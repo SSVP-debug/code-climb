@@ -1,7 +1,17 @@
 import { signInWithGoogle } from "../services/auth";
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   const handleGoogleLogin = async () => {
     const user = await signInWithGoogle();
 
@@ -11,7 +21,7 @@ function LoginPage() {
     }
   };
 
-  const navigate = useNavigate();
+
 
   return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
