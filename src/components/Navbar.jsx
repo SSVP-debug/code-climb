@@ -25,7 +25,9 @@ function Navbar() {
                 <Link to="/dashboard" className="hover:text-zinc-300 transition">
                     Dashboard
                 </Link>
-
+                <Link to="/problems" className="hover:text-zinc-300 transition">
+                    Problems
+                </Link>
                 <Link to="/analytics" className="hover:text-zinc-300 transition">
                     Analytics
                 </Link>
