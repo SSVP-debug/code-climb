@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+
 import {
   useParams,
   Link,
 } from "react-router-dom";
 
 import DashboardLayout from "../layouts/DashboardLayout";
+
 import Editor from "@monaco-editor/react";
 
 import { runCode } from "../services/compiler";
+
+import { judgeSubmission } from "../services/judgeService";
 
 import problems from "../data/problems";
 
@@ -19,7 +23,6 @@ function ProblemDetailsPage() {
     (p) => p.slug === title
   );
 
-  // IMPORTANT FIX
   if (!problem) {
 
     return (
@@ -33,7 +36,6 @@ function ProblemDetailsPage() {
     );
   }
 
-  // NOW SAFE
   const currentIndex =
     problems.findIndex(
       (p) => p.slug === problem.slug
@@ -121,8 +123,6 @@ function ProblemDetailsPage() {
         customInput
       );
 
-      console.log(result);
-
       if (result.stdout) {
 
         setStatus("Code Executed ✅");
@@ -172,26 +172,86 @@ function ProblemDetailsPage() {
         customInput
       );
 
-      console.log(result);
-
       const newSubmission = {
         language,
         status: "",
         time: new Date().toLocaleTimeString(),
+        passed: judgeResult.passed || 0,
+
+        total: judgeResult.total || 0,
+        visiblePassed:
+          judgeResult.visiblePassed || 0,
+
+        hiddenPassed:
+          judgeResult.hiddenPassed || 0,
       };
 
-      if (result.stdout) {
+      // Compilation Error
+      if (result.compile_output) {
 
         newSubmission.status =
-          "Accepted 🎉";
+          "Compilation Error ❌";
 
         setStatus(
-          "Submission Accepted 🎉"
+          "Compilation Error ❌"
         );
 
-        setOutput(result.stdout);
+        setOutput(
+          result.compile_output
+        );
 
-        // Mark solved
+        setSubmissions((prev) => [
+          newSubmission,
+          ...prev,
+        ]);
+
+        return;
+      }
+
+      // Runtime Error
+      if (result.stderr) {
+
+        newSubmission.status =
+          "Runtime Error ❌";
+
+        setStatus(
+          "Runtime Error ❌"
+        );
+
+        setOutput(result.stderr);
+
+        setSubmissions((prev) => [
+          newSubmission,
+          ...prev,
+        ]);
+
+        return;
+      }
+
+      // Judge System
+      const judgeResult =
+        await judgeSubmission({
+          problem,
+          code,
+          language,
+        });
+
+      newSubmission.status =
+        judgeResult.status;
+
+      setStatus(
+        judgeResult.status
+      );
+
+      setOutput(result.stdout);
+
+      // Accepted
+      if (
+        judgeResult.status ===
+        "Accepted" &&
+        !isSolved
+      ) {
+
         setIsSolved(true);
 
         localStorage.setItem(
@@ -199,7 +259,7 @@ function ProblemDetailsPage() {
           "true"
         );
 
-        // Global solved problems
+        // Global Solved Problems
         const solvedProblems =
           JSON.parse(
             localStorage.getItem(
@@ -221,7 +281,7 @@ function ProblemDetailsPage() {
           );
         }
 
-        // Difficulty tracking
+        // Difficulty Tracking
         const solvedDifficulty =
           JSON.parse(
             localStorage.getItem(
@@ -320,38 +380,6 @@ function ProblemDetailsPage() {
           todayKey,
           todaySolved + 1
         );
-
-      } else if (result.stderr) {
-
-        newSubmission.status =
-          "Runtime Error ❌";
-
-        setStatus(
-          "Submission Failed ❌"
-        );
-
-        setOutput(result.stderr);
-
-      } else if (
-        result.compile_output
-      ) {
-
-        newSubmission.status =
-          "Compilation Error ❌";
-
-        setStatus(
-          "Compilation Error ❌"
-        );
-
-        setOutput(
-          result.compile_output
-        );
-
-      } else {
-
-        newSubmission.status =
-          "Submission Completed";
-
       }
 
       setSubmissions((prev) => [
@@ -421,28 +449,6 @@ function ProblemDetailsPage() {
             {problem.description}
           </p>
 
-          <div className="mt-6">
-
-            <h3 className="text-xl font-semibold mb-4">
-              Constraints
-            </h3>
-
-            <ul className="space-y-2 text-zinc-400">
-
-              {problem.constraints.map(
-                (constraint, index) => (
-
-                  <li key={index}>
-                    • {constraint}
-                  </li>
-
-                )
-              )}
-
-            </ul>
-
-          </div>
-
         </div>
 
         {/* Main Section */}
@@ -467,7 +473,7 @@ function ProblemDetailsPage() {
 
                   setCode(
                     problem.starterCode[
-                      e.target.value
+                    e.target.value
                     ]
                   );
 
@@ -534,28 +540,8 @@ function ProblemDetailsPage() {
           {/* Right Section */}
           <div>
 
-            {/* Custom Input */}
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-
-              <h3 className="text-xl font-semibold mb-4">
-                Custom Input
-              </h3>
-
-              <textarea
-                value={customInput}
-                onChange={(e) =>
-                  setCustomInput(
-                    e.target.value
-                  )
-                }
-                placeholder="Enter custom input..."
-                className="w-full h-[120px] bg-black border border-zinc-800 rounded-xl p-4 outline-none resize-none font-mono text-sm"
-              />
-
-            </div>
-
             {/* Output */}
-            <div className="mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
 
               <h3 className="text-xl font-semibold mb-4">
                 Output
@@ -564,6 +550,39 @@ function ProblemDetailsPage() {
               <p className="mb-3 font-semibold text-green-400">
                 {status}
               </p>
+              {submissions.length > 0 && (
+
+                <div className="text-sm text-zinc-400 mb-4 space-y-1">
+
+                  <p>
+                    Passed {
+                      submissions[0].passed || 0
+                    } / {
+                      submissions[0].total || 0
+                    } testcases
+                  </p>
+
+                  <p>
+                    Visible:
+                    {" "}
+                    {
+                      submissions[0]
+                        .visiblePassed || 0
+                    }
+                  </p>
+
+                  <p>
+                    Hidden:
+                    {" "}
+                    {
+                      submissions[0]
+                        .hiddenPassed || 0
+                    }
+                  </p>
+
+                </div>
+
+              )}
 
               <div className="bg-black border border-zinc-800 rounded-xl p-4 min-h-[120px] font-mono text-sm whitespace-pre-wrap">
 
@@ -629,48 +648,6 @@ function ProblemDetailsPage() {
                     )
                   )
 
-                )}
-
-              </div>
-
-            </div>
-
-            {/* Testcases */}
-            <div className="mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-
-              <h2 className="text-2xl font-semibold mb-6">
-                Testcases
-              </h2>
-
-              <div className="space-y-4">
-
-                {problem.examples.map(
-                  (example, index) => (
-
-                    <div
-                      key={index}
-                      className="bg-zinc-800 p-4 rounded-xl"
-                    >
-
-                      <p className="text-zinc-400 mb-2">
-                        Input
-                      </p>
-
-                      <p className="font-mono mb-4">
-                        {example.input}
-                      </p>
-
-                      <p className="text-zinc-400 mb-2">
-                        Output
-                      </p>
-
-                      <p className="font-mono">
-                        {example.output}
-                      </p>
-
-                    </div>
-
-                  )
                 )}
 
               </div>

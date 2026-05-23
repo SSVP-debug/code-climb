@@ -15,10 +15,15 @@ const problems = [
 
     examples: [
       {
-        input:
-          "nums = [2,7,11,15], target = 9",
+        input: "nums = [2,7,11,15], target = 9",
 
         output: "[0,1]",
+      },
+
+      {
+        input: "nums = [3,2,4], target = 6",
+
+        output: "[1,2]",
       },
     ],
 
@@ -29,41 +34,72 @@ const problems = [
     ],
 
     starterCode: {
-      python:
-`def twoSum(nums, target):
+      python: `def twoSum(nums, target):
     # Write your solution here
     pass`,
 
-      javascript:
-`function twoSum(nums, target) {
+      javascript: `function twoSum(nums, target) {
   // Write your solution here
 }`,
 
-      java:
-`class Solution {
+      java: `class Solution {
     public int[] twoSum(int[] nums, int target) {
 
     }
 }`,
 
-      cpp:
-`class Solution {
+      cpp: `class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
 
     }
 };`,
     },
+
+    testcases: [
+      {
+        input: {
+          nums: [2, 7, 11, 15],
+          target: 9,
+        },
+
+        expectedOutput: [0, 1],
+      },
+
+      {
+        input: "[3,2,4]\n6",
+
+        expectedOutput: "[1,2]",
+      },
+    ],
+
+    hiddenTestcases: [
+      {
+        input: {
+          nums: [2, 7, 11, 15],
+          target: 9,
+        },
+
+        expectedOutput: [0, 1],
+      },
+
+      {
+        input: {
+          nums: [1, 5, 8, 2],
+          target: 10,
+        },
+
+        expectedOutput: [2, 3],
+      },
+    ],
   },
 
   {
     id: 2,
 
-    title:
-      "Binary Tree Level Order Traversal",
+    title: "Binary Tree Level Order Traversal",
 
-    slug:
-      "binary-tree-level-order-traversal",
+    slug: "binary-tree-level-order-traversal",
 
     difficulty: "Medium",
 
@@ -74,44 +110,77 @@ public:
 
     examples: [
       {
-        input:
-          "root = [3,9,20,null,null,15,7]",
+        input: "root = [3,9,20,null,null,15,7]",
 
-        output:
-          "[[3],[9,20],[15,7]]",
+        output: "[[3],[9,20],[15,7]]",
+      },
+
+      {
+        input: "root = [1]",
+
+        output: "[[1]]",
       },
     ],
 
     constraints: [
       "The number of nodes in the tree is in the range [0, 2000].",
+      "-1000 <= Node.val <= 1000",
     ],
 
     starterCode: {
-      python:
-`class Solution:
+      python: `class Solution:
     def levelOrder(self, root):
         pass`,
 
-      javascript:
-`function levelOrder(root) {
+      javascript: `function levelOrder(root) {
 
 }`,
 
-      java:
-`class Solution {
+      java: `class Solution {
     public List<List<Integer>> levelOrder(TreeNode root) {
 
     }
 }`,
 
-      cpp:
-`class Solution {
+      cpp: `class Solution {
 public:
     vector<vector<int>> levelOrder(TreeNode* root) {
 
     }
 };`,
     },
+
+    testcases: [
+      {
+        input: {
+          root: [3, 9, 20, null, null, 15, 7],
+        },
+
+        expectedOutput: [[3], [9, 20], [15, 7]],
+      },
+
+      {
+        input: {
+          root: [1],
+        },
+
+        expectedOutput: [[1]],
+      },
+    ],
+
+    hiddenTestcases: [
+      {
+        input: "[]",
+
+        expectedOutput: "[]",
+      },
+
+      {
+        input: "[1,2,3,4,5]",
+
+        expectedOutput: "[[1],[2,3],[4,5]]",
+      },
+    ],
   },
 ];
 
