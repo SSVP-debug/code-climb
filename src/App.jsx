@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import ProblemsPage from "./pages/ProblemsPage";
 import ProblemDetailsPage from "./pages/ProblemDetailsPage";
 
+
 function App() {
   return (
     <Routes>

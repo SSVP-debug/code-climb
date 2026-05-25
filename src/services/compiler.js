@@ -7,19 +7,19 @@ export async function runCode(
   try {
 
     const response = await fetch(
-      "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
+      API_URL,
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
 
-        body: JSON.stringify({
-          source_code: sourceCode,
-          language_id: languageId,
-          stdin: stdin
-        }),
+        body: JSON.stringify(data),
+
+        signal:
+          AbortSignal.timeout(10000),
       }
     );
 

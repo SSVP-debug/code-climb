@@ -23,9 +23,13 @@ export const judgeSubmission =
     problem,
     code,
     language,
+    onProgress,
   }) => {
 
     try {
+
+      const startTime =
+        performance.now();
 
       const visibleTestcases =
         problem.testcases;
@@ -46,13 +50,23 @@ export const judgeSubmission =
         of allTestcases.entries()
       ) {
 
+        if (onProgress) {
+
+          onProgress({
+            current: index + 1,
+            total: allTestcases.length,
+          });
+
+        }
+
         // Generate executable code
-        generateDriverCode(
-          language,
-          code,
-          testcase.input,
-          problem.functionName
-        );
+        const executableCode =
+          generateDriverCode(
+            language,
+            code,
+            testcase.input,
+            problem.functionName
+          );
 
         // Run testcase
         const result =
@@ -112,10 +126,31 @@ export const judgeSubmission =
             result.stdout || ""
           );
 
+        if (actual.length > 5000) {
+
+          return {
+            status:
+              "Output Limit Exceeded ❌",
+
+            passed:
+              passedCount,
+
+            total:
+              allTestcases.length,
+          };
+        }
+
         // Wrong Answer
         if (
           expected !== actual
         ) {
+
+          const endTime =
+            performance.now();
+
+          const executionTime =
+            (endTime - startTime)
+              .toFixed(2);
 
           return {
             status:
@@ -132,6 +167,14 @@ export const judgeSubmission =
             hiddenPassed,
 
             failedTestcase: testcase,
+
+            expectedOutput:
+              testcase.expectedOutput,
+
+            actualOutput:
+              result.stdout || "",
+
+            executionTime,
           };
         }
 
@@ -147,6 +190,13 @@ export const judgeSubmission =
         }
       }
 
+      const endTime =
+        performance.now();
+
+      const executionTime =
+        (endTime - startTime)
+          .toFixed(2);
+
       // Accepted
       return {
         status:
@@ -161,6 +211,8 @@ export const judgeSubmission =
         visiblePassed,
 
         hiddenPassed,
+        executionTime,
+
       };
 
     } catch (error) {

@@ -15,6 +15,14 @@ import { judgeSubmission } from "../services/judgeService";
 
 import problems from "../data/problems";
 
+import {
+  isProblemSolved,
+} from "../utils/problemUtils";
+
+import {
+  useAppContext,
+} from "../context/AppContext";
+
 function ProblemDetailsPage() {
 
   const { title } = useParams();
@@ -22,6 +30,12 @@ function ProblemDetailsPage() {
   const problem = problems.find(
     (p) => p.slug === title
   );
+
+  const {
+    addSolvedProblem,
+    addSubmission,
+    updateTopicStats,
+  } = useAppContext();
 
   if (!problem) {
 
@@ -70,6 +84,14 @@ function ProblemDetailsPage() {
   const [submitting, setSubmitting] =
     useState(false);
 
+  const [judgeState, setJudgeState] =
+    useState("");
+
+  const [
+    testcaseProgress,
+    setTestcaseProgress,
+  ] = useState(null);
+
   const [submissions, setSubmissions] =
     useState(() => {
 
@@ -94,6 +116,11 @@ function ProblemDetailsPage() {
       );
 
     });
+
+  const [
+    selectedSubmission,
+    setSelectedSubmission,
+  ] = useState(null);
 
   useEffect(() => {
 
@@ -166,90 +193,77 @@ function ProblemDetailsPage() {
 
       setSubmitting(true);
 
-      const result = await runCode(
-        code,
-        languageMap[language],
-        customInput
-      );
+      setJudgeState("Queued");
 
-      const newSubmission = {
-        language,
-        status: "",
-        time: new Date().toLocaleTimeString(),
-        passed: judgeResult.passed || 0,
+      setJudgeState("Running");
 
-        total: judgeResult.total || 0,
-        visiblePassed:
-          judgeResult.visiblePassed || 0,
-
-        hiddenPassed:
-          judgeResult.hiddenPassed || 0,
-      };
-
-      // Compilation Error
-      if (result.compile_output) {
-
-        newSubmission.status =
-          "Compilation Error ❌";
-
-        setStatus(
-          "Compilation Error ❌"
-        );
-
-        setOutput(
-          result.compile_output
-        );
-
-        setSubmissions((prev) => [
-          newSubmission,
-          ...prev,
-        ]);
-
-        return;
-      }
-
-      // Runtime Error
-      if (result.stderr) {
-
-        newSubmission.status =
-          "Runtime Error ❌";
-
-        setStatus(
-          "Runtime Error ❌"
-        );
-
-        setOutput(result.stderr);
-
-        setSubmissions((prev) => [
-          newSubmission,
-          ...prev,
-        ]);
-
-        return;
-      }
-
-      // Judge System
       const judgeResult =
         await judgeSubmission({
           problem,
           code,
           language,
+          onProgress:
+            setTestcaseProgress,
         });
 
-      newSubmission.status =
-        judgeResult.status;
+      setJudgeState("Completed");
+
+      const newSubmission = {
+
+        id: crypto.randomUUID(),
+
+        problemTitle:
+          problem.title,
+
+        problemSlug:
+          problem.slug,
+
+        language,
+
+        status:
+          judgeResult.status,
+
+        time:
+          new Date().toLocaleTimeString(),
+
+        date:
+          new Date().toLocaleDateString(),
+
+        passed:
+          judgeResult.passed || 0,
+
+        total:
+          judgeResult.total || 0,
+
+        visiblePassed:
+          judgeResult.visiblePassed || 0,
+
+        hiddenPassed:
+          judgeResult.hiddenPassed || 0,
+
+        expectedOutput:
+          judgeResult.expectedOutput,
+
+        actualOutput:
+          judgeResult.actualOutput,
+
+        executionTime:
+          judgeResult.executionTime,
+      };
 
       setStatus(
         judgeResult.status
       );
 
-      setOutput(result.stdout);
+      setOutput(
+        judgeResult.actualOutput || ""
+      );
 
       // Accepted
       if (
         judgeResult.status ===
-        "Accepted" &&
-        !isSolved
+        "Accepted 🎉" &&
+        !isProblemSolved(title)
       ) {
 
         setIsSolved(true);
@@ -259,27 +273,11 @@ function ProblemDetailsPage() {
           "true"
         );
 
-        // Global Solved Problems
-        const solvedProblems =
-          JSON.parse(
-            localStorage.getItem(
-              "codeclimbSolved"
-            )
-          ) || [];
+        addSolvedProblem(title);
 
-        if (
-          !solvedProblems.includes(title)
-        ) {
-
-          solvedProblems.push(title);
-
-          localStorage.setItem(
-            "codeclimbSolved",
-            JSON.stringify(
-              solvedProblems
-            )
-          );
-        }
+        updateTopicStats(
+          problem.topic
+        );
 
         // Difficulty Tracking
         const solvedDifficulty =
@@ -382,6 +380,10 @@ function ProblemDetailsPage() {
         );
       }
 
+      addSubmission(
+        newSubmission
+      );
+
       setSubmissions((prev) => [
         newSubmission,
         ...prev,
@@ -398,6 +400,12 @@ function ProblemDetailsPage() {
     } finally {
 
       setSubmitting(false);
+
+      setTestcaseProgress(null);
+
+      setTimeout(() => {
+        setJudgeState("");
+      }, 2000);
 
     }
   }
@@ -473,7 +481,7 @@ function ProblemDetailsPage() {
 
                   setCode(
                     problem.starterCode[
-                    e.target.value
+                      e.target.value
                     ]
                   );
 
@@ -526,7 +534,11 @@ function ProblemDetailsPage() {
               <button
                 onClick={handleSubmitCode}
                 disabled={submitting}
-                className="bg-green-500 hover:bg-green-600 transition px-6 py-3 rounded-xl font-semibold text-black"
+                className={`px-6 py-3 rounded-xl font-semibold text-black transition ${
+                  submitting
+                    ? "bg-green-300 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
               >
                 {submitting
                   ? "Submitting..."
@@ -534,6 +546,16 @@ function ProblemDetailsPage() {
               </button>
 
             </div>
+
+            {submitting && (
+
+              <div className="mt-4 text-yellow-400 text-sm">
+
+                Running hidden testcases...
+
+              </div>
+
+            )}
 
           </div>
 
@@ -547,9 +569,40 @@ function ProblemDetailsPage() {
                 Output
               </h3>
 
+              {judgeState && (
+
+                <div className="mb-4">
+
+                  <span className="bg-zinc-800 px-3 py-1 rounded-lg text-sm">
+
+                    Judge Status:
+                    {" "}
+                    {judgeState}
+
+                  </span>
+
+                </div>
+
+              )}
+
+              {testcaseProgress && (
+
+                <div className="mb-4 text-sm text-blue-400">
+
+                  Running testcase {
+                    testcaseProgress.current
+                  } / {
+                    testcaseProgress.total
+                  }
+
+                </div>
+
+              )}
+
               <p className="mb-3 font-semibold text-green-400">
                 {status}
               </p>
+
               {submissions.length > 0 && (
 
                 <div className="text-sm text-zinc-400 mb-4 space-y-1">
@@ -583,6 +636,50 @@ function ProblemDetailsPage() {
                 </div>
 
               )}
+
+              {submissions.length > 0 &&
+                submissions[0].status ===
+                "Wrong Answer ❌" && (
+
+                  <div className="mt-4 space-y-4">
+
+                    <div>
+
+                      <p className="text-red-400 mb-1">
+                        Expected Output
+                      </p>
+
+                      <div className="bg-black border border-zinc-800 rounded-xl p-3 font-mono text-sm">
+
+                        {JSON.stringify(
+                          submissions[0]
+                            .expectedOutput
+                        )}
+
+                      </div>
+
+                    </div>
+
+                    <div>
+
+                      <p className="text-yellow-400 mb-1">
+                        Your Output
+                      </p>
+
+                      <div className="bg-black border border-zinc-800 rounded-xl p-3 font-mono text-sm">
+
+                        {
+                          submissions[0]
+                            .actualOutput
+                        }
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                )}
 
               <div className="bg-black border border-zinc-800 rounded-xl p-4 min-h-[120px] font-mono text-sm whitespace-pre-wrap">
 
@@ -618,7 +715,12 @@ function ProblemDetailsPage() {
 
                       <div
                         key={index}
-                        className="bg-zinc-800 p-4 rounded-xl flex items-center justify-between"
+                        onClick={() =>
+                          setSelectedSubmission(
+                            submission
+                          )
+                        }
+                        className="bg-zinc-800 p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-zinc-700 transition"
                       >
 
                         <div>
@@ -633,6 +735,14 @@ function ProblemDetailsPage() {
                             {
                               submission.language
                             }
+                          </p>
+
+                          <p className="text-zinc-500 text-xs mt-1">
+                            Runtime:
+                            {" "}
+                            {
+                              submission.executionTime
+                            } ms
                           </p>
 
                         </div>
@@ -653,6 +763,134 @@ function ProblemDetailsPage() {
               </div>
 
             </div>
+
+            {/* Submission Details */}
+            {selectedSubmission && (
+
+              <div className="mt-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+
+                <div className="flex items-center justify-between mb-6">
+
+                  <h2 className="text-2xl font-semibold">
+                    Submission Details
+                  </h2>
+
+                  <button
+                    onClick={() =>
+                      setSelectedSubmission(null)
+                    }
+                    className="bg-zinc-800 px-4 py-2 rounded-lg"
+                  >
+                    Close
+                  </button>
+
+                </div>
+
+                <div className="space-y-4">
+
+                  <div>
+
+                    <p className="text-zinc-400 text-sm">
+                      Status
+                    </p>
+
+                    <p className="font-semibold">
+                      {
+                        selectedSubmission.status
+                      }
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-zinc-400 text-sm">
+                      Language
+                    </p>
+
+                    <p>
+                      {
+                        selectedSubmission.language
+                      }
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-zinc-400 text-sm">
+                      Runtime
+                    </p>
+
+                    <p>
+                      {
+                        selectedSubmission.executionTime
+                      } ms
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-zinc-400 text-sm">
+                      Passed Testcases
+                    </p>
+
+                    <p>
+                      {
+                        selectedSubmission.passed
+                      } / {
+                        selectedSubmission.total
+                      }
+                    </p>
+
+                  </div>
+
+                  {selectedSubmission.expectedOutput && (
+
+                    <div>
+
+                      <p className="text-red-400 mb-2">
+                        Expected Output
+                      </p>
+
+                      <div className="bg-black border border-zinc-800 rounded-xl p-3 font-mono text-sm">
+
+                        {JSON.stringify(
+                          selectedSubmission.expectedOutput
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  )}
+
+                  {selectedSubmission.actualOutput && (
+
+                    <div>
+
+                      <p className="text-yellow-400 mb-2">
+                        Your Output
+                      </p>
+
+                      <div className="bg-black border border-zinc-800 rounded-xl p-3 font-mono text-sm whitespace-pre-wrap">
+
+                        {
+                          selectedSubmission.actualOutput
+                        }
+
+                      </div>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              </div>
+
+            )}
 
           </div>
 

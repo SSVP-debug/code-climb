@@ -1,149 +1,66 @@
-import { useContext, useState } from "react";
+import { useEffect } from "react";
 
-import { AuthContext } from "../context/AuthContext";
-
-import DashboardLayout from "../layouts/DashboardLayout";
-
-import useDashboardData from "../hooks/useDashboardData";
-
-import DailyGoal from "../components/dashboard/DailyGoal";
-
-import RecommendationSection from "../components/dashboard/RecommendationSection";
-
-import AchievementsSection from "../components/dashboard/AchievementsSection";
-
-import RecentActivitySection from "../components/dashboard/RecentActivitySection";
-
-import HeatmapSection from "../components/dashboard/HeatmapSection";
-
-import StatsSection from "../components/dashboard/StatsSection";
-
-import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
+import DashboardSections
+from "../components/dashboard/DashboardSections";
 
 function Dashboard() {
 
-  const { user } = useContext(AuthContext);
+  useEffect(() => {
 
-  const [username, setUsername] = useState(
-    localStorage.getItem("leetcodeUsername") || ""
-  );
+    // Save joined date once
+    if (
+      !localStorage.getItem(
+        "joinedDate"
+      )
+    ) {
 
-  const [isConnected, setIsConnected] = useState(
-    !!localStorage.getItem("leetcodeUsername")
-  );
+      localStorage.setItem(
+        "joinedDate",
+        new Date().toLocaleDateString()
+      );
 
-  const {
-    stats,
-    loading,
-    error,
-    setStats,
-    streak,
-    badges,
-    recommendation,
-    dailySolved,
-    recentActivity,
-    codeClimbSolved,
-  } = useDashboardData(username);
+    }
 
-  const statsData = [
-    {
-      title: "Total Solved",
-      value: stats?.solvedProblem || 0,
-      color: "text-white",
-    },
-    {
-      title: "Easy",
-      value: stats?.easySolved || 0,
-      color: "text-green-400",
-    },
-    {
-      title: "Medium",
-      value: stats?.mediumSolved || 0,
-      color: "text-yellow-400",
-    },
-    {
-      title: "Hard",
-      value: stats?.hardSolved || 0,
-      color: "text-red-400",
-    },
-    {
-      title: "Current Streak",
-      value: `${streak} Days`,
-      color: "text-orange-400",
-    },
-    {
-      title: "Code Climb Solved",
-      value: codeClimbSolved,
-      color: "text-purple-400",
-    },
-  ];
+  }, []);
 
   return (
+
     <DashboardLayout>
 
-      <div className="p-8">
+      <div className="p-8 space-y-8">
+        <DashboardSections />
 
-        {/* Welcome */}
-        <div className="mb-8">
+        {/* Rank Progress */}
+        <RankProgressSection />
 
-          <h1 className="text-4xl font-bold">
-            Welcome back, {user?.displayName} 👋
-          </h1>
+        {/* Daily Challenge */}
+        <DailyChallengeSection />
 
-          <p className="text-zinc-400 mt-2">
-            Let's track and break DSA problems today!
-          </p>
+        {/* Basic Stats */}
+        <StatsSection />
 
-        </div>
+        {/* Advanced Stats */}
+        <AdvancedStatsSection />
 
-        {/* Loading */}
-        {loading && (
-          <p className="text-yellow-400 mb-4">
-            Loading stats...
-          </p>
-        )}
+        {/* Language Usage */}
+        <LanguageChart />
 
-        {/* Error */}
-        {error && (
-          <p className="text-red-400 mb-4">
-            {error}
-          </p>
-        )}
+        {/* Topic Mastery */}
+        <TopicMasteryChart />
 
-        {/* Connect LeetCode */}
-        <ConnectLeetCodeSection
-          isConnected={isConnected}
-          username={username}
-          setUsername={setUsername}
-          setIsConnected={setIsConnected}
-          setStats={setStats}
-        />
-
-        {/* Stats */}
-        <StatsSection statsData={statsData} />
-
-        {/* Daily Goal */}
-        <DailyGoal dailySolved={dailySolved} />
-
-        {/* Recommendation */}
-        <RecommendationSection
-          recommendation={recommendation}
-        />
+        {/* AI Insights */}
+        <AIInsightsSection />
 
         {/* Achievements */}
-        <AchievementsSection badges={badges} />
+        <AchievementGallery />
 
-        {/* Heatmap */}
-        <HeatmapSection />
-
-        {/* Recent Activity */}
-        <RecentActivitySection
-          recentActivity={recentActivity}
-        />
+        {/* Public Profile */}
+        <PublicProfileCard />
 
       </div>
 
     </DashboardLayout>
+
   );
 }
 
