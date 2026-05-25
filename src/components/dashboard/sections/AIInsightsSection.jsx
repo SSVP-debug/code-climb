@@ -2,7 +2,7 @@ import {
     getWeakestTopic,
     getStrongestTopic,
     getAcceptanceRate,
-} from "../../utils/analyticsUtils";
+} from "../../../utils/analyticsUtils";
 
 function AIInsightsSection() {
 

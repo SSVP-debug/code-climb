@@ -1,6 +1,6 @@
 import {
   getAchievements,
-} from "../../utils/analyticsUtils";
+} from "../../../utils/analyticsUtils";
 
 function AchievementGallery() {
 

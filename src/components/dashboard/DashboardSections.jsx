@@ -1,26 +1,14 @@
-import RankProgressSection
-from "./sections/RankProgressSection";
+import RankProgressSection from "./sections/RankProgressSection";
 
-import DailyChallengeSection
-from "./sections/DailyChallengeSection";
+import DailyChallengeSection from "./sections/DailyChallengeSection";
 
-import AdvancedStatsSection
-from "./sections/AdvancedStatsSection";
+import AdvancedStatsSection from "./sections/AdvancedStatsSection";
 
-import LanguageChart
-from "./sections/LanguageChart";
+import AIInsightsSection from "./sections/AIInsightsSection";
 
-import TopicMasteryChart
-from "./sections/TopicMasteryChart";
+import AchievementGallery from "./sections/AchievementGallery";
 
-import AIInsightsSection
-from "./sections/AIInsightsSection";
-
-import AchievementGallery
-from "./sections/AchievementGallery";
-
-import PublicProfileCard
-from "./sections/PublicProfileCard";
+import PublicProfileCard from "./sections/PublicProfileCard";
 
 function DashboardSections() {
 
@@ -33,10 +21,6 @@ function DashboardSections() {
       <DailyChallengeSection />
 
       <AdvancedStatsSection />
-
-      <LanguageChart />
-
-      <TopicMasteryChart />
 
       <AIInsightsSection />
 

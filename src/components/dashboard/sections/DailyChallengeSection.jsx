@@ -4,7 +4,7 @@ import {
 
 import {
   getDailyChallenge,
-} from "../../utils/analyticsUtils";
+} from "../../../utils/analyticsUtils";
 
 function DailyChallengeSection() {
 

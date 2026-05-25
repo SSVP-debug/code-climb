@@ -3,7 +3,7 @@ import {
     getAverageRuntime,
     getLanguageStats,
     getAllSubmissions,
-} from "../../utils/analyticsUtils";
+} from "../../../utils/analyticsUtils";
 
 import { useMemo } from "react";
 
