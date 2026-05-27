@@ -1,12 +1,12 @@
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD2FRu0F5Hpbz_hTqCDo5cAVupR1nZlNr8",
-  authDomain: "code-climb-auth.firebaseapp.com",
-  projectId: "code-climb-auth",
-  storageBucket: "code-climb-auth.firebasestorage.app",
-  messagingSenderId: "700712222471",
-  appId: "1:700712222471:web:2445367e1129236400cfa2"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);

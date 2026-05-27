@@ -1,15 +1,12 @@
 import { runCode } from "./compiler";
-
 import { generateDriverCode } from "../utils/generateDriverCode";
+import { parseJudge0Result } from "../utils/parseJudge0Result";
 
-const normalizeOutput = (output) => {
-
-  return output
+const normalizeOutput = (output) =>
+  output
     .toString()
     .trim()
     .replace(/\s+/g, "");
-
-};
 
 const languageMap = {
   python: 71,
@@ -18,211 +15,203 @@ const languageMap = {
   cpp: 54,
 };
 
-export const judgeSubmission =
-  async ({
-    problem,
-    code,
-    language,
-    onProgress,
-  }) => {
+const RUNTIME_STATUS_IDS = new Set([
+  7, 8, 9, 10, 11, 12,
+]);
 
-    try {
+function isInfrastructureError(stderr) {
+  return /code runner unavailable|failed to reach|ECONNREFUSED|502|network|unauthorized|fetch failed/i.test(
+    stderr || ""
+  );
+}
 
-      const startTime =
-        performance.now();
+function analyzeRunResult(result) {
+  if (!result) {
+    return { type: "infra", message: "No response from code runner" };
+  }
 
-      const visibleTestcases =
-        problem.testcases;
+  if (result.compile_output) {
+    return {
+      type: "compile",
+      message: result.compile_output,
+    };
+  }
 
-      const hiddenTestcases =
-        problem.hiddenTestcases;
+  const statusId = result.status?.id;
 
-      const allTestcases = [
-        ...visibleTestcases,
-        ...hiddenTestcases,
-      ];
+  if (statusId === 6) {
+    return {
+      type: "compile",
+      message:
+        result.compile_output ||
+        result.status?.description ||
+        "Compilation Error",
+    };
+  }
 
-      let passedCount = 0;
-      let visiblePassed = 0;
-      let hiddenPassed = 0;
-      for (
-        const [index, testcase]
-        of allTestcases.entries()
-      ) {
+  if (result.stderr) {
+    if (isInfrastructureError(result.stderr)) {
+      return { type: "infra", message: result.stderr };
+    }
 
-        if (onProgress) {
+    return { type: "runtime", message: result.stderr };
+  }
 
-          onProgress({
-            current: index + 1,
-            total: allTestcases.length,
-          });
+  if (
+    statusId &&
+    RUNTIME_STATUS_IDS.has(statusId)
+  ) {
+    return {
+      type: "runtime",
+      message:
+        result.status?.description ||
+        "Runtime Error",
+    };
+  }
 
-        }
+  return { type: "ok" };
+}
 
-        // Generate executable code
-        const executableCode =
-          generateDriverCode(
-            language,
-            code,
-            testcase.input,
-            problem.functionName
-          );
+export const judgeSubmission = async ({
+  problem,
+  code,
+  language,
+  onProgress,
+}) => {
+  try {
+    const startTime = performance.now();
+    const visibleTestcases = problem.testcases || [];
+    const hiddenTestcases = problem.hiddenTestcases || [];
+    const allTestcases = [
+      ...visibleTestcases,
+      ...hiddenTestcases,
+    ];
 
-        // Run testcase
-        const result =
-          await runCode(
-            executableCode,
-            languageMap[language],
-            ""
-          );
+    let passedCount = 0;
+    let visiblePassed = 0;
+    let hiddenPassed = 0;
 
-        // Runtime Error
-        if (result.stderr) {
-
-          return {
-            status:
-              "Runtime Error ❌",
-
-            passed:
-              passedCount,
-
-            total:
-              allTestcases.length,
-
-            error:
-              result.stderr,
-          };
-        }
-
-        // Compilation Error
-        if (
-          result.compile_output
-        ) {
-
-          return {
-            status:
-              "Compilation Error ❌",
-
-            passed:
-              passedCount,
-
-            total:
-              allTestcases.length,
-
-            error:
-              result.compile_output,
-          };
-        }
-
-        const expected =
-          normalizeOutput(
-            JSON.stringify(
-              testcase.expectedOutput
-            )
-          );
-
-        const actual =
-          normalizeOutput(
-            result.stdout || ""
-          );
-
-        if (actual.length > 5000) {
-
-          return {
-            status:
-              "Output Limit Exceeded ❌",
-
-            passed:
-              passedCount,
-
-            total:
-              allTestcases.length,
-          };
-        }
-
-        // Wrong Answer
-        if (
-          expected !== actual
-        ) {
-
-          const endTime =
-            performance.now();
-
-          const executionTime =
-            (endTime - startTime)
-              .toFixed(2);
-
-          return {
-            status:
-              "Wrong Answer ❌",
-
-            passed:
-              passedCount,
-
-            total:
-              allTestcases.length,
-
-            visiblePassed,
-
-            hiddenPassed,
-
-            failedTestcase: testcase,
-
-            expectedOutput:
-              testcase.expectedOutput,
-
-            actualOutput:
-              result.stdout || "",
-
-            executionTime,
-          };
-        }
-
-        passedCount++;
-        if (index < visibleTestcases.length) {
-
-          visiblePassed++;
-
-        } else {
-
-          hiddenPassed++;
-
-        }
+    for (const [index, testcase] of allTestcases.entries()) {
+      if (onProgress) {
+        onProgress({
+          current: index + 1,
+          total: allTestcases.length,
+        });
       }
 
-      const endTime =
-        performance.now();
+      const executableCode = generateDriverCode(
+        language,
+        code,
+        testcase.input,
+        problem.functionName
+      );
 
-      const executionTime =
-        (endTime - startTime)
-          .toFixed(2);
+      if (import.meta.env.DEV) {
+        console.log(
+          `[Judge] testcase ${index + 1}/${allTestcases.length}, lang=${language}, id=${languageMap[language]}`
+        );
+        console.log(
+          `[Judge] generated code (first 300 chars):`,
+          executableCode.slice(0, 300)
+        );
+      }
+      const parsed = parseJudge0Result(result);
+      
 
-      // Accepted
-      return {
-        status:
-          "Accepted 🎉",
+      const result = await runCode(
+        executableCode,
+        languageMap[language],
+        ""
+      );
 
-        passed:
-          passedCount,
+      const analysis = analyzeRunResult(result);
 
-        total:
-          allTestcases.length,
+      if (analysis.type === "infra") {
+        return {
+          status: "Judge Error ❌",
+          passed: passedCount,
+          total: allTestcases.length,
+          error: analysis.message,
+        };
+      }
 
-        visiblePassed,
+      if (analysis.type === "compile") {
+        return {
+          status: "Compilation Error ❌",
+          passed: passedCount,
+          total: allTestcases.length,
+          error: analysis.message,
+        };
+      }
 
-        hiddenPassed,
-        executionTime,
+      if (analysis.type === "runtime") {
+        return {
+          status: "Runtime Error ❌",
+          passed: passedCount,
+          total: allTestcases.length,
+          error: analysis.message,
+        };
+      }
 
-      };
+      const expected = normalizeOutput(
+        JSON.stringify(testcase.expectedOutput)
+      );
 
-    } catch (error) {
+      const actual = normalizeOutput(
+        result.stdout || ""
+      );
 
-      return {
-        status:
-          "Judge Error ❌",
+      if (actual.length > 5000) {
+        return {
+          status: "Output Limit Exceeded ❌",
+          passed: passedCount,
+          total: allTestcases.length,
+        };
+      }
 
-        error: error.message,
-      };
+      if (expected !== actual) {
+        const executionTime = (
+          performance.now() - startTime
+        ).toFixed(2);
 
+        return {
+          status: "Wrong Answer ❌",
+          passed: passedCount,
+          total: allTestcases.length,
+          visiblePassed,
+          hiddenPassed,
+          failedTestcase: testcase,
+          expectedOutput: testcase.expectedOutput,
+          actualOutput: result.stdout || "",
+          executionTime,
+        };
+      }
+
+      passedCount++;
+
+      if (index < visibleTestcases.length) {
+        visiblePassed++;
+      } else {
+        hiddenPassed++;
+      }
     }
-  };
+
+    const executionTime = (
+      performance.now() - startTime
+    ).toFixed(2);
+
+    return {
+      status: "Accepted 🎉",
+      passed: passedCount,
+      total: allTestcases.length,
+      visiblePassed,
+      hiddenPassed,
+      executionTime,
+    };
+  } catch (error) {
+    return {
+      status: "Judge Error ❌",
+      error: error.message,
+    };
+  }
+};

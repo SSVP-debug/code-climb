@@ -1,7 +1,7 @@
 import {
   getUserRank,
   getUserLevel,
-} from "../../utils/analyticsUtils";
+} from "../../../utils/analyticsUtils";
 
 function RankProgressSection() {
 

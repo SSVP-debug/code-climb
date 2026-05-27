@@ -1,325 +1,355 @@
-import problems
-    from "../data/problems";
+import problems from "../data/problems";
+
 import {
-    getStorageData,
+  getStorageData,
 } from "../services/storageService";
+import { PROGRESS_KEYS } from "../constants/progressKeys";
 
-export function getDailyChallenge() {
-
-    const today =
-        new Date()
-            .toLocaleDateString();
-
-    const seed =
-        today
-            .split("/")
-            .join("");
-
-    const index =
-        Number(seed) %
-        problems.length;
-
-    return problems[index];
-
-}
+// Submissions
 export function getAllSubmissions() {
 
-    return (
-        getStorageData(
-            "allSubmissions",
-            []
-        )
-    );
+  return getStorageData(
+    PROGRESS_KEYS.submissions,
+    []
+  );
 
 }
 
+// Solved Problems
 export function getSolvedProblems() {
 
-    return (
-        JSON.parse(
-            localStorage.getItem(
-                "codeclimbSolved"
-            )
-        ) || []
-    );
+  return getStorageData(
+    PROGRESS_KEYS.solved,
+    []
+  );
 
 }
 
+// Acceptance Rate
 export function getAcceptanceRate() {
 
-    const submissions =
-        getAllSubmissions();
+  const submissions =
+    getAllSubmissions();
 
-    if (submissions.length === 0) {
+  if (submissions.length === 0) {
 
-        return 0;
+    return 0;
 
-    }
+  }
 
-    const accepted =
-        submissions.filter(
-            (submission) =>
-                submission.status ===
-                "Accepted 🎉"
-        ).length;
+  const accepted =
+    submissions.filter(
+      (submission) =>
+        submission.status ===
+        "Accepted 🎉"
+    ).length;
 
-    return (
-        (
-            accepted /
-            submissions.length
-        ) * 100
-    ).toFixed(1);
+  return (
+    (
+      accepted /
+      submissions.length
+    ) * 100
+  ).toFixed(1);
 
 }
 
+// Average Runtime
 export function getAverageRuntime() {
 
-    const submissions =
-        getAllSubmissions();
+  const submissions =
+    getAllSubmissions();
 
-    const acceptedSubmissions =
-        submissions.filter(
-            (submission) =>
-                submission.status ===
-                "Accepted 🎉"
+  const acceptedSubmissions =
+    submissions.filter(
+      (submission) =>
+        submission.status ===
+        "Accepted 🎉"
+    );
+
+  if (
+    acceptedSubmissions.length === 0
+  ) {
+
+    return 0;
+
+  }
+
+  const totalRuntime =
+    acceptedSubmissions.reduce(
+      (sum, submission) => {
+
+        return (
+          sum +
+          Number(
+            submission.executionTime || 0
+          )
         );
 
-    if (
-        acceptedSubmissions.length === 0
-    ) {
+      },
+      0
+    );
 
-        return 0;
-
-    }
-
-    const totalRuntime =
-        acceptedSubmissions.reduce(
-            (sum, submission) => {
-
-                return (
-                    sum +
-                    Number(
-                        submission.executionTime || 0
-                    )
-                );
-
-            },
-            0
-        );
-
-    return (
-        totalRuntime /
-        acceptedSubmissions.length
-    ).toFixed(2);
+  return (
+    totalRuntime /
+    acceptedSubmissions.length
+  ).toFixed(2);
 
 }
 
+// Language Stats
 export function getLanguageStats() {
 
-    const submissions =
-        getAllSubmissions();
+  const submissions =
+    getAllSubmissions();
 
-    const stats = {};
+  const stats = {};
 
-    submissions.forEach(
-        (submission) => {
+  submissions.forEach(
+    (submission) => {
 
-            const language =
-                submission.language;
+      const language =
+        submission.language;
 
-            stats[language] =
-                (stats[language] || 0) + 1;
+      stats[language] =
+        (stats[language] || 0) + 1;
 
-        }
-    );
+    }
+  );
 
-    return stats;
+  return stats;
 
 }
+
+// Topic Stats
 export function getTopicStats() {
 
-    return (
-        JSON.parse(
-            localStorage.getItem(
-                "topicStats"
-            )
-        ) || {}
-    );
+  return getStorageData(
+    PROGRESS_KEYS.topicStats,
+    {}
+  );
 
 }
+
+// Weakest Topic
 export function getWeakestTopic() {
 
-    const topicStats =
-        JSON.parse(
-            localStorage.getItem(
-                "topicStats"
-            )
-        ) || {};
+  const topicStats =
+    getTopicStats();
 
-    const topics =
-        Object.entries(topicStats);
+  const topics =
+    Object.entries(topicStats);
 
-    if (topics.length === 0) {
+  if (topics.length === 0) {
 
-        return "N/A";
+    return "N/A";
 
-    }
+  }
 
-    topics.sort(
-        (a, b) => a[1] - b[1]
-    );
+  topics.sort(
+    (a, b) => a[1] - b[1]
+  );
 
-    return topics[0][0];
+  return topics[0][0];
 
 }
+
+// Strongest Topic
 export function getStrongestTopic() {
 
-    const topicStats =
-        JSON.parse(
-            localStorage.getItem(
-                "topicStats"
-            )
-        ) || {};
+  const topicStats =
+    getTopicStats();
 
-    const topics =
-        Object.entries(topicStats);
+  const topics =
+    Object.entries(topicStats);
 
-    if (topics.length === 0) {
+  if (topics.length === 0) {
 
-        return "N/A";
+    return "N/A";
 
-    }
+  }
 
-    topics.sort(
-        (a, b) => b[1] - a[1]
-    );
+  topics.sort(
+    (a, b) => b[1] - a[1]
+  );
 
-    return topics[0][0];
+  return topics[0][0];
 
 }
+
+// User Rank
+export function getUserRank() {
+
+  const solvedProblems =
+    getSolvedProblems();
+
+  const solvedCount =
+    solvedProblems.length;
+
+  if (solvedCount < 5) {
+
+    return "Beginner";
+
+  }
+
+  if (solvedCount < 15) {
+
+    return "Learner";
+
+  }
+
+  if (solvedCount < 30) {
+
+    return "Intermediate";
+
+  }
+
+  if (solvedCount < 60) {
+
+    return "Advanced";
+
+  }
+
+  return "Expert";
+
+}
+
+// User Level
+export function getUserLevel() {
+
+  const solvedProblems =
+    getSolvedProblems();
+
+  return solvedProblems.length;
+
+}
+
+// Achievements
 export function getAchievements() {
 
-    const solvedProblems =
-        JSON.parse(
-            localStorage.getItem(
-                "codeclimbSolved"
-            )
-        ) || [];
+  const solvedProblems =
+    getSolvedProblems();
 
-    const submissions =
-        JSON.parse(
-            localStorage.getItem(
-                "allSubmissions"
-            )
-        ) || [];
+  const submissions =
+    getAllSubmissions();
 
-    const achievements = [];
+  const achievements = [];
 
-    // First Solve
-    if (solvedProblems.length >= 1) {
+  if (solvedProblems.length >= 1) {
 
-        achievements.push({
-            title: "First Blood",
-            description:
-                "Solved your first problem.",
-        });
+    achievements.push({
+      title: "First Blood",
+      description:
+        "Solved your first problem.",
+    });
 
-    }
+  }
 
-    // 5 Solves
-    if (solvedProblems.length >= 5) {
+  if (solvedProblems.length >= 5) {
 
-        achievements.push({
-            title: "Consistency Begins",
-            description:
-                "Solved 5 problems.",
-        });
+    achievements.push({
+      title:
+        "Consistency Begins",
 
-    }
+      description:
+        "Solved 5 problems.",
+    });
 
-    // 25 Solves
-    if (solvedProblems.length >= 25) {
+  }
 
-        achievements.push({
-            title: "Problem Crusher",
-            description:
-                "Solved 25 problems.",
-        });
+  if (solvedProblems.length >= 25) {
 
-    }
+    achievements.push({
+      title:
+        "Problem Crusher",
 
-    // 50 Solves
-    if (solvedProblems.length >= 50) {
+      description:
+        "Solved 25 problems.",
+    });
 
-        achievements.push({
-            title: "DSA Warrior",
-            description:
-                "Solved 50 problems.",
-        });
+  }
 
-    }
+  if (solvedProblems.length >= 50) {
 
-    // Fast Runtime
-    const fastSubmission =
-        submissions.find(
-            (submission) =>
-                Number(
-                    submission.executionTime
-                ) < 100
-        );
+    achievements.push({
+      title: "DSA Warrior",
 
-    if (fastSubmission) {
+      description:
+        "Solved 50 problems.",
+    });
 
-        achievements.push({
-            title: "Speed Demon",
-            description:
-                "Achieved runtime under 100ms.",
-        });
+  }
 
-    }
+  const fastSubmission =
+    submissions.find(
+      (submission) =>
+        Number(
+          submission.executionTime
+        ) < 100
+    );
 
-    return achievements;
+  if (fastSubmission) {
+
+    achievements.push({
+      title: "Speed Demon",
+
+      description:
+        "Achieved runtime under 100ms.",
+    });
+
+  }
+
+  return achievements;
 
 }
+
+// Daily Challenge
+export function getDailyChallenge() {
+
+  const today =
+    new Date()
+      .toLocaleDateString();
+
+  const seed =
+    today
+      .split("/")
+      .join("");
+
+  const index =
+    Number(seed) %
+    problems.length;
+
+  return problems[index];
+
+}
+
+// Public Profile
 export function getProfileData() {
 
-    const solvedProblems =
-        JSON.parse(
-            localStorage.getItem(
-                "codeclimbSolved"
-            )
-        ) || [];
+  const solvedProblems =
+    getSolvedProblems();
 
-    const submissions =
-        JSON.parse(
-            localStorage.getItem(
-                "allSubmissions"
-            )
-        ) || [];
+  const submissions =
+    getAllSubmissions();
 
-    const topicStats =
-        JSON.parse(
-            localStorage.getItem(
-                "topicStats"
-            )
-        ) || {};
+  const topicStats =
+    getTopicStats();
 
-    return {
+  return {
 
-        totalSolved:
-            solvedProblems.length,
+    totalSolved:
+      solvedProblems.length,
 
-        totalSubmissions:
-            submissions.length,
+    totalSubmissions:
+      submissions.length,
 
-        topicsSolved:
-            Object.keys(topicStats).length,
+    topicsSolved:
+      Object.keys(topicStats).length,
 
-        joinedDate:
-            localStorage.getItem(
-                "joinedDate"
-            ) || "Today",
+    joinedDate:
+      localStorage.getItem(
+        "joinedDate"
+      ) || "Today",
 
-    };
+  };
 
 }

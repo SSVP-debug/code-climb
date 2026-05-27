@@ -1,7 +1,7 @@
 import { signInWithGoogle } from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/authContext";
 
 function LoginPage() {
   const navigate = useNavigate();

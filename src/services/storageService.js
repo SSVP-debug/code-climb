@@ -1,37 +1,37 @@
-export const storageService = {
+export function getStorageData(
+  key,
+  defaultValue = null
+) {
 
-  get(key, defaultValue = null) {
+  const data =
+    localStorage.getItem(key);
 
-    try {
+  if (!data) {
 
-      const value =
-        localStorage.getItem(key);
+    return defaultValue;
 
-      return value
-        ? JSON.parse(value)
-        : defaultValue;
+  }
 
-    } catch {
+  return JSON.parse(data);
 
-      return defaultValue;
+}
 
-    }
+export function setStorageData(
+  key,
+  value
+) {
 
-  },
+  localStorage.setItem(
+    key,
+    JSON.stringify(value)
+  );
 
-  set(key, value) {
+}
 
-    localStorage.setItem(
-      key,
-      JSON.stringify(value)
-    );
+export function removeStorageData(
+  key
+) {
 
-  },
+  localStorage.removeItem(key);
 
-  remove(key) {
-
-    localStorage.removeItem(key);
-
-  },
-
-};
+}
