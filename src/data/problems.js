@@ -6,6 +6,8 @@ const problems = [
 
     slug: "two-sum",
 
+    functionName: "twoSum",
+
     difficulty: "Easy",
 
     topic: "Arrays",
@@ -67,9 +69,12 @@ public:
       },
 
       {
-        input: "[3,2,4]\n6",
+        input: {
+          nums: [3, 2, 4],
+          target: 6,
+        },
 
-        expectedOutput: "[1,2]",
+        expectedOutput: [1, 2],
       },
     ],
 
@@ -100,6 +105,8 @@ public:
     title: "Binary Tree Level Order Traversal",
 
     slug: "binary-tree-level-order-traversal",
+
+    functionName: "levelOrder",
 
     difficulty: "Medium",
 
@@ -170,15 +177,19 @@ public:
 
     hiddenTestcases: [
       {
-        input: "[]",
+        input: {
+          root: [],
+        },
 
-        expectedOutput: "[]",
+        expectedOutput: [],
       },
 
       {
-        input: "[1,2,3,4,5]",
+        input: {
+          root: [1, 2, 3, 4, 5],
+        },
 
-        expectedOutput: "[[1],[2,3],[4,5]]",
+        expectedOutput: [[1], [2, 3], [4, 5]],
       },
     ],
   },

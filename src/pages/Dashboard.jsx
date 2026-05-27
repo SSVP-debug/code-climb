@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import DashboardLayout from "../layouts/DashboardLayout";
+import { PROGRESS_KEYS } from "../constants/progressKeys";
 
 import DashboardSections from "../components/dashboard/DashboardSections";
 
@@ -11,12 +12,12 @@ function Dashboard() {
     // Save joined date once
     if (
       !localStorage.getItem(
-        "joinedDate"
+        PROGRESS_KEYS.joinedDate
       )
     ) {
 
       localStorage.setItem(
-        "joinedDate",
+        PROGRESS_KEYS.joinedDate,
         new Date().toLocaleDateString()
       );
 

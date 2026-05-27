@@ -4,6 +4,33 @@ import {
   getProfileData,
   getUserRank,
 } from "../../../utils/analyticsUtils";
+import { getStorageData } from "../../../services/storageService";
+
+function getHeatmapCells() {
+
+  const activityDates =
+    getStorageData(
+      "activityDates",
+      []
+    );
+
+  const cells = [];
+  const today = new Date();
+
+  for (let i = 34; i >= 0; i -= 1) {
+
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+
+    cells.push(
+      activityDates.includes(
+        date.toLocaleDateString()
+      )
+    );
+  }
+
+  return cells;
+}
 
 function PublicProfileCard() {
 
@@ -12,6 +39,9 @@ function PublicProfileCard() {
 
   const rank =
     getUserRank();
+
+  const heatmapCells =
+    getHeatmapCells();
 
   const [
     showDialog,
@@ -266,14 +296,12 @@ function PublicProfileCard() {
 
         <div className="grid grid-cols-7 gap-2">
 
-          {Array.from({
-            length: 35,
-          }).map((_, index) => (
+          {heatmapCells.map((active, index) => (
 
             <div
               key={index}
               className={`h-6 rounded-md ${
-                Math.random() > 0.5
+                active
                   ? "bg-green-500"
                   : "bg-zinc-800"
               }`}

@@ -3,12 +3,13 @@ import problems from "../data/problems";
 import {
   getStorageData,
 } from "../services/storageService";
+import { PROGRESS_KEYS } from "../constants/progressKeys";
 
 // Submissions
 export function getAllSubmissions() {
 
   return getStorageData(
-    "allSubmissions",
+    PROGRESS_KEYS.submissions,
     []
   );
 
@@ -18,7 +19,7 @@ export function getAllSubmissions() {
 export function getSolvedProblems() {
 
   return getStorageData(
-    "codeclimbSolved",
+    PROGRESS_KEYS.solved,
     []
   );
 
@@ -123,7 +124,7 @@ export function getLanguageStats() {
 export function getTopicStats() {
 
   return getStorageData(
-    "topicStats",
+    PROGRESS_KEYS.topicStats,
     {}
   );
 

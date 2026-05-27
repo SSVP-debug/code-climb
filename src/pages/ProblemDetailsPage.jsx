@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   useParams,
@@ -15,13 +15,11 @@ import { judgeSubmission } from "../services/judgeService";
 
 import problems from "../data/problems";
 
+import { useAppContext } from "../hooks/useAppContext";
 import {
-  isProblemSolved,
-} from "../utils/problemUtils";
-
-import {
-  useAppContext,
-} from "../context/AppContext";
+  loadSavedCode,
+  saveCode,
+} from "../utils/editorStorage";
 
 function ProblemDetailsPage() {
 
@@ -30,12 +28,6 @@ function ProblemDetailsPage() {
   const problem = problems.find(
     (p) => p.slug === title
   );
-
-  const {
-    addSolvedProblem,
-    addSubmission,
-    updateTopicStats,
-  } = useAppContext();
 
   if (!problem) {
 
@@ -50,24 +42,65 @@ function ProblemDetailsPage() {
     );
   }
 
-  const currentIndex =
-    problems.findIndex(
-      (p) => p.slug === problem.slug
-    );
+  return (
+    <ProblemSolver
+      key={title}
+      problem={problem}
+      title={title}
+    />
+  );
+}
 
-  const previousProblem =
-    problems[currentIndex - 1];
+function ProblemSolver({
+  problem,
+  title,
+}) {
 
-  const nextProblem =
-    problems[currentIndex + 1];
+  const {
+    solvedProblems,
+    submissions: allSubmissions,
+    addSubmission,
+    markProblemSolved,
+  } = useAppContext();
+
+  const isSolved = solvedProblems.includes(title);
+
+  const submissions = useMemo(
+    () =>
+      allSubmissions.filter(
+        (s) => s.problemSlug === title
+      ),
+    [allSubmissions, title]
+  );
 
   const [language, setLanguage] =
     useState("python");
 
-  const [code, setCode] =
-    useState(
+  const [code, setCode] = useState(() =>
+    loadSavedCode(
+      title,
+      "python",
       problem.starterCode.python
+    )
+  );
+
+  useEffect(() => {
+    saveCode(title, language, code);
+  }, [title, language, code]);
+
+  function handleLanguageChange(
+    nextLanguage
+  ) {
+    saveCode(title, language, code);
+    setLanguage(nextLanguage);
+    setCode(
+      loadSavedCode(
+        title,
+        nextLanguage,
+        problem.starterCode[nextLanguage] || ""
+      )
     );
+  }
 
   const [output, setOutput] =
     useState("");
@@ -92,44 +125,21 @@ function ProblemDetailsPage() {
     setTestcaseProgress,
   ] = useState(null);
 
-  const [submissions, setSubmissions] =
-    useState(() => {
-
-      const savedSubmissions =
-        localStorage.getItem(
-          `submissions-${title}`
-        );
-
-      return savedSubmissions
-        ? JSON.parse(savedSubmissions)
-        : [];
-
-    });
-
-  const [isSolved, setIsSolved] =
-    useState(() => {
-
-      return (
-        localStorage.getItem(
-          `solved-${title}`
-        ) === "true"
-      );
-
-    });
-
   const [
     selectedSubmission,
     setSelectedSubmission,
   ] = useState(null);
 
-  useEffect(() => {
-
-    localStorage.setItem(
-      `submissions-${title}`,
-      JSON.stringify(submissions)
+  const currentIndex =
+    problems.findIndex(
+      (p) => p.slug === problem.slug
     );
 
-  }, [submissions, title]);
+  const previousProblem =
+    problems[currentIndex - 1];
+
+  const nextProblem =
+    problems[currentIndex + 1];
 
   const languageMap = {
     python: 71,
@@ -150,7 +160,13 @@ function ProblemDetailsPage() {
         customInput
       );
 
-      if (result.stdout) {
+      if (!result) {
+
+        setStatus("Execution failed");
+
+        setOutput("No response from code runner");
+
+      } else if (result.stdout) {
 
         setStatus("Code Executed ✅");
 
@@ -263,131 +279,17 @@ function ProblemDetailsPage() {
       if (
         judgeResult.status ===
         "Accepted 🎉" &&
-        !isProblemSolved(title)
+        !isSolved
       ) {
-
-        setIsSolved(true);
-
-        localStorage.setItem(
-          `solved-${title}`,
-          "true"
-        );
-
-        addSolvedProblem(title);
-
-        updateTopicStats(
-          problem.topic
-        );
-
-        // Difficulty Tracking
-        const solvedDifficulty =
-          JSON.parse(
-            localStorage.getItem(
-              "solvedDifficulty"
-            )
-          ) || {
-            easy: 0,
-            medium: 0,
-            hard: 0,
-          };
-
-        if (
-          problem.difficulty === "Easy"
-        ) {
-
-          solvedDifficulty.easy += 1;
-
-        } else if (
-          problem.difficulty ===
-          "Medium"
-        ) {
-
-          solvedDifficulty.medium += 1;
-
-        } else {
-
-          solvedDifficulty.hard += 1;
-
-        }
-
-        localStorage.setItem(
-          "solvedDifficulty",
-          JSON.stringify(
-            solvedDifficulty
-          )
-        );
-
-        // Recent Activity
-        const recentActivity =
-          JSON.parse(
-            localStorage.getItem(
-              "recentActivity"
-            )
-          ) || [];
-
-        recentActivity.unshift({
+        await markProblemSolved({
+          slug: title,
+          topic: problem.topic,
+          difficulty: problem.difficulty,
           title: problem.title,
-          time:
-            new Date().toLocaleString(),
         });
-
-        localStorage.setItem(
-          "recentActivity",
-          JSON.stringify(
-            recentActivity.slice(0, 10)
-          )
-        );
-
-        // Activity Dates
-        const today =
-          new Date().toLocaleDateString();
-
-        const activityDates =
-          JSON.parse(
-            localStorage.getItem(
-              "activityDates"
-            )
-          ) || [];
-
-        if (
-          !activityDates.includes(today)
-        ) {
-
-          activityDates.push(today);
-
-          localStorage.setItem(
-            "activityDates",
-            JSON.stringify(
-              activityDates
-            )
-          );
-        }
-
-        // Daily Solved
-        const todayKey =
-          `dailySolved-${today}`;
-
-        const todaySolved =
-          Number(
-            localStorage.getItem(
-              todayKey
-            )
-          ) || 0;
-
-        localStorage.setItem(
-          todayKey,
-          todaySolved + 1
-        );
       }
 
-      addSubmission(
-        newSubmission
-      );
-
-      setSubmissions((prev) => [
-        newSubmission,
-        ...prev,
-      ]);
+      await addSubmission(newSubmission);
 
     } catch (error) {
 
@@ -473,19 +375,11 @@ function ProblemDetailsPage() {
 
               <select
                 value={language}
-                onChange={(e) => {
-
-                  setLanguage(
+                onChange={(e) =>
+                  handleLanguageChange(
                     e.target.value
-                  );
-
-                  setCode(
-                    problem.starterCode[
-                      e.target.value
-                    ]
-                  );
-
-                }}
+                  )
+                }
                 className="bg-zinc-800 border border-zinc-700 px-3 py-2 rounded-lg outline-none"
               >
 
@@ -518,6 +412,25 @@ function ProblemDetailsPage() {
               }
               theme="vs-dark"
             />
+
+            <div className="mt-4">
+              <label
+                htmlFor="custom-input"
+                className="block text-sm text-zinc-400 mb-2"
+              >
+                Custom input (optional)
+              </label>
+              <textarea
+                id="custom-input"
+                value={customInput}
+                onChange={(e) =>
+                  setCustomInput(e.target.value)
+                }
+                rows={3}
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 font-mono text-sm outline-none"
+                placeholder="stdin for Run Code"
+              />
+            </div>
 
             <div className="flex gap-4 mt-6">
 

@@ -1,35 +1,98 @@
+import { apiFetch } from "./api";
+
+const JUDGE0_DIRECT_URL =
+  import.meta.env.VITE_JUDGE0_API_URL ||
+  "https://ce.judge0.com/submissions?base64_encoded=false&wait=true";
+
+function isBackendUnavailableError(message) {
+  return /failed|fetch|network|ECONNREFUSED|502|401|unauthorized|not found/i.test(
+    message || ""
+  );
+}
+
+async function runViaBackend(
+  sourceCode,
+  languageId,
+  stdin
+) {
+  return apiFetch("/api/compiler/run", {
+    method: "POST",
+    body: JSON.stringify({
+      source_code: sourceCode,
+      language_id: languageId,
+      stdin,
+    }),
+  });
+}
+
+async function runViaJudge0Direct(
+  sourceCode,
+  languageId,
+  stdin
+) {
+  const response = await fetch(JUDGE0_DIRECT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      source_code: sourceCode,
+      language_id: languageId,
+      stdin,
+    }),
+    signal: AbortSignal.timeout(20000),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message ||
+        `Judge0 request failed (${response.status})`
+    );
+  }
+
+  return data;
+}
+
 export async function runCode(
   sourceCode,
   languageId,
   stdin = ""
 ) {
-
   try {
-
-    const response = await fetch(
-      API_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify(data),
-
-        signal:
-          AbortSignal.timeout(10000),
-      }
+    return await runViaBackend(
+      sourceCode,
+      languageId,
+      stdin
     );
-
-    const data = await response.json();
-
-    return data;
-
   } catch (error) {
+    const message = error.message || "Failed to run code";
 
-    console.error("Compiler Error:", error);
+    if (isBackendUnavailableError(message)) {
+      console.warn(
+        "[Compiler] Backend unavailable, trying Judge0 direct fallback"
+      );
 
+      try {
+        return await runViaJudge0Direct(
+          sourceCode,
+          languageId,
+          stdin
+        );
+      } catch (fallbackError) {
+        console.error(
+          "[Compiler] Direct Judge0 fallback failed:",
+          fallbackError
+        );
+        return {
+          stderr:
+            "Code runner unavailable. Start the backend server and ensure MongoDB is connected.",
+        };
+      }
+    }
+
+    console.error("[Compiler] Error:", message);
+    return { stderr: message };
   }
 }

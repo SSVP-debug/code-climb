@@ -1,5 +1,4 @@
 import {
-  createContext,
   useEffect,
   useState,
 } from "react";
@@ -10,9 +9,7 @@ import {
 } from "firebase/auth";
 
 import app from "../firebase/firebase";
-
-export const AuthContext =
-  createContext();
+import { AuthContext } from "./authContext";
 
 function AuthProvider({
   children,
@@ -42,7 +39,7 @@ function AuthProvider({
 
     return () => unsubscribe();
 
-  }, []);
+  }, [auth]);
 
   return (
 
