@@ -12,6 +12,17 @@ const submissionSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    statusDescription: {
+      type: String,
+    },
+
+    judge0Time: {
+      type: String,
+    },
+
+    memory: {
+      type: Number,
+    },
     problemTitle: String,
     language: String,
     status: String,

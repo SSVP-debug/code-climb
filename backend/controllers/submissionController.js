@@ -24,6 +24,9 @@ export async function createSubmission(req, res) {
   const submission = await Submission.create({
     userId: req.userDoc._id,
     ...req.body,
+    statusDescription: parsed.status,
+    judge0Time: parsed.time,
+    memory: parsed.memory,
   });
 
   res.status(201).json(toClientSubmission(submission));

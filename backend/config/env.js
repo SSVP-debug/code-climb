@@ -42,7 +42,6 @@ export function getMongoUri() {
       "MONGODB_URI still contains a password placeholder. Replace it with your real MongoDB password."
     );
   }
-  console.log(process.env.MONGODB_URI);
 
   return uri;
 }

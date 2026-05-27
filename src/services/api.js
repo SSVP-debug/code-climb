@@ -13,6 +13,9 @@ export async function apiFetch(
   const token =
     await auth.currentUser?.getIdToken();
 
+  console.log("Current User:", auth.currentUser);
+  console.log("Token:", token);
+
   const response = await fetch(
     `${API_URL}${path}`,
     {
@@ -40,7 +43,7 @@ export async function apiFetch(
 
     throw new Error(
       message ||
-        `Request failed (${response.status})`
+      `Request failed (${response.status})`
     );
   }
 

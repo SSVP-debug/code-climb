@@ -39,7 +39,7 @@ export async function requireAuth(req, res, next) {
 
     next();
   } catch (error) {
-    console.error("[Auth] Token verification failed:", error.message);
+    console.error("[Auth] FULL ERROR:", error);
     return res.status(401).json({ error: "Unauthorized" });
   }
 }

@@ -1,5 +1,6 @@
 import { runCode } from "./compiler";
 import { generateDriverCode } from "../utils/generateDriverCode";
+import { parseJudge0Result } from "../utils/parseJudge0Result";
 
 const normalizeOutput = (output) =>
   output
@@ -114,6 +115,8 @@ export const judgeSubmission = async ({
           executableCode.slice(0, 300)
         );
       }
+      const parsed = parseJudge0Result(result);
+      
 
       const result = await runCode(
         executableCode,
