@@ -129,24 +129,28 @@ export function migrateLegacyLocalStorage() {
 }
 
 export async function fetchProgressFromApi() {
-  console.log("[Progress] Fetching from API...");
+  if (import.meta.env.DEV) {
+    console.log("[Progress] Fetching progress from API...");
+  }
   const progress = await apiFetch("/api/progress");
-  console.log(
-    "[Progress] Fetched",
-    progress.solvedSlugs?.length || 0,
-    "solved problems"
-  );
+  if (import.meta.env.DEV) {
+    console.log("[Progress] Fetched progress from API:", progress);
+  }
   return progress;
 }
 
 export async function fetchSubmissionsFromApi() {
-  console.log("[Progress] Fetching submissions from API...");
+  if (import.meta.env.DEV) {
+    console.log("[Progress] Fetching submissions from API...");
+  }
   const submissions = await apiFetch("/api/submissions");
-  console.log(
-    "[Progress] Fetched",
-    submissions.length,
-    "submissions"
-  );
+  if (import.meta.env.DEV) {
+    console.log(
+      "[Progress] Fetched",
+      submissions.length,
+      "submissions"
+    );
+  }
   return submissions;
 }
 
@@ -164,13 +168,13 @@ export function mapApiSubmission(submission) {
     total: submission.total,
     visiblePassed: submission.visiblePassed,
     hiddenPassed: submission.hiddenPassed,
-    executionTime: submission.executionTime,
+    executionTime: formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))),
     expectedOutput: submission.expectedOutput,
     actualOutput: submission.actualOutput,
     time: submission.time ||
       new Date(submission.createdAt).toLocaleTimeString(),
     date: submission.date ||
-      new Date(submission.createdAt).toLocaleDateString(),
+      new Date(submission.createdAt).formatDate(),
   };
 }
 
@@ -212,23 +216,29 @@ export async function syncProgressOnLogin() {
       ),
     };
   } catch (error) {
-    console.warn(
-      "[Progress] API sync failed, using local cache:",
-      error.message
-    );
+    if (import.meta.env.DEV) {
+      console.warn(
+        "[Progress] API sync failed, using local cache:",
+        error.message
+      );
+    }
 
     const local = progressFromLocalStorage();
 
     try {
       await saveProgressToApi(local);
-      console.log(
-        "[Progress] Pushed local progress to API"
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          "[Progress] Pushed local progress to API"
+        );
+      };
     } catch (pushError) {
-      console.warn(
-        "[Progress] Could not push local progress:",
-        pushError.message
-      );
+      if (import.meta.env.DEV) {
+        console.warn(
+          "[Progress] Could not push local progress:",
+          pushError.message
+        );
+      }
     }
 
     return {
@@ -261,7 +271,9 @@ export async function recordSubmission(
       body: JSON.stringify(submission),
     });
   } catch (error) {
-    console.error("Failed to sync submission:", error);
+    if (import.meta.env.DEV) {
+      console.error("Failed to sync submission:", error);
+    }
   }
 
   return updated;
@@ -338,7 +350,7 @@ export function markProblemSolvedInProgress(
     solvedDifficulty.hard += 1;
   }
 
-  const today = new Date().toLocaleDateString();
+  const today = new Date().formatDate();
   const activityDates =
     progress.activityDates.includes(today)
       ? progress.activityDates
@@ -347,7 +359,7 @@ export function markProblemSolvedInProgress(
   const recentActivity = [
     {
       title,
-      time: new Date().toLocaleString(),
+      time: new Date().formatDateTime(),
     },
     ...progress.recentActivity,
   ].slice(0, 10);

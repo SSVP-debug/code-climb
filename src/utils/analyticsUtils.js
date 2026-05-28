@@ -1,40 +1,35 @@
 import problems from "../data/problems";
+import { formatDate } from "./formatters";
 
 import {
   getStorageData,
 } from "../services/storageService";
+
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 
 // Submissions
 export function getAllSubmissions() {
-
   return getStorageData(
     PROGRESS_KEYS.submissions,
     []
   );
-
 }
 
 // Solved Problems
 export function getSolvedProblems() {
-
   return getStorageData(
     PROGRESS_KEYS.solved,
     []
   );
-
 }
 
 // Acceptance Rate
 export function getAcceptanceRate() {
-
   const submissions =
     getAllSubmissions();
 
   if (submissions.length === 0) {
-
     return 0;
-
   }
 
   const accepted =
@@ -50,12 +45,10 @@ export function getAcceptanceRate() {
       submissions.length
     ) * 100
   ).toFixed(1);
-
 }
 
 // Average Runtime
 export function getAverageRuntime() {
-
   const submissions =
     getAllSubmissions();
 
@@ -69,22 +62,18 @@ export function getAverageRuntime() {
   if (
     acceptedSubmissions.length === 0
   ) {
-
     return 0;
-
   }
 
   const totalRuntime =
     acceptedSubmissions.reduce(
       (sum, submission) => {
-
         return (
           sum +
           Number(
             submission.executionTime || 0
           )
         );
-
       },
       0
     );
@@ -93,12 +82,10 @@ export function getAverageRuntime() {
     totalRuntime /
     acceptedSubmissions.length
   ).toFixed(2);
-
 }
 
 // Language Stats
 export function getLanguageStats() {
-
   const submissions =
     getAllSubmissions();
 
@@ -106,33 +93,27 @@ export function getLanguageStats() {
 
   submissions.forEach(
     (submission) => {
-
       const language =
         submission.language;
 
       stats[language] =
         (stats[language] || 0) + 1;
-
     }
   );
 
   return stats;
-
 }
 
 // Topic Stats
 export function getTopicStats() {
-
   return getStorageData(
     PROGRESS_KEYS.topicStats,
     {}
   );
-
 }
 
 // Weakest Topic
 export function getWeakestTopic() {
-
   const topicStats =
     getTopicStats();
 
@@ -140,9 +121,7 @@ export function getWeakestTopic() {
     Object.entries(topicStats);
 
   if (topics.length === 0) {
-
     return "N/A";
-
   }
 
   topics.sort(
@@ -150,12 +129,10 @@ export function getWeakestTopic() {
   );
 
   return topics[0][0];
-
 }
 
 // Strongest Topic
 export function getStrongestTopic() {
-
   const topicStats =
     getTopicStats();
 
@@ -163,9 +140,7 @@ export function getStrongestTopic() {
     Object.entries(topicStats);
 
   if (topics.length === 0) {
-
     return "N/A";
-
   }
 
   topics.sort(
@@ -173,12 +148,10 @@ export function getStrongestTopic() {
   );
 
   return topics[0][0];
-
 }
 
 // User Rank
 export function getUserRank() {
-
   const solvedProblems =
     getSolvedProblems();
 
@@ -186,46 +159,34 @@ export function getUserRank() {
     solvedProblems.length;
 
   if (solvedCount < 5) {
-
     return "Beginner";
-
   }
 
   if (solvedCount < 15) {
-
     return "Learner";
-
   }
 
   if (solvedCount < 30) {
-
     return "Intermediate";
-
   }
 
   if (solvedCount < 60) {
-
     return "Advanced";
-
   }
 
   return "Expert";
-
 }
 
 // User Level
 export function getUserLevel() {
-
   const solvedProblems =
     getSolvedProblems();
 
   return solvedProblems.length;
-
 }
 
 // Achievements
 export function getAchievements() {
-
   const solvedProblems =
     getSolvedProblems();
 
@@ -235,17 +196,14 @@ export function getAchievements() {
   const achievements = [];
 
   if (solvedProblems.length >= 1) {
-
     achievements.push({
       title: "First Blood",
       description:
         "Solved your first problem.",
     });
-
   }
 
   if (solvedProblems.length >= 5) {
-
     achievements.push({
       title:
         "Consistency Begins",
@@ -253,11 +211,9 @@ export function getAchievements() {
       description:
         "Solved 5 problems.",
     });
-
   }
 
   if (solvedProblems.length >= 25) {
-
     achievements.push({
       title:
         "Problem Crusher",
@@ -265,49 +221,41 @@ export function getAchievements() {
       description:
         "Solved 25 problems.",
     });
-
   }
 
   if (solvedProblems.length >= 50) {
-
     achievements.push({
       title: "DSA Warrior",
 
       description:
         "Solved 50 problems.",
     });
-
   }
 
   const fastSubmission =
     submissions.find(
       (submission) =>
         Number(
-          submission.executionTime
+          submission.executionTime || 0
         ) < 100
     );
 
   if (fastSubmission) {
-
     achievements.push({
       title: "Speed Demon",
 
       description:
         "Achieved runtime under 100ms.",
     });
-
   }
 
   return achievements;
-
 }
 
 // Daily Challenge
 export function getDailyChallenge() {
-
   const today =
-    new Date()
-      .toLocaleDateString();
+    formatDate(new Date());
 
   const seed =
     today
@@ -319,12 +267,10 @@ export function getDailyChallenge() {
     problems.length;
 
   return problems[index];
-
 }
 
 // Public Profile
 export function getProfileData() {
-
   const solvedProblems =
     getSolvedProblems();
 
@@ -335,7 +281,6 @@ export function getProfileData() {
     getTopicStats();
 
   return {
-
     totalSolved:
       solvedProblems.length,
 
@@ -349,7 +294,5 @@ export function getProfileData() {
       localStorage.getItem(
         "joinedDate"
       ) || "Today",
-
   };
-
 }

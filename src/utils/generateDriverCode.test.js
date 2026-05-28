@@ -20,6 +20,19 @@ describe("generateDriverCode", () => {
     expect(code).toContain("[2,7,11,15]");
   });
 
+  it("wraps python class-based solution correctly", () => {
+    const code = generateDriverCode(
+      "python",
+      "class Solution:\n  def twoSum(self, nums, target):\n    pass",
+      input,
+      "twoSum"
+    );
+
+    expect(code).toContain("Solution().twoSum");
+    expect(code).toContain("json.dumps");
+    expect(code).toContain("[2,7,11,15]");
+  });
+
   it("wraps javascript with function call", () => {
     const code = generateDriverCode(
       "javascript",

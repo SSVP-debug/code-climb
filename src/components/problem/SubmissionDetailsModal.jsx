@@ -46,7 +46,7 @@ function SubmissionDetailsModal({ submission, onClose }) {
             </div>
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Runtime</p>
-              <p className="text-sm font-bold text-zinc-200 font-mono">{submission.executionTime || '0'}ms</p>
+              <p className="text-sm font-bold text-zinc-200 font-mono">{formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))) || '0'}ms</p>
             </div>
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Passed</p>

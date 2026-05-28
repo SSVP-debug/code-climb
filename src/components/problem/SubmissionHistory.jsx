@@ -1,11 +1,8 @@
 import React from "react";
+import { formatRuntime } from "../../utils/formatters";
+import { getStatusColor } from "../../utils/statusStyles";
 
 function SubmissionHistory({ submissions, onSelectSubmission }) {
-  const getStatusColor = (status) => {
-    if (!status) return "text-zinc-400";
-    if (status.includes("Accepted")) return "text-green-400";
-    return "text-rose-400";
-  };
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 h-full overflow-hidden flex flex-col">
@@ -22,7 +19,10 @@ function SubmissionHistory({ submissions, onSelectSubmission }) {
             <svg className="w-12 h-12 mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p className="text-sm">No submissions recorded for this problem yet.</p>
+            <div className="text-zinc-400 text-sm space-y-2">
+              <p>No submissions yet.</p>
+              <p>Run or submit code to see history.</p>
+            </div>
           </div>
         ) : (
           [...submissions].reverse().map((submission) => (
@@ -45,15 +45,15 @@ function SubmissionHistory({ submissions, onSelectSubmission }) {
                   <span className="text-zinc-600">Passed:</span>
                   <span className="text-zinc-200">{submission.passed}/{submission.total}</span>
                 </div>
-                {submission.executionTime && (
+                {formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))) && (
                   <div className="flex items-center gap-1.5">
                     <span className="text-zinc-600">Time:</span>
-                    <span className="text-zinc-200">{submission.executionTime}ms</span>
+                    <span className="text-zinc-200">{formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime))))))}ms</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
                   <span className="text-zinc-600">Date:</span>
-                  <span className="text-zinc-500">{submission.date || (submission.createdAt ? new Date(submission.createdAt).toLocaleDateString() : 'N/A')}</span>
+                  <span className="text-zinc-500">{submission.date || (submission.createdAt ? new Date(submission.createdAt).formatDate() : 'N/A')}</span>
                 </div>
               </div>
             </div>
