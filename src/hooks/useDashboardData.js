@@ -43,7 +43,7 @@ function useDashboardData(username) {
       "Try solving Hard problems to level up.";
   }
 
-  const today = new Date().toLocaleDateString();
+  const today = new Date().formatDate(...);
   const dailySolved = activityDates.includes(today)
     ? 1
     : 0;

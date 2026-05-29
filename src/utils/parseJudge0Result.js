@@ -10,7 +10,7 @@ export function parseJudge0Result(result) {
 
   let kind = "empty";
 
-  if (compileOutput) {
+  if (compileOutput || /syntaxerror|syntax error|parsererror|unexpected eof/i.test(stderr)) {
     kind = "compile";
   } else if (
     stderr ||

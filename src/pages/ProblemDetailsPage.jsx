@@ -1,3 +1,10 @@
+import ErrorBanner from "../components/ErrorBanner";
+import {
+  formatDate,
+  formatDateTime,
+  formatRuntime,
+  formatMemory,
+} from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -27,7 +34,7 @@ function ProblemDetailsPage() {
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Problem Not Found</h2>
             <p className="text-zinc-500 mb-6">The problem you're looking for doesn't exist or has been moved.</p>
-            <button 
+            <button
               onClick={() => window.history.back()}
               className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors"
             >
@@ -65,10 +72,11 @@ function ProblemSolver({ problem, title }) {
 
   // State Management
   const [language, setLanguage] = useState("python");
+  const [error, setError] = useState("");
   const [code, setCode] = useState(() =>
     loadSavedCode(title, "python", problem.starterCode.python)
   );
-  
+
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState("");
   const [customInput, setCustomInput] = useState("");
@@ -108,7 +116,8 @@ function ProblemSolver({ problem, title }) {
       setRunning(true);
       setStatus("Running...");
       setExecutionMeta(null);
-      
+      setError("Execution failed. Please try again.");
+
       const result = await runCode(
         code,
         languageMap[language],
@@ -150,6 +159,7 @@ function ProblemSolver({ problem, title }) {
       setJudgeState("Queued");
       setExecutionMeta(null);
       setStatus("Judging...");
+      setError("Submission failed. Please try again.");
 
       const judgeResult = await judgeSubmission({
         problem,
@@ -168,7 +178,7 @@ function ProblemSolver({ problem, title }) {
         problemSlug: problem.slug,
         language,
         status: judgeResult.status,
-        date: new Date().toLocaleDateString(),
+        date: formatDate(new Date()),
         createdAt: new Date().toISOString(),
         passed: judgeResult.passed || 0,
         total: judgeResult.total || 0,
@@ -207,16 +217,16 @@ function ProblemSolver({ problem, title }) {
     <DashboardLayout>
       <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Left Column: Problem Info */}
           <div className="lg:col-span-5 h-full space-y-6">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 lg:sticky lg:top-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
-              <ProblemHeader 
-                problem={problem} 
-                isSolved={isSolved} 
+              <ProblemHeader
+                problem={problem}
+                isSolved={isSolved}
               />
-              <ProblemInfo 
-                problem={problem} 
+              <ProblemInfo
+                problem={problem}
               />
             </div>
           </div>

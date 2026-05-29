@@ -18,7 +18,7 @@ function Dashboard() {
 
       localStorage.setItem(
         PROGRESS_KEYS.joinedDate,
-        new Date().toLocaleDateString()
+        new Date().formatDate()
       );
 
     }

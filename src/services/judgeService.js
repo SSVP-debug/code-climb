@@ -54,6 +54,11 @@ function analyzeRunResult(result) {
       return { type: "infra", message: result.stderr };
     }
 
+    // Classify syntax errors as compile errors
+    if (/syntaxerror|syntax error|parsererror|unexpected eof/i.test(result.stderr)) {
+      return { type: "compile", message: result.stderr };
+    }
+
     return { type: "runtime", message: result.stderr };
   }
 
@@ -106,27 +111,28 @@ export const judgeSubmission = async ({
         problem.functionName
       );
 
-      if (import.meta.env.DEV) {
-        console.log(
-          `[Judge] testcase ${index + 1}/${allTestcases.length}, lang=${language}, id=${languageMap[language]}`
-        );
-        console.log(
-          `[Judge] generated code (first 300 chars):`,
-          executableCode.slice(0, 300)
-        );
-      }
-      const parsed = parseJudge0Result(result);
-      
-
       const result = await runCode(
         executableCode,
         languageMap[language],
         ""
       );
 
+      if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+        if (import.meta.env.DEV) {
+          console.log();
+        }
+      }
+
       const analysis = analyzeRunResult(result);
 
+      if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+        console.log(`[Judge Debug] Status classification:`, JSON.stringify(analysis, null, 2));
+      }
+
       if (analysis.type === "infra") {
+        if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+          console.log(`[Judge Debug] Final assigned status: Judge Error ❌`);
+        }
         return {
           status: "Judge Error ❌",
           passed: passedCount,
@@ -136,6 +142,9 @@ export const judgeSubmission = async ({
       }
 
       if (analysis.type === "compile") {
+        if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+          console.log(`[Judge Debug] Final assigned status: Compilation Error ❌`);
+        }
         return {
           status: "Compilation Error ❌",
           passed: passedCount,
@@ -145,6 +154,9 @@ export const judgeSubmission = async ({
       }
 
       if (analysis.type === "runtime") {
+        if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+          console.log(`[Judge Debug] Final assigned status: Runtime Error ❌`);
+        }
         return {
           status: "Runtime Error ❌",
           passed: passedCount,
@@ -161,7 +173,16 @@ export const judgeSubmission = async ({
         result.stdout || ""
       );
 
+      if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+        console.log(`[Judge Debug] Expected output (normalized): "${expected}"`);
+        console.log(`[Judge Debug] Actual output (normalized): "${actual}"`);
+        console.log(`[Judge Debug] Comparison result: ${expected === actual}`);
+      }
+
       if (actual.length > 5000) {
+        if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+          console.log(`[Judge Debug] Final assigned status: Output Limit Exceeded ❌`);
+        }
         return {
           status: "Output Limit Exceeded ❌",
           passed: passedCount,
@@ -174,6 +195,9 @@ export const judgeSubmission = async ({
           performance.now() - startTime
         ).toFixed(2);
 
+        if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+          console.log(`[Judge Debug] Final assigned status: Wrong Answer ❌`);
+        }
         return {
           status: "Wrong Answer ❌",
           passed: passedCount,
@@ -200,6 +224,9 @@ export const judgeSubmission = async ({
       performance.now() - startTime
     ).toFixed(2);
 
+    if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+      console.log(`[Judge Debug] Final assigned status: Accepted 🎉`);
+    }
     return {
       status: "Accepted 🎉",
       passed: passedCount,
@@ -209,6 +236,9 @@ export const judgeSubmission = async ({
       executionTime,
     };
   } catch (error) {
+    if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
+      console.log(`[Judge Debug] Final assigned status: Judge Error ❌ (caught error: ${error.message})`);
+    }
     return {
       status: "Judge Error ❌",
       error: error.message,

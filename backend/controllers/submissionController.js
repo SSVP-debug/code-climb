@@ -15,7 +15,7 @@ function toClientSubmission(doc) {
     expectedOutput: doc.expectedOutput,
     actualOutput: doc.actualOutput,
     time: new Date(doc.createdAt).toLocaleTimeString(),
-    date: new Date(doc.createdAt).toLocaleDateString(),
+    date: new Date(doc.createdAt).formatDate(),
     createdAt: doc.createdAt,
   };
 }
@@ -24,9 +24,9 @@ export async function createSubmission(req, res) {
   const submission = await Submission.create({
     userId: req.userDoc._id,
     ...req.body,
-    statusDescription: parsed.status,
-    judge0Time: parsed.time,
-    memory: parsed.memory,
+    statusDescription: req.body.statusDescription || req.body.status,
+    judge0Time: req.body.judge0Time || req.body.executionTime,
+    memory: req.body.memory || null,
   });
 
   res.status(201).json(toClientSubmission(submission));
