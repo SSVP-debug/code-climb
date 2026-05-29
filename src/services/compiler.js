@@ -15,13 +15,15 @@ async function runViaBackend(
   languageId,
   stdin
 ) {
-  return apiFetch("/api/compiler/run", {
+  const token = await auth.currentUser.getIdToken();
+
+  return await fetch("/api/compiler", {
     method: "POST",
-    body: JSON.stringify({
-      source_code: sourceCode,
-      language_id: languageId,
-      stdin,
-    }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
   });
 }
 
@@ -48,7 +50,7 @@ async function runViaJudge0Direct(
   if (!response.ok) {
     throw new Error(
       data?.message ||
-        `Judge0 request failed (${response.status})`
+      `Judge0 request failed (${response.status})`
     );
   }
 
