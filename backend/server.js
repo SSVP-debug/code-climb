@@ -1,3 +1,4 @@
+const verifyFirebaseToken = require("./middleware/verifyFirebaseToken");
 import "./config/env.js";
 
 import express from "express";
