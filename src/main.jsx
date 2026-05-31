@@ -1,21 +1,26 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import './index.css'
-import AuthProvider from "./context/AuthProvider";
-import { AppProvider } from "./context/AppProvider";
-import ProgressSync from "./components/ProgressSync";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+import App from "./App";
+
+import { AuthProvider } from "./context/authContext";
+
+import AppContextProvider from "./context/appContext";
+
+import "./index.css";
+
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
   <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter>
-        <AppProvider>
-          <ProgressSync />
+    <BrowserRouter>
+      <AuthProvider>
+        <AppContextProvider>
           <App />
-        </AppProvider>
-      </BrowserRouter>
-    </AuthProvider>
-  </React.StrictMode>,
-)
+        </AppContextProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);
+

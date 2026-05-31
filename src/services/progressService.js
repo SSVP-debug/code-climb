@@ -1,376 +1,90 @@
-import { apiFetch } from "./api";
 import {
-  getStorageData,
-  setStorageData,
-} from "./storageService";
-import { PROGRESS_KEYS } from "../constants/progressKeys";
+  arrayUnion,
+  doc,
+  getDoc,
+  increment,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
-export function emptyProgress() {
-  return {
-    solvedSlugs: [],
-    topicStats: {},
-    activityDates: [],
-    solvedDifficulty: {
-      easy: 0,
-      medium: 0,
-      hard: 0,
-    },
-    recentActivity: [],
-    leetcodeUsername: "",
-    joinedDate: null,
-  };
+const DEFAULT_PROGRESS = {
+  solvedProblems: [],
+  activityDates: [],
+  solvedDifficulty: { Easy: 0, Medium: 0, Hard: 0 },
+};
+
+function getTodayString() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
-export function progressFromLocalStorage() {
-  return {
-    solvedSlugs: getStorageData(
-      PROGRESS_KEYS.solved,
-      []
-    ),
-    topicStats: getStorageData(
-      PROGRESS_KEYS.topicStats,
-      {}
-    ),
-    activityDates: getStorageData(
-      PROGRESS_KEYS.activityDates,
-      []
-    ),
-    solvedDifficulty: getStorageData(
-      PROGRESS_KEYS.solvedDifficulty,
-      {
-        easy: 0,
-        medium: 0,
-        hard: 0,
-      }
-    ),
-    recentActivity: getStorageData(
-      PROGRESS_KEYS.recentActivity,
-      []
-    ),
-    leetcodeUsername:
-      localStorage.getItem(
-        PROGRESS_KEYS.leetcodeUsername
-      ) || "",
-    joinedDate:
-      localStorage.getItem(
-        PROGRESS_KEYS.joinedDate
-      ) || null,
-  };
-}
-
-export function saveProgressToLocalStorage(
-  progress
-) {
-  setStorageData(
-    PROGRESS_KEYS.solved,
-    progress.solvedSlugs
-  );
-  setStorageData(
-    PROGRESS_KEYS.topicStats,
-    progress.topicStats
-  );
-  setStorageData(
-    PROGRESS_KEYS.activityDates,
-    progress.activityDates
-  );
-  setStorageData(
-    PROGRESS_KEYS.solvedDifficulty,
-    progress.solvedDifficulty
-  );
-  setStorageData(
-    PROGRESS_KEYS.recentActivity,
-    progress.recentActivity
-  );
-
-  if (progress.leetcodeUsername) {
-    localStorage.setItem(
-      PROGRESS_KEYS.leetcodeUsername,
-      progress.leetcodeUsername
-    );
-  }
-
-  if (progress.joinedDate) {
-    localStorage.setItem(
-      PROGRESS_KEYS.joinedDate,
-      progress.joinedDate
-    );
-  }
-}
-
-export function migrateLegacyLocalStorage() {
-  const solved = new Set(
-    getStorageData(PROGRESS_KEYS.solved, [])
-  );
-
-  for (let i = 0; i < localStorage.length; i += 1) {
-    const key = localStorage.key(i);
-
-    if (key?.startsWith("solved-")) {
-      const slug = key.slice("solved-".length);
-
-      if (localStorage.getItem(key) === "true") {
-        solved.add(slug);
-      }
-
-      localStorage.removeItem(key);
-    }
-
-    if (key?.startsWith("submissions-")) {
-      localStorage.removeItem(key);
-    }
-  }
-
-  if (solved.size > 0) {
-    setStorageData(
-      PROGRESS_KEYS.solved,
-      [...solved]
-    );
-  }
-}
-
-export async function fetchProgressFromApi() {
-  if (import.meta.env.DEV) {
-    console.log("[Progress] Fetching progress from API...");
-  }
-  const progress = await apiFetch("/api/progress");
-  if (import.meta.env.DEV) {
-    console.log("[Progress] Fetched progress from API:", progress);
-  }
-  return progress;
-}
-
-export async function fetchSubmissionsFromApi() {
-  if (import.meta.env.DEV) {
-    console.log("[Progress] Fetching submissions from API...");
-  }
-  const submissions = await apiFetch("/api/submissions");
-  if (import.meta.env.DEV) {
-    console.log(
-      "[Progress] Fetched",
-      submissions.length,
-      "submissions"
-    );
-  }
-  return submissions;
-}
-
-export function mapApiSubmission(submission) {
-  return {
-    id:
-      submission.id ||
-      submission._id ||
-      crypto.randomUUID(),
-    problemTitle: submission.problemTitle,
-    problemSlug: submission.problemSlug,
-    language: submission.language,
-    status: submission.status,
-    passed: submission.passed,
-    total: submission.total,
-    visiblePassed: submission.visiblePassed,
-    hiddenPassed: submission.hiddenPassed,
-    executionTime: formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))),
-    expectedOutput: submission.expectedOutput,
-    actualOutput: submission.actualOutput,
-    time: submission.time ||
-      new Date(submission.createdAt).toLocaleTimeString(),
-    date: submission.date ||
-      new Date(submission.createdAt).formatDate(),
-  };
-}
-
-export async function saveProgressToApi(
-  progress
-) {
-  return apiFetch("/api/progress", {
-    method: "PUT",
-    body: JSON.stringify(progress),
-  });
-}
-
-export async function syncProgressOnLogin() {
-  migrateLegacyLocalStorage();
+// Returns user's progress from Firestore, or defaults if no document exists.
+export async function getProgress(userId) {
+  if (!userId) throw new Error("[progressService] userId required");
 
   try {
-    const [remote, apiSubmissions] = await Promise.all([
-      fetchProgressFromApi(),
-      fetchSubmissionsFromApi().catch(() => []),
-    ]);
+    const snap = await getDoc(doc(db, "progress", userId));
 
-    saveProgressToLocalStorage(remote);
-
-    if (apiSubmissions.length > 0) {
-      const mapped = apiSubmissions.map(
-        mapApiSubmission
-      );
-      setStorageData(
-        PROGRESS_KEYS.submissions,
-        mapped
-      );
-    }
+    if (!snap.exists()) return { ...DEFAULT_PROGRESS };
 
     return {
-      progress: remote,
-      submissions: getStorageData(
-        PROGRESS_KEYS.submissions,
-        []
-      ),
+      ...DEFAULT_PROGRESS,
+      ...snap.data(),
     };
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn(
-        "[Progress] API sync failed, using local cache:",
-        error.message
-      );
-    }
-
-    const local = progressFromLocalStorage();
-
-    try {
-      await saveProgressToApi(local);
-      if (import.meta.env.DEV) {
-        console.log(
-          "[Progress] Pushed local progress to API"
-        );
-      };
-    } catch (pushError) {
-      if (import.meta.env.DEV) {
-        console.warn(
-          "[Progress] Could not push local progress:",
-          pushError.message
-        );
-      }
-    }
-
-    return {
-      progress: local,
-      submissions: getStorageData(
-        PROGRESS_KEYS.submissions,
-        []
-      ),
-    };
+  } catch (err) {
+    console.error("[progressService] getProgress failed:", err.message);
+    return { ...DEFAULT_PROGRESS };
   }
 }
 
-export async function recordSubmission(
-  submission
-) {
-  const submissions = getStorageData(
-    PROGRESS_KEYS.submissions,
-    []
-  );
-  const updated = [submission, ...submissions];
+// Creates a blank progress document for first-time users.
+// Safe to call on every login — only writes if the document doesn't exist.
+export async function initProgress(userId) {
+  if (!userId) throw new Error("[progressService] userId required");
 
-  setStorageData(
-    PROGRESS_KEYS.submissions,
-    updated
-  );
+  const ref = doc(db, "progress", userId);
+  const snap = await getDoc(ref);
 
-  try {
-    await apiFetch("/api/submissions", {
-      method: "POST",
-      body: JSON.stringify(submission),
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      ...DEFAULT_PROGRESS,
+      createdAt: serverTimestamp(),
+      lastActive: serverTimestamp(),
     });
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.error("Failed to sync submission:", error);
-    }
-  }
-
-  return updated;
-}
-
-export function getSubmissionsForProblem(
-  slug
-) {
-  const all = getStorageData(
-    PROGRESS_KEYS.submissions,
-    []
-  );
-
-  return all.filter(
-    (s) => s.problemSlug === slug
-  );
-}
-
-export function buildProgressUpdate({
-  solvedSlugs,
-  topicStats,
-  activityDates,
-  solvedDifficulty,
-  recentActivity,
-  leetcodeUsername,
-}) {
-  return {
-    solvedSlugs,
-    topicStats,
-    activityDates,
-    solvedDifficulty,
-    recentActivity,
-    leetcodeUsername,
-  };
-}
-
-export async function persistProgress(
-  progress
-) {
-  saveProgressToLocalStorage(progress);
-
-  try {
-    await saveProgressToApi(progress);
-  } catch (error) {
-    console.error("Failed to sync progress:", error);
   }
 }
 
-export function markProblemSolvedInProgress(
-  progress,
-  { slug, topic, difficulty, title }
-) {
-  const solvedSlugs = progress.solvedSlugs.includes(
-    slug
-  )
-    ? progress.solvedSlugs
-    : [...progress.solvedSlugs, slug];
-
-  const topicStats = {
-    ...progress.topicStats,
-    [topic]:
-      (progress.topicStats[topic] || 0) + 1,
-  };
-
-  const solvedDifficulty = {
-    ...progress.solvedDifficulty,
-  };
-
-  if (difficulty === "Easy") {
-    solvedDifficulty.easy += 1;
-  } else if (difficulty === "Medium") {
-    solvedDifficulty.medium += 1;
-  } else {
-    solvedDifficulty.hard += 1;
+// Atomically marks a problem as solved in Firestore.
+//
+// difficulty must be "Easy" | "Medium" | "Hard" (capitalized) — matching
+// problem.difficulty and appContext's solvedDifficulty keys.
+export async function markProblemSolved(userId, problemSlug, difficulty) {
+  if (!userId || !problemSlug || !difficulty) {
+    throw new Error(
+      "[progressService] markProblemSolved requires userId, problemSlug, difficulty"
+    );
   }
 
-  const today = new Date().formatDate();
-  const activityDates =
-    progress.activityDates.includes(today)
-      ? progress.activityDates
-      : [...progress.activityDates, today];
+  const validDifficulties = ["Easy", "Medium", "Hard"];
+  if (!validDifficulties.includes(difficulty)) {
+    throw new Error(
+      `[progressService] Invalid difficulty: "${difficulty}". Must be one of: ${validDifficulties.join(", ")}`
+    );
+  }
 
-  const recentActivity = [
+  await setDoc(
+    doc(db, "progress", userId),
     {
-      title,
-      time: new Date().formatDateTime(),
+      solvedProblems: arrayUnion(problemSlug),
+      activityDates: arrayUnion(getTodayString()),
+      // e.g. "solvedDifficulty.Easy": increment(1)
+      [`solvedDifficulty.${difficulty}`]: increment(1),
+      lastActive: serverTimestamp(),
     },
-    ...progress.recentActivity,
-  ].slice(0, 10);
-
-  return buildProgressUpdate({
-    solvedSlugs,
-    topicStats,
-    activityDates,
-    solvedDifficulty,
-    recentActivity,
-    leetcodeUsername:
-      progress.leetcodeUsername,
-  });
+    { merge: true }  // create or update without overwriting other fields
+  );
 }

@@ -1,39 +1,76 @@
 import ErrorBanner from "../components/ErrorBanner";
+import ErrorBoundary from "../components/ErrorBoundary";
+
 import {
   formatDate,
-  formatDateTime,
-  formatRuntime,
-  formatMemory,
 } from "../utils/formatters";
-import { useEffect, useMemo, useState } from "react";
+
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { useParams } from "react-router-dom";
+
 import DashboardLayout from "../layouts/DashboardLayout";
+
 import { runCode } from "../services/compiler";
+
 import { judgeSubmission } from "../services/judgeService";
+
 import problems from "../data/problems";
+
 import { useAppContext } from "../hooks/useAppContext";
-import { loadSavedCode, saveCode } from "../utils/editorStorage";
+
+import {
+  loadSavedCode,
+  saveCode,
+} from "../utils/editorStorage";
+
 import { parseJudge0Result } from "../utils/parseJudge0Result";
 
 // Sub-components
 import ProblemHeader from "../components/problem/ProblemHeader";
+
 import ProblemInfo from "../components/problem/ProblemInfo";
+
 import ProblemEditor from "../components/problem/ProblemEditor";
+
 import ProblemResults from "../components/problem/ProblemResults";
+
 import SubmissionHistory from "../components/problem/SubmissionHistory";
+
 import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
 
+
+
+
 function ProblemDetailsPage() {
-  const { title } = useParams();
-  const problem = useMemo(() => problems.find((p) => p.slug === title), [title]);
+  const { slug } = useParams();
+
+  const problem = useMemo(
+    () =>
+      problems.find(
+        (p) => p.slug === slug
+      ),
+    [slug]
+  );
 
   if (!problem) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Problem Not Found</h2>
-            <p className="text-zinc-500 mb-6">The problem you're looking for doesn't exist or has been moved.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Problem Not Found
+            </h2>
+
+            <p className="text-zinc-500 mb-6">
+              The problem you're looking for
+              doesn't exist or has been moved.
+            </p>
+
             <button
               onClick={() => window.history.back()}
               className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors"
@@ -48,14 +85,17 @@ function ProblemDetailsPage() {
 
   return (
     <ProblemSolver
-      key={title}
+      key={slug}
       problem={problem}
-      title={title}
+      slug={slug}
     />
   );
 }
 
-function ProblemSolver({ problem, title }) {
+function ProblemSolver({
+  problem,
+  slug,
+}) {
   const {
     solvedProblems,
     submissions: allSubmissions,
@@ -63,43 +103,86 @@ function ProblemSolver({ problem, title }) {
     markProblemSolved,
   } = useAppContext();
 
-  const isSolved = solvedProblems.includes(title);
+  const isSolved =
+    solvedProblems.includes(slug);
 
   const submissions = useMemo(
-    () => allSubmissions.filter((s) => s.problemSlug === title),
-    [allSubmissions, title]
+    () =>
+      allSubmissions.filter(
+        (s) =>
+          s.problemSlug === slug
+      ),
+    [allSubmissions, slug]
   );
 
   // State Management
-  const [language, setLanguage] = useState("python");
-  const [error, setError] = useState("");
-  const [code, setCode] = useState(() =>
-    loadSavedCode(title, "python", problem.starterCode.python)
-  );
+  const [language, setLanguage] =
+    useState("python");
 
-  const [output, setOutput] = useState("");
-  const [status, setStatus] = useState("");
-  const [customInput, setCustomInput] = useState("");
-  const [running, setRunning] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [judgeState, setJudgeState] = useState("");
-  const [testcaseProgress, setTestcaseProgress] = useState(null);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
-  const [executionMeta, setExecutionMeta] = useState(null);
+  const [error, setError] =
+    useState("");
+
+  const [code, setCode] =
+    useState(() =>
+      loadSavedCode(
+        slug,
+        "python",
+        problem.starterCode.python
+      )
+    );
+
+  const [output, setOutput] =
+    useState("");
+
+  const [status, setStatus] =
+    useState("");
+
+  const [customInput, setCustomInput] =
+    useState("");
+
+  const [running, setRunning] =
+    useState(false);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [judgeState, setJudgeState] =
+    useState("");
+
+  const [
+    testcaseProgress,
+    setTestcaseProgress,
+  ] = useState(null);
+
+  const [
+    selectedSubmission,
+    setSelectedSubmission,
+  ] = useState(null);
+
+  const [
+    executionMeta,
+    setExecutionMeta,
+  ] = useState(null);
 
   // Sync code to storage
   useEffect(() => {
-    saveCode(title, language, code);
-  }, [title, language, code]);
+    saveCode(slug, language, code);
+  }, [slug, language, code]);
 
-  const handleLanguageChange = (nextLanguage) => {
-    saveCode(title, language, code);
+  const handleLanguageChange = (
+    nextLanguage
+  ) => {
+    saveCode(slug, language, code);
+
     setLanguage(nextLanguage);
+
     setCode(
       loadSavedCode(
-        title,
+        slug,
         nextLanguage,
-        problem.starterCode[nextLanguage] || ""
+        problem.starterCode[
+        nextLanguage
+        ] || ""
       )
     );
   };
@@ -111,160 +194,345 @@ function ProblemSolver({ problem, title }) {
     cpp: 54,
   };
 
-  const handleRunCode = async () => {
-    try {
-      setRunning(true);
-      setStatus("Running...");
-      setExecutionMeta(null);
-      setError("Execution failed. Please try again.");
+  const handleRunCode =
+    async () => {
+      if (running) return;
 
-      const result = await runCode(
-        code,
-        languageMap[language],
-        customInput
-      );
+      try {
+        setRunning(true);
 
-      const parsed = parseJudge0Result(result);
-      setExecutionMeta({
-        time: parsed.time,
-        memory: parsed.memory,
-        kind: parsed.kind,
-      });
+        setError("");
 
-      setStatus(parsed.status);
+        setStatus("Running...");
 
-      if (parsed.kind === "success") {
-        setOutput(parsed.stdout);
-      } else if (parsed.kind === "runtime") {
-        setOutput(parsed.stderr);
-      } else if (parsed.kind === "compile") {
-        setOutput(parsed.compileOutput);
-      } else if (parsed.kind === "infra") {
-        setOutput("Execution infrastructure error. Please try again.");
-      } else {
-        setOutput(parsed.stdout || "No output produced.");
-      }
-    } catch (error) {
-      console.error(error);
-      setStatus("Execution Failed ❌");
-      setOutput("An unexpected error occurred during execution.");
-    } finally {
-      setRunning(false);
-    }
-  };
+        setExecutionMeta(null);
 
-  const handleSubmitCode = async () => {
-    try {
-      setSubmitting(true);
-      setJudgeState("Queued");
-      setExecutionMeta(null);
-      setStatus("Judging...");
-      setError("Submission failed. Please try again.");
+        const result =
+          await runCode(
+            code,
+            languageMap[
+            language
+            ],
+            customInput
+          );
 
-      const judgeResult = await judgeSubmission({
-        problem,
-        code,
-        language,
-        onProgress: setTestcaseProgress,
-      });
+        const parsed =
+          parseJudge0Result(
+            result
+          );
 
-      setJudgeState("Completed");
-      setStatus(judgeResult.status);
-      setOutput(judgeResult.actualOutput || "");
+        setExecutionMeta({
+          time: parsed.time,
+          memory:
+            parsed.memory,
+          kind: parsed.kind,
+        });
 
-      const newSubmission = {
-        id: crypto.randomUUID(),
-        problemTitle: problem.title,
-        problemSlug: problem.slug,
-        language,
-        status: judgeResult.status,
-        date: formatDate(new Date()),
-        createdAt: new Date().toISOString(),
-        passed: judgeResult.passed || 0,
-        total: judgeResult.total || 0,
-        visiblePassed: judgeResult.visiblePassed || 0,
-        hiddenPassed: judgeResult.hiddenPassed || 0,
-        expectedOutput: judgeResult.expectedOutput,
-        actualOutput: judgeResult.actualOutput,
-        executionTime: judgeResult.executionTime,
-      };
+        setStatus(
+          parsed.status
+        );
 
-      // Mark as solved if accepted
-      if (judgeResult.status === "Accepted 🎉") {
-        if (!isSolved) {
-          await markProblemSolved({
-            slug: title,
-            topic: problem.topic,
-            difficulty: problem.difficulty,
-            title: problem.title,
-          });
+        if (
+          parsed.kind ===
+          "success"
+        ) {
+          setOutput(
+            parsed.stdout
+          );
+        } else if (
+          parsed.kind ===
+          "runtime"
+        ) {
+          setOutput(
+            parsed.stderr
+          );
+        } else if (
+          parsed.kind ===
+          "compile"
+        ) {
+          setOutput(
+            parsed.compileOutput
+          );
+        } else if (
+          parsed.kind ===
+          "infra"
+        ) {
+          setOutput(
+            "Execution infrastructure error. Please try again."
+          );
+        } else {
+          setOutput(
+            parsed.stdout ||
+            "No output produced."
+          );
         }
-      }
+      } catch (error) {
+        console.error(error);
 
-      await addSubmission(newSubmission);
-    } catch (error) {
-      console.error(error);
-      setStatus("Submission Error ❌");
-      setJudgeState("Failed");
-    } finally {
-      setSubmitting(false);
-      setTestcaseProgress(null);
-      setTimeout(() => setJudgeState(""), 3000);
-    }
-  };
+        setError(
+          "Execution failed. Please try again."
+        );
+
+        setStatus(
+          "Execution Failed ❌"
+        );
+
+        setOutput(
+          "An unexpected error occurred during execution."
+        );
+      } finally {
+        setRunning(false);
+      }
+    };
+
+  const handleSubmitCode =
+    async () => {
+      if (submitting) return;
+
+      try {
+        setSubmitting(true);
+
+        setError("");
+
+        setJudgeState(
+          "Queued"
+        );
+
+        setExecutionMeta(null);
+
+        setStatus(
+          "Judging..."
+        );
+
+        const judgeResult =
+          await judgeSubmission(
+            {
+              problem,
+              code,
+              language,
+              onProgress:
+                setTestcaseProgress,
+            }
+          );
+
+        setJudgeState(
+          "Completed"
+        );
+
+        setStatus(
+          judgeResult.status
+        );
+
+        setOutput(
+          judgeResult.actualOutput ||
+          ""
+        );
+
+        const newSubmission =
+        {
+          id: crypto.randomUUID(),
+
+          problemTitle:
+            problem.title,
+
+          problemSlug:
+            problem.slug,
+
+          language,
+
+          status:
+            judgeResult.status,
+
+          date: formatDate(
+            new Date()
+          ),
+
+          createdAt:
+            new Date().toISOString(),
+
+          passed:
+            judgeResult.passed ||
+            0,
+
+          total:
+            judgeResult.total ||
+            0,
+
+          visiblePassed:
+            judgeResult.visiblePassed ||
+            0,
+
+          hiddenPassed:
+            judgeResult.hiddenPassed ||
+            0,
+
+          expectedOutput:
+            judgeResult.expectedOutput,
+
+          actualOutput:
+            judgeResult.actualOutput,
+
+          executionTime:
+            judgeResult.executionTime,
+        };
+
+        // Mark solved
+        if (
+          judgeResult.status ===
+          "Accepted 🎉"
+        ) {
+          if (!isSolved) {
+            await markProblemSolved(
+              {
+                slug,
+                topic:
+                  problem.topic,
+                difficulty:
+                  problem.difficulty,
+                title:
+                  problem.title,
+              }
+            );
+          }
+        }
+
+        await addSubmission(
+          newSubmission
+        );
+      } catch (error) {
+        console.error(error);
+
+        setError(
+          "Submission failed. Please try again."
+        );
+
+        setStatus(
+          "Submission Error ❌"
+        );
+
+        setJudgeState(
+          "Failed"
+        );
+      } finally {
+        setSubmitting(false);
+
+        setTestcaseProgress(
+          null
+        );
+
+        setTimeout(
+          () =>
+            setJudgeState(""),
+          3000
+        );
+      }
+    };
 
   return (
     <DashboardLayout>
       <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* Left Column: Problem Info */}
+          {/* Left Column */}
           <div className="lg:col-span-5 h-full space-y-6">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 lg:sticky lg:top-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+
               <ProblemHeader
                 problem={problem}
-                isSolved={isSolved}
+                isSolved={
+                  isSolved
+                }
               />
+
               <ProblemInfo
                 problem={problem}
               />
             </div>
           </div>
 
-          {/* Right Column: Editor & Results */}
+          {/* Right Column */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Editor Section */}
-            <div className="h-[600px]">
-              <ProblemEditor
-                language={language}
-                setLanguage={handleLanguageChange}
-                code={code}
-                setCode={setCode}
-                customInput={customInput}
-                setCustomInput={setCustomInput}
-                onRun={handleRunCode}
-                onSubmit={handleSubmitCode}
-                running={running}
-                submitting={submitting}
+
+            {/* Error Banner */}
+            {error && (
+              <ErrorBanner
+                message={error}
               />
+            )}
+
+            {/* Editor */}
+            <div className="h-[600px]">
+
+              <ErrorBoundary
+                fallback={
+                  <div className="bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                    Editor failed to load.
+                  </div>
+                }
+              >
+                <ProblemEditor
+                  language={
+                    language
+                  }
+                  setLanguage={
+                    handleLanguageChange
+                  }
+                  code={code}
+                  setCode={
+                    setCode
+                  }
+                  customInput={
+                    customInput
+                  }
+                  setCustomInput={
+                    setCustomInput
+                  }
+                  onRun={
+                    handleRunCode
+                  }
+                  onSubmit={
+                    handleSubmitCode
+                  }
+                  running={
+                    running
+                  }
+                  submitting={
+                    submitting
+                  }
+                />
+              </ErrorBoundary>
             </div>
 
-            {/* Results & History Grid */}
+            {/* Results + History */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+
               <div className="h-full">
                 <ProblemResults
                   status={status}
                   output={output}
-                  executionMeta={executionMeta}
-                  judgeState={judgeState}
-                  testcaseProgress={testcaseProgress}
-                  submitting={submitting}
+                  executionMeta={
+                    executionMeta
+                  }
+                  judgeState={
+                    judgeState
+                  }
+                  testcaseProgress={
+                    testcaseProgress
+                  }
+                  submitting={
+                    submitting
+                  }
                 />
               </div>
+
               <div className="h-[400px] md:h-auto overflow-hidden">
                 <SubmissionHistory
-                  submissions={submissions}
-                  onSelectSubmission={setSelectedSubmission}
+                  submissions={
+                    submissions
+                  }
+                  onSelectSubmission={
+                    setSelectedSubmission
+                  }
                 />
               </div>
             </div>
@@ -272,11 +540,17 @@ function ProblemSolver({ problem, title }) {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modal */}
       {selectedSubmission && (
         <SubmissionDetailsModal
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
+          submission={
+            selectedSubmission
+          }
+          onClose={() =>
+            setSelectedSubmission(
+              null
+            )
+          }
         />
       )}
     </DashboardLayout>
@@ -284,3 +558,4 @@ function ProblemSolver({ problem, title }) {
 }
 
 export default ProblemDetailsPage;
+
