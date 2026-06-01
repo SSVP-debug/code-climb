@@ -6,11 +6,13 @@ function LandingPage() {
       <div className="max-w-5xl mx-auto px-8 py-20">
         <header className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-4">
-            Code Climb
+            Code Club
           </h1>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+            First Rule of Code Club: You do not talk about Code Club. Just kidding, tell everyone!
             Practice DSA problems, track your progress, and sync
             with your LeetCode journey — all in one place.
+            All for free. Join the club and level up your coding skills today!
           </p>
           <div className="flex items-center justify-center gap-4 mt-10">
             <Link
@@ -56,7 +58,7 @@ function LandingPage() {
             </h2>
             <p className="text-zinc-400 leading-relaxed">
               Connect your LeetCode username to pull external
-              stats alongside your Code Climb activity.
+              stats alongside your Code Club activity.
             </p>
           </div>
         </div>

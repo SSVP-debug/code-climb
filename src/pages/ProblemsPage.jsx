@@ -116,7 +116,7 @@ function ProblemsPage() {
 
           <p className="text-zinc-400 mt-2">
             Sharpen your DSA skills
-            and climb consistently.
+            and lets you punch harder consistently.
           </p>
         </div>
 

@@ -39,7 +39,7 @@ console.log("[CORS] Allowed origins:", allowedOrigins.join(", "));
 app.use(express.json({ limit: "1mb" }));
 
 // ─── Public routes (no auth needed) ────────────────────────────────────────
-app.get("/", (req, res) => res.send("Code Climb Backend Running"));
+app.get("/", (req, res) => res.send("Code Club Backend Running"));
 
 app.get("/api/health", (req, res) => {
   res.json({

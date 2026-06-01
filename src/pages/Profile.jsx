@@ -1,6 +1,19 @@
-import { useContext, useState } from "react";
+// src/pages/Profile.jsx
+//
+// FIXES:
+//   1. Replaced useContext(AuthContext) with useAuth() — consistent with
+//      the rest of the codebase. useContext(AuthContext) still works but
+//      useAuth() throws a clear error if the Provider is missing, making
+//      bugs easier to catch.
+//
+//   2. recentActivity now works correctly. Previously AppContext provided
+//      date strings ["2025-05-30"], but Profile accessed item.title and
+//      item.time — both undefined, rendering blank rows. AppContext now
+//      provides { title, time, status, slug } objects from submissions.
+
+import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { AuthContext } from "../context/authContext";
+import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
 import {
   getUserLevel,
@@ -10,27 +23,24 @@ import { apiFetch } from "../services/api";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 
 function Profile() {
-  const { user } = useContext(AuthContext);
+  // FIX: useAuth() instead of useContext(AuthContext)
+  const { user } = useAuth();
+
   const {
     solvedProblems,
     activityDates,
     recentActivity,
   } = useAppContext();
 
-  const [leetcodeUsername, setLeetcodeUsername] =
-    useState(
-      () =>
-        localStorage.getItem(
-          PROGRESS_KEYS.leetcodeUsername
-        ) || ""
-    );
+  const [leetcodeUsername, setLeetcodeUsername] = useState(
+    () => localStorage.getItem(PROGRESS_KEYS.leetcodeUsername) || ""
+  );
 
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
   const joinedDate =
-    localStorage.getItem(PROGRESS_KEYS.joinedDate) ||
-    "Recently";
+    localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
 
   async function handleSaveLeetcode() {
     setError("");
@@ -42,11 +52,7 @@ function Profile() {
         body: JSON.stringify({ leetcodeUsername }),
       });
 
-      localStorage.setItem(
-        PROGRESS_KEYS.leetcodeUsername,
-        leetcodeUsername
-      );
-
+      localStorage.setItem(PROGRESS_KEYS.leetcodeUsername, leetcodeUsername);
       setSaved(true);
     } catch (err) {
       setError(err.message || "Failed to save");
@@ -58,6 +64,7 @@ function Profile() {
       <div className="max-w-3xl space-y-8">
         <h1 className="text-4xl font-bold">Profile</h1>
 
+        {/* User info card */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex items-center gap-6">
           {user?.photoURL ? (
             <img
@@ -82,6 +89,7 @@ function Profile() {
           </div>
         </div>
 
+        {/* Stats grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <p className="text-zinc-400 text-sm">Solved</p>
@@ -89,12 +97,14 @@ function Profile() {
               {solvedProblems.length}
             </p>
           </div>
+
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <p className="text-zinc-400 text-sm">Streak days</p>
             <p className="text-3xl font-bold mt-1">
               {activityDates.length}
             </p>
           </div>
+
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <p className="text-zinc-400 text-sm">Rank</p>
             <p className="text-3xl font-bold mt-1">
@@ -106,6 +116,7 @@ function Profile() {
           </div>
         </div>
 
+        {/* LeetCode username */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-4">
             LeetCode Username
@@ -114,9 +125,7 @@ function Profile() {
             <input
               type="text"
               value={leetcodeUsername}
-              onChange={(e) =>
-                setLeetcodeUsername(e.target.value)
-              }
+              onChange={(e) => setLeetcodeUsername(e.target.value)}
               placeholder="your-leetcode-username"
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
             />
@@ -127,11 +136,13 @@ function Profile() {
               Save
             </button>
           </div>
+
           {saved && (
             <p className="text-green-400 text-sm mt-2">
               Saved successfully
             </p>
           )}
+
           {error && (
             <p className="text-red-400 text-sm mt-2">
               {error}
@@ -139,10 +150,12 @@ function Profile() {
           )}
         </div>
 
+        {/* Recent Activity */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-4">
             Recent Activity
           </h2>
+
           {recentActivity.length === 0 ? (
             <p className="text-zinc-400">
               No activity yet. Solve a problem to get started.
@@ -152,10 +165,20 @@ function Profile() {
               {recentActivity.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between"
+                  className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
                 >
-                  <span>{item.title}</span>
-                  <span className="text-zinc-500 text-sm">
+                  <div className="flex items-center gap-3">
+                    {/* Status indicator dot */}
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        item.status?.includes("Accepted")
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                    />
+                    <span className="text-sm">{item.title}</span>
+                  </div>
+                  <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
                     {item.time}
                   </span>
                 </div>
