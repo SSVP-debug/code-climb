@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchLeetCodeStats } from "../services/leetcode";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 import { useAppContext } from "./useAppContext";
@@ -15,68 +15,57 @@ function useDashboardData(username) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const earnedBadges = [];
+  // ── Derived values ────────────────────────────────────────────────────
+  // Keys must be capitalized: "Easy" | "Medium" | "Hard"
+  const earnedBadges = useMemo(() => {
+    const badges = [];
+    if (solvedDifficulty.Easy >= 1)   badges.push("Beginner 🟢");
+    if (solvedDifficulty.Medium >= 1) badges.push("Intermediate 🟡");
+    if (solvedDifficulty.Hard >= 1)   badges.push("Advanced 🔴");
+    return badges;
+  }, [solvedDifficulty]);
 
-  if (solvedDifficulty.easy >= 1) {
-    earnedBadges.push("Beginner 🟢");
-  }
+  const recommendation = useMemo(() => {
+    if (solvedProblems.length < 3) {
+      return "Start solving more Easy problems consistently.";
+    }
+    if (activityDates.length < 3) {
+      return "Build a stronger daily solving streak.";
+    }
+    if (solvedDifficulty.Hard === 0) {
+      return "Try solving Hard problems to level up.";
+    }
+    return "Excellent progress! Keep pushing consistency.";
+  }, [solvedProblems, activityDates, solvedDifficulty]);
 
-  if (solvedDifficulty.medium >= 1) {
-    earnedBadges.push("Intermediate 🟡");
-  }
+  const today = new Date().toISOString().split("T")[0];
+  const dailySolved = activityDates.includes(today) ? 1 : 0;
 
-  if (solvedDifficulty.hard >= 1) {
-    earnedBadges.push("Advanced 🔴");
-  }
-
-  let recommendation =
-    "Excellent progress! Keep pushing consistency.";
-
-  if (solvedProblems.length < 3) {
-    recommendation =
-      "Start solving more Easy problems consistently.";
-  } else if (activityDates.length < 3) {
-    recommendation =
-      "Build a stronger daily solving streak.";
-  } else if (solvedDifficulty.hard === 0) {
-    recommendation =
-      "Try solving Hard problems to level up.";
-  }
-
-  const today = new Date().formatDate(...);
-  const dailySolved = activityDates.includes(today)
-    ? 1
-    : 0;
-
+  // ── LeetCode stats fetch ──────────────────────────────────────────────
   useEffect(() => {
     async function getStats() {
-      if (!username.trim()) {
+      if (!username?.trim()) {
         setStats(null);
         setError("");
         return;
       }
 
-      try {
-        setLoading(true);
-        setError("");
+      setLoading(true);
+      setError("");
 
+      try {
         const data = await fetchLeetCodeStats(username);
 
         if (data && data.solvedProblem !== undefined) {
           setStats(data);
-          localStorage.setItem(
-            PROGRESS_KEYS.leetcodeUsername,
-            username
-          );
+          localStorage.setItem(PROGRESS_KEYS.leetcodeUsername, username);
         } else {
           setStats(null);
-          setError(
-            "Unable to fetch LeetCode stats right now"
-          );
+          setError("Unable to fetch LeetCode stats right now.");
         }
       } catch (err) {
-        console.error(err);
-        setError("Something went wrong");
+        console.error("[useDashboardData] LeetCode fetch failed:", err);
+        setError("Something went wrong fetching LeetCode stats.");
       } finally {
         setLoading(false);
       }

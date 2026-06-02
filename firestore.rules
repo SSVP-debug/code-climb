@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ─────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ── Problems ─────────────────────────────────────────────────────────
+    // Any logged-in user can read problems.
+    // Problems are managed via Firebase Admin SDK only (not from the browser).
+    match /problems/{problemId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ── Users ────────────────────────────────────────────────────────────
+    // Each user can only read and write their own profile document.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ── Progress ─────────────────────────────────────────────────────────
+    // Each user can only read and update their own progress.
+    match /progress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ── Submissions ───────────────────────────────────────────────────────
+    // Users can create and read their own submissions.
+    // Submissions are immutable once created (no update/delete).
+    match /submissions/{submissionId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ── Default: deny everything else ────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

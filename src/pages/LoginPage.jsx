@@ -26,7 +26,7 @@ function LoginPage() {
   return (
     <div className="h-screen flex items-center justify-center bg-black text-white">
       <div className="bg-zinc-900 p-10 rounded-2xl shadow-lg text-center w-[400px]">
-        <h1 className="text-3xl font-bold mb-3">Welcome to Code Climb</h1>
+        <h1 className="text-3xl font-bold mb-3">Welcome to Code Club</h1>
 
         <p className="text-zinc-400 mb-8">
           Continue your DSA journey
