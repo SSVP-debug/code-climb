@@ -10,7 +10,7 @@
 //      date strings ["2025-05-30"], but Profile accessed item.title and
 //      item.time — both undefined, rendering blank rows. AppContext now
 //      provides { title, time, status, slug } objects from submissions.
-
+import toast from "react-hot-toast";
 import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/authContext";
@@ -43,8 +43,8 @@ function Profile() {
     localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
 
   async function handleSaveLeetcode() {
-    setError("");
-    setSaved(false);
+    setError(err.message || "Failed to save LeetCode username.");
+    setSaved(true);
 
     try {
       await apiFetch("/api/me", {
@@ -54,8 +54,10 @@ function Profile() {
 
       localStorage.setItem(PROGRESS_KEYS.leetcodeUsername, leetcodeUsername);
       setSaved(true);
+      toast.success("LeetCode username saved!");
     } catch (err) {
       setError(err.message || "Failed to save");
+      toast.error("Failed to save LeetCode username.");
     }
   }
 

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
 
@@ -201,7 +202,7 @@ function ProblemSolver({
       try {
         setRunning(true);
 
-        setError("");
+        setError("Execution failed. Please try again.");
 
         setStatus("Running...");
 
@@ -269,9 +270,8 @@ function ProblemSolver({
       } catch (error) {
         console.error(error);
 
-        setError(
-          "Execution failed. Please try again."
-        );
+        setError("Execution failed. Please try again.");
+        toast.error("Execution failed. Please try again.");
 
         setStatus(
           "Execution Failed ❌"
@@ -292,7 +292,7 @@ function ProblemSolver({
       try {
         setSubmitting(true);
 
-        setError("");
+        setError("Submission failed. Please try again.");
 
         setJudgeState(
           "Queued"
@@ -393,6 +393,7 @@ function ProblemSolver({
                   problem.title,
               }
             );
+            toast.success("Problem solved! 🎉", { duration: 4000 });
           }
         }
 
@@ -405,6 +406,7 @@ function ProblemSolver({
         setError(
           "Submission failed. Please try again."
         );
+        toast.error("Submission failed. Please try again.");
 
         setStatus(
           "Submission Error ❌"
