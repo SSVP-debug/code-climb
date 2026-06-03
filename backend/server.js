@@ -50,10 +50,10 @@ app.get("/api/health", (req, res) => {
 });
 
 // ─── Protected routes (Firebase token required for ALL of these) ────────────
-app.use("/api/users",       requireAuth, apiLimiter,      userRoutes);
-app.use("/api/progress",    requireAuth, apiLimiter,      progressRoutes);
-app.use("/api/submissions", requireAuth, apiLimiter,      submissionRoutes);
-app.use("/api/compiler",    requireAuth, compilerLimiter, compilerRoutes);
+app.use("/api/users", requireAuth, apiLimiter, userRoutes);
+app.use("/api/progress", requireAuth, apiLimiter, progressRoutes);
+app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
+app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 
 // ─── 404 handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -76,11 +76,24 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await connectDB();
-    app.listen(PORT, () => console.log(`[Server] Running on port ${PORT}`));
+    const server = app.listen(PORT, () => console.log(`[Server] Running on port ${PORT}`));
+    return server;
   } catch (error) {
     console.error("[Server] Failed to start:", error.message);
     process.exit(1);
   }
 }
 
-start();
+const server = await start();
+
+process.on("SIGTERM", () => {
+  console.log("[Server] SIGTERM received — shutting down gracefully");
+  server.close(() => {
+    console.log("[Server] Closed. Exiting.");
+    process.exit(0);
+  });
+});
+
+process.on("SIGINT", () => {
+  server.close(() => process.exit(0));
+});
