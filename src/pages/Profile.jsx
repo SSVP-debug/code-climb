@@ -1,15 +1,3 @@
-// src/pages/Profile.jsx
-//
-// FIXES:
-//   1. Replaced useContext(AuthContext) with useAuth() — consistent with
-//      the rest of the codebase. useContext(AuthContext) still works but
-//      useAuth() throws a clear error if the Provider is missing, making
-//      bugs easier to catch.
-//
-//   2. recentActivity now works correctly. Previously AppContext provided
-//      date strings ["2025-05-30"], but Profile accessed item.title and
-//      item.time — both undefined, rendering blank rows. AppContext now
-//      provides { title, time, status, slug } objects from submissions.
 import toast from "react-hot-toast";
 import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
