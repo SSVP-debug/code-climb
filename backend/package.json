@@ -8,20 +8,23 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "nodemon --ext js,mjs,json,env server.js",
     "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^10.56.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "firebase-admin": "^13.10.0",
+    "helmet": "^8.2.0",
     "mongodb": "^7.2.0",
-    "mongoose": "^9.6.2"
+    "mongoose": "^9.6.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

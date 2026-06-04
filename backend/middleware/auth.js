@@ -12,34 +12,24 @@ export async function requireAuth(req, res, next) {
     }
 
     const token = header.slice(7);
+
     const decoded = await getFirebaseAdmin()
       .auth()
       .verifyIdToken(token);
-
-    let user = await User.findOne({
-      firebaseUid: decoded.uid,
-    });
-
-    if (!user) {
-      user = await User.create({
-        firebaseUid: decoded.uid,
-        email: decoded.email || "",
-        displayName: decoded.name || decoded.email || "",
-      });
-      console.log(
-        `[Auth] Created user ${decoded.uid}`
-      );
-    }
 
     req.auth = {
       uid: decoded.uid,
       email: decoded.email,
     };
-    req.userDoc = user;
 
-    next();
+    // TEMPORARILY SKIP MongoDB
+    return next();
+
   } catch (error) {
     console.error("[Auth] FULL ERROR:", error);
-    return res.status(401).json({ error: "Unauthorized" });
+
+    return res.status(401).json({
+      error: error.message,
+    });
   }
 }

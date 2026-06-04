@@ -130,7 +130,11 @@ function ProblemSolver({ problem, slug }) {
         kind: parsed.kind,
       });
 
-      setStatus(parsed.status);
+      setStatus(parsed.kind === "success" ? "Executed ✓" :
+        parsed.kind === "compile" ? "Compilation Error ❌" :
+          parsed.kind === "runtime" ? "Runtime Error ❌" :
+            parsed.kind === "infra" ? "Runner Unavailable ❌" :
+              "Ran ");
 
       if (parsed.kind === "success") {
         setOutput(parsed.stdout);

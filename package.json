@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@sentry/react": "^10.56.0",
     "@tailwindcss/vite": "^4.3.0",
     "canvas-confetti": "^1.9.4",
     "firebase": "^12.13.0",

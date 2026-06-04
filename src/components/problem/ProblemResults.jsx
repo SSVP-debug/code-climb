@@ -18,9 +18,19 @@ function ProblemResults({
 
   const getStatusColor = (status) => {
     if (!status) return "text-zinc-400";
-    if (status.includes("Accepted")) return "text-green-400";
-    if (status.includes("Pending") || status.includes("Running")) return "text-amber-400";
-    return "text-rose-400";
+
+    if (status.includes("✓")) return "text-green-400";
+    if (status.includes("❌")) return "text-rose-400";
+
+    if (
+      status.includes("Pending") ||
+      status.includes("Running") ||
+      status.includes("Judging")
+    ) {
+      return "text-amber-400";
+    }
+
+    return "text-zinc-400";
   };
 
   return (
@@ -65,7 +75,7 @@ function ProblemResults({
           </div>
           {testcaseProgress && (
             <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="bg-blue-500 h-full transition-all duration-300 shadow-[0_0_8px_rgba(59,130,246,0.5)]"
                 style={{ width: `${(testcaseProgress.current / testcaseProgress.total) * 100}%` }}
               />

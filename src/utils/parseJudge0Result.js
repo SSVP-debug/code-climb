@@ -10,14 +10,20 @@ export function parseJudge0Result(result) {
 
   let kind = "empty";
 
-  if (compileOutput || /syntaxerror|syntax error|parsererror|unexpected eof/i.test(stderr)) {
+  if (
+    compileOutput ||
+    /syntaxerror|syntax error|parsererror|unexpected eof/i.test(stderr)
+  ) {
     kind = "compile";
   } else if (
     stderr ||
     status.toLowerCase().includes("runtime")
   ) {
     kind = "runtime";
-  } else if (stdout) {
+  } else if (
+    stdout ||
+    status.toLowerCase().includes("accepted")
+  ) {
     kind = "success";
   } else if (
     status.toLowerCase().includes("internal") ||

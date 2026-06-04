@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import {
   createContext,
   useContext,
@@ -11,6 +12,9 @@ import {
 } from "firebase/auth";
 
 import { auth } from "../firebase/firebase";
+
+
+
 
 // ── Context ────────────────────────────────────────────────────────────────
 export const AuthContext = createContext(null);
@@ -34,6 +38,11 @@ export function AuthProvider({ children }) {
     // onAuthStateChanged fires immediately with the persisted session (if any),
     // then again whenever the user signs in or out.
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        Sentry.setUser({ id: firebaseUser.uid, email: firebaseUser.email });
+      } else {
+        Sentry.setUser(null);  // clear on sign-out
+      }
       setUser(firebaseUser ?? null);
       setLoading(false);
     });

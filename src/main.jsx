@@ -1,3 +1,6 @@
+import * as Sentry from "@sentry/react";
+import { ErrorBoundary } from "@sentry/react";
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -5,33 +8,45 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
 import { AuthProvider } from "./context/authContext";
-
 import AppContextProvider from "./context/appContext";
-
-import "./index.css";
 
 import { Toaster } from "react-hot-toast";
 
-// Inside your render, right after <AuthProvider>:
-<AuthProvider>
-  <AppContextProvider>
-    <Toaster
-      position="bottom-right"
-      toastOptions={{
-        style: {
-          background: "#18181b",
-          color: "#ffffff",
-          border: "1px solid #3f3f46",
-          borderRadius: "12px",
-          fontSize: "14px",
-        },
-        success: { iconTheme: { primary: "#22c55e", secondary: "#000" } },
-        error: { iconTheme: { primary: "#ef4444", secondary: "#fff" } },
-      }}
-    />
-    <App />
-  </AppContextProvider>
-</AuthProvider>
+import "./index.css";
+
+
+// ─────────────────────────────────────────────────────────────
+// Sentry Initialization
+// ─────────────────────────────────────────────────────────────
+
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+
+    environment: import.meta.env.MODE,
+
+    // Only report errors in production
+    enabled: import.meta.env.MODE === "production",
+
+    tracesSampleRate: 0.2,
+
+    replaysOnErrorSampleRate: 1.0,
+
+    integrations: [
+      Sentry.browserTracingIntegration(),
+
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: false,
+      }),
+    ],
+  });
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// React App Render
+// ─────────────────────────────────────────────────────────────
 
 ReactDOM.createRoot(
   document.getElementById("root")
@@ -40,7 +55,47 @@ ReactDOM.createRoot(
     <BrowserRouter>
       <AuthProvider>
         <AppContextProvider>
-          <App />
+
+          <ErrorBoundary
+            fallback={
+              <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <p>
+                  Something went wrong. Our team has been notified.
+                </p>
+              </div>
+            }
+          >
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "#18181b",
+                  color: "#ffffff",
+                  border: "1px solid #3f3f46",
+                  borderRadius: "12px",
+                  fontSize: "14px",
+                },
+
+                success: {
+                  iconTheme: {
+                    primary: "#22c55e",
+                    secondary: "#000",
+                  },
+                },
+
+                error: {
+                  iconTheme: {
+                    primary: "#ef4444",
+                    secondary: "#fff",
+                  },
+                },
+              }}
+            />
+
+            <App />
+
+          </ErrorBoundary>
+
         </AppContextProvider>
       </AuthProvider>
     </BrowserRouter>
