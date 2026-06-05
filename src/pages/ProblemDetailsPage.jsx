@@ -12,14 +12,20 @@ import { loadSavedCode, saveCode } from "../utils/editorStorage";
 import { parseJudge0Result } from "../utils/parseJudge0Result";
 import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
+import { getStatusMeta } from "../utils/statusMessages";
 
 // Sub-components
 import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
 import ProblemResults from "../components/problem/ProblemResults";
+import SubmitResultCard from "../components/problem/SubmitResultCard";
 import SubmissionHistory from "../components/problem/SubmissionHistory";
 import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
+
+// ── ProblemDetailsPage ────────────────────────────────────────────────────────
+// Finds the problem by slug — renders 404 panel if not found.
+// key={slug} on ProblemSolver resets all state when navigating between problems.
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
@@ -52,9 +58,12 @@ function ProblemDetailsPage() {
     );
   }
 
-  // key={slug} resets all state (including timer) when navigating between problems
   return <ProblemSolver key={slug} problem={problem} slug={slug} />;
 }
+
+// ── ProblemSolver ─────────────────────────────────────────────────────────────
+// All interactive state lives here. Rendered with key={slug} so navigating to
+// a different problem fully resets this component tree.
 
 function ProblemSolver({ problem, slug }) {
   const {
@@ -74,21 +83,43 @@ function ProblemSolver({ problem, slug }) {
   // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
-  // ── State ──────────────────────────────────────────────────────────────
+  // ── Editor state ───────────────────────────────────────────────────────
   const [language, setLanguage] = useState("python");
-  const [error, setError] = useState("");
   const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
   );
-  const [output, setOutput] = useState("");
-  const [status, setStatus] = useState("");
   const [customInput, setCustomInput] = useState("");
+
+  // ── Execution state ────────────────────────────────────────────────────
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  /**
+   * runResult — populated by handleRunCode.
+   * Shape: { status, output, executionMeta }
+   * Passed to ProblemResults for stdout / error display.
+   */
+  const [runResult, setRunResult] = useState(null);
+
+  /**
+   * submitResult — populated by handleSubmitCode.
+   * Shape mirrors judgeResult + isFirstSolve flag:
+   * {
+   *   status, passed, total, visiblePassed, hiddenPassed,
+   *   expectedOutput, actualOutput, executionTime,
+   *   error,          ← compile/runtime/judge error text
+   *   isFirstSolve,   ← true when this was the first Accepted
+   * }
+   * Passed to SubmitResultCard.
+   */
+  const [submitResult, setSubmitResult] = useState(null);
+
+  // judgeState / testcaseProgress still used by ProblemResults loading indicator
   const [judgeState, setJudgeState] = useState("");
   const [testcaseProgress, setTestcaseProgress] = useState(null);
+
   const [selectedSubmission, setSelectedSubmission] = useState(null);
-  const [executionMeta, setExecutionMeta] = useState(null);
 
   // ── Sync code to storage ───────────────────────────────────────────────
   useEffect(() => {
@@ -112,61 +143,78 @@ function ProblemSolver({ problem, slug }) {
   };
 
   // ── Run Code ───────────────────────────────────────────────────────────
+  // Executes user code against the custom stdin panel input.
+  // Updates runResult only — does NOT touch submitResult.
   const handleRunCode = async () => {
     if (running) return;
 
     try {
       setRunning(true);
       setError("");
-      setStatus("Running...");
-      setExecutionMeta(null);
+      // Reset run result to show loading state in ProblemResults
+      setRunResult({ status: "Running...", output: "", executionMeta: null });
 
       const result = await runCode(code, languageMap[language], customInput);
       const parsed = parseJudge0Result(result);
 
-      setExecutionMeta({
-        time: parsed.time,
-        memory: parsed.memory,
-        kind: parsed.kind,
+      const meta = getStatusMeta(
+        parsed.kind === "success"   ? "Executed ✓" :
+        parsed.kind === "compile"   ? "Compilation Error ❌" :
+        parsed.kind === "runtime"   ? "Runtime Error ❌" :
+        parsed.kind === "infra"     ? "Runner Unavailable ❌" :
+                                      "Execution Failed ❌"
+      );
+
+      const output =
+        parsed.kind === "success" ? parsed.stdout :
+        parsed.kind === "runtime" ? parsed.stderr :
+        parsed.kind === "compile" ? parsed.compileOutput :
+        parsed.kind === "infra"   ? "Execution infrastructure error. Please try again." :
+                                    parsed.stdout || "No output produced.";
+
+      setRunResult({
+        status: meta.label,    // human label from statusMessages (no emoji)
+        rawStatus: parsed.kind === "success" ? "Executed ✓" :
+                   parsed.kind === "compile" ? "Compilation Error ❌" :
+                   parsed.kind === "runtime" ? "Runtime Error ❌" :
+                   parsed.kind === "infra"   ? "Runner Unavailable ❌" :
+                                              "Execution Failed ❌",
+        output,
+        executionMeta: {
+          time: parsed.time,
+          memory: parsed.memory,
+          kind: parsed.kind,
+        },
       });
-
-      setStatus(parsed.kind === "success" ? "Executed ✓" :
-        parsed.kind === "compile" ? "Compilation Error ❌" :
-          parsed.kind === "runtime" ? "Runtime Error ❌" :
-            parsed.kind === "infra" ? "Runner Unavailable ❌" :
-              "Ran ");
-
-      if (parsed.kind === "success") {
-        setOutput(parsed.stdout);
-      } else if (parsed.kind === "runtime") {
-        setOutput(parsed.stderr);
-      } else if (parsed.kind === "compile") {
-        setOutput(parsed.compileOutput);
-      } else if (parsed.kind === "infra") {
-        setOutput("Execution infrastructure error. Please try again.");
-      } else {
-        setOutput(parsed.stdout || "No output produced.");
-      }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setError("Execution failed. Please try again.");
-      setStatus("Execution Failed ❌");
-      setOutput("An unexpected error occurred during execution.");
+      setRunResult({
+        status: "Execution Failed",
+        rawStatus: "Execution Failed ❌",
+        output: "An unexpected error occurred during execution.",
+        executionMeta: null,
+      });
     } finally {
       setRunning(false);
     }
   };
 
   // ── Submit Code ────────────────────────────────────────────────────────
+  // Runs against all testcases (visible + hidden) via backend judge.
+  // Updates submitResult — does NOT touch runResult.
   const handleSubmitCode = async () => {
     if (submitting) return;
+
+    // Snapshot isSolved BEFORE the async flow — used for isFirstSolve below.
+    // After markProblemSolved() runs, isSolved will be true for all future renders.
+    const wasAlreadySolved = isSolved;
 
     try {
       setSubmitting(true);
       setError("");
       setJudgeState("Queued");
-      setExecutionMeta(null);
-      setStatus("Judging...");
+      setTestcaseProgress(null);
 
       const judgeResult = await judgeSubmission({
         problem,
@@ -176,29 +224,10 @@ function ProblemSolver({ problem, slug }) {
       });
 
       setJudgeState("Completed");
-      setStatus(judgeResult.status);
-      setOutput(judgeResult.actualOutput || "");
-
-      const newSubmission = {
-        id: crypto.randomUUID(),
-        problemTitle: problem.title,
-        problemSlug: problem.slug,
-        language,
-        status: judgeResult.status,
-        date: formatDate(new Date()),
-        createdAt: new Date().toISOString(),
-        passed: judgeResult.passed || 0,
-        total: judgeResult.total || 0,
-        visiblePassed: judgeResult.visiblePassed || 0,
-        hiddenPassed: judgeResult.hiddenPassed || 0,
-        expectedOutput: judgeResult.expectedOutput,
-        actualOutput: judgeResult.actualOutput,
-        executionTime: judgeResult.executionTime,
-      };
 
       // ── Accepted: mark solved + stop timer + confetti ──────────────
       if (judgeResult.status === "Accepted 🎉") {
-        if (!isSolved) {
+        if (!wasAlreadySolved) {
           await markProblemSolved({
             slug,
             topic: problem.topic,
@@ -206,10 +235,8 @@ function ProblemSolver({ problem, slug }) {
             title: problem.title,
           });
 
-          // Stop the timer — problem is solved
           stopTimer();
 
-          // Confetti burst
           confetti({
             particleCount: 120,
             spread: 80,
@@ -217,7 +244,6 @@ function ProblemSolver({ problem, slug }) {
             colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"],
           });
 
-          // Second burst with slight delay for a fuller effect
           setTimeout(() => {
             confetti({
               particleCount: 60,
@@ -237,12 +263,49 @@ function ProblemSolver({ problem, slug }) {
         }
       }
 
+      // Set submitResult AFTER markProblemSolved so isFirstSolve is accurate
+      setSubmitResult({
+        status: judgeResult.status,
+        passed: judgeResult.passed ?? 0,
+        total: judgeResult.total ?? 0,
+        visiblePassed: judgeResult.visiblePassed ?? 0,
+        hiddenPassed: judgeResult.hiddenPassed ?? 0,
+        expectedOutput: judgeResult.expectedOutput ?? null,
+        actualOutput: judgeResult.actualOutput ?? null,
+        executionTime: judgeResult.executionTime ?? null,
+        error: judgeResult.error ?? null,
+        isFirstSolve: judgeResult.status === "Accepted 🎉" && !wasAlreadySolved,
+      });
+
+      const newSubmission = {
+        id: crypto.randomUUID(),
+        problemTitle: problem.title,
+        problemSlug: problem.slug,
+        language,
+        status: judgeResult.status,
+        date: formatDate(new Date()),
+        createdAt: new Date().toISOString(),
+        passed: judgeResult.passed || 0,
+        total: judgeResult.total || 0,
+        visiblePassed: judgeResult.visiblePassed || 0,
+        hiddenPassed: judgeResult.hiddenPassed || 0,
+        expectedOutput: judgeResult.expectedOutput,
+        actualOutput: judgeResult.actualOutput,
+        executionTime: judgeResult.executionTime,
+      };
+
       await addSubmission(newSubmission);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setError("Submission failed. Please try again.");
-      setStatus("Submission Error ❌");
       setJudgeState("Failed");
+      setSubmitResult({
+        status: "Submission Error ❌",
+        passed: 0,
+        total: 0,
+        error: err.message ?? "An unexpected error occurred.",
+        isFirstSolve: false,
+      });
     } finally {
       setSubmitting(false);
       setTestcaseProgress(null);
@@ -283,7 +346,7 @@ function ProblemSolver({ problem, slug }) {
               </span>
             </div>
 
-            {/* Error Banner */}
+            {/* Error Banner — network / auth failures only */}
             {error && <ErrorBanner message={error} />}
 
             {/* Editor */}
@@ -310,13 +373,24 @@ function ProblemSolver({ problem, slug }) {
               </ErrorBoundary>
             </div>
 
-            {/* Results + History */}
+            {/*
+              ── Results area ────────────────────────────────────────────
+              Layout:
+                Row 1: ProblemResults (run output) | SubmissionHistory
+                Row 2: SubmitResultCard (full width — only after submission)
+
+              WHY separate rows:
+                SubmitResultCard needs the full width for the diff panel.
+                ProblemResults + SubmissionHistory stay side-by-side as before.
+            */}
+
+            {/* Row 1: Run output + Submission history */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
               <div className="h-full">
                 <ProblemResults
-                  status={status}
-                  output={output}
-                  executionMeta={executionMeta}
+                  status={runResult?.rawStatus ?? ""}
+                  output={runResult?.output ?? ""}
+                  executionMeta={runResult?.executionMeta ?? null}
                   judgeState={judgeState}
                   testcaseProgress={testcaseProgress}
                   submitting={submitting}
@@ -329,8 +403,14 @@ function ProblemSolver({ problem, slug }) {
                 />
               </div>
             </div>
-          </div>
 
+            {/* Row 2: Submit result card — appears after first submission */}
+            <SubmitResultCard
+              submitResult={submitResult}
+              isFirstSolve={submitResult?.isFirstSolve ?? false}
+            />
+
+          </div>
         </div>
       </div>
 
