@@ -21,8 +21,8 @@ export function parseJudge0Result(result) {
   ) {
     kind = "runtime";
   } else if (
-    stdout ||
-    status.toLowerCase().includes("accepted")
+    stdout 
+    
   ) {
     kind = "success";
   } else if (
