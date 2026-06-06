@@ -70,8 +70,8 @@ function ProblemSolver({ problem, slug }) {
   );
   const [runResults, setRunResults] = useState(null);
   const runtimeError =
-  runResults?.results?.find((r) => r.error)?.error;
-  
+    runResults?.results?.find((r) => r.error)?.error;
+
   // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
@@ -96,7 +96,7 @@ function ProblemSolver({ problem, slug }) {
   // ── NEW: Run result state — feeds TestcaseResultPanel ─────────────────
   // Shape: { results: [...], compileFailed: bool, error: string|null } | null
   // null = never been run yet (shows idle panel)
-  
+
 
   // ── Sync code to storage ───────────────────────────────────────────────
   useEffect(() => {
@@ -317,50 +317,40 @@ function ProblemSolver({ problem, slug }) {
               This keeps the side-by-side layout identical to before while giving
               the run panel the same real estate it always had.
             */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-
-              {/* Run results — testcase tabs */}
-              <div>
-                <TestcaseResultPanel
-                  results={runResults?.results ?? null}
-                  compileFailed={runResults?.compileFailed ?? false}
-                  compileError={runResults?.error ?? null}
-                  isRunning={running}
-                />
-              </div>
-
-              {/* Submission history — unchanged */}
-              <div className="h-[400px] md:h-auto overflow-hidden">
-                <SubmissionHistory
-                  submissions={submissions}
-                  onSelectSubmission={setSelectedSubmission}
-                />
-              </div>
+            <div>
+              <TestcaseResultPanel
+                results={runResults?.results ?? null}
+                compileFailed={runResults?.compileFailed ?? false}
+                compileError={runResults?.error ?? null}
+                isRunning={running}
+              />
             </div>
 
-            {/* Submit verdict — only rendered when status is non-empty */}
-            {status && (
-              <ProblemResults
-                status={status}
-                output={output}
-                executionMeta={executionMeta}
-                judgeState={judgeState}
-                testcaseProgress={testcaseProgress}
-                submitting={submitting}
-              />
-            )}
+          {/* Submit verdict — only rendered when status is non-empty */}
+          {status && (
+            <ProblemResults
+              status={status}
+              output={output}
+              executionMeta={executionMeta}
+              judgeState={judgeState}
+              testcaseProgress={testcaseProgress}
+              submitting={submitting}
+            />
+          )}
 
-          </div>
         </div>
       </div>
+    </div>
 
-      {selectedSubmission && (
-        <SubmissionDetailsModal
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
-        />
-      )}
-    </DashboardLayout>
+      {
+    selectedSubmission && (
+      <SubmissionDetailsModal
+        submission={selectedSubmission}
+        onClose={() => setSelectedSubmission(null)}
+      />
+    )
+  }
+    </DashboardLayout >
   );
 }
 
