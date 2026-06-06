@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Editor from "@monaco-editor/react";
 
-function ProblemEditor({
-  language,
-  setLanguage,
-  code,
-  setCode,
-  customInput,
-  setCustomInput,
-  onRun,
-  onSubmit,
-  running,
-  submitting,
-}) {
+function ProblemEditor(
+  {
+    language,
+    setLanguage,
+    code,
+    setCode,
+    customInput,
+    setCustomInput,
+    onRun,
+    onSubmit,
+    running,
+    submitting,
+  }) {
+  const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
   return (
     <div className="flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
       {/* Editor Header */}
@@ -48,8 +50,8 @@ function ProblemEditor({
             onClick={onSubmit}
             disabled={running || submitting}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${submitting
-                ? "bg-green-500/20 text-green-500 border border-green-500/30"
-                : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
+              ? "bg-green-500/20 text-green-500 border border-green-500/30"
+              : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
               }`}
           >
             {submitting ? "Submitting..." : "Submit"}
@@ -58,47 +60,59 @@ function ProblemEditor({
 
       </div>
 
-      {/* Editor Content */ }
-  <div className="flex-grow min-h-[400px]">
-    <Editor
-      height="100%"
-      language={language === "cpp" ? "cpp" : language === "python" ? "python" : language}
-      value={code}
-      onChange={(value) => setCode(value || "")}
-      theme="vs-dark"
-      options={{
-        fontSize: 14,
-        minimap: { enabled: false },
-        padding: { top: 16, bottom: 16 },
-        scrollBeyondLastLine: false,
-        automaticLayout: true,
-        tabSize: language === "javascript" ? 2 : 4,
-      }}
-    />
-  </div>
+      {/* Editor Content */}
+      <div className="flex-grow min-h-[400px]">
+        <Editor
+          height="100%"
+          language={language === "cpp" ? "cpp" : language === "python" ? "python" : language}
+          value={code}
+          onChange={(value) => setCode(value || "")}
+          theme="vs-dark"
+          options={{
+            fontSize: 14,
+            minimap: { enabled: false },
+            padding: { top: 16, bottom: 16 },
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            tabSize: language === "javascript" ? 2 : 4,
+          }}
+        />
+      </div>
 
-  {/* Editor Footer / Controls */ }
-  <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
-    <div className="mb-4">
-      <label
-        htmlFor="custom-input"
-        className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
-      >
-        Custom Input (Run Code only)
-      </label>
-      <textarea
-        id="custom-input"
-        value={customInput}
-        onChange={(e) => setCustomInput(e.target.value)}
-        rows={2}
-        className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 font-mono text-sm text-zinc-200 outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600"
-        placeholder="Enter standard input..."
-      />
+      {/* Editor Footer / Controls */}
+      <div className="mb-2">
+        <button
+          type="button"
+          onClick={() => setShowAdvancedTesting(!showAdvancedTesting)}
+          className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors"
+        >
+          <span>{showAdvancedTesting ? "▼" : "▶"}</span>
+          Advanced Testing
+        </button>
+      </div>
+
+      {showAdvancedTesting && (
+        <div className="mb-4">
+          <label
+            htmlFor="custom-input"
+            className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
+          >
+            Custom Input
+          </label>
+
+          <textarea
+            id="custom-input"
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+            rows={2}
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 font-mono text-sm text-zinc-200 outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600"
+            placeholder="Enter standard input..."
+          />
+        </div>
+      )}
+
+
     </div>
-
-    
-  </div>
-    </div >
   );
 }
 
