@@ -4,28 +4,21 @@ import { formatDate } from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { runTestcases } from "../services/judgeService";
-import { judgeSubmission } from "../services/judgeService";
+import { judgeSubmission, runTestcases } from "../services/judgeService"; // ← runCode import removed; runTestcases added
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
 import { loadSavedCode, saveCode } from "../utils/editorStorage";
-import { parseJudge0Result } from "../utils/parseJudge0Result";
-import { useTimer } from "../hooks/useTimer";
+import { useTimer } from "../hooks/useTimer";                               // ← parseJudge0Result import removed (no longer used by Run)
 import confetti from "canvas-confetti";
-import { getStatusMeta } from "../utils/statusMessages";
 
 // Sub-components
 import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
 import ProblemResults from "../components/problem/ProblemResults";
-import SubmitResultCard from "../components/problem/SubmitResultCard";
+import TestcaseResultPanel from "../components/problem/TestcaseResultPanel"; // ← NEW
 import SubmissionHistory from "../components/problem/SubmissionHistory";
 import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
-
-// ── ProblemDetailsPage ────────────────────────────────────────────────────────
-// Finds the problem by slug — renders 404 panel if not found.
-// key={slug} on ProblemSolver resets all state when navigating between problems.
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
@@ -61,10 +54,6 @@ function ProblemDetailsPage() {
   return <ProblemSolver key={slug} problem={problem} slug={slug} />;
 }
 
-// ── ProblemSolver ─────────────────────────────────────────────────────────────
-// All interactive state lives here. Rendered with key={slug} so navigating to
-// a different problem fully resets this component tree.
-
 function ProblemSolver({ problem, slug }) {
   const {
     solvedProblems,
@@ -79,47 +68,35 @@ function ProblemSolver({ problem, slug }) {
     () => allSubmissions.filter((s) => s.problemSlug === slug),
     [allSubmissions, slug]
   );
-
+  const [runResults, setRunResults] = useState(null);
+  const runtimeError =
+  runResults?.results?.find((r) => r.error)?.error;
+  
   // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
-  // ── Editor state ───────────────────────────────────────────────────────
+  // ── State ──────────────────────────────────────────────────────────────
   const [language, setLanguage] = useState("python");
+  const [error, setError] = useState("");
   const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
   );
   const [customInput, setCustomInput] = useState("");
-
-  // ── Execution state ────────────────────────────────────────────────────
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  /**
-   * runResult — populated by handleRunCode.
-   * Shape: { status, output, executionMeta }
-   * Passed to ProblemResults for stdout / error display.
-   */
-  const [runResult, setRunResult] = useState(null);
-
-  /**
-   * submitResult — populated by handleSubmitCode.
-   * Shape mirrors judgeResult + isFirstSolve flag:
-   * {
-   *   status, passed, total, visiblePassed, hiddenPassed,
-   *   expectedOutput, actualOutput, executionTime,
-   *   error,          ← compile/runtime/judge error text
-   *   isFirstSolve,   ← true when this was the first Accepted
-   * }
-   * Passed to SubmitResultCard.
-   */
-  const [submitResult, setSubmitResult] = useState(null);
-
-  // judgeState / testcaseProgress still used by ProblemResults loading indicator
   const [judgeState, setJudgeState] = useState("");
   const [testcaseProgress, setTestcaseProgress] = useState(null);
-
   const [selectedSubmission, setSelectedSubmission] = useState(null);
+
+  // Submit result state (unchanged — feeds ProblemResults)
+  const [status, setStatus] = useState("");
+  const [output, setOutput] = useState("");
+  const [executionMeta, setExecutionMeta] = useState(null);
+
+  // ── NEW: Run result state — feeds TestcaseResultPanel ─────────────────
+  // Shape: { results: [...], compileFailed: bool, error: string|null } | null
+  // null = never been run yet (shows idle panel)
+  
 
   // ── Sync code to storage ───────────────────────────────────────────────
   useEffect(() => {
@@ -135,122 +112,45 @@ function ProblemSolver({ problem, slug }) {
     );
   };
 
-  const languageMap = {
-    python: 71,
-    javascript: 63,
-    java: 62,
-    cpp: 54,
-  };
-
   // ── Run Code ───────────────────────────────────────────────────────────
-  // Executes user code against the custom stdin panel input.
-  // Updates runResult only — does NOT touch submitResult.
+  // CHANGED: now calls runTestcases() → /api/judge/run with driver wrapping.
+  // Sets runResults state which feeds TestcaseResultPanel.
+  // No longer sets status/output/executionMeta (those belong to Submit).
   const handleRunCode = async () => {
     if (running) return;
 
     try {
       setRunning(true);
       setError("");
+      // Clear previous run results so the skeleton loading state shows
+      setRunResults(null);
 
-      setRunResult({
-        status: "Running...",
-        output: "",
-        executionMeta: null,
-      });
+      const response = await runTestcases({ problem, code, language });
 
-      const { results = [], compileFailed, error: runError } =
-        await runTestcases({
-          problem,
-          code,
-          language,
-        });
+      // response shape: { results, compileFailed, error }
+      setRunResults(response);
 
-      // Compile error
-      if (compileFailed || (runError && results.length === 0)) {
-        setRunResult({
-          status: "Compilation Error ❌",
-          output: runError || "Compilation failed.",
-          executionMeta: null,
-        });
-        return;
-      }
-
-      // Unexpected service error
-      if (runError && results.length === 0) {
-        setRunResult({
-          status: "Runner Error ❌",
-          output: runError,
-          executionMeta: null,
-        });
-        return;
-      }
-
-      const passed = results.filter((r) => r.passed).length;
-      const total = results.length;
-      const allPassed = total > 0 && passed === total;
-
-      const lines = results.map((r, i) => {
-        if (r.error) {
-          return `Example ${i + 1}: Runtime Error\n${r.error}`;
-        }
-
-        const verdict = r.passed ? "✓ Passed" : "✗ Failed";
-
-        const detail = r.passed
-          ? `Output: ${r.actual}`
-          : `Expected: ${JSON.stringify(r.expected)}\nGot: ${r.actual}`;
-
-        return `Example ${i + 1}: ${verdict}\n${detail}`;
-      });
-
-      const lastResult = results[results.length - 1];
-
-      console.log("RUN RESULTS", results);
-      console.log("PASSED", passed);
-      console.log("TOTAL", total);
-      console.log("ALL PASSED", allPassed);
-
-      setRunResult({
-        status: allPassed ? "Executed ✓" : `${passed}/${total} passed`,
-        output: lines.join("\n\n"),
-        executionMeta: lastResult
-          ? {
-            time: lastResult.time,
-            memory: lastResult.memory,
-            kind: allPassed ? "success" : "wrong",
-          }
-          : null,
-      });
     } catch (err) {
       console.error(err);
-
       setError("Execution failed. Please try again.");
-
-      setRunResult({
-        status: "Execution Failed ❌",
-        output: err?.message || "Unknown error",
-        executionMeta: null,
-      });
+      // Show an error state in the panel without crashing
+      setRunResults({ results: [], compileFailed: false, error: err.message });
     } finally {
       setRunning(false);
     }
   };
 
   // ── Submit Code ────────────────────────────────────────────────────────
-  // Runs against all testcases (visible + hidden) via backend judge.
-  // Updates submitResult — does NOT touch runResult.
+  // UNCHANGED — sets status/output/executionMeta which feed ProblemResults.
   const handleSubmitCode = async () => {
     if (submitting) return;
-
-    // Snapshot isSolved BEFORE the async flow — used for isFirstSolve below.
-    // After markProblemSolved() runs, isSolved will be true for all future renders.
-    const wasAlreadySolved = isSolved;
 
     try {
       setSubmitting(true);
       setError("");
       setJudgeState("Queued");
-      setTestcaseProgress(null);
+      setExecutionMeta(null);
+      setStatus("Judging...");
 
       const judgeResult = await judgeSubmission({
         problem,
@@ -260,10 +160,29 @@ function ProblemSolver({ problem, slug }) {
       });
 
       setJudgeState("Completed");
+      setStatus(judgeResult.status);
+      setOutput(judgeResult.actualOutput || "");
 
-      // ── Accepted: mark solved + stop timer + confetti ──────────────
+      const newSubmission = {
+        id: crypto.randomUUID(),
+        problemTitle: problem.title,
+        problemSlug: problem.slug,
+        language,
+        status: judgeResult.status,
+        date: formatDate(new Date()),
+        createdAt: new Date().toISOString(),
+        passed: judgeResult.passed || 0,
+        total: judgeResult.total || 0,
+        visiblePassed: judgeResult.visiblePassed || 0,
+        hiddenPassed: judgeResult.hiddenPassed || 0,
+        expectedOutput: judgeResult.expectedOutput,
+        actualOutput: judgeResult.actualOutput,
+        executionTime: judgeResult.executionTime,
+      };
+
+
       if (judgeResult.status === "Accepted 🎉") {
-        if (!wasAlreadySolved) {
+        if (!isSolved) {
           await markProblemSolved({
             slug,
             topic: problem.topic,
@@ -299,49 +218,12 @@ function ProblemSolver({ problem, slug }) {
         }
       }
 
-      // Set submitResult AFTER markProblemSolved so isFirstSolve is accurate
-      setSubmitResult({
-        status: judgeResult.status,
-        passed: judgeResult.passed ?? 0,
-        total: judgeResult.total ?? 0,
-        visiblePassed: judgeResult.visiblePassed ?? 0,
-        hiddenPassed: judgeResult.hiddenPassed ?? 0,
-        expectedOutput: judgeResult.expectedOutput ?? null,
-        actualOutput: judgeResult.actualOutput ?? null,
-        executionTime: judgeResult.executionTime ?? null,
-        error: judgeResult.error ?? null,
-        isFirstSolve: judgeResult.status === "Accepted 🎉" && !wasAlreadySolved,
-      });
-
-      const newSubmission = {
-        id: crypto.randomUUID(),
-        problemTitle: problem.title,
-        problemSlug: problem.slug,
-        language,
-        status: judgeResult.status,
-        date: formatDate(new Date()),
-        createdAt: new Date().toISOString(),
-        passed: judgeResult.passed || 0,
-        total: judgeResult.total || 0,
-        visiblePassed: judgeResult.visiblePassed || 0,
-        hiddenPassed: judgeResult.hiddenPassed || 0,
-        expectedOutput: judgeResult.expectedOutput,
-        actualOutput: judgeResult.actualOutput,
-        executionTime: judgeResult.executionTime,
-      };
-
       await addSubmission(newSubmission);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setError("Submission failed. Please try again.");
+      setStatus("Submission Error ❌");
       setJudgeState("Failed");
-      setSubmitResult({
-        status: "Submission Error ❌",
-        passed: 0,
-        total: 0,
-        error: err.message ?? "An unexpected error occurred.",
-        isFirstSolve: false,
-      });
     } finally {
       setSubmitting(false);
       setTestcaseProgress(null);
@@ -382,7 +264,7 @@ function ProblemSolver({ problem, slug }) {
               </span>
             </div>
 
-            {/* Error Banner — network / auth failures only */}
+            {/* Error Banner */}
             {error && <ErrorBanner message={error} />}
 
             {/* Editor */}
@@ -394,6 +276,17 @@ function ProblemSolver({ problem, slug }) {
                   </div>
                 }
               >
+                {runtimeError && (
+                  <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-xl p-3">
+                    <div className="font-semibold text-red-400">
+                      Runtime Error ⚠️
+                    </div>
+                    <div className="text-red-300 text-sm font-mono">
+                      {runtimeError}
+                    </div>
+                  </div>
+                )}
+
                 <ProblemEditor
                   language={language}
                   setLanguage={handleLanguageChange}
@@ -410,28 +303,33 @@ function ProblemSolver({ problem, slug }) {
             </div>
 
             {/*
-              ── Results area ────────────────────────────────────────────
-              Layout:
-                Row 1: ProblemResults (run output) | SubmissionHistory
-                Row 2: SubmitResultCard (full width — only after submission)
+              Results area
+              ┌─────────────────────┬──────────────────────┐
+              │ TestcaseResultPanel │  SubmissionHistory   │
+              │  (Run results)      │                      │
+              └─────────────────────┴──────────────────────┘
+              ┌────────────────────────────────────────────┐
+              │ ProblemResults (Submit verdict)            │
+              └────────────────────────────────────────────┘
 
-              WHY separate rows:
-                SubmitResultCard needs the full width for the diff panel.
-                ProblemResults + SubmissionHistory stay side-by-side as before.
+              TestcaseResultPanel replaces the old ProblemResults position.
+              ProblemResults moves below at full width — only visible after Submit.
+              This keeps the side-by-side layout identical to before while giving
+              the run panel the same real estate it always had.
             */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
-            {/* Row 1: Run output + Submission history */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-              <div className="h-full">
-                <ProblemResults
-                  status={runResult?.status ?? ""}
-                  output={runResult?.output ?? ""}
-                  executionMeta={runResult?.executionMeta ?? null}
-                  judgeState={judgeState}
-                  testcaseProgress={testcaseProgress}
-                  submitting={submitting}
+              {/* Run results — testcase tabs */}
+              <div>
+                <TestcaseResultPanel
+                  results={runResults?.results ?? null}
+                  compileFailed={runResults?.compileFailed ?? false}
+                  compileError={runResults?.error ?? null}
+                  isRunning={running}
                 />
               </div>
+
+              {/* Submission history — unchanged */}
               <div className="h-[400px] md:h-auto overflow-hidden">
                 <SubmissionHistory
                   submissions={submissions}
@@ -440,17 +338,22 @@ function ProblemSolver({ problem, slug }) {
               </div>
             </div>
 
-            {/* Row 2: Submit result card — appears after first submission */}
-            <SubmitResultCard
-              submitResult={submitResult}
-              isFirstSolve={submitResult?.isFirstSolve ?? false}
-            />
+            {/* Submit verdict — only rendered when status is non-empty */}
+            {status && (
+              <ProblemResults
+                status={status}
+                output={output}
+                executionMeta={executionMeta}
+                judgeState={judgeState}
+                testcaseProgress={testcaseProgress}
+                submitting={submitting}
+              />
+            )}
 
           </div>
         </div>
       </div>
 
-      {/* Submission details modal */}
       {selectedSubmission && (
         <SubmissionDetailsModal
           submission={selectedSubmission}
@@ -461,4 +364,4 @@ function ProblemSolver({ problem, slug }) {
   );
 }
 
-export default ProblemDetailsPage;
+export default ProblemDetailsPage;                          
