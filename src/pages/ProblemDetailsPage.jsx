@@ -1,3 +1,4 @@
+
 import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { formatDate } from "../utils/formatters";
@@ -19,6 +20,8 @@ import ProblemResults from "../components/problem/ProblemResults";
 import TestcaseResultPanel from "../components/problem/TestcaseResultPanel"; // ← NEW
 import SubmissionHistory from "../components/problem/SubmissionHistory";
 import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
+import BottomWorkspaceTabs from "../components/problem/BottomWorkspaceTabs";
+import DebugPanel from "../components/problem/DebugPanel";
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
@@ -63,7 +66,7 @@ function ProblemSolver({ problem, slug }) {
   } = useAppContext();
 
   const isSolved = solvedProblems.includes(slug);
-
+  const [activeBottomTab, setActiveBottomTab] = useState("Testcases");
   const submissions = useMemo(
     () => allSubmissions.filter((s) => s.problemSlug === slug),
     [allSubmissions, slug]
@@ -72,8 +75,10 @@ function ProblemSolver({ problem, slug }) {
   const runtimeError =
     runResults?.results?.find((r) => r.error)?.error;
 
+
   // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
+
 
   // ── State ──────────────────────────────────────────────────────────────
   const [language, setLanguage] = useState("python");
@@ -88,10 +93,12 @@ function ProblemSolver({ problem, slug }) {
   const [testcaseProgress, setTestcaseProgress] = useState(null);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
 
+
   // Submit result state (unchanged — feeds ProblemResults)
   const [status, setStatus] = useState("");
   const [output, setOutput] = useState("");
   const [executionMeta, setExecutionMeta] = useState(null);
+
 
   // ── NEW: Run result state — feeds TestcaseResultPanel ─────────────────
   // Shape: { results: [...], compileFailed: bool, error: string|null } | null
@@ -126,6 +133,16 @@ function ProblemSolver({ problem, slug }) {
       setRunResults(null);
 
       const response = await runTestcases({ problem, code, language });
+      console.log("RUN RESPONSE", response);
+
+      const hasRuntimeError =
+        response.results?.some((r) => r.error);
+
+      if (hasRuntimeError || response.compileFailed) {
+        setActiveBottomTab("Debug");
+      } else {
+        setActiveBottomTab("Testcases");
+      }
 
       // response shape: { results, compileFailed, error }
       setRunResults(response);
@@ -317,39 +334,48 @@ function ProblemSolver({ problem, slug }) {
               This keeps the side-by-side layout identical to before while giving
               the run panel the same real estate it always had.
             */}
-            <div>
-              <TestcaseResultPanel
-                results={runResults?.results ?? null}
-                compileFailed={runResults?.compileFailed ?? false}
-                compileError={runResults?.error ?? null}
-                isRunning={running}
+            <div className="space-y-4">
+              <BottomWorkspaceTabs
+                activeTab={activeBottomTab}
+                setActiveTab={setActiveBottomTab}
               />
+
+              {activeBottomTab === "Testcases" ? (
+                <TestcaseResultPanel
+                  results={runResults?.results ?? null}
+                  compileFailed={runResults?.compileFailed ?? false}
+                  compileError={runResults?.error ?? null}
+                  isRunning={running}
+                />
+              ) : (
+                <DebugPanel />
+              )}
             </div>
 
-          {/* Submit verdict — only rendered when status is non-empty */}
-          {status && (
-            <ProblemResults
-              status={status}
-              output={output}
-              executionMeta={executionMeta}
-              judgeState={judgeState}
-              testcaseProgress={testcaseProgress}
-              submitting={submitting}
-            />
-          )}
+            {/* Submit verdict — only rendered when status is non-empty */}
+            {status && (
+              <ProblemResults
+                status={status}
+                output={output}
+                executionMeta={executionMeta}
+                judgeState={judgeState}
+                testcaseProgress={testcaseProgress}
+                submitting={submitting}
+              />
+            )}
 
+          </div>
         </div>
       </div>
-    </div>
 
       {
-    selectedSubmission && (
-      <SubmissionDetailsModal
-        submission={selectedSubmission}
-        onClose={() => setSelectedSubmission(null)}
-      />
-    )
-  }
+        selectedSubmission && (
+          <SubmissionDetailsModal
+            submission={selectedSubmission}
+            onClose={() => setSelectedSubmission(null)}
+          />
+        )
+      }
     </DashboardLayout >
   );
 }
