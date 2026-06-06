@@ -35,6 +35,95 @@ const submitSchema = z.object({
     .default([]),
 });
 
+// ADD after the submitSchema definition (after line 36)
+
+const runSchema = z.object({
+  code: z
+    .string({ required_error: "code is required" })
+    .min(1).max(50_000),
+
+  language: z.enum(["python", "javascript", "java", "cpp"], {
+    errorMap: () => ({ message: "language must be: python, javascript, java, or cpp" }),
+  }),
+
+  functionName: z
+    .string({ required_error: "functionName is required" })
+    .min(1).max(100),
+
+  testcases: z
+    .array(z.object({
+      input: z.record(z.unknown()),
+      expectedOutput: z.unknown(),
+    }))
+    .min(1, "At least one testcase required")
+    .max(10),
+});
+
+// ADD after the router.post("/submit", ...) block (after line 195)
+
+router.post("/run", validateBody(runSchema), async (req, res) => {
+  const { code, language, functionName, testcases } = req.body;
+  const languageId = languageIdMap[language];
+  const isDev = process.env.NODE_ENV !== "production";
+  const results = [];
+
+  for (const [index, testcase] of testcases.entries()) {
+    let result;
+
+    try {
+      result = await callJudge0({
+        sourceCode: code,
+        language,
+        languageId,
+        testcaseInput: testcase.input,
+        functionName,
+      });
+    } catch (callErr) {
+      return res.json({
+        error: callErr.message,
+        results,
+        compileFailed: false,
+      });
+    }
+
+    // Compile error on first testcase aborts all — no point running rest
+    if (result.compile_output) {
+      return res.json({
+        error: result.compile_output,
+        compileFailed: true,
+        results,
+      });
+    }
+
+    const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
+    const actual = normalizeOutput(result.stdout || "");
+    const passed = expected === actual;
+    const hasError = !!result.stderr;
+
+    if (isDev) {
+      console.log(`[Run] tc${index + 1} expected="${expected}" actual="${actual}" passed=${passed}`);
+    }
+
+    results.push({
+      index,
+      input: testcase.input,
+      expected: testcase.expectedOutput,
+      actual: result.stdout?.trim() ?? "",
+      passed: hasError ? false : passed,
+      error: result.stderr || null,
+      time: result.time ?? null,
+      memory: result.memory ?? null,
+    });
+
+    // Runtime error: record it then stop — remaining testcases will also fail
+    if (hasError) {
+      return res.json({ results, compileFailed: false });
+    }
+  }
+
+  return res.json({ results, compileFailed: false });
+});
+
 function normalizeOutput(output) {
   return String(output ?? "").trim().replace(/\s+/g, "");
 }

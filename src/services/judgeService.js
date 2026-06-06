@@ -39,3 +39,28 @@ export const judgeSubmission = async ({
     };
   }
 };
+
+
+export const runTestcases = async ({ problem, code, language }) => {
+  try {
+    const result = await apiFetch("/api/judge/run", {
+      method: "POST",
+      body: JSON.stringify({
+        code,
+        language,
+        functionName: problem.functionName,
+        testcases:    problem.testcases || [],
+      }),
+    });
+
+    return result; // { results: [...], compileFailed: bool, error?: string }
+
+  } catch (error) {
+    console.error("[runTestcases] Error:", error.message);
+    return {
+      results: [],
+      compileFailed: false,
+      error: error.message,
+    };
+  }
+};

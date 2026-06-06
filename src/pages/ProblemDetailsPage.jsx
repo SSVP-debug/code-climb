@@ -4,7 +4,7 @@ import { formatDate } from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { runCode } from "../services/compiler";
+import { runTestcases } from "../services/judgeService";
 import { judgeSubmission } from "../services/judgeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
@@ -151,48 +151,84 @@ function ProblemSolver({ problem, slug }) {
     try {
       setRunning(true);
       setError("");
-      // Reset run result to show loading state in ProblemResults
-      setRunResult({ status: "Running...", output: "", executionMeta: null });
-
-      const result = await runCode(code, languageMap[language], customInput);
-      const parsed = parseJudge0Result(result);
-
-      const meta = getStatusMeta(
-        parsed.kind === "success"   ? "Executed ✓" :
-        parsed.kind === "compile"   ? "Compilation Error ❌" :
-        parsed.kind === "runtime"   ? "Runtime Error ❌" :
-        parsed.kind === "infra"     ? "Runner Unavailable ❌" :
-                                      "Execution Failed ❌"
-      );
-
-      const output =
-        parsed.kind === "success" ? parsed.stdout :
-        parsed.kind === "runtime" ? parsed.stderr :
-        parsed.kind === "compile" ? parsed.compileOutput :
-        parsed.kind === "infra"   ? "Execution infrastructure error. Please try again." :
-                                    parsed.stdout || "No output produced.";
 
       setRunResult({
-        status: meta.label,    // human label from statusMessages (no emoji)
-        rawStatus: parsed.kind === "success" ? "Executed ✓" :
-                   parsed.kind === "compile" ? "Compilation Error ❌" :
-                   parsed.kind === "runtime" ? "Runtime Error ❌" :
-                   parsed.kind === "infra"   ? "Runner Unavailable ❌" :
-                                              "Execution Failed ❌",
-        output,
-        executionMeta: {
-          time: parsed.time,
-          memory: parsed.memory,
-          kind: parsed.kind,
-        },
+        status: "Running...",
+        output: "",
+        executionMeta: null,
+      });
+
+      const { results = [], compileFailed, error: runError } =
+        await runTestcases({
+          problem,
+          code,
+          language,
+        });
+
+      // Compile error
+      if (compileFailed || (runError && results.length === 0)) {
+        setRunResult({
+          status: "Compilation Error ❌",
+          output: runError || "Compilation failed.",
+          executionMeta: null,
+        });
+        return;
+      }
+
+      // Unexpected service error
+      if (runError && results.length === 0) {
+        setRunResult({
+          status: "Runner Error ❌",
+          output: runError,
+          executionMeta: null,
+        });
+        return;
+      }
+
+      const passed = results.filter((r) => r.passed).length;
+      const total = results.length;
+      const allPassed = total > 0 && passed === total;
+
+      const lines = results.map((r, i) => {
+        if (r.error) {
+          return `Example ${i + 1}: Runtime Error\n${r.error}`;
+        }
+
+        const verdict = r.passed ? "✓ Passed" : "✗ Failed";
+
+        const detail = r.passed
+          ? `Output: ${r.actual}`
+          : `Expected: ${JSON.stringify(r.expected)}\nGot: ${r.actual}`;
+
+        return `Example ${i + 1}: ${verdict}\n${detail}`;
+      });
+
+      const lastResult = results[results.length - 1];
+
+      console.log("RUN RESULTS", results);
+      console.log("PASSED", passed);
+      console.log("TOTAL", total);
+      console.log("ALL PASSED", allPassed);
+
+      setRunResult({
+        status: allPassed ? "Executed ✓" : `${passed}/${total} passed`,
+        output: lines.join("\n\n"),
+        executionMeta: lastResult
+          ? {
+            time: lastResult.time,
+            memory: lastResult.memory,
+            kind: allPassed ? "success" : "wrong",
+          }
+          : null,
       });
     } catch (err) {
       console.error(err);
+
       setError("Execution failed. Please try again.");
+
       setRunResult({
-        status: "Execution Failed",
-        rawStatus: "Execution Failed ❌",
-        output: "An unexpected error occurred during execution.",
+        status: "Execution Failed ❌",
+        output: err?.message || "Unknown error",
         executionMeta: null,
       });
     } finally {
@@ -388,7 +424,7 @@ function ProblemSolver({ problem, slug }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
               <div className="h-full">
                 <ProblemResults
-                  status={runResult?.rawStatus ?? ""}
+                  status={runResult?.status ?? ""}
                   output={runResult?.output ?? ""}
                   executionMeta={runResult?.executionMeta ?? null}
                   judgeState={judgeState}
