@@ -1,32 +1,4 @@
-/**
- * TestcaseResultPanel.jsx
- * src/components/problem/TestcaseResultPanel.jsx
- *
- * LeetCode-style tabbed testcase results for the Run flow.
- *
- * KEY FIX vs previous version:
- *   Python and JavaScript drivers (generateDriverCode.js lines 197-201) catch
- *   runtime exceptions and print them to STDOUT as:
- *     "RUNTIME_ERROR: name 'j' is not defined"
- *   The /run backend route checks result.stderr for r.error, so these never
- *   reach r.error — they land in r.actual instead.
- *
- *   Fix: normaliseActual() detects the "RUNTIME_ERROR:" prefix in r.actual
- *   and promotes it to a synthetic r.error value before any rendering logic
- *   runs. The rest of the component only checks r.error — it never inspects
- *   r.actual for error strings directly.
- *
- *   This also means WorkspacePanel's auto-switch-to-debug logic works correctly
- *   because it reads r.error off the normalised results.
- *
- * PROPS:
- *   results        — array | null  (from runResults.results)
- *   compileFailed  — boolean
- *   compileError   — string | null
- *   isRunning      — boolean
- */
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 // ── Runtime error normalisation ───────────────────────────────────────────────
 //
@@ -37,7 +9,7 @@ import { useState, useEffect } from "react";
 function normaliseResults(results) {
   if (!results) return results;
   return results.map((r) => {
-    console.log("NORMALISE CHECK", r);
+    
     // Already has a real stderr error — leave it
     if (r.error) return r;
 
@@ -138,9 +110,13 @@ export default function TestcaseResultPanel({
   isRunning,
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  
 
   // Normalise once — promotes "RUNTIME_ERROR:" stdout strings to r.error
-  const results = normaliseResults(rawResults);
+  const results = useMemo(
+    () => normaliseResults(rawResults),
+    [rawResults]
+  );
 
   // Auto-jump to first failing tab when results arrive
   useEffect(() => {
@@ -210,7 +186,8 @@ export default function TestcaseResultPanel({
       </div>
 
       {/* ── Example tabs ─────────────────────────────────────────────── */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap relative"
+        style={{ zIndex: 9999 }}>
         {results.map((r, i) => {
           const isActive = safeTab === i;
           const isPassing = r.passed && !r.error;
@@ -218,7 +195,9 @@ export default function TestcaseResultPanel({
           return (
             <button
               key={i}
-              onClick={() => setActiveTab(i)}
+              onClick={() => {                
+                setActiveTab(i);
+              }}
               className={`
                 px-3 py-1.5 rounded-lg text-xs font-mono font-medium
                 flex items-center gap-1.5 transition-all duration-150

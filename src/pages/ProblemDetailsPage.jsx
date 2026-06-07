@@ -7,6 +7,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
+import { usePanelResize } from "../hooks/usePanelResize";
 import { loadSavedCode, saveCode } from "../utils/editorStorage";
 import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
@@ -69,17 +70,17 @@ function ProblemSolver({ problem, slug }) {
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
-  const [language, setLanguage]       = useState("python");
-  const [code, setCode]               = useState(() =>
+  const [language, setLanguage] = useState("python");
+  const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
   );
   const [customInput, setCustomInput] = useState("");
-  const [running, setRunning]         = useState(false);
-  const [submitting, setSubmitting]   = useState(false);
-  const [error, setError]             = useState("");
-  const [runResults, setRunResults]   = useState(null);
-  const [submitInfo, setSubmitInfo]   = useState(null);
-
+  const [running, setRunning] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [runResults, setRunResults] = useState(null);
+  const [submitInfo, setSubmitInfo] = useState(null);
+  const { problemWidth, setProblemWidth } = usePanelResize();
   const forceTab = useMemo(
     () => deriveForceTab(runResults, submitInfo),
     [runResults, submitInfo]
@@ -120,22 +121,24 @@ function ProblemSolver({ problem, slug }) {
       setRunResults(null);
       setSubmitInfo(null);
 
-      const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => {} });
+      const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
 
       setSubmitInfo({
         status: judgeResult.status,
-        error:  judgeResult.error  ?? null,
+        error: judgeResult.error ?? null,
         passed: judgeResult.passed ?? 0,
-        total:  judgeResult.total  ?? 0,
+        total: judgeResult.total ?? 0,
       });
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         stopTimer();
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 },
-          colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"] });
+        confetti({
+          particleCount: 120, spread: 80, origin: { y: 0.6 },
+          colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"]
+        });
         setTimeout(() => {
-          confetti({ particleCount: 60, angle: 60,  spread: 55, origin: { x: 0, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
+          confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
           confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
         }, 200);
       }
@@ -203,7 +206,7 @@ function ProblemSolver({ problem, slug }) {
             overflow-hidden: grid never expands beyond its allocated height.
             items-stretch: both columns fill the row height equally.
           */}
-          <div className="h-full overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="hidden lg:flex h-full overflow-hidden relative">
 
             {/*
               ════════════════════════════════════════════════════
@@ -213,12 +216,48 @@ function ProblemSolver({ problem, slug }) {
               Inner div: h-full overflow-y-auto = the ONLY scroll
               owner for problem description content.
             */}
-            <div className="lg:col-span-5 h-full overflow-hidden">
+            <div
+              className="h-full overflow-hidden"
+              style={{ width: `${problemWidth}%` }}
+            >
               <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                 <ProblemHeader problem={problem} isSolved={isSolved} />
                 <ProblemInfo problem={problem} />
               </div>
             </div>
+            <div
+              className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
+              onMouseDown={(e) => {
+                e.preventDefault();
+
+                const startX = e.clientX;
+                const startWidth = problemWidth;
+
+                const handleMove = (moveEvent) => {
+                  const delta =
+                    ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+
+                  const next = Math.min(
+                    60,
+                    Math.max(
+                      25,
+                      startWidth + delta
+                    )
+                  );
+
+                  setProblemWidth(next);
+                };
+
+                const handleUp = () => {
+                  window.removeEventListener("mousemove", handleMove);
+                  window.removeEventListener("mouseup", handleUp);
+                };
+
+                window.addEventListener("mousemove", handleMove);
+                window.addEventListener("mouseup", handleUp);
+              }}
+            />
+
 
             {/*
               ════════════════════════════════════════════════════
@@ -232,7 +271,10 @@ function ProblemSolver({ problem, slug }) {
                 flex-shrink-0 items → fixed height, never compress
                 flex-1 min-h-0 item → claims remaining space exactly
             */}
-            <div className="lg:col-span-7 h-full flex flex-col overflow-hidden">
+            <div
+              className="h-full flex flex-col overflow-hidden"
+              style={{ width: `${100 - problemWidth}%` }}
+            >
 
               {/*
                 Timer + difficulty row.
@@ -247,9 +289,9 @@ function ProblemSolver({ problem, slug }) {
                   }
                 </span>
                 <span className="text-xs text-zinc-600">
-                  {problem.difficulty === "Easy"   && "🟢 Easy"}
+                  {problem.difficulty === "Easy" && "🟢 Easy"}
                   {problem.difficulty === "Medium" && "🟡 Medium"}
-                  {problem.difficulty === "Hard"   && "🔴 Hard"}
+                  {problem.difficulty === "Hard" && "🔴 Hard"}
                 </span>
               </div>
 
