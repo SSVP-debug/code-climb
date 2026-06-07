@@ -1,6 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Runtime error normalisation ───────────────────────────────────────────────
+//
+// Detects "RUNTIME_ERROR: ..." in stdout (result.actual) and moves it to
+// result.error so all downstream logic has a single place to check.
+// Returns a new array — never mutates the input.
+
+function normaliseResults(results) {
+  if (!results) return results;
+  return results.map((r) => {
+    
+    // Already has a real stderr error — leave it
+    if (r.error) return r;
+
+    const actual = String(r.actual ?? "").trim();
+    if (actual.startsWith("RUNTIME_ERROR:")) {
+      return {
+        ...r,
+        actual: "",
+        passed: false,
+        error: actual.replace(/^RUNTIME_ERROR:\s*/, ""),
+      };
+    }
+    return r;
+  });
+}
+
+// ── Formatters ────────────────────────────────────────────────────────────────
 
 function formatInput(input) {
   if (!input || typeof input !== "object") return String(input ?? "—");
@@ -15,8 +41,7 @@ function formatExpected(expected) {
 }
 
 function formatActual(actual) {
-  if (actual === null || actual === undefined) return "—";
-  const s = String(actual).trim();
+  const s = String(actual ?? "").trim();
   return s === "" ? "(empty)" : s;
 }
 
@@ -32,10 +57,9 @@ function DataRow({ label, value, highlight }) {
         className={`
           rounded-lg px-3 py-2.5 text-sm font-mono leading-relaxed
           whitespace-pre-wrap break-all border
-          ${
-            highlight === "pass"
-              ? "bg-green-500/5 border-green-500/20 text-green-300"
-              : highlight === "fail"
+          ${highlight === "pass"
+            ? "bg-green-500/5 border-green-500/20 text-green-300"
+            : highlight === "fail"
               ? "bg-red-500/5 border-red-500/20 text-red-300"
               : "bg-zinc-950 border-zinc-800 text-zinc-200"
           }
@@ -50,7 +74,7 @@ function DataRow({ label, value, highlight }) {
 function MetaChip({ label, value }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-zinc-500">
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-mono">
       <span className="text-zinc-700">{label}</span>
       <span className="text-zinc-400">{value}</span>
     </span>
@@ -59,7 +83,7 @@ function MetaChip({ label, value }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4 animate-pulse">
+    <div className="space-y-4 animate-pulse">
       <div className="flex gap-2">
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-7 w-24 rounded-lg bg-zinc-800" />
@@ -77,28 +101,22 @@ function LoadingSkeleton() {
   );
 }
 
-function CompileErrorPanel({ error }) {
-  return (
-    <div className="bg-zinc-900 border border-yellow-500/30 rounded-2xl p-5 space-y-3">
-      <span className="text-yellow-400 text-sm font-semibold font-mono">
-        ⚠ Compilation Error
-      </span>
-      <div className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 font-mono text-xs text-yellow-200 whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
-        {error || "Unknown compilation error."}
-      </div>
-    </div>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function TestcaseResultPanel({
-  results,
+  results: rawResults,
   compileFailed,
   compileError,
   isRunning,
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  
+
+  // Normalise once — promotes "RUNTIME_ERROR:" stdout strings to r.error
+  const results = useMemo(
+    () => normaliseResults(rawResults),
+    [rawResults]
+  );
 
   // Auto-jump to first failing tab when results arrive
   useEffect(() => {
@@ -107,13 +125,11 @@ export default function TestcaseResultPanel({
     setActiveTab(firstFail === -1 ? 0 : firstFail);
   }, [results]);
 
-  // ── Loading ───────────────────────────────────────────────────────────
   if (isRunning) return <LoadingSkeleton />;
 
-  // ── Pre-run idle ──────────────────────────────────────────────────────
   if (!results && !compileFailed) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-center min-h-[200px]">
+      <div className="flex items-center justify-center min-h-[160px]">
         <p className="text-zinc-600 text-sm font-mono">
           Click Run to test against examples
         </p>
@@ -121,43 +137,47 @@ export default function TestcaseResultPanel({
     );
   }
 
-  // ── Compile error ─────────────────────────────────────────────────────
-  if (compileFailed) return <CompileErrorPanel error={compileError} />;
+  if (compileFailed) {
+    return (
+      <div className="space-y-3">
+        <span className="text-yellow-400 text-sm font-semibold font-mono">
+          ⚠ Compilation Error
+        </span>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 font-mono text-xs text-yellow-200 whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
+          {compileError || "Unknown compilation error."}
+        </div>
+      </div>
+    );
+  }
 
-  // ── Empty results guard ───────────────────────────────────────────────
   if (!results || results.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-center min-h-[200px]">
+      <div className="flex items-center justify-center min-h-[160px]">
         <p className="text-zinc-600 text-sm font-mono">No results returned.</p>
       </div>
     );
   }
 
-  const safeTab  = Math.min(activeTab, results.length - 1);
-  const active   = results[safeTab];
+  const safeTab = Math.min(activeTab, results.length - 1);
+  const active = results[safeTab];
   const passCount = results.filter((r) => r.passed && !r.error).length;
   const allPassed = passCount === results.length;
-  const hasRuntimeError = results.some((r) => r.error);
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4">
+    <div className="space-y-4">
 
-      {/* ── Summary header ───────────────────────────────────────────── */}
+      {/* ── Summary + meta ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <span
-          className={`text-sm font-semibold font-mono ${
-            allPassed ? "text-green-400" : "text-red-400"
-          }`}
+          className={`text-sm font-semibold font-mono ${allPassed ? "text-green-400" : "text-red-400"
+            }`}
         >
           {allPassed
-            ? `✓ ${results.length}/${results.length} examples passed`
-            : `✗ ${passCount}/${results.length} examples passed`}
+            ? `✓ ${results.length}/${results.length} passed`
+            : `✗ ${passCount}/${results.length} passed`}
         </span>
         <div className="flex items-center gap-3">
-          <MetaChip
-            label="time"
-            value={active.time ? `${active.time}s` : null}
-          />
+          <MetaChip label="time" value={active.time ? `${active.time}s` : null} />
           <MetaChip
             label="mem"
             value={active.memory ? `${Math.round(active.memory / 1024)}MB` : null}
@@ -165,16 +185,19 @@ export default function TestcaseResultPanel({
         </div>
       </div>
 
-      {/* ── Tabs ─────────────────────────────────────────────────────── */}
-      <div className="flex gap-2 flex-wrap">
+      {/* ── Example tabs ─────────────────────────────────────────────── */}
+      <div className="flex gap-2 flex-wrap relative"
+        style={{ zIndex: 9999 }}>
         {results.map((r, i) => {
-          const isActive  = safeTab === i;
+          const isActive = safeTab === i;
           const isPassing = r.passed && !r.error;
 
           return (
             <button
               key={i}
-              onClick={() => setActiveTab(i)}
+              onClick={() => {                
+                setActiveTab(i);
+              }}
               className={`
                 px-3 py-1.5 rounded-lg text-xs font-mono font-medium
                 flex items-center gap-1.5 transition-all duration-150
@@ -189,9 +212,8 @@ export default function TestcaseResultPanel({
               `}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                  isPassing ? "bg-green-400" : "bg-red-400"
-                }`}
+                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isPassing ? "bg-green-400" : "bg-red-400"
+                  }`}
               />
               Example {i + 1}
             </button>
@@ -200,26 +222,25 @@ export default function TestcaseResultPanel({
       </div>
 
       {/* ── Active testcase body ──────────────────────────────────────── */}
-      <div className="space-y-3 pt-1">
+      <div className="space-y-3">
         {active.error ? (
-          // Runtime error: show input + error, no expected/actual diff
           <>
             <DataRow label="Input" value={formatInput(active.input)} />
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+            <div className="rounded-lg border border-red-500/25 bg-red-500/5 p-4">
+              <p className="text-red-400 font-medium">
                 Runtime Error
-              </span>
-              <div className="bg-zinc-950 border border-red-500/25 rounded-lg px-3 py-2.5 font-mono text-xs text-red-300 whitespace-pre-wrap break-all max-h-32 overflow-y-auto">
-                {active.error}
-              </div>
+              </p>
+
+              <p className="text-zinc-500 text-sm mt-1">
+                Open the Debug tab for details →
+              </p>
             </div>
           </>
         ) : (
-          // Normal: input / expected / actual
           <>
-            <DataRow label="Input"           value={formatInput(active.input)} />
-            <DataRow label="Expected Output" value={formatExpected(active.expected)} highlight={active.passed ? "pass" : undefined} />
-            <DataRow label="Your Output"     value={formatActual(active.actual)}    highlight={active.passed ? "pass" : "fail"} />
+            <DataRow label="Input" value={formatInput(active.input)} />
+            <DataRow label="Expected Output" value={formatExpected(active.expected)} highlight="pass" />
+            <DataRow label="Your Output" value={formatActual(active.actual)} highlight={active.passed ? "pass" : "fail"} />
           </>
         )}
       </div>
