@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
 
-// ── debugPanel ────────────────────────────────────────────────────────────────
+// ── DebugPanel ────────────────────────────────────────────────────────────────
 
 function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
-    // ── Loading state ─────────────────────────────────────────────────────
     if (isRunning || isSubmitting) {
         return (
             <div className="p-5 space-y-3 animate-pulse">
@@ -14,10 +13,6 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
         );
     }
 
-    // ── Collect error content to show ─────────────────────────────────────
-    // Priority: compile > runtime > judge/infra > submit error > idle
-
-    // 1. Compile error from Run
     if (runResults?.compileFailed) {
         return (
             <div className="p-5 space-y-3">
@@ -27,44 +22,33 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
         );
     }
 
-    // 2. Runtime errors embedded in testcase results
-    //    (Python/JS drivers print RUNTIME_ERROR: to stdout; we normalise in
-    //     TestcaseResultPanel. Here we collect the cleaned error field.)
-    // 2. Runtime errors embedded in testcase results (including RUNTIME_ERROR: in actual)
     if (runResults?.results?.length > 0) {
         const erroredCase = runResults.results.find(
             (r) =>
                 r.error ||
                 String(r.actual ?? "").trim().startsWith("RUNTIME_ERROR:")
         );
-
-        console.log("DEBUG CASE FOUND:", erroredCase);
-
         if (erroredCase) {
-            const errorText =
-                erroredCase.error ||
-                String(erroredCase.actual ?? "").replace(
-                    /^RUNTIME_ERROR:\s*/,
-                    ""
-                );
-
             return (
                 <div className="p-5 space-y-3">
                     <ErrorHeader kind="runtime" />
-
                     <div className="space-y-1.5">
                         <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
-                            Example {(erroredCase.index ?? 0) + 1}
+                            Example {erroredCase.index + 1}
                         </span>
-
-                        <ErrorBlock text={errorText} color="red" />
+                        <ErrorBlock text={erroredCase.error} color="red" />
                     </div>
+                    {runResults.results.filter((r) => r.error).length > 1 && (
+                        <p className="text-xs text-zinc-500 font-mono">
+                            + {runResults.results.filter((r) => r.error).length - 1} more
+                            runtime error{runResults.results.filter((r) => r.error).length > 2 ? "s" : ""}
+                        </p>
+                    )}
                 </div>
             );
         }
     }
 
-    // 3. Top-level run error (network/infra — not compile, not runtime)
     if (runResults?.error && !runResults?.compileFailed) {
         return (
             <div className="p-5 space-y-3">
@@ -74,7 +58,6 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
         );
     }
 
-    // 4. Submit-level errors
     if (submitInfo?.status) {
         const isSubmitError =
             submitInfo.status.includes("Error") ||
@@ -102,14 +85,11 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
         }
     }
 
-    // 5. Idle — no errors yet
     return (
-        <div className="flex items-center justify-center min-h-[160px]">
+        <div className="flex items-center justify-center h-full min-h-[160px]">
             <div className="text-center space-y-2">
                 <div className="text-2xl">🐛</div>
-                <p className="text-zinc-600 text-sm font-mono">
-                    No errors to show
-                </p>
+                <p className="text-zinc-600 text-sm font-mono">No errors to show</p>
                 <p className="text-zinc-700 text-xs font-mono">
                     Runtime errors and compile errors appear here
                 </p>
@@ -118,7 +98,7 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
     );
 }
 
-// ── debugPanel helpers ────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const KIND_META = {
     compile: { label: "Compilation Error", color: "text-yellow-400", icon: "⚠" },
@@ -173,25 +153,20 @@ export default function WorkspacePanel({
 }) {
     const [activeTab, setActiveTab] = useState("testcases");
 
-    // Respect forceTab whenever it changes (new run/submit result arrived)
     useEffect(() => {
-        console.log("WORKSPACE RECEIVED:", forceTab);
-
         if (forceTab === "testcases" || forceTab === "debug") {
-            console.log("SWITCHING TO:", forceTab);
             setActiveTab(forceTab);
         }
     }, [forceTab]);
 
-    // ── Tab counts / badges ───────────────────────────────────────────────
     const errorCount = (() => {
         if (runResults?.compileFailed) return 1;
-        if (runResults?.results) {
-            return runResults.results.filter((r) => r.error).length;
-        }
-        if (submitInfo?.status?.includes("Error") ||
+        if (runResults?.results) return runResults.results.filter((r) => r.error).length;
+        if (
+            submitInfo?.status?.includes("Error") ||
             submitInfo?.status?.includes("Compilation") ||
-            submitInfo?.status?.includes("Runtime")) return 1;
+            submitInfo?.status?.includes("Runtime")
+        ) return 1;
         return 0;
     })();
 
@@ -199,14 +174,14 @@ export default function WorkspacePanel({
     const totalCount = runResults?.results?.length ?? 0;
 
     return (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+        /* h-full fills the flex-1 wrapper. flex flex-col: tab bar fixed, content flex-1. */
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden h-full flex flex-col">
 
-            {/* ── Tab bar ──────────────────────────────────────────────────── */}
-            <div className="flex items-center border-b border-zinc-800 px-1 pt-1">
+            {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
+            <div className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0">
                 {TABS.map((tab) => {
                     const isActive = activeTab === tab;
 
-                    // Badge for testcases tab: "2/3" when results exist
                     const badge =
                         tab === "testcases" && totalCount > 0
                             ? `${passCount}/${totalCount}`
@@ -214,7 +189,6 @@ export default function WorkspacePanel({
                                 ? String(errorCount)
                                 : null;
 
-                    // Badge colour
                     const badgeColor =
                         tab === "testcases"
                             ? passCount === totalCount && totalCount > 0
@@ -228,28 +202,18 @@ export default function WorkspacePanel({
                             onClick={() => setActiveTab(tab)}
                             className={`
                 relative px-4 py-2.5 text-xs font-mono font-medium
-                flex items-center gap-2
-                transition-colors duration-150
-                ${isActive
-                                    ? "text-white"
-                                    : "text-zinc-500 hover:text-zinc-300"
-                                }
+                flex items-center gap-2 transition-colors duration-150
+                ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
               `}
                         >
-                            {tab === "testcases" ? "testcases" : "debug"}
+                            {tab === "testcases" ? "Testcases" : "Debug"}
 
                             {badge && (
-                                <span
-                                    className={`
-                    px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold
-                    ${badgeColor}
-                  `}
-                                >
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${badgeColor}`}>
                                     {badge}
                                 </span>
                             )}
 
-                            {/* Active underline */}
                             {isActive && (
                                 <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />
                             )}
@@ -258,8 +222,16 @@ export default function WorkspacePanel({
                 })}
             </div>
 
-            {/* ── Tab content ──────────────────────────────────────────────── */}
-            <div className="min-h-[220px]">
+            {/*
+        ── Tab content ───────────────────────────────────────────────────────
+        flex-1:             takes all remaining height inside the flex-col panel.
+        min-h-0:            CSS flex fix — without this, flex children won't
+                            shrink below their content size, defeating overflow-y-auto.
+        overflow-y-auto:    THIS is the scroll owner for workspace content.
+                            Long testcase lists or error output scroll here only.
+        custom-scrollbar:   project's existing thin scrollbar style.
+      */}
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {activeTab === "testcases" ? (
                     <div className="p-4">
                         <TestcaseResultPanel
@@ -278,6 +250,7 @@ export default function WorkspacePanel({
                     />
                 )}
             </div>
+
         </div>
     );
 }

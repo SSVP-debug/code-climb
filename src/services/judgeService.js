@@ -41,7 +41,7 @@ export const judgeSubmission = async ({
 };
 
 
-export const runtestcases = async ({ problem, code, language }) => {
+export const runTestcases = async ({ problem, code, language }) => {
   try {
     const result = await apiFetch("/api/judge/run", {
       method: "POST",
