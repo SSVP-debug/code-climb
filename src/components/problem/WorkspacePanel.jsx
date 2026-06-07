@@ -153,11 +153,7 @@ export default function WorkspacePanel({
 }) {
     const [activeTab, setActiveTab] = useState("testcases");
 
-    useEffect(() => {
-        if (forceTab === "testcases" || forceTab === "debug") {
-            setActiveTab(forceTab);
-        }
-    }, [forceTab]);
+
 
     const errorCount = (() => {
         if (runResults?.compileFailed) return 1;
@@ -178,7 +174,10 @@ export default function WorkspacePanel({
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden h-full flex flex-col">
 
             {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
-            <div className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0">
+            <div
+                className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0"                
+            >
+            
                 {TABS.map((tab) => {
                     const isActive = activeTab === tab;
 
@@ -199,7 +198,9 @@ export default function WorkspacePanel({
                     return (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab)}
+                            onClick={() => {                                
+                                setActiveTab(tab);
+                            }}
                             className={`
                 relative px-4 py-2.5 text-xs font-mono font-medium
                 flex items-center gap-2 transition-colors duration-150

@@ -8,6 +8,7 @@ import { judgeSubmission, runTestcases } from "../services/judgeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePanelResize } from "../hooks/usePanelResize";
+import { useVerticalResize } from "../hooks/useVerticalResize";
 import { loadSavedCode, saveCode } from "../utils/editorStorage";
 import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
@@ -70,6 +71,7 @@ function ProblemSolver({ problem, slug }) {
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
+  const { editorHeight, setEditorHeight } = useVerticalResize();
   const [language, setLanguage] = useState("python");
   const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
@@ -313,7 +315,10 @@ function ProblemSolver({ problem, slug }) {
                 Do NOT add overflow here — Monaco renders decorations outside
                 its own bounds and needs to paint freely.
               */}
-              <div className="flex-shrink-0 h-[500px] pb-3">
+              <div
+                className="flex-shrink-0 pb-2"
+                style={{ height: `${editorHeight}px` }}
+              >
                 <ErrorBoundary
                   fallback={
                     <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
@@ -335,6 +340,48 @@ function ProblemSolver({ problem, slug }) {
                   />
                 </ErrorBoundary>
               </div>
+
+              <div
+                className="
+    w-full
+    h-2
+    cursor-row-resize
+    flex-shrink-0
+    rounded
+    bg-zinc-800
+    hover:bg-green-500
+    transition-colors
+    mb-2
+  "
+                onMouseDown={(e) => {
+                  e.preventDefault();
+
+                  const startY = e.clientY;
+                  const startHeight = editorHeight;
+
+                  const handleMove = (moveEvent) => {
+                    const delta = moveEvent.clientY - startY;
+
+                    const nextHeight = Math.min(
+                      800,
+                      Math.max(
+                        300,
+                        startHeight + delta
+                      )
+                    );
+
+                    setEditorHeight(nextHeight);
+                  };
+
+                  const handleUp = () => {
+                    window.removeEventListener("mousemove", handleMove);
+                    window.removeEventListener("mouseup", handleUp);
+                  };
+
+                  window.addEventListener("mousemove", handleMove);
+                  window.addEventListener("mouseup", handleUp);
+                }}
+              />
 
               {/*
                 ════════════════════════════════════════════════
