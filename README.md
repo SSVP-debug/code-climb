@@ -46,7 +46,7 @@ code-club/
 │   ├── components/       # ProtectedRoute, ProblemEditor, ProblemResults, SubmissionHistory...
 │   ├── services/         # api.js, compiler.js, judgeService.js, progressService.js
 │   ├── utils/            # generateDriverCode, parseJudge0Result, editorStorage, formatters
-│   └── data/             # problems.js (static fallback + hiddenTestcases for judge)
+│   └── data/             # problems.js (static fallback + hiddentestcases for judge)
 ├── backend/
 │   ├── config/           # db.js, env.js, firebaseAdmin.js
 │   ├── middleware/        # auth.js (requireAuth), rateLimiter.js

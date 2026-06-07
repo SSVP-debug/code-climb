@@ -1,27 +1,62 @@
-
 import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { formatDate } from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { judgeSubmission, runTestcases } from "../services/judgeService"; // ← runCode import removed; runTestcases added
+import { judgeSubmission, runtestcases } from "../services/judgeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
 import { loadSavedCode, saveCode } from "../utils/editorStorage";
-import { useTimer } from "../hooks/useTimer";                               // ← parseJudge0Result import removed (no longer used by Run)
+import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
 
 // Sub-components
 import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
-import ProblemResults from "../components/problem/ProblemResults";
-import TestcaseResultPanel from "../components/problem/TestcaseResultPanel"; // ← NEW
-import SubmissionHistory from "../components/problem/SubmissionHistory";
-import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
-import BottomWorkspaceTabs from "../components/problem/BottomWorkspaceTabs";
-import DebugPanel from "../components/problem/DebugPanel";
+import WorkspacePanel from "../components/problem/WorkspacePanel";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Derives which workspace tab should be forced active after a result arrives.
+ * Returns "debug" | "testcases" | null.
+ * null = no override (don't change the current tab).
+ */
+function deriveForceTab(runResults, submitInfo) {
+  // Run: compile error or any testcase with a runtime error → debug
+  if (runResults?.compileFailed) return "debug";
+  if (
+    runResults?.results?.some(
+      (r) =>
+        r.error ||
+        String(r.actual ?? "").trim().startsWith("RUNTIME_ERROR:")
+    )
+  ) {
+    return "debug";
+  }
+  // Run: top-level network/infra error → debug
+  if (runResults?.error && !runResults?.compileFailed) return "debug";
+  // Run: results present with no errors → testcases
+  if (runResults?.results?.length > 0) return "testcases";
+
+  // Submit: any error verdict → debug
+  if (submitInfo?.status) {
+    const s = submitInfo.status;
+    if (
+      s.includes("Compilation") ||
+      s.includes("Runtime") ||
+      s.includes("Error") // covers "Judge Error", "Submission Error"
+    ) return "debug";
+    // Accepted or Wrong Answer → testcases
+    return "testcases";
+  }
+
+  return null;
+}
+
+// ── ProblemDetailsPage ────────────────────────────────────────────────────────
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
@@ -57,6 +92,8 @@ function ProblemDetailsPage() {
   return <ProblemSolver key={slug} problem={problem} slug={slug} />;
 }
 
+// ── ProblemSolver ─────────────────────────────────────────────────────────────
+
 function ProblemSolver({ problem, slug }) {
   const {
     solvedProblems,
@@ -66,44 +103,38 @@ function ProblemSolver({ problem, slug }) {
   } = useAppContext();
 
   const isSolved = solvedProblems.includes(slug);
-  const [activeBottomTab, setActiveBottomTab] = useState("Testcases");
-  const submissions = useMemo(
-    () => allSubmissions.filter((s) => s.problemSlug === slug),
-    [allSubmissions, slug]
-  );
-  const [runResults, setRunResults] = useState(null);
-  const runtimeError =
-    runResults?.results?.find((r) => r.error)?.error;
-
 
   // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
-
-  // ── State ──────────────────────────────────────────────────────────────
+  // ── Editor state ───────────────────────────────────────────────────────
   const [language, setLanguage] = useState("python");
-  const [error, setError] = useState("");
   const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
   );
   const [customInput, setCustomInput] = useState("");
+
+  // ── Execution flags ────────────────────────────────────────────────────
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [judgeState, setJudgeState] = useState("");
-  const [testcaseProgress, setTestcaseProgress] = useState(null);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [error, setError] = useState("");
 
+  // ── Run result — feeds WorkspacePanel → TestcaseResultPanel ───────────
+  // Shape: { results, compileFailed, error } | null
+  const [runResults, setRunResults] = useState(null);
+  const [debugInfo, setDebugInfo] = useState(null);
 
-  // Submit result state (unchanged — feeds ProblemResults)
-  const [status, setStatus] = useState("");
-  const [output, setOutput] = useState("");
-  const [executionMeta, setExecutionMeta] = useState(null);
+  // ── Submit result — feeds WorkspacePanel → debugPanel ─────────────────
+  // Shape: { status, error, passed, total } | null
+  const [submitInfo, setSubmitInfo] = useState(null);
 
-
-  // ── NEW: Run result state — feeds TestcaseResultPanel ─────────────────
-  // Shape: { results: [...], compileFailed: bool, error: string|null } | null
-  // null = never been run yet (shows idle panel)
-
+  // ── Derived: which tab WorkspacePanel should force-activate ───────────
+  const forceTab = useMemo(
+    () => deriveForceTab(runResults, submitInfo),
+    [runResults, submitInfo]
+  );
+  console.log("FORCE TAB =", forceTab);
+  console.log("RUN RESULTS =", runResults);
 
   // ── Sync code to storage ───────────────────────────────────────────────
   useEffect(() => {
@@ -120,37 +151,53 @@ function ProblemSolver({ problem, slug }) {
   };
 
   // ── Run Code ───────────────────────────────────────────────────────────
-  // CHANGED: now calls runTestcases() → /api/judge/run with driver wrapping.
-  // Sets runResults state which feeds TestcaseResultPanel.
-  // No longer sets status/output/executionMeta (those belong to Submit).
   const handleRunCode = async () => {
     if (running) return;
 
     try {
       setRunning(true);
       setError("");
-      // Clear previous run results so the skeleton loading state shows
-      setRunResults(null);
+      setRunResults(null);   // triggers skeleton in panel
+      setSubmitInfo(null);   // clear stale submit result from workspace
 
-      const response = await runTestcases({ problem, code, language });
-      console.log("RUN RESPONSE", response);
+      const response = await runtestcases({ problem, code, language });
+      setRunResults(response);
+      let debug = null;
 
-      const hasRuntimeError =
-        response.results?.some((r) => r.error);
+      for (const r of response.results || []) {
+        const actual = String(r.actual ?? "").trim();
 
-      if (hasRuntimeError || response.compileFailed) {
-        setActiveBottomTab("Debug");
-      } else {
-        setActiveBottomTab("Testcases");
+        if (actual.startsWith("RUNTIME_ERROR:")) {
+          debug = {
+            type: "runtime",
+            message: actual.replace(/^RUNTIME_ERROR:\s*/, ""),
+            testcase: r.index + 1,
+          };
+          break;
+        }
+
+        if (r.error) {
+          debug = {
+            type: "runtime",
+            message: r.error,
+            testcase: r.index + 1,
+          };
+          break;
+        }
       }
 
-      // response shape: { results, compileFailed, error }
-      setRunResults(response);
+      if (response.compileFailed) {
+        debug = {
+          type: "compile",
+          message: response.error,
+        };
+      }
+
+      setDebugInfo(debug);
 
     } catch (err) {
       console.error(err);
       setError("Execution failed. Please try again.");
-      // Show an error state in the panel without crashing
       setRunResults({ results: [], compileFailed: false, error: err.message });
     } finally {
       setRunning(false);
@@ -158,29 +205,70 @@ function ProblemSolver({ problem, slug }) {
   };
 
   // ── Submit Code ────────────────────────────────────────────────────────
-  // UNCHANGED — sets status/output/executionMeta which feed ProblemResults.
   const handleSubmitCode = async () => {
     if (submitting) return;
+
+    const wasAlreadySolved = isSolved;
 
     try {
       setSubmitting(true);
       setError("");
-      setJudgeState("Queued");
-      setExecutionMeta(null);
-      setStatus("Judging...");
+      setRunResults(null);   // clear run results while judging
+      setSubmitInfo(null);
 
       const judgeResult = await judgeSubmission({
         problem,
         code,
         language,
-        onProgress: setTestcaseProgress,
+        onProgress: () => { },  // progress stub — SSE not yet implemented
       });
 
-      setJudgeState("Completed");
-      setStatus(judgeResult.status);
-      setOutput(judgeResult.actualOutput || "");
+      // Feed the submit verdict into WorkspacePanel
+      setSubmitInfo({
+        status: judgeResult.status,
+        error: judgeResult.error ?? null,
+        passed: judgeResult.passed ?? 0,
+        total: judgeResult.total ?? 0,
+      });
 
-      const newSubmission = {
+      // ── Accepted ───────────────────────────────────────────────────
+      if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
+        await markProblemSolved({
+          slug,
+          topic: problem.topic,
+          difficulty: problem.difficulty,
+          title: problem.title,
+        });
+
+        stopTimer();
+
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"],
+        });
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 60,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.65 },
+            colors: ["#22c55e", "#4ade80", "#ffffff"],
+          });
+          confetti({
+            particleCount: 60,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.65 },
+            colors: ["#22c55e", "#4ade80", "#ffffff"],
+          });
+        }, 200);
+      }
+
+      // Persist submission record
+      await addSubmission({
         id: crypto.randomUUID(),
         problemTitle: problem.title,
         problemSlug: problem.slug,
@@ -195,56 +283,19 @@ function ProblemSolver({ problem, slug }) {
         expectedOutput: judgeResult.expectedOutput,
         actualOutput: judgeResult.actualOutput,
         executionTime: judgeResult.executionTime,
-      };
+      });
 
-
-      if (judgeResult.status === "Accepted 🎉") {
-        if (!isSolved) {
-          await markProblemSolved({
-            slug,
-            topic: problem.topic,
-            difficulty: problem.difficulty,
-            title: problem.title,
-          });
-
-          stopTimer();
-
-          confetti({
-            particleCount: 120,
-            spread: 80,
-            origin: { y: 0.6 },
-            colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"],
-          });
-
-          setTimeout(() => {
-            confetti({
-              particleCount: 60,
-              angle: 60,
-              spread: 55,
-              origin: { x: 0, y: 0.65 },
-              colors: ["#22c55e", "#4ade80", "#ffffff"],
-            });
-            confetti({
-              particleCount: 60,
-              angle: 120,
-              spread: 55,
-              origin: { x: 1, y: 0.65 },
-              colors: ["#22c55e", "#4ade80", "#ffffff"],
-            });
-          }, 200);
-        }
-      }
-
-      await addSubmission(newSubmission);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setError("Submission failed. Please try again.");
-      setStatus("Submission Error ❌");
-      setJudgeState("Failed");
+      setSubmitInfo({
+        status: "Submission Error ❌",
+        error: err.message ?? "An unexpected error occurred.",
+        passed: 0,
+        total: 0,
+      });
     } finally {
       setSubmitting(false);
-      setTestcaseProgress(null);
-      setTimeout(() => setJudgeState(""), 3000);
     }
   };
 
@@ -254,18 +305,18 @@ function ProblemSolver({ problem, slug }) {
       <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* Left Column — problem description */}
-          <div className="lg:col-span-5 h-full space-y-6">
+          {/* ── Left: problem description ────────────────────────────── */}
+          <div className="lg:col-span-5">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 lg:sticky lg:top-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
               <ProblemHeader problem={problem} isSolved={isSolved} />
               <ProblemInfo problem={problem} />
             </div>
           </div>
 
-          {/* Right Column — editor + results */}
-          <div className="lg:col-span-7 space-y-6">
+          {/* ── Right: editor + workspace ────────────────────────────── */}
+          <div className="lg:col-span-7 space-y-4">
 
-            {/* Timer row */}
+            {/* Timer + difficulty row */}
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-500 font-mono tracking-widest">
                 {isSolved ? (
@@ -281,11 +332,11 @@ function ProblemSolver({ problem, slug }) {
               </span>
             </div>
 
-            {/* Error Banner */}
+            {/* Error banner — network/auth failures only */}
             {error && <ErrorBanner message={error} />}
 
-            {/* Editor */}
-            <div className="h-[600px]">
+            {/* Monaco editor */}
+            <div className="h-[580px]">
               <ErrorBoundary
                 fallback={
                   <div className="bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
@@ -293,17 +344,6 @@ function ProblemSolver({ problem, slug }) {
                   </div>
                 }
               >
-                {runtimeError && (
-                  <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-xl p-3">
-                    <div className="font-semibold text-red-400">
-                      Runtime Error ⚠️
-                    </div>
-                    <div className="text-red-300 text-sm font-mono">
-                      {runtimeError}
-                    </div>
-                  </div>
-                )}
-
                 <ProblemEditor
                   language={language}
                   setLanguage={handleLanguageChange}
@@ -320,64 +360,24 @@ function ProblemSolver({ problem, slug }) {
             </div>
 
             {/*
-              Results area
-              ┌─────────────────────┬──────────────────────┐
-              │ TestcaseResultPanel │  SubmissionHistory   │
-              │  (Run results)      │                      │
-              └─────────────────────┴──────────────────────┘
-              ┌────────────────────────────────────────────┐
-              │ ProblemResults (Submit verdict)            │
-              └────────────────────────────────────────────┘
-
-              TestcaseResultPanel replaces the old ProblemResults position.
-              ProblemResults moves below at full width — only visible after Submit.
-              This keeps the side-by-side layout identical to before while giving
-              the run panel the same real estate it always had.
+              WorkspacePanel — full width below the editor.
+              Contains testcases | debug tabs.
+              forceTab drives auto-switch on every new result.
             */}
-            <div className="space-y-4">
-              <BottomWorkspaceTabs
-                activeTab={activeBottomTab}
-                setActiveTab={setActiveBottomTab}
-              />
-
-              {activeBottomTab === "Testcases" ? (
-                <TestcaseResultPanel
-                  results={runResults?.results ?? null}
-                  compileFailed={runResults?.compileFailed ?? false}
-                  compileError={runResults?.error ?? null}
-                  isRunning={running}
-                />
-              ) : (
-                <DebugPanel />
-              )}
-            </div>
-
-            {/* Submit verdict — only rendered when status is non-empty */}
-            {status && (
-              <ProblemResults
-                status={status}
-                output={output}
-                executionMeta={executionMeta}
-                judgeState={judgeState}
-                testcaseProgress={testcaseProgress}
-                submitting={submitting}
-              />
-            )}
+            <WorkspacePanel
+              runResults={runResults}
+              submitInfo={submitInfo}
+              debugInfo={debugInfo}
+              isRunning={running}
+              isSubmitting={submitting}
+              forceTab={forceTab}
+            />
 
           </div>
         </div>
       </div>
-
-      {
-        selectedSubmission && (
-          <SubmissionDetailsModal
-            submission={selectedSubmission}
-            onClose={() => setSelectedSubmission(null)}
-          />
-        )
-      }
-    </DashboardLayout >
+    </DashboardLayout>
   );
 }
 
-export default ProblemDetailsPage;                          
+export default ProblemDetailsPage;

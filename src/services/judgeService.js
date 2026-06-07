@@ -21,7 +21,7 @@ export const judgeSubmission = async ({
         functionName:     problem.functionName,
         // Visible testcases are NOT secret — safe to send from frontend.
         // Hidden testcases are loaded server-side by the backend.
-        visibleTestcases: problem.testcases || [],
+        visibletestcases: problem.testcases || [],
       }),
     });
 
@@ -41,7 +41,7 @@ export const judgeSubmission = async ({
 };
 
 
-export const runTestcases = async ({ problem, code, language }) => {
+export const runtestcases = async ({ problem, code, language }) => {
   try {
     const result = await apiFetch("/api/judge/run", {
       method: "POST",
@@ -56,7 +56,7 @@ export const runTestcases = async ({ problem, code, language }) => {
     return result; // { results: [...], compileFailed: bool, error?: string }
 
   } catch (error) {
-    console.error("[runTestcases] Error:", error.message);
+    console.error("[runtestcases] Error:", error.message);
     return {
       results: [],
       compileFailed: false,

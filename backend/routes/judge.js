@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { validateBody } from "./compiler.js";
 import { callJudge0 } from "../controllers/compilerController.js";
-import hiddenTestcases from "../data/hiddenTestcases.js";
+import hiddentestcases from "../data/hiddentestcases.js";
 
 const router = Router();
 
@@ -25,7 +25,7 @@ const submitSchema = z.object({
     .string({ required_error: "functionName is required" })
     .min(1).max(100),
 
-  visibleTestcases: z
+  visibletestcases: z
     .array(z.object({
       input: z.record(z.unknown()),
       expectedOutput: z.unknown(),
@@ -133,24 +133,24 @@ const languageIdMap = {
 };
 
 router.post("/submit", validateBody(submitSchema), async (req, res) => {
-  const { problemSlug, code, language, functionName, visibleTestcases } = req.body;
+  const { problemSlug, code, language, functionName, visibletestcases } = req.body;
   const isDev = process.env.NODE_ENV !== "production";
 
   // ── Load hidden testcases ──────────────────────────────────────────────
-  const hidden = hiddenTestcases[problemSlug];
+  const hidden = hiddentestcases[problemSlug];
 
   if (!hidden || hidden.length === 0) {
     return res.status(404).json({
       error: `No hidden testcases configured for problem: "${problemSlug}". ` +
-        `Add it to backend/data/hiddenTestcases.js`,
+        `Add it to backend/data/hiddentestcases.js`,
     });
   }
 
   const languageId = languageIdMap[language];
-  const allTestcases = [...visibleTestcases, ...hidden];
+  const alltestcases = [...visibletestcases, ...hidden];
 
   // ── CRITICAL GUARD: empty testcases → would silently return Accepted ──
-  if (allTestcases.length === 0) {
+  if (alltestcases.length === 0) {
     console.error(`[Judge] No testcases found for "${problemSlug}"`);
     return res.status(500).json({
       error: `Judge has no testcases to run for "${problemSlug}".`,
@@ -159,8 +159,8 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
 
   if (isDev) {
     console.log(
-      `[Judge] "${problemSlug}" — ${visibleTestcases.length} visible + ` +
-      `${hidden.length} hidden = ${allTestcases.length} total | lang=${language}`
+      `[Judge] "${problemSlug}" — ${visibletestcases.length} visible + ` +
+      `${hidden.length} hidden = ${alltestcases.length} total | lang=${language}`
     );
   }
 
@@ -170,8 +170,8 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
   let hiddenPassed = 0;
 
   try {
-    for (const [index, testcase] of allTestcases.entries()) {
-      const isVisible = index < visibleTestcases.length;
+    for (const [index, testcase] of alltestcases.entries()) {
+      const isVisible = index < visibletestcases.length;
 
       // ── Run testcase through Judge0 ──────────────────────────────────
       let result;
@@ -188,7 +188,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
         return res.json({
           status: "Judge Error ❌",
           passed: passedCount,
-          total: allTestcases.length,
+          total: alltestcases.length,
           error: callErr.message,
         });
       }
@@ -197,7 +197,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
         return res.json({
           status: "Judge Error ❌",
           passed: passedCount,
-          total: allTestcases.length,
+          total: alltestcases.length,
           error: "Judge0 returned no result",
         });
       }
@@ -207,7 +207,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
         return res.json({
           status: "Compilation Error ❌",
           passed: passedCount,
-          total: allTestcases.length,
+          total: alltestcases.length,
           error: result.compile_output,
         });
       }
@@ -218,7 +218,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
         return res.json({
           status: isInfra ? "Judge Error ❌" : "Runtime Error ❌",
           passed: passedCount,
-          total: allTestcases.length,
+          total: alltestcases.length,
           error: result.stderr,
         });
       }
@@ -229,7 +229,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
 
       if (isDev) {
         console.log(
-          `[Judge] Testcase ${index + 1}/${allTestcases.length} ` +
+          `[Judge] Testcase ${index + 1}/${alltestcases.length} ` +
           `(${isVisible ? "visible" : "hidden"}) | ` +
           `expected="${expected}" actual="${actual}" match=${expected === actual}`
         );
@@ -243,7 +243,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
         return res.json({
           status: "Wrong Answer ❌",
           passed: passedCount,
-          total: allTestcases.length,
+          total: alltestcases.length,
           visiblePassed,
           hiddenPassed,
           executionTime: String(Date.now() - startTime),
@@ -260,13 +260,13 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
     }
 
     if (isDev) {
-      console.log(`[Judge] "${problemSlug}" → Accepted (${passedCount}/${allTestcases.length})`);
+      console.log(`[Judge] "${problemSlug}" → Accepted (${passedCount}/${alltestcases.length})`);
     }
 
     return res.json({
       status: "Accepted 🎉",
       passed: passedCount,
-      total: allTestcases.length,
+      total: alltestcases.length,
       visiblePassed,
       hiddenPassed,
       executionTime: String(Date.now() - startTime),
@@ -277,7 +277,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
     return res.json({
       status: "Judge Error ❌",
       passed: passedCount,
-      total: allTestcases.length,
+      total: alltestcases.length,
       error: "An unexpected error occurred during judging.",
     });
   }

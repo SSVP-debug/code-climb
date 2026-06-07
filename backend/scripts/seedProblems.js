@@ -56,9 +56,9 @@ async function seed() {
       continue;
     }
 
-    // SECURITY: strip hiddenTestcases — they must never reach the client
+    // SECURITY: strip hiddentestcases — they must never reach the client
     // eslint-disable-next-line no-unused-vars
-    const { hiddenTestcases, ...safeFields } = problem;
+    const { hiddentestcases, ...safeFields } = problem;
 
     const ref = db.collection("problems").doc(String(problem.id));
     batch.set(ref, safeFields);
@@ -78,7 +78,7 @@ async function seed() {
 
   console.log(`\n📋 Firestore collection: problems`);
   console.log(`   Each document ID = problem.id (e.g. "1", "2", ...)`);
-  console.log(`   hiddenTestcases were NOT written — they remain in src/data/problems.js only.\n`);
+  console.log(`   hiddentestcases were NOT written — they remain in src/data/problems.js only.\n`);
 }
 
 seed()
