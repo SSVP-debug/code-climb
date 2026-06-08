@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "../../context/ThemeContext";
 
 function ProblemEditor(
   {
@@ -15,6 +16,7 @@ function ProblemEditor(
     submitting,
   }) {
   const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
+  const { theme } = useTheme();
   return (
     <div className="flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
       {/* Editor Header */}
@@ -43,7 +45,7 @@ function ProblemEditor(
             disabled={running || submitting}
             className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50"
           >
-            {running ? "Running..." : "Run Code"}
+            {running ? "Running..." : theme.words.run}
           </button>
 
           <button
@@ -54,7 +56,7 @@ function ProblemEditor(
               : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
               }`}
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {submitting ? "Submitting..." : theme.words.submit}
           </button>
         </div>
 

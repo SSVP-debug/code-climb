@@ -1,6 +1,9 @@
 import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "@sentry/react";
 
+import { ThemeProvider } from "./context/ThemeContext";
+
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -52,53 +55,55 @@ ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <AppContextProvider>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppContextProvider>
 
-          <ErrorBoundary
-            fallback={
-              <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <p>
-                  Something went wrong. Our team has been notified.
-                </p>
-              </div>
-            }
-          >
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: "#18181b",
-                  color: "#ffffff",
-                  border: "1px solid #3f3f46",
-                  borderRadius: "12px",
-                  fontSize: "14px",
-                },
-
-                success: {
-                  iconTheme: {
-                    primary: "#22c55e",
-                    secondary: "#000",
+            <ErrorBoundary
+              fallback={
+                <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                  <p>
+                    Something went wrong. Our team has been notified.
+                  </p>
+                </div>
+              }
+            >
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: "#18181b",
+                    color: "#ffffff",
+                    border: "1px solid #3f3f46",
+                    borderRadius: "12px",
+                    fontSize: "14px",
                   },
-                },
 
-                error: {
-                  iconTheme: {
-                    primary: "#ef4444",
-                    secondary: "#fff",
+                  success: {
+                    iconTheme: {
+                      primary: "#22c55e",
+                      secondary: "#000",
+                    },
                   },
-                },
-              }}
-            />
 
-            <App />
+                  error: {
+                    iconTheme: {
+                      primary: "#ef4444",
+                      secondary: "#fff",
+                    },
+                  },
+                }}
+              />
 
-          </ErrorBoundary>
+              <App />
 
-        </AppContextProvider>
-      </AuthProvider>
-    </BrowserRouter>
+            </ErrorBoundary>
+
+          </AppContextProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </React.StrictMode>
 );
 
