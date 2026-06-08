@@ -83,6 +83,7 @@ function ProblemSolver({ problem, slug }) {
   const [runResults, setRunResults] = useState(null);
   const [submitInfo, setSubmitInfo] = useState(null);
   const { problemWidth, setProblemWidth } = usePanelResize();
+  const [problemHidden, setProblemHidden] = useState(false);
   const forceTab = useMemo(
     () => deriveForceTab(runResults, submitInfo),
     [runResults, submitInfo]
@@ -219,46 +220,54 @@ function ProblemSolver({ problem, slug }) {
               owner for problem description content.
             */}
             <div
-              className="h-full overflow-hidden"
-              style={{ width: `${problemWidth}%` }}
+              className={`
+    h-full overflow-hidden
+    transition-all duration-300
+    ${problemHidden ? "w-0 opacity-0" : ""}
+  `}
+              style={
+                problemHidden
+                  ? { width: 0 }
+                  : { width: `${problemWidth}%` }
+              }
             >
               <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                 <ProblemHeader problem={problem} isSolved={isSolved} />
                 <ProblemInfo problem={problem} />
               </div>
             </div>
-            <div
-              className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
-              onMouseDown={(e) => {
-                e.preventDefault();
 
-                const startX = e.clientX;
-                const startWidth = problemWidth;
+            {!problemHidden && (
+              <div
+                className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
+                onMouseDown={(e) => {
+                  e.preventDefault();
 
-                const handleMove = (moveEvent) => {
-                  const delta =
-                    ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+                  const startX = e.clientX;
+                  const startWidth = problemWidth;
 
-                  const next = Math.min(
-                    60,
-                    Math.max(
-                      25,
-                      startWidth + delta
-                    )
-                  );
+                  const handleMove = (moveEvent) => {
+                    const delta =
+                      ((moveEvent.clientX - startX) / window.innerWidth) * 100;
 
-                  setProblemWidth(next);
-                };
+                    const next = Math.min(
+                      60,
+                      Math.max(25, startWidth + delta)
+                    );
 
-                const handleUp = () => {
-                  window.removeEventListener("mousemove", handleMove);
-                  window.removeEventListener("mouseup", handleUp);
-                };
+                    setProblemWidth(next);
+                  };
 
-                window.addEventListener("mousemove", handleMove);
-                window.addEventListener("mouseup", handleUp);
-              }}
-            />
+                  const handleUp = () => {
+                    window.removeEventListener("mousemove", handleMove);
+                    window.removeEventListener("mouseup", handleUp);
+                  };
+
+                  window.addEventListener("mousemove", handleMove);
+                  window.addEventListener("mouseup", handleUp);
+                }}
+              />
+            )}
 
 
             {/*
@@ -275,7 +284,11 @@ function ProblemSolver({ problem, slug }) {
             */}
             <div
               className="h-full flex flex-col overflow-hidden"
-              style={{ width: `${100 - problemWidth}%` }}
+              style={{
+                width: problemHidden
+                  ? "100%"
+                  : `${100 - problemWidth}%`,
+              }}
             >
 
               {/*
@@ -284,17 +297,36 @@ function ProblemSolver({ problem, slug }) {
                 pb-2: spacing to editor below (replaces gap).
               */}
               <div className="flex items-center justify-between flex-shrink-0 pb-2">
-                <span className="text-xs text-zinc-500 font-mono tracking-widest">
-                  {isSolved
-                    ? <span className="text-green-500">✓ Solved</span>
-                    : <>⏱ {timerFormatted}</>
-                  }
-                </span>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setProblemHidden((v) => !v)}
+                    className="
+        text-xs font-mono
+        px-2 py-1
+        rounded-lg
+        bg-zinc-800
+        hover:bg-zinc-700
+        transition-colors
+      "
+                  >
+                    {problemHidden ? "▶ Show Problem" : "◀ Hide Problem"}
+                  </button>
+
+                  <span className="text-xs text-zinc-500 font-mono tracking-widest">
+                    {isSolved
+                      ? <span className="text-green-500">✓ Solved</span>
+                      : <>⏱ {timerFormatted}</>
+                    }
+                  </span>
+                </div>
+
                 <span className="text-xs text-zinc-600">
                   {problem.difficulty === "Easy" && "🟢 Easy"}
                   {problem.difficulty === "Medium" && "🟡 Medium"}
                   {problem.difficulty === "Hard" && "🔴 Hard"}
                 </span>
+
               </div>
 
               {/*
@@ -418,7 +450,7 @@ function ProblemSolver({ problem, slug }) {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </DashboardLayout >
   );
 }
 
