@@ -72,6 +72,7 @@ export const codeHeistTheme = createTheme({
         clearFilters: "Reset Operation",
         topic: "Target",
         solveProblem: "Breach Vault",
+        solved: "Breached",
     },
 
 });

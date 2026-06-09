@@ -1,5 +1,6 @@
 import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
+
 import { formatDate } from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -17,6 +18,7 @@ import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
 import WorkspacePanel from "../components/problem/WorkspacePanel";
+import SubmissionResultBanner from "../components/workspace/SubmissionResultBanner";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -402,23 +404,31 @@ function ProblemSolver({ problem, slug }) {
                 WorkspacePanel must be h-full to fill this wrapper.
                 It already is (set in WorkspacePanel.jsx).
               */}
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <WorkspacePanel
-                  runResults={runResults}
+              <div className="flex-1 min-h-0 flex flex-col">
+
+                <SubmissionResultBanner
                   submitInfo={submitInfo}
-                  isRunning={running}
-                  isSubmitting={submitting}
-                  forceTab={forceTab}
                 />
+
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <WorkspacePanel
+                    runResults={runResults}
+                    submitInfo={submitInfo}
+                    isRunning={running}
+                    isSubmitting={submitting}
+                    forceTab={forceTab}
+                  />
+                </div>
+
               </div>
 
-            </div>
-            {/* end right column */}
-
           </div>
+          {/* end right column */}
+
         </div>
       </div>
-    </DashboardLayout>
+    </div>
+    </DashboardLayout >
   );
 }
 

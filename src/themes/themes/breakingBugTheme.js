@@ -72,5 +72,6 @@ export const breakingBugTheme = createTheme({
 
         topic: "Research Field",
         solveProblem: "Run Experiment",
+        solved: "Verified",
     },
 });
