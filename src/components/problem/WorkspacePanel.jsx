@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
+import { useTheme } from "../../context/ThemeContext";
 
 // ── DebugPanel ────────────────────────────────────────────────────────────────
 
-function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
+function DebugPanel({
+    runResults,
+    submitInfo,
+    isRunning,
+    isSubmitting,
+    theme
+}) {
     if (isRunning || isSubmitting) {
         return (
             <div className="p-5 space-y-3 animate-pulse">
@@ -16,7 +23,10 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
     if (runResults?.compileFailed) {
         return (
             <div className="p-5 space-y-3">
-                <ErrorHeader kind="compile" />
+                <ErrorHeader
+                    kind="compile"
+                    theme={theme}
+                />
                 <ErrorBlock text={runResults.error} color="yellow" />
             </div>
         );
@@ -31,7 +41,7 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
         if (erroredCase) {
             return (
                 <div className="p-5 space-y-3">
-                    <ErrorHeader kind="runtime" />
+                    <ErrorHeader kind="runtime" theme={theme} />
                     <div className="space-y-1.5">
                         <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
                             Example {erroredCase.index + 1}
@@ -52,7 +62,7 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
     if (runResults?.error && !runResults?.compileFailed) {
         return (
             <div className="p-5 space-y-3">
-                <ErrorHeader kind="infra" />
+                <ErrorHeader kind="infra" theme={theme} />
                 <ErrorBlock text={runResults.error} color="zinc" />
             </div>
         );
@@ -73,7 +83,7 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
 
             return (
                 <div className="p-5 space-y-3">
-                    <ErrorHeader kind={kind} label={submitInfo.status.replace(" ❌", "")} />
+                    <ErrorHeader kind={kind} label={submitInfo.status.replace(" ❌", "")} theme={theme} />
                     {submitInfo.error && <ErrorBlock text={submitInfo.error} color="red" />}
                     {submitInfo.passed !== undefined && (
                         <p className="text-xs text-zinc-500 font-mono">
@@ -100,14 +110,36 @@ function DebugPanel({ runResults, submitInfo, isRunning, isSubmitting }) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const KIND_META = {
-    compile: { label: "Compilation Error", color: "text-yellow-400", icon: "⚠" },
-    runtime: { label: "Runtime Error", color: "text-red-400", icon: "✗" },
-    judge: { label: "Judge Error", color: "text-zinc-400", icon: "⚙" },
-    infra: { label: "Runner Unavailable", color: "text-zinc-400", icon: "⚙" },
-};
+function getKindMeta(theme) {
+    return {
+        compile: {
+            label: theme.words.compileError,
+            color: "text-yellow-400",
+            icon: "⚠",
+        },
 
-function ErrorHeader({ kind, label }) {
+        runtime: {
+            label: theme.words.runtimeError,
+            color: "text-red-400",
+            icon: "✗",
+        },
+
+        judge: {
+            label: theme.words.judgeError,
+            color: "text-zinc-400",
+            icon: "⚙",
+        },
+
+        infra: {
+            label: "Runner Unavailable",
+            color: "text-zinc-400",
+            icon: "⚙",
+        },
+    };
+}
+
+function ErrorHeader({ kind, label, theme }) {
+    const KIND_META = getKindMeta(theme);
     const meta = KIND_META[kind] ?? KIND_META.judge;
     return (
         <div className="flex items-center gap-2">
@@ -143,7 +175,6 @@ function ErrorBlock({ text, color = "red" }) {
 // ── WorkspacePanel ────────────────────────────────────────────────────────────
 
 const TABS = ["testcases", "debug"];
-
 export default function WorkspacePanel({
     runResults,
     submitInfo,
@@ -152,6 +183,7 @@ export default function WorkspacePanel({
     forceTab,
 }) {
     const [activeTab, setActiveTab] = useState("testcases");
+    const { theme } = useTheme();
 
 
 
@@ -175,9 +207,9 @@ export default function WorkspacePanel({
 
             {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
             <div
-                className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0"                
+                className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0"
             >
-            
+
                 {TABS.map((tab) => {
                     const isActive = activeTab === tab;
 
@@ -198,7 +230,7 @@ export default function WorkspacePanel({
                     return (
                         <button
                             key={tab}
-                            onClick={() => {                                
+                            onClick={() => {
                                 setActiveTab(tab);
                             }}
                             className={`
@@ -207,7 +239,9 @@ export default function WorkspacePanel({
                 ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
               `}
                         >
-                            {tab === "testcases" ? "Testcases" : "Debug"}
+                            {tab === "testcases"
+                                ? theme.words.testcases
+                                : theme.words.debug}
 
                             {badge && (
                                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${badgeColor}`}>
@@ -248,6 +282,7 @@ export default function WorkspacePanel({
                         submitInfo={submitInfo}
                         isRunning={isRunning}
                         isSubmitting={isSubmitting}
+                        theme={theme}
                     />
                 )}
             </div>

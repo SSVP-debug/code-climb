@@ -6,7 +6,12 @@ import {
   getDailyChallenge,
 } from "../../../utils/analyticsUtils";
 
+import { useTheme } from "../../../context/ThemeContext";
+
 function DailyChallengeSection() {
+  const { theme } = useTheme();
+
+  const { words } = useTheme();
 
   const challenge =
     getDailyChallenge();
@@ -21,7 +26,7 @@ function DailyChallengeSection() {
 
           <p className="text-zinc-400 text-sm">
 
-            Daily Challenge
+            {theme.words.dailyChallenge}
 
           </p>
 
@@ -37,7 +42,7 @@ function DailyChallengeSection() {
 
           <p className="text-zinc-400 text-sm">
 
-            Difficulty
+            {theme.words.difficulty}
 
           </p>
 
@@ -62,7 +67,7 @@ function DailyChallengeSection() {
         className="inline-block bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
       >
 
-        Solve Challenge
+        {theme.words.solveChallenge}
 
       </Link>
 

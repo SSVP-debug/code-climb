@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTheme } from "../../context/ThemeContext";
 
 // ── Runtime error normalisation ───────────────────────────────────────────────
 //
@@ -110,6 +111,7 @@ export default function TestcaseResultPanel({
   isRunning,
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  const { theme } = useTheme();
   
 
   // Normalise once — promotes "RUNTIME_ERROR:" stdout strings to r.error
@@ -131,7 +133,7 @@ export default function TestcaseResultPanel({
     return (
       <div className="flex items-center justify-center min-h-[160px]">
         <p className="text-zinc-600 text-sm font-mono">
-          Click Run to test against examples
+          Click {theme.words.run} to test against examples
         </p>
       </div>
     );
@@ -141,7 +143,7 @@ export default function TestcaseResultPanel({
     return (
       <div className="space-y-3">
         <span className="text-yellow-400 text-sm font-semibold font-mono">
-          ⚠ Compilation Error
+          ⚠ {theme.words.compileError}
         </span>
         <div className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 font-mono text-xs text-yellow-200 whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
           {compileError || "Unknown compilation error."}
@@ -228,11 +230,11 @@ export default function TestcaseResultPanel({
             <DataRow label="Input" value={formatInput(active.input)} />
             <div className="rounded-lg border border-red-500/25 bg-red-500/5 p-4">
               <p className="text-red-400 font-medium">
-                Runtime Error
+                {theme.words.runtimeError}
               </p>
 
               <p className="text-zinc-500 text-sm mt-1">
-                Open the Debug tab for details →
+                Open the {theme.words.debug} tab for details →
               </p>
             </div>
           </>
