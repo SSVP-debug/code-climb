@@ -58,5 +58,19 @@ export const breakingBugTheme = createTheme({
         joined: "Lab Joined",
         recentActivity: "Research Timeline",
         connectLeetcode: "Connect Research Archive",
+        searchProblems: "Search experiments...",
+        all: "All",
+        easy: "Stable",
+        medium: "Reactive",
+        hard: "Volatile",
+
+        problemFound: "experiment found",
+        problemsFound: "experiments found",
+
+        noProblemsFound: "No experiments match your filters.",
+        clearFilters: "Reset Research",
+
+        topic: "Research Field",
+        solveProblem: "Run Experiment",
     },
 });
