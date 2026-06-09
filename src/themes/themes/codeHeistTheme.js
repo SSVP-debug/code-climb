@@ -73,6 +73,12 @@ export const codeHeistTheme = createTheme({
         topic: "Target",
         solveProblem: "Breach Vault",
         solved: "Breached",
+        running: "Scouting...",
+        submitting: "Executing...",
+        language: "Equipment",
+        advancedTesting: "Dry Run",
+        customInput: "Mission Parameters",
+        customInputPlaceholder: "Enter operation input...",
     },
 
 });

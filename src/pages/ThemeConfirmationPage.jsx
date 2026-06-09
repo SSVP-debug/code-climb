@@ -14,8 +14,18 @@ export default function ThemeConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
-      <div className="max-w-2xl text-center">
-        <div className="text-7xl mb-6">
+      <div
+        className="
+    max-w-2xl text-center
+    animate-[fadeIn_.4s_ease-out]
+  "
+      >
+        <div
+          className="
+    text-7xl mb-6
+    animate-[pulseGlow_1s_ease-out]
+  "
+        >
           {theme.icon}
         </div>
 

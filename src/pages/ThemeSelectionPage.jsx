@@ -33,7 +33,14 @@ export default function ThemeSelectionPage() {
                 {THEME_OPTIONS.map((theme) => (
                     <div
                         key={theme.id}
-                        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6"
+                        className="
+        bg-zinc-900 border border-zinc-800 rounded-2xl p-6
+        transition-all duration-300
+        hover:-translate-y-2
+        hover:scale-[1.02]
+        hover:border-green-500
+        hover:shadow-lg hover:shadow-green-500/10
+    "
                     >
                         <div className="text-4xl mb-4">{theme.icon}</div>
 

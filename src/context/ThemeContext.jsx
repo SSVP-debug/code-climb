@@ -41,6 +41,7 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
+    const { themeId, themeInfo, theme, setTheme } = useContext(ThemeContext);
     const context = useContext(ThemeContext);
 
     if (!context) {
