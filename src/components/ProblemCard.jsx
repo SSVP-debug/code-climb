@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 function ProblemCard({
   title,
@@ -6,11 +7,16 @@ function ProblemCard({
   topic,
   slug,
 }) {
-
+  const { theme } = useTheme();
   const difficultyColors = {
     Easy: "text-green-400",
     Medium: "text-yellow-400",
     Hard: "text-red-400",
+  };
+  const difficultyLabels = {
+    Easy: theme.words.easy,
+    Medium: theme.words.medium,
+    Hard: theme.words.hard,
   };
 
   return (
@@ -23,24 +29,23 @@ function ProblemCard({
         </h2>
 
         <span
-          className={`font-semibold ${
-            difficultyColors[difficulty]
-          }`}
+          className={`font-semibold ${difficultyColors[difficulty]
+            }`}
         >
-          {difficulty}
+          {difficultyLabels[difficulty] ?? difficulty}
         </span>
 
       </div>
 
       <p className="text-zinc-400 mt-4">
-        Topic: {topic}
+        {theme.words.topic}: {topic}
       </p>
 
       <Link
         to={`/problems/${slug}`}
         className="inline-block mt-6 bg-green-500 hover:bg-green-600 transition px-5 py-3 rounded-xl font-semibold text-black"
       >
-        Solve Problem
+        {theme.words.solveProblem}
       </Link>
 
     </div>

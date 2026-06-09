@@ -59,5 +59,19 @@ export const codeHeistTheme = createTheme({
         joined: "Recruited",
         recentActivity: "Operation History",
         connectLeetcode: "Connect Hacker Profile",
+        searchProblems: "Search vaults...",
+        all: "All",
+        easy: "Low Security",
+        medium: "Guarded",
+        hard: "Maximum Security",
+
+        problemFound: "vault found",
+        problemsFound: "vaults found",
+
+        noProblemsFound: "No vaults match your filters.",
+        clearFilters: "Reset Operation",
+        topic: "Target",
+        solveProblem: "Breach Vault",
     },
+
 });
