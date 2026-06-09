@@ -9,6 +9,10 @@ import { formatDate } from "../../../utils/formatters";
 
 import { getStorageData } from "../../../services/storageService";
 
+import { useTheme } from "../../../context/ThemeContext";
+
+
+
 function getHeatmapCells() {
   const activityDates =
     getStorageData(
@@ -37,6 +41,7 @@ function getHeatmapCells() {
 }
 
 function PublicProfileCard() {
+  const { theme } = useTheme();
   const profile =
     getProfileData();
 
@@ -85,7 +90,7 @@ function PublicProfileCard() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-zinc-400 text-sm">
-            Public Developer Profile
+            {theme.words.publicProfile}
           </p>
 
           <h2 className="text-3xl font-bold mt-2">
@@ -102,7 +107,7 @@ function PublicProfileCard() {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-zinc-800 rounded-xl p-4">
           <p className="text-zinc-400 text-sm">
-            Total Solved
+            {theme.words.totalSolved}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -112,7 +117,7 @@ function PublicProfileCard() {
 
         <div className="bg-zinc-800 rounded-xl p-4">
           <p className="text-zinc-400 text-sm">
-            Total Submissions
+            {theme.words.totalSubmissions}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -122,7 +127,7 @@ function PublicProfileCard() {
 
         <div className="bg-green-900 rounded-xl p-4">
           <p className="text-green-300 text-sm">
-            Easy Solved
+            {theme.words.easySolved}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -132,7 +137,7 @@ function PublicProfileCard() {
 
         <div className="bg-yellow-900 rounded-xl p-4">
           <p className="text-yellow-300 text-sm">
-            Medium Solved
+            {theme.words.mediumSolved}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -142,7 +147,7 @@ function PublicProfileCard() {
 
         <div className="bg-red-900 rounded-xl p-4">
           <p className="text-red-300 text-sm">
-            Hard Solved
+            {theme.words.hardSolved}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -152,7 +157,7 @@ function PublicProfileCard() {
 
         <div className="bg-zinc-800 rounded-xl p-4">
           <p className="text-zinc-400 text-sm">
-            Topics
+            {theme.words.topics}
           </p>
 
           <h3 className="text-2xl font-bold mt-2">
@@ -162,7 +167,7 @@ function PublicProfileCard() {
 
         <div className="bg-zinc-800 rounded-xl p-4 col-span-2">
           <p className="text-zinc-400 text-sm">
-            Joined
+            {theme.words.joined}
           </p>
 
           <h3 className="text-lg font-bold mt-2">
@@ -174,7 +179,7 @@ function PublicProfileCard() {
       {/* Activity Heatmap */}
       <div className="mt-8">
         <p className="text-zinc-400 text-sm mb-3">
-          Recent Activity
+          {theme.words.recentActivity}
         </p>
 
         <div className="grid grid-cols-7 gap-2">
@@ -201,7 +206,7 @@ function PublicProfileCard() {
           }
           className="w-full bg-yellow-500 hover:bg-yellow-400 transition text-black font-semibold py-3 rounded-xl"
         >
-          Connect LeetCode
+          {theme.words.connectLeetcode}
         </button>
       </div>
 

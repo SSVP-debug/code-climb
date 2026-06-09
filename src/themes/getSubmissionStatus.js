@@ -1,4 +1,4 @@
-export function getSubmissionStatus(theme, status) {
+export function getStatusLabel(theme, status) {
   if (!status) return status;
 
   if (status.includes("Accepted")) {

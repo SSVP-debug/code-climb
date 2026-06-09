@@ -4,7 +4,11 @@ import {
     getAcceptanceRate,
 } from "../../../utils/analyticsUtils";
 
+import { useTheme } from "../../../context/ThemeContext";
+
 function AIInsightsSection() {
+    const { theme } = useTheme();
+    
 
     const weakestTopic =
         getWeakestTopic();
@@ -21,7 +25,7 @@ function AIInsightsSection() {
 
             <h2 className="text-2xl font-semibold mb-6">
 
-                AI Learning Insights
+                {theme.words.aiInsights}
 
             </h2>
 
@@ -31,7 +35,7 @@ function AIInsightsSection() {
 
                     <p className="text-zinc-400 text-sm">
 
-                        Strongest Topic
+                        {theme.words.strongestTopic}
 
                     </p>
 
@@ -47,7 +51,7 @@ function AIInsightsSection() {
 
                     <p className="text-zinc-400 text-sm">
 
-                        Weakest Topic
+                        {theme.words.weakestTopic}
 
                     </p>
 
@@ -63,7 +67,7 @@ function AIInsightsSection() {
 
                     <p className="text-zinc-400 text-sm">
 
-                        Recommendation
+                        {theme.words.recommendation}
 
                     </p>
 

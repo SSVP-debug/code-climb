@@ -2,8 +2,11 @@ import {
   getAchievements,
 } from "../../../utils/analyticsUtils";
 
+import { useTheme } from "../../../context/ThemeContext";
+
 function AchievementGallery() {
 
+  const { theme } = useTheme();
   const achievements =
     getAchievements();
 
@@ -13,7 +16,7 @@ function AchievementGallery() {
 
       <h2 className="text-2xl font-semibold mb-6">
 
-        Achievements
+        {theme.words.achievements}
 
       </h2>
 
@@ -21,7 +24,7 @@ function AchievementGallery() {
 
         <p className="text-zinc-400">
 
-          No achievements unlocked yet.
+          {theme.words.noAchievements}
 
         </p>
 
@@ -42,7 +45,7 @@ function AchievementGallery() {
 
                 <h3 className="text-lg font-bold">
 
-                  🏆 {
+                  {theme.words.achievementIcon} {
                     achievement.title
                   }
 
