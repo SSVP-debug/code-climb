@@ -118,15 +118,3 @@ async function start() {
 }
 
 start();
-
-process.on("SIGTERM", () => {
-  console.log("[Server] SIGTERM received — shutting down gracefully");
-  server.close(() => {
-    console.log("[Server] Closed. Exiting.");
-    process.exit(0);
-  });
-});
-
-process.on("SIGINT", () => {
-  server.close(() => process.exit(0));
-});
