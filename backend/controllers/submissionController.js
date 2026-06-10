@@ -15,7 +15,7 @@ function toClientSubmission(doc) {
     expectedOutput: doc.expectedOutput,
     actualOutput: doc.actualOutput,
     time: new Date(doc.createdAt).toLocaleTimeString(),
-    date: new Date(doc.createdAt).formatDate(),
+    date: new Date(doc.createdAt).toLocaleDateString(),
     createdAt: doc.createdAt,
   };
 }
