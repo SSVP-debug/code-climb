@@ -22,19 +22,28 @@ export async function requireAuth(req, res, next) {
       email: decoded.email,
     };
 
-    let userDoc = await User.findOne({
-      firebaseUid: decoded.uid,
-    });
-
-    if (!userDoc) {
-      userDoc = await User.create({
+    try {
+      let userDoc = await User.findOne({
         firebaseUid: decoded.uid,
-        email: decoded.email || "",
-        displayName: decoded.name || "",
       });
-    }
 
-    req.userDoc = userDoc;
+      if (!userDoc) {
+        userDoc = await User.create({
+          firebaseUid: decoded.uid,
+          email: decoded.email || "",
+          displayName: decoded.name || "",
+        });
+      }
+
+      req.userDoc = userDoc;
+    } catch (mongoError) {
+      console.warn(
+        "[Auth] Mongo unavailable, continuing with Firebase auth only:",
+        mongoError.message
+      );
+
+      req.userDoc = null;
+    }
 
     return next();
 

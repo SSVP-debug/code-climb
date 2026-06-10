@@ -95,9 +95,15 @@ router.post("/run", validateBody(runSchema), async (req, res) => {
       });
     }
 
-    const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
-    const actual = normalizeOutput(result.stdout || "");
-    const passed = expected === actual;
+    const expected = normalizeOutput(
+      JSON.stringify(testcase.expectedOutput)
+    );
+
+    const actual = normalizeOutput(
+      result.stdout || ""
+    );
+
+    const passed = outputsMatch(expected, actual);
     const hasError = !!result.stderr;
 
     if (isDev) {
@@ -128,6 +134,16 @@ function normalizeOutput(output) {
   return String(output ?? "")
     .trim()
     .replace(/\r\n/g, "\n");
+}
+
+function outputsMatch(expected, actual) {
+  try {
+    return JSON.stringify(JSON.parse(expected))
+      === JSON.stringify(JSON.parse(actual));
+  } catch {
+    return normalizeOutput(expected)
+      === normalizeOutput(actual);
+  }
 }
 
 const languageIdMap = {
@@ -241,7 +257,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       console.log("ACTUAL:", actual);
       console.log("RAW STDOUT:", result.stdout);
 
-      if (expected !== actual) {
+      if (!outputsMatch(expected, actual)) {
         return res.json({
           status: "Wrong Answer ❌",
           passed: passedCount,

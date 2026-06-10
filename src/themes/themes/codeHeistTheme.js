@@ -72,6 +72,10 @@ export const codeHeistTheme = createTheme({
         clearFilters: "Reset Operation",
         topic: "Target",
         solveProblem: "Breach Vault",
+        language: "Equipment",
+        advancedTesting: "Dry Run",
+        customInput: "Mission Parameters",
+        customInputPlaceholder: "Enter operation input...",
     },
 
 });

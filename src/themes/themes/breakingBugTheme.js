@@ -72,5 +72,9 @@ export const breakingBugTheme = createTheme({
 
         topic: "Research Field",
         solveProblem: "Run Experiment",
+        language: "Formula",
+        advancedTesting: "Advanced Cook",
+        customInput: "Custom Ingredients",
+        customInputPlaceholder: "Enter reaction input...",
     },
 });

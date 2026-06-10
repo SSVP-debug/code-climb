@@ -24,7 +24,7 @@ function ProblemEditor(
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-            Language
+            {theme.words.language}
           </span>
 
           <select
@@ -45,7 +45,9 @@ function ProblemEditor(
             disabled={running || submitting}
             className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50"
           >
-            {running ? "Running..." : theme.words.run}
+            {running
+              ? theme.words.running
+              : theme.words.run}
           </button>
 
           <button
@@ -56,7 +58,9 @@ function ProblemEditor(
               : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
               }`}
           >
-            {submitting ? "Submitting..." : theme.words.submit}
+            {submitting
+              ? theme.words.submitting
+              : theme.words.submit}
           </button>
         </div>
 
@@ -89,7 +93,7 @@ function ProblemEditor(
           className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors"
         >
           <span>{showAdvancedTesting ? "▼" : "▶"}</span>
-          Advanced Testing
+          {theme.words.advancedTesting}
         </button>
       </div>
 
@@ -99,7 +103,7 @@ function ProblemEditor(
             htmlFor="custom-input"
             className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
           >
-            Custom Input
+            {theme.words.customInput}
           </label>
 
           <textarea
@@ -108,7 +112,7 @@ function ProblemEditor(
             onChange={(e) => setCustomInput(e.target.value)}
             rows={2}
             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 font-mono text-sm text-zinc-200 outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600"
-            placeholder="Enter standard input..."
+            placeholder={theme.words.customInputPlaceholder}
           />
         </div>
       )}
