@@ -79,6 +79,9 @@ function App() {
           </ProtectedRoute>
         }
       />
+      
+
+      
 
       <Route
         path="/problems/:slug"

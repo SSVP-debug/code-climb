@@ -10,6 +10,11 @@ import {
   addDoc,
   collection,
   serverTimestamp,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
@@ -19,6 +24,9 @@ import {
   initProgress,
   markProblemSolved as persistSolvedToFirestore,
 } from "../services/progressService";
+import problems from "../data/problems";
+
+
 
 // Named export — required by useAppContext.js import
 export const AppContext = createContext(null);
@@ -103,6 +111,15 @@ function AppContextProvider({ children }) {
         await initProgress(user.uid);
         const fp = await getProgress(user.uid);
 
+        const firestoreSubmissions =
+          await loadUserSubmissions(user.uid);
+
+        setSubmissions((prev) => {
+          if (prev.length > 0) return prev;
+
+          return firestoreSubmissions;
+        });
+
         // Merge solvedProblems: union of both sources
         setSolvedProblems((prev) =>
           Array.from(new Set([...prev, ...(fp.solvedProblems || [])]))
@@ -118,9 +135,9 @@ function AppContextProvider({ children }) {
         setSolvedDifficulty((prev) => {
           const fd = fp.solvedDifficulty || {};
           return {
-            Easy:   Math.max(prev.Easy   || 0, fd.Easy   || 0),
+            Easy: Math.max(prev.Easy || 0, fd.Easy || 0),
             Medium: Math.max(prev.Medium || 0, fd.Medium || 0),
-            Hard:   Math.max(prev.Hard   || 0, fd.Hard   || 0),
+            Hard: Math.max(prev.Hard || 0, fd.Hard || 0),
           };
         });
       } catch (err) {
@@ -151,6 +168,22 @@ function AppContextProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("submissions", JSON.stringify(submissions));
   }, [submissions]);
+
+  async function loadUserSubmissions(userId) {
+    const q = query(
+      collection(db, "submissions"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(100)
+    );
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
 
   // ── Actions ──────────────────────────────────────────────────────────────
 
@@ -205,6 +238,17 @@ function AppContextProvider({ children }) {
       }
     }
   }
+
+  const totalXP = solvedProblems.reduce(
+    (sum, slug) => {
+      const p = problems.find(
+        (x) => x.slug === slug
+      );
+
+      return sum + (p?.xp || 0);
+    },
+    0
+  );
 
   // ── Context value ────────────────────────────────────────────────────────
   const value = {
