@@ -22,7 +22,20 @@ export async function requireAuth(req, res, next) {
       email: decoded.email,
     };
 
-    // TEMPORARILY SKIP MongoDB
+    let userDoc = await User.findOne({
+      firebaseUid: decoded.uid,
+    });
+
+    if (!userDoc) {
+      userDoc = await User.create({
+        firebaseUid: decoded.uid,
+        email: decoded.email || "",
+        displayName: decoded.name || "",
+      });
+    }
+
+    req.userDoc = userDoc;
+
     return next();
 
   } catch (error) {
