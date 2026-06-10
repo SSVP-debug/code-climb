@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
@@ -19,12 +19,14 @@ import {
 
 function Profile() {
   // FIX: useAuth() instead of useContext(AuthContext)
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, themeInfo } = useTheme();
   const {
     solvedProblems,
     activityDates,
     recentActivity,
+    submissions,
   } = useAppContext();
 
   const canSwitchUniverse = canChangeTheme({
@@ -47,9 +49,12 @@ function Profile() {
   const joinedDate =
     localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
 
+  const recentSubmissions =
+    submissions.slice(0, 5);
+
   async function handleSaveLeetcode() {
-    setError(err.message || "Failed to save LeetCode username.");
-    setSaved(true);
+    setError("");
+    setSaved(false);
 
     try {
       await apiFetch("/api/me", {
@@ -156,105 +161,156 @@ function Profile() {
               </div>
             )}
           </div>
-      </div>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-400 text-sm">Solved</p>
-          <p className="text-3xl font-bold mt-1">
-            {solvedProblems.length}
-          </p>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-400 text-sm">Streak days</p>
-          <p className="text-3xl font-bold mt-1">
-            {activityDates.length}
-          </p>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <p className="text-zinc-400 text-sm">Rank</p>
-          <p className="text-3xl font-bold mt-1">
-            {getUserRank()}
-          </p>
-          <p className="text-zinc-500 text-sm mt-1">
-            Level {getUserLevel()}
-          </p>
-        </div>
-      </div>
-
-      {/* LeetCode username */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          LeetCode Username
-        </h2>
-        <div className="flex gap-3">
-          <input
-            type="text"
-            value={leetcodeUsername}
-            onChange={(e) => setLeetcodeUsername(e.target.value)}
-            placeholder="your-leetcode-username"
-            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
-          />
-          <button
-            onClick={handleSaveLeetcode}
-            className="bg-green-500 text-black px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition"
-          >
-            Save
-          </button>
-        </div>
-
-        {saved && (
-          <p className="text-green-400 text-sm mt-2">
-            Saved successfully
-          </p>
-        )}
-
-        {error && (
-          <p className="text-red-400 text-sm mt-2">
-            {error}
-          </p>
-        )}
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          Recent Activity
-        </h2>
-
-        {recentActivity.length === 0 ? (
-          <p className="text-zinc-400">
-            No activity yet. Solve a problem to get started.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {recentActivity.map((item, index) => (
-              <div
-                key={index}
-                className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
-              >
-                <div className="flex items-center gap-3">
-                  {/* Status indicator dot */}
-                  <span
-                    className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted")
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                      }`}
-                  />
-                  <span className="text-sm">{item.title}</span>
-                </div>
-                <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
-                  {item.time}
-                </span>
-              </div>
-            ))}
+        {/* Stats grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <p className="text-zinc-400 text-sm">Solved</p>
+            <p className="text-3xl font-bold mt-1">
+              {solvedProblems.length}
+            </p>
           </div>
-        )}
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <p className="text-zinc-400 text-sm">Streak days</p>
+            <p className="text-3xl font-bold mt-1">
+              {activityDates.length}
+            </p>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <p className="text-zinc-400 text-sm">Rank</p>
+            <p className="text-3xl font-bold mt-1">
+              {getUserRank()}
+            </p>
+            <p className="text-zinc-500 text-sm mt-1">
+              Level {getUserLevel()}
+            </p>
+          </div>
+        </div>
+
+        {/* LeetCode username */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            LeetCode Username
+          </h2>
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={leetcodeUsername}
+              onChange={(e) => setLeetcodeUsername(e.target.value)}
+              placeholder="your-leetcode-username"
+              className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none"
+            />
+            <button
+              onClick={handleSaveLeetcode}
+              className="bg-green-500 text-black px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition"
+            >
+              Save
+            </button>
+          </div>
+
+          {saved && (
+            <p className="text-green-400 text-sm mt-2">
+              Saved successfully
+            </p>
+          )}
+
+          {error && (
+            <p className="text-red-400 text-sm mt-2">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Recent Activity
+          </h2>
+
+          {recentActivity.length === 0 ? (
+            <p className="text-zinc-400">
+              No activity yet. Solve a problem to get started.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {recentActivity.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Status indicator dot */}
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted")
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                        }`}
+                    />
+                    <span className="text-sm">{item.title}</span>
+                  </div>
+                  <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
+                    {item.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Recent Submissions
+          </h2>
+
+
+          {recentSubmissions.length === 0 ? (
+            <p className="text-zinc-500">
+              No submissions yet.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {recentSubmissions.map((submission) => (
+                <div
+                  key={
+                    submission.id ||
+                    submission.createdAt ||
+                    Math.random()
+                  }
+                  className="flex justify-between items-center border-b border-border/30 pb-2"
+                >
+                  <div>
+                    <p className="font-medium">
+                      {submission.problemTitle}
+                    </p>
+
+                    <p className="text-xs text-zinc-500">
+                      {submission.language}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p
+                      className={
+                        submission.status === "Accepted"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      {submission.status}
+                    </p>
+
+                    <p className="text-xs text-zinc-500">
+                      {submission.date}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </DashboardLayout >
   );
 }
