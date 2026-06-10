@@ -1,4 +1,4 @@
-const hiddenTestcases = {
+const hiddentestcases = {
   "two-sum": [
     { input: { nums: [1, 2, 3, 4, 5], target: 9 }, expectedOutput: [3, 4] },
     { input: { nums: [-1, 0], target: -1 }, expectedOutput: [0, 1] },
@@ -100,4 +100,4 @@ const hiddenTestcases = {
   ],
 };
 
-export default hiddenTestcases;
+export default hiddentestcases;

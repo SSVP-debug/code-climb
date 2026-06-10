@@ -4,38 +4,48 @@ import { formatDate } from "../utils/formatters";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { judgeSubmission, runTestcases } from "../services/judgeService"; // ← runCode import removed; runTestcases added
+import { judgeSubmission, runTestcases } from "../services/judgeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
+import { usePanelResize } from "../hooks/usePanelResize";
+import { useVerticalResize } from "../hooks/useVerticalResize";
 import { loadSavedCode, saveCode } from "../utils/editorStorage";
-import { useTimer } from "../hooks/useTimer";                               // ← parseJudge0Result import removed (no longer used by Run)
+import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
 
-// Sub-components
 import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
-import ProblemResults from "../components/problem/ProblemResults";
-import TestcaseResultPanel from "../components/problem/TestcaseResultPanel"; // ← NEW
-import SubmissionHistory from "../components/problem/SubmissionHistory";
-import SubmissionDetailsModal from "../components/problem/SubmissionDetailsModal";
+import WorkspacePanel from "../components/problem/WorkspacePanel";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function deriveForceTab(runResults, submitInfo) {
+  if (runResults?.compileFailed) return "debug";
+  if (runResults?.results?.some((r) => r.error)) return "debug";
+  if (runResults?.error && !runResults?.compileFailed) return "debug";
+  if (runResults?.results?.length > 0) return "testcases";
+  if (submitInfo?.status) {
+    const s = submitInfo.status;
+    if (s.includes("Compilation") || s.includes("Runtime") || s.includes("Error"))
+      return "debug";
+    return "testcases";
+  }
+  return null;
+}
+
+// ── ProblemDetailsPage ────────────────────────────────────────────────────────
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
-
-  const problem = useMemo(
-    () => problems.find((p) => p.slug === slug),
-    [slug]
-  );
+  const problem = useMemo(() => problems.find((p) => p.slug === slug), [slug]);
 
   if (!problem) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Problem Not Found
-            </h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Problem Not Found</h2>
             <p className="text-zinc-500 mb-6">
               The problem you're looking for doesn't exist or has been moved.
             </p>
@@ -54,314 +64,362 @@ function ProblemDetailsPage() {
   return <ProblemSolver key={slug} problem={problem} slug={slug} />;
 }
 
+// ── ProblemSolver ─────────────────────────────────────────────────────────────
+
 function ProblemSolver({ problem, slug }) {
-  const {
-    solvedProblems,
-    submissions: allSubmissions,
-    addSubmission,
-    markProblemSolved,
-  } = useAppContext();
-
+  const { solvedProblems, addSubmission, markProblemSolved } = useAppContext();
   const isSolved = solvedProblems.includes(slug);
-
-  const submissions = useMemo(
-    () => allSubmissions.filter((s) => s.problemSlug === slug),
-    [allSubmissions, slug]
-  );
-  const [runResults, setRunResults] = useState(null);
-  const runtimeError =
-  runResults?.results?.find((r) => r.error)?.error;
-  
-  // ── Timer ──────────────────────────────────────────────────────────────
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
-  // ── State ──────────────────────────────────────────────────────────────
+  const { editorHeight, setEditorHeight } = useVerticalResize();
   const [language, setLanguage] = useState("python");
-  const [error, setError] = useState("");
   const [code, setCode] = useState(() =>
     loadSavedCode(slug, "python", problem.starterCode.python)
   );
   const [customInput, setCustomInput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [judgeState, setJudgeState] = useState("");
-  const [testcaseProgress, setTestcaseProgress] = useState(null);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [error, setError] = useState("");
+  const [runResults, setRunResults] = useState(null);
+  const [submitInfo, setSubmitInfo] = useState(null);
+  const { problemWidth, setProblemWidth } = usePanelResize();
+  const forceTab = useMemo(
+    () => deriveForceTab(runResults, submitInfo),
+    [runResults, submitInfo]
+  );
 
-  // Submit result state (unchanged — feeds ProblemResults)
-  const [status, setStatus] = useState("");
-  const [output, setOutput] = useState("");
-  const [executionMeta, setExecutionMeta] = useState(null);
+  useEffect(() => { saveCode(slug, language, code); }, [slug, language, code]);
 
-  // ── NEW: Run result state — feeds TestcaseResultPanel ─────────────────
-  // Shape: { results: [...], compileFailed: bool, error: string|null } | null
-  // null = never been run yet (shows idle panel)
-  
-
-  // ── Sync code to storage ───────────────────────────────────────────────
-  useEffect(() => {
-    saveCode(slug, language, code);
-  }, [slug, language, code]);
-
-  // ── Language change ────────────────────────────────────────────────────
   const handleLanguageChange = (nextLanguage) => {
     saveCode(slug, language, code);
     setLanguage(nextLanguage);
-    setCode(
-      loadSavedCode(slug, nextLanguage, problem.starterCode[nextLanguage] || "")
-    );
+    setCode(loadSavedCode(slug, nextLanguage, problem.starterCode[nextLanguage] || ""));
   };
 
-  // ── Run Code ───────────────────────────────────────────────────────────
-  // CHANGED: now calls runTestcases() → /api/judge/run with driver wrapping.
-  // Sets runResults state which feeds TestcaseResultPanel.
-  // No longer sets status/output/executionMeta (those belong to Submit).
   const handleRunCode = async () => {
     if (running) return;
-
     try {
       setRunning(true);
       setError("");
-      // Clear previous run results so the skeleton loading state shows
       setRunResults(null);
-
+      setSubmitInfo(null);
       const response = await runTestcases({ problem, code, language });
-
-      // response shape: { results, compileFailed, error }
       setRunResults(response);
-
     } catch (err) {
       console.error(err);
       setError("Execution failed. Please try again.");
-      // Show an error state in the panel without crashing
       setRunResults({ results: [], compileFailed: false, error: err.message });
     } finally {
       setRunning(false);
     }
   };
 
-  // ── Submit Code ────────────────────────────────────────────────────────
-  // UNCHANGED — sets status/output/executionMeta which feed ProblemResults.
   const handleSubmitCode = async () => {
     if (submitting) return;
-
+    const wasAlreadySolved = isSolved;
     try {
       setSubmitting(true);
       setError("");
-      setJudgeState("Queued");
-      setExecutionMeta(null);
-      setStatus("Judging...");
+      setRunResults(null);
+      setSubmitInfo(null);
 
-      const judgeResult = await judgeSubmission({
-        problem,
-        code,
-        language,
-        onProgress: setTestcaseProgress,
+      const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
+
+      setSubmitInfo({
+        status: judgeResult.status,
+        error: judgeResult.error ?? null,
+        passed: judgeResult.passed ?? 0,
+        total: judgeResult.total ?? 0,
       });
 
-      setJudgeState("Completed");
-      setStatus(judgeResult.status);
-      setOutput(judgeResult.actualOutput || "");
-
-      const newSubmission = {
-        id: crypto.randomUUID(),
-        problemTitle: problem.title,
-        problemSlug: problem.slug,
-        language,
-        status: judgeResult.status,
-        date: formatDate(new Date()),
-        createdAt: new Date().toISOString(),
-        passed: judgeResult.passed || 0,
-        total: judgeResult.total || 0,
-        visiblePassed: judgeResult.visiblePassed || 0,
-        hiddenPassed: judgeResult.hiddenPassed || 0,
-        expectedOutput: judgeResult.expectedOutput,
-        actualOutput: judgeResult.actualOutput,
-        executionTime: judgeResult.executionTime,
-      };
-
-
-      if (judgeResult.status === "Accepted 🎉") {
-        if (!isSolved) {
-          await markProblemSolved({
-            slug,
-            topic: problem.topic,
-            difficulty: problem.difficulty,
-            title: problem.title,
-          });
-
-          stopTimer();
-
-          confetti({
-            particleCount: 120,
-            spread: 80,
-            origin: { y: 0.6 },
-            colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"],
-          });
-
-          setTimeout(() => {
-            confetti({
-              particleCount: 60,
-              angle: 60,
-              spread: 55,
-              origin: { x: 0, y: 0.65 },
-              colors: ["#22c55e", "#4ade80", "#ffffff"],
-            });
-            confetti({
-              particleCount: 60,
-              angle: 120,
-              spread: 55,
-              origin: { x: 1, y: 0.65 },
-              colors: ["#22c55e", "#4ade80", "#ffffff"],
-            });
-          }, 200);
-        }
+      if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
+        await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
+        stopTimer();
+        confetti({
+          particleCount: 120, spread: 80, origin: { y: 0.6 },
+          colors: ["#22c55e", "#16a34a", "#4ade80", "#ffffff", "#86efac"]
+        });
+        setTimeout(() => {
+          confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
+          confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
+        }, 200);
       }
 
-      await addSubmission(newSubmission);
-    } catch (error) {
-      console.error(error);
+      await addSubmission({
+        id: crypto.randomUUID(), problemTitle: problem.title, problemSlug: problem.slug,
+        language, status: judgeResult.status, date: formatDate(new Date()),
+        createdAt: new Date().toISOString(),
+        passed: judgeResult.passed || 0, total: judgeResult.total || 0,
+        visiblePassed: judgeResult.visiblePassed || 0, hiddenPassed: judgeResult.hiddenPassed || 0,
+        expectedOutput: judgeResult.expectedOutput, actualOutput: judgeResult.actualOutput,
+        executionTime: judgeResult.executionTime,
+      });
+    } catch (err) {
+      console.error(err);
       setError("Submission failed. Please try again.");
-      setStatus("Submission Error ❌");
-      setJudgeState("Failed");
+      setSubmitInfo({ status: "Submission Error ❌", error: err.message ?? "Unexpected error.", passed: 0, total: 0 });
     } finally {
       setSubmitting(false);
-      setTestcaseProgress(null);
-      setTimeout(() => setJudgeState(""), 3000);
     }
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
+  //
+  // LAYOUT CONTRACT:
+  //
+  //  position: fixed          — escapes DashboardLayout's scroll container.
+  //                             The page fills the viewport regardless of what
+  //                             DashboardLayout does above it. The navbar sits
+  //                             on top of this element, so we inset by the
+  //                             navbar height (top-16 = 4rem = 64px).
+  //                             Adjust top-16 if your navbar is a different height:
+  //                               top-14 = 56px  |  top-16 = 64px  |  top-12 = 48px
+  //
+  //  overflow-hidden          — nothing escapes this viewport-locked container.
+  //
+  //  Two-column grid:
+  //    Left  (5/12) — problem description, scrolls independently
+  //    Right (7/12) — flex column:
+  //                     [timer row]   flex-shrink-0
+  //                     [editor]      flex-shrink-0, fixed height
+  //                     [workspace]   flex-1 min-h-0, scrolls internally
+  //
   return (
     <DashboardLayout>
-      <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/*
+        ╔══════════════════════════════════════════════════════════════════╗
+        ║  VIEWPORT LOCK                                                   ║
+        ║  position:fixed + inset-0 fills entire viewport.                ║
+        ║  top-16 pushes below the navbar (adjust if navbar height differs)║
+        ║  overflow-hidden: airtight — no ancestor can scroll this.       ║
+        ╚══════════════════════════════════════════════════════════════════╝
+      */}
+      <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
 
-          {/* Left Column — problem description */}
-          <div className="lg:col-span-5 h-full space-y-6">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 lg:sticky lg:top-8 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
-              <ProblemHeader problem={problem} isSolved={isSolved} />
-              <ProblemInfo problem={problem} />
-            </div>
-          </div>
+        {/*
+          Padding wrapper — overflow-hidden so padding never causes scroll.
+          h-full passes the constrained height down.
+        */}
+        <div className="h-full overflow-hidden px-4 py-3 sm:px-6 lg:px-8">
 
-          {/* Right Column — editor + results */}
-          <div className="lg:col-span-7 space-y-6">
-
-            {/* Timer row */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-500 font-mono tracking-widest">
-                {isSolved ? (
-                  <span className="text-green-500">✓ Solved</span>
-                ) : (
-                  <>⏱ {timerFormatted}</>
-                )}
-              </span>
-              <span className="text-xs text-zinc-600">
-                {problem.difficulty === "Easy" && "🟢 Easy"}
-                {problem.difficulty === "Medium" && "🟡 Medium"}
-                {problem.difficulty === "Hard" && "🔴 Hard"}
-              </span>
-            </div>
-
-            {/* Error Banner */}
-            {error && <ErrorBanner message={error} />}
-
-            {/* Editor */}
-            <div className="h-[600px]">
-              <ErrorBoundary
-                fallback={
-                  <div className="bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
-                    Editor failed to load.
-                  </div>
-                }
-              >
-                {runtimeError && (
-                  <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-xl p-3">
-                    <div className="font-semibold text-red-400">
-                      Runtime Error ⚠️
-                    </div>
-                    <div className="text-red-300 text-sm font-mono">
-                      {runtimeError}
-                    </div>
-                  </div>
-                )}
-
-                <ProblemEditor
-                  language={language}
-                  setLanguage={handleLanguageChange}
-                  code={code}
-                  setCode={setCode}
-                  customInput={customInput}
-                  setCustomInput={setCustomInput}
-                  onRun={handleRunCode}
-                  onSubmit={handleSubmitCode}
-                  running={running}
-                  submitting={submitting}
-                />
-              </ErrorBoundary>
-            </div>
+          {/*
+            Two-column grid.
+            h-full: fills the padding wrapper.
+            overflow-hidden: grid never expands beyond its allocated height.
+            items-stretch: both columns fill the row height equally.
+          */}
+          <div className="hidden lg:flex h-full overflow-hidden relative">
 
             {/*
-              Results area
-              ┌─────────────────────┬──────────────────────┐
-              │ TestcaseResultPanel │  SubmissionHistory   │
-              │  (Run results)      │                      │
-              └─────────────────────┴──────────────────────┘
-              ┌────────────────────────────────────────────┐
-              │ ProblemResults (Submit verdict)            │
-              └────────────────────────────────────────────┘
-
-              TestcaseResultPanel replaces the old ProblemResults position.
-              ProblemResults moves below at full width — only visible after Submit.
-              This keeps the side-by-side layout identical to before while giving
-              the run panel the same real estate it always had.
+              ════════════════════════════════════════════════════
+              LEFT COLUMN — Problem description
+              ════════════════════════════════════════════════════
+              h-full overflow-hidden: column is height-locked.
+              Inner div: h-full overflow-y-auto = the ONLY scroll
+              owner for problem description content.
             */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-
-              {/* Run results — testcase tabs */}
-              <div>
-                <TestcaseResultPanel
-                  results={runResults?.results ?? null}
-                  compileFailed={runResults?.compileFailed ?? false}
-                  compileError={runResults?.error ?? null}
-                  isRunning={running}
-                />
-              </div>
-
-              {/* Submission history — unchanged */}
-              <div className="h-[400px] md:h-auto overflow-hidden">
-                <SubmissionHistory
-                  submissions={submissions}
-                  onSelectSubmission={setSelectedSubmission}
-                />
+            <div
+              className="h-full overflow-hidden"
+              style={{ width: `${problemWidth}%` }}
+            >
+              <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <ProblemHeader problem={problem} isSolved={isSolved} />
+                <ProblemInfo problem={problem} />
               </div>
             </div>
+            <div
+              className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
+              onMouseDown={(e) => {
+                e.preventDefault();
 
-            {/* Submit verdict — only rendered when status is non-empty */}
-            {status && (
-              <ProblemResults
-                status={status}
-                output={output}
-                executionMeta={executionMeta}
-                judgeState={judgeState}
-                testcaseProgress={testcaseProgress}
-                submitting={submitting}
+                const startX = e.clientX;
+                const startWidth = problemWidth;
+
+                const handleMove = (moveEvent) => {
+                  const delta =
+                    ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+
+                  const next = Math.min(
+                    60,
+                    Math.max(
+                      25,
+                      startWidth + delta
+                    )
+                  );
+
+                  setProblemWidth(next);
+                };
+
+                const handleUp = () => {
+                  window.removeEventListener("mousemove", handleMove);
+                  window.removeEventListener("mouseup", handleUp);
+                };
+
+                window.addEventListener("mousemove", handleMove);
+                window.addEventListener("mouseup", handleUp);
+              }}
+            />
+
+
+            {/*
+              ════════════════════════════════════════════════════
+              RIGHT COLUMN — Editor + Workspace
+              ════════════════════════════════════════════════════
+              h-full: fills the grid row.
+              flex flex-col: vertical stack.
+              overflow-hidden: column never expands beyond h-full.
+
+              Children:
+                flex-shrink-0 items → fixed height, never compress
+                flex-1 min-h-0 item → claims remaining space exactly
+            */}
+            <div
+              className="h-full flex flex-col overflow-hidden"
+              style={{ width: `${100 - problemWidth}%` }}
+            >
+
+              {/*
+                Timer + difficulty row.
+                flex-shrink-0: always exactly its natural height.
+                pb-2: spacing to editor below (replaces gap).
+              */}
+              <div className="flex items-center justify-between flex-shrink-0 pb-2">
+                <span className="text-xs text-zinc-500 font-mono tracking-widest">
+                  {isSolved
+                    ? <span className="text-green-500">✓ Solved</span>
+                    : <>⏱ {timerFormatted}</>
+                  }
+                </span>
+                <span className="text-xs text-zinc-600">
+                  {problem.difficulty === "Easy" && "🟢 Easy"}
+                  {problem.difficulty === "Medium" && "🟡 Medium"}
+                  {problem.difficulty === "Hard" && "🔴 Hard"}
+                </span>
+              </div>
+
+              {/*
+                Error banner — only rendered when present.
+                flex-shrink-0 + pb-2: does not compress siblings.
+              */}
+              {error && (
+                <div className="flex-shrink-0 pb-2">
+                  <ErrorBanner message={error} />
+                </div>
+              )}
+
+              {/*
+                Monaco editor.
+                flex-shrink-0: fixed height, never compressed by workspace.
+                h-[500px]: explicit height Monaco requires to render correctly.
+                pb-3: spacing between editor and workspace.
+                Do NOT add overflow here — Monaco renders decorations outside
+                its own bounds and needs to paint freely.
+              */}
+              <div
+                className="flex-shrink-0 pb-2"
+                style={{ height: `${editorHeight}px` }}
+              >
+                <ErrorBoundary
+                  fallback={
+                    <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                      Editor failed to load.
+                    </div>
+                  }
+                >
+                  <ProblemEditor
+                    language={language}
+                    setLanguage={handleLanguageChange}
+                    code={code}
+                    setCode={setCode}
+                    customInput={customInput}
+                    setCustomInput={setCustomInput}
+                    onRun={handleRunCode}
+                    onSubmit={handleSubmitCode}
+                    running={running}
+                    submitting={submitting}
+                  />
+                </ErrorBoundary>
+              </div>
+
+              <div
+                className="
+    w-full
+    h-2
+    cursor-row-resize
+    flex-shrink-0
+    rounded
+    bg-zinc-800
+    hover:bg-green-500
+    transition-colors
+    mb-2
+  "
+                onMouseDown={(e) => {
+                  e.preventDefault();
+
+                  const startY = e.clientY;
+                  const startHeight = editorHeight;
+
+                  const handleMove = (moveEvent) => {
+                    const delta = moveEvent.clientY - startY;
+
+                    const nextHeight = Math.min(
+                      800,
+                      Math.max(
+                        300,
+                        startHeight + delta
+                      )
+                    );
+
+                    setEditorHeight(nextHeight);
+                  };
+
+                  const handleUp = () => {
+                    window.removeEventListener("mousemove", handleMove);
+                    window.removeEventListener("mouseup", handleUp);
+                  };
+
+                  window.addEventListener("mousemove", handleMove);
+                  window.addEventListener("mouseup", handleUp);
+                }}
               />
-            )}
+
+              {/*
+                ════════════════════════════════════════════════
+                WORKSPACE WRAPPER — the critical scroll region
+                ════════════════════════════════════════════════
+                flex-1:          claims ALL remaining vertical space
+                                 after timer + editor + spacing.
+                min-h-0:         WITHOUT this, flex children default to
+                                 min-height:auto — the child refuses to
+                                 shrink below its content height, defeating
+                                 overflow-y-auto inside WorkspacePanel.
+                                 This is the #1 cause of workspace overflow
+                                 escaping into the page.
+                overflow-hidden: nothing escapes this wrapper.
+                                 WorkspacePanel's own overflow-y-auto is
+                                 the scroll owner — not this div.
+
+                WorkspacePanel must be h-full to fill this wrapper.
+                It already is (set in WorkspacePanel.jsx).
+              */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <WorkspacePanel
+                  runResults={runResults}
+                  submitInfo={submitInfo}
+                  isRunning={running}
+                  isSubmitting={submitting}
+                  forceTab={forceTab}
+                />
+              </div>
+
+            </div>
+            {/* end right column */}
 
           </div>
         </div>
       </div>
-
-      {selectedSubmission && (
-        <SubmissionDetailsModal
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
-        />
-      )}
     </DashboardLayout>
   );
 }
 
-export default ProblemDetailsPage;                          
+export default ProblemDetailsPage;

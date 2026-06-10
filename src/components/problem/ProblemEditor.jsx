@@ -1,24 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "../../context/ThemeContext";
 
-function ProblemEditor({
-  language,
-  setLanguage,
-  code,
-  setCode,
-  customInput,
-  setCustomInput,
-  onRun,
-  onSubmit,
-  running,
-  submitting,
-}) {
+function ProblemEditor(
+  {
+    language,
+    setLanguage,
+    code,
+    setCode,
+    customInput,
+    setCustomInput,
+    onRun,
+    onSubmit,
+    running,
+    submitting,
+  }) {
+  const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
+  const { theme } = useTheme();
   return (
     <div className="flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
       {/* Editor Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
+
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Language</span>
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            Language
+          </span>
+
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -30,6 +38,28 @@ function ProblemEditor({
             <option value="cpp">C++</option>
           </select>
         </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onRun}
+            disabled={running || submitting}
+            className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50"
+          >
+            {running ? "Running..." : theme.words.run}
+          </button>
+
+          <button
+            onClick={onSubmit}
+            disabled={running || submitting}
+            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${submitting
+              ? "bg-green-500/20 text-green-500 border border-green-500/30"
+              : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
+              }`}
+          >
+            {submitting ? "Submitting..." : theme.words.submit}
+          </button>
+        </div>
+
       </div>
 
       {/* Editor Content */}
@@ -52,14 +82,26 @@ function ProblemEditor({
       </div>
 
       {/* Editor Footer / Controls */}
-      <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
+      <div className="mb-2">
+        <button
+          type="button"
+          onClick={() => setShowAdvancedTesting(!showAdvancedTesting)}
+          className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors"
+        >
+          <span>{showAdvancedTesting ? "▼" : "▶"}</span>
+          Advanced Testing
+        </button>
+      </div>
+
+      {showAdvancedTesting && (
         <div className="mb-4">
           <label
             htmlFor="custom-input"
             className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
           >
-            Custom Input (Run Code only)
+            Custom Input
           </label>
+
           <textarea
             id="custom-input"
             value={customInput}
@@ -69,28 +111,9 @@ function ProblemEditor({
             placeholder="Enter standard input..."
           />
         </div>
+      )}
 
-        <div className="flex items-center justify-end gap-3">
-          <button
-            onClick={onRun}
-            disabled={running || submitting}
-            className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {running ? "Running..." : "Run Code"}
-          </button>
-          <button
-            onClick={onSubmit}
-            disabled={running || submitting}
-            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-              submitting
-                ? "bg-green-500/20 text-green-500 border border-green-500/30"
-                : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
-            }`}
-          >
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
-        </div>
-      </div>
+
     </div>
   );
 }

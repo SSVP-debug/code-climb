@@ -69,7 +69,7 @@ function ProblemResults({
             <span className="text-zinc-400 font-medium">{judgeState || "Judging"}</span>
             {testcaseProgress && (
               <span className="text-blue-400 font-bold">
-                {testcaseProgress.current} / {testcaseProgress.total} Testcases
+                {testcaseProgress.current} / {testcaseProgress.total} testcases
               </span>
             )}
           </div>

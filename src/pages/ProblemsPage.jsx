@@ -3,6 +3,8 @@ import {
   useState,
 } from "react";
 
+import { useTheme } from "../context/ThemeContext";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import ProblemCard from "../components/ProblemCard";
@@ -10,6 +12,7 @@ import ProblemCard from "../components/ProblemCard";
 import { useProblems } from "../hooks/useProblems";
 
 function ProblemsPage() {
+  const { theme } = useTheme();
   const {
     problems,
     loading,
@@ -52,15 +55,15 @@ function ProblemsPage() {
       (problem) => {
         const matchesDifficulty =
           selectedDifficulty ===
-            "All" ||
+          "All" ||
           problem.difficulty ===
-            selectedDifficulty;
+          selectedDifficulty;
 
         const matchesTopic =
           selectedTopic ===
-            "All" ||
+          "All" ||
           problem.topic ===
-            selectedTopic;
+          selectedTopic;
 
         const matchesSearch =
           problem.title
@@ -111,12 +114,11 @@ function ProblemsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold">
-            Problems
+            {theme.words.problems}
           </h1>
 
           <p className="text-zinc-400 mt-2">
-            Sharpen your DSA skills
-            and lets you punch harder consistently.
+            {theme.description}
           </p>
         </div>
 
@@ -124,7 +126,7 @@ function ProblemsPage() {
         <div className="mb-8">
           <input
             type="text"
-            placeholder="Search problems..."
+            placeholder={theme.words.searchProblems}
             value={searchTerm}
             onChange={(e) =>
               setSearchTerm(
@@ -145,12 +147,11 @@ function ProblemsPage() {
                   topic
                 )
               }
-              className={`px-5 py-2 rounded-xl transition font-semibold ${
-                selectedTopic ===
+              className={`px-5 py-2 rounded-xl transition font-semibold ${selectedTopic ===
                 topic
-                  ? "bg-blue-500 text-white"
-                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-blue-500"
-              }`}
+                ? "bg-blue-500 text-white"
+                : "bg-zinc-900 border border-zinc-800 text-white hover:border-blue-500"
+                }`}
             >
               {topic}
             </button>
@@ -160,26 +161,25 @@ function ProblemsPage() {
         {/* Difficulty Filters */}
         <div className="flex gap-4 mb-8 flex-wrap">
           {[
-            "All",
-            "Easy",
-            "Medium",
-            "Hard",
+            { value: "All", label: theme.words.all },
+            { value: "Easy", label: theme.words.easy },
+            { value: "Medium", label: theme.words.medium },
+            { value: "Hard", label: theme.words.hard },
           ].map((level) => (
             <button
-              key={level}
+              key={level.value}
               onClick={() =>
                 setSelectedDifficulty(
-                  level
+                  level.value
                 )
               }
-              className={`px-5 py-2 rounded-xl transition font-semibold ${
-                selectedDifficulty ===
-                level
-                  ? "bg-green-500 text-black"
-                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-green-500"
-              }`}
+              className={`px-5 py-2 rounded-xl transition font-semibold ${selectedDifficulty ===
+                level.value
+                ? "bg-green-500 text-black"
+                : "bg-zinc-900 border border-zinc-800 text-white hover:border-green-500"
+                }`}
             >
-              {level}
+              {level.label}
             </button>
           ))}
         </div>
@@ -187,11 +187,9 @@ function ProblemsPage() {
         {/* Results Count */}
         <p className="text-zinc-500 text-sm mb-6">
           {filtered.length}{" "}
-          problem
-          {filtered.length !== 1
-            ? "s"
-            : ""}{" "}
-          found
+          {filtered.length === 1
+            ? theme.words.problemFound
+            : theme.words.problemsFound}
         </p>
 
         {/* Problems Grid */}
@@ -222,8 +220,7 @@ function ProblemsPage() {
         ) : (
           <div className="text-center py-16 text-zinc-500">
             <p className="text-lg">
-              No problems match
-              your filters.
+              {theme.words.noProblemsFound}
             </p>
 
             <button
@@ -240,7 +237,7 @@ function ProblemsPage() {
               }}
               className="mt-4 text-green-500 hover:underline text-sm"
             >
-              Clear all filters
+              {theme.words.clearFilters}
             </button>
           </div>
         )}

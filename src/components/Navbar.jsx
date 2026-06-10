@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../services/auth";
 import { useContext } from "react";
 import { AuthContext } from "../context/authContext";
+import { useTheme } from "../context/ThemeContext";
 
 function Navbar() {
 
@@ -12,28 +13,37 @@ function Navbar() {
         await logoutUser();
         navigate("/login");
     };
+    const { theme } = useTheme();
 
     return (
         <nav className="bg-zinc-900 text-white px-8 py-4 flex items-center justify-between border-b border-zinc-800">
 
-            <div className="text-2xl font-bold">
-                Code Club
+            <div className="flex flex-col">
+                <span className="text-2xl font-bold">
+                    Code Club
+                </span>
+
+                <span className="text-[10px] text-zinc-500 uppercase tracking-widest">
+                    {theme.name}
+                </span>
             </div>
 
             <div className="flex items-center gap-6">
 
                 <Link to="/dashboard" className="hover:text-zinc-300 transition">
-                    Dashboard
+                    {theme.words.dashboard}
                 </Link>
+
                 <Link to="/problems" className="hover:text-zinc-300 transition">
-                    Problems
+                    {theme.words.problems}
                 </Link>
+
                 <Link to="/analytics" className="hover:text-zinc-300 transition">
-                    Analytics
+                    {theme.words.analytics}
                 </Link>
 
                 <Link to="/profile" className="hover:text-zinc-300 transition">
-                    Profile
+                    {theme.words.profile}
                 </Link>
 
                 <div className="flex items-center gap-3">

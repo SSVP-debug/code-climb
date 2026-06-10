@@ -5,9 +5,12 @@ import {
     getAllSubmissions,
 } from "../../../utils/analyticsUtils";
 
+import { useTheme } from "../../../context/ThemeContext";
+
 import { useMemo } from "react";
 
 function AdvancedStatsSection() {
+  const { theme } = useTheme();
 
     const acceptanceRate =
         useMemo(
@@ -48,7 +51,7 @@ function AdvancedStatsSection() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
 
                 <p className="text-zinc-400 text-sm">
-                    Acceptance Rate
+                    {theme.words.acceptanceRate}
                 </p>
 
                 <h2 className="text-3xl font-bold mt-2">
@@ -62,7 +65,7 @@ function AdvancedStatsSection() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
 
                 <p className="text-zinc-400 text-sm">
-                    Average Runtime
+                    {theme.words.averageRuntime}
                 </p>
 
                 <h2 className="text-3xl font-bold mt-2">
@@ -76,7 +79,7 @@ function AdvancedStatsSection() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
 
                 <p className="text-zinc-400 text-sm">
-                    Favorite Language
+                    {theme.words.favoriteLanguage}
                 </p>
 
                 <h2 className="text-3xl font-bold mt-2 capitalize">
@@ -90,7 +93,7 @@ function AdvancedStatsSection() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
 
                 <p className="text-zinc-400 text-sm">
-                    Total Submissions
+                    {theme.words.totalSubmissions}
                 </p>
 
                 <h2 className="text-3xl font-bold mt-2">

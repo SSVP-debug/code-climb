@@ -3,6 +3,8 @@ import {
   getUserLevel,
 } from "../../../utils/analyticsUtils";
 
+import { useTheme } from "../../../context/ThemeContext";
+
 function RankProgressSection() {
 
   const rank =
@@ -14,6 +16,8 @@ function RankProgressSection() {
   const progress =
     (level % 10) * 10;
 
+  const { theme } = useTheme();
+
   return (
 
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
@@ -23,9 +27,7 @@ function RankProgressSection() {
         <div>
 
           <p className="text-zinc-400 text-sm">
-
-            Current Rank
-
+            {theme.words.rank}
           </p>
 
           <h2 className="text-3xl font-bold mt-2">
@@ -40,7 +42,7 @@ function RankProgressSection() {
 
           <p className="text-zinc-400 text-sm">
 
-            Level
+            {theme.words.level}
 
           </p>
 
@@ -66,11 +68,7 @@ function RankProgressSection() {
       </div>
 
       <p className="text-zinc-400 text-sm mt-3">
-
-        {10 - (level % 10)}
-        {" "}
-        more solves to next milestone
-
+        {10 - (level % 10)} {theme.words.nextMilestone}
       </p>
 
     </div>
