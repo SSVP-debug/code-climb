@@ -125,7 +125,9 @@ router.post("/run", validateBody(runSchema), async (req, res) => {
 });
 
 function normalizeOutput(output) {
-  return String(output ?? "").trim().replace(/\s+/g, "");
+  return String(output ?? "")
+    .trim()
+    .replace(/\r\n/g, "\n");
 }
 
 const languageIdMap = {
