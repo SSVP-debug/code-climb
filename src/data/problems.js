@@ -27,10 +27,7 @@ const problems = [
       { input: { nums: [3, 2, 4], target: 6 }, expectedOutput: [1, 2] },
       { input: { nums: [3, 3], target: 6 }, expectedOutput: [0, 1] },
     ],
-    hiddentestcases: [
-      { input: { nums: [1, 2, 3, 4, 5], target: 9 }, expectedOutput: [3, 4] },
-      { input: { nums: [-1, 0], target: -1 }, expectedOutput: [0, 1] },
-    ],
+    
   },
 
   {
@@ -58,10 +55,7 @@ const problems = [
       { input: { nums: [1, 2, 3, 4] }, expectedOutput: false },
       { input: { nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2] }, expectedOutput: true },
     ],
-    hiddentestcases: [
-      { input: { nums: [1] }, expectedOutput: false },
-      { input: { nums: [1, 1] }, expectedOutput: true },
-    ],
+    
   },
 
   {
@@ -89,10 +83,7 @@ const problems = [
       { input: { prices: [7, 6, 4, 3, 1] }, expectedOutput: 0 },
       { input: { prices: [1, 2] }, expectedOutput: 1 },
     ],
-    hiddentestcases: [
-      { input: { prices: [2, 4, 1] }, expectedOutput: 2 },
-      { input: { prices: [1, 2, 3, 4, 5] }, expectedOutput: 4 },
-    ],
+    
   },
 
   {
@@ -121,10 +112,7 @@ const problems = [
       { input: { s: "()[]{}" }, expectedOutput: true },
       { input: { s: "(]" }, expectedOutput: false },
     ],
-    hiddentestcases: [
-      { input: { s: "([)]" }, expectedOutput: false },
-      { input: { s: "{[]}" }, expectedOutput: true },
-    ],
+    
   },
 
   {
@@ -153,10 +141,7 @@ const problems = [
       { input: { nums: [1] }, expectedOutput: 1 },
       { input: { nums: [5, 4, -1, 7, 8] }, expectedOutput: 23 },
     ],
-    hiddentestcases: [
-      { input: { nums: [-1] }, expectedOutput: -1 },
-      { input: { nums: [-2, -1] }, expectedOutput: -1 },
-    ],
+    
   },
 
   {
@@ -184,10 +169,7 @@ const problems = [
       { input: { n: 3 }, expectedOutput: 3 },
       { input: { n: 5 }, expectedOutput: 8 },
     ],
-    hiddentestcases: [
-      { input: { n: 1 }, expectedOutput: 1 },
-      { input: { n: 10 }, expectedOutput: 89 },
-    ],
+    
   },
 
   {
@@ -215,10 +197,7 @@ const problems = [
       { input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 },
       { input: { nums: [1] }, expectedOutput: 1 },
     ],
-    hiddentestcases: [
-      { input: { nums: [0, 0, 3] }, expectedOutput: 3 },
-      { input: { nums: [-1, -1, 5] }, expectedOutput: 5 },
-    ],
+    
   },
 
   {
@@ -247,10 +226,7 @@ const problems = [
       { input: { n: 3 }, expectedOutput: 2 },
       { input: { n: 4 }, expectedOutput: 3 },
     ],
-    hiddentestcases: [
-      { input: { n: 0 }, expectedOutput: 0 },
-      { input: { n: 10 }, expectedOutput: 55 },
-    ],
+    
   },
 
   // ── MEDIUM ────────────────────────────────────────────────────────────────
@@ -281,10 +257,7 @@ const problems = [
       { input: { s: "bbbbb" }, expectedOutput: 1 },
       { input: { s: "pwwkew" }, expectedOutput: 3 },
     ],
-    hiddentestcases: [
-      { input: { s: "" }, expectedOutput: 0 },
-      { input: { s: "dvdf" }, expectedOutput: 3 },
-    ],
+    
   },
 
   {
@@ -312,10 +285,7 @@ const problems = [
       { input: { s: "rat", t: "car" }, expectedOutput: false },
       { input: { s: "ab", t: "a" }, expectedOutput: false },
     ],
-    hiddentestcases: [
-      { input: { s: "a", t: "a" }, expectedOutput: true },
-      { input: { s: "listen", t: "silent" }, expectedOutput: true },
-    ],
+    
   },
 
   {
@@ -343,10 +313,7 @@ const problems = [
       { input: { height: [1, 1] }, expectedOutput: 1 },
       { input: { height: [4, 3, 2, 1, 4] }, expectedOutput: 16 },
     ],
-    hiddentestcases: [
-      { input: { height: [1, 2, 1] }, expectedOutput: 2 },
-      { input: { height: [2, 3, 4, 5, 18, 17, 6] }, expectedOutput: 17 },
-    ],
+    
   },
 
   {
@@ -374,10 +341,7 @@ const problems = [
       { input: { nums: [2, 7, 9, 3, 1] }, expectedOutput: 12 },
       { input: { nums: [1, 2] }, expectedOutput: 2 },
     ],
-    hiddentestcases: [
-      { input: { nums: [2, 1, 1, 2] }, expectedOutput: 4 },
-      { input: { nums: [1] }, expectedOutput: 1 },
-    ],
+    
   },
 
   {
@@ -406,10 +370,7 @@ const problems = [
       { input: { coins: [2], amount: 3 }, expectedOutput: -1 },
       { input: { coins: [1, 2, 5], amount: 11 }, expectedOutput: 3 },
     ],
-    hiddentestcases: [
-      { input: { coins: [1], amount: 0 }, expectedOutput: 0 },
-      { input: { coins: [2, 5, 10, 1], amount: 27 }, expectedOutput: 4 },
-    ],
+    
   },
 
   {
@@ -438,10 +399,7 @@ const problems = [
       { input: { nums: [4, 5, 6, 7, 0, 1, 2] }, expectedOutput: 0 },
       { input: { nums: [11, 13, 15, 17] }, expectedOutput: 11 },
     ],
-    hiddentestcases: [
-      { input: { nums: [1] }, expectedOutput: 1 },
-      { input: { nums: [2, 1] }, expectedOutput: 1 },
-    ],
+    
   },
 
   {
@@ -469,10 +427,7 @@ const problems = [
       { input: { nums: [2, 2, 1, 1, 1, 2, 2] }, expectedOutput: 2 },
       { input: { nums: [1] }, expectedOutput: 1 },
     ],
-    hiddentestcases: [
-      { input: { nums: [6, 5, 5] }, expectedOutput: 5 },
-      { input: { nums: [1, 1, 1, 2, 3] }, expectedOutput: 1 },
-    ],
+    
   },
 
   {
@@ -500,10 +455,7 @@ const problems = [
       { input: { strs: ["dog", "racecar", "car"] }, expectedOutput: "" },
       { input: { strs: ["interview", "inter", "interest"] }, expectedOutput: "inter" },
     ],
-    hiddentestcases: [
-      { input: { strs: ["a"] }, expectedOutput: "a" },
-      { input: { strs: ["ab", "a"] }, expectedOutput: "a" },
-    ],
+    
   },
 
   // ── HARD ─────────────────────────────────────────────────────────────────
@@ -533,10 +485,7 @@ const problems = [
       { input: { height: [4, 2, 0, 3, 2, 5] }, expectedOutput: 9 },
       { input: { height: [3, 0, 2, 0, 4] }, expectedOutput: 7 },
     ],
-    hiddentestcases: [
-      { input: { height: [1, 0, 1] }, expectedOutput: 1 },
-      { input: { height: [2, 0, 2] }, expectedOutput: 2 },
-    ],
+    
   },
 
   {
@@ -565,10 +514,7 @@ const problems = [
       { input: { s: "applepenapple", wordDict: ["apple", "pen"] }, expectedOutput: true },
       { input: { s: "catsandog", wordDict: ["cats", "dog", "sand", "and", "cat"] }, expectedOutput: false },
     ],
-    hiddentestcases: [
-      { input: { s: "a", wordDict: ["a"] }, expectedOutput: true },
-      { input: { s: "bb", wordDict: ["a", "b", "bbb", "bbbb"] }, expectedOutput: true },
-    ],
+    
   },
 
   {
@@ -597,10 +543,7 @@ const problems = [
       { input: { s: "226" }, expectedOutput: 3 },
       { input: { s: "06" }, expectedOutput: 0 },
     ],
-    hiddentestcases: [
-      { input: { s: "1" }, expectedOutput: 1 },
-      { input: { s: "11106" }, expectedOutput: 2 },
-    ],
+    
   },
 
   {
@@ -628,10 +571,7 @@ const problems = [
       { input: { nums: [2, 3, 0, 1, 4] }, expectedOutput: 2 },
       { input: { nums: [1, 2, 3] }, expectedOutput: 2 },
     ],
-    hiddentestcases: [
-      { input: { nums: [1, 1, 1, 1] }, expectedOutput: 3 },
-      { input: { nums: [1, 2, 1, 1, 1] }, expectedOutput: 3 },
-    ],
+    
   },
 ];
 
