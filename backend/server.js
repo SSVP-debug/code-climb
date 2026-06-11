@@ -22,7 +22,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  process.env.FRONTEND_URL, // add your deployed frontend URL here via env
+  "https://code-climb-self.vercel.app",
+  process.env.FRONTEND_URL,
 ].filter(Boolean); // removes undefined if FRONTEND_URL is not set
 
 app.use(
