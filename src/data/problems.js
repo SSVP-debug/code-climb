@@ -11,7 +11,7 @@ const problems = [
     topic: "Arrays",
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input has exactly one solution, and you may not use the same element twice.",
-    
+
     examples: [
       { input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "nums[0] + nums[1] = 9" },
       { input: "nums = [3,2,4], target = 6", output: "[1,2]" },
@@ -40,7 +40,7 @@ const problems = [
     topic: "Arrays",
     description:
       "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
-    
+
     examples: [
       { input: "nums = [1,2,3,1]", output: "true" },
       { input: "nums = [1,2,3,4]", output: "false" },
@@ -70,7 +70,7 @@ const problems = [
     description:
       "You are given an array prices where prices[i] is the price of a stock on day i. Maximize your profit by choosing a single day to buy and a different future day to sell. Return the maximum profit, or 0 if no profit is possible.",
 
-    
+
     examples: [
       { input: "prices = [7,1,5,3,6,4]", output: "5", explanation: "Buy day 2 (price=1), sell day 5 (price=6). Profit = 5." },
       { input: "prices = [7,6,4,3,1]", output: "0" },
@@ -443,7 +443,7 @@ const problems = [
     topic: "Strings",
     description:
       "Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string.",
-    
+
     examples: [
       { input: 'strs = ["flower","flow","flight"]', output: '"fl"' },
       { input: 'strs = ["dog","racecar","car"]', output: '""', explanation: "No common prefix." },
@@ -578,6 +578,32 @@ const problems = [
     ],
 
   },
+
+  {
+    id: 21,
+    title: "Group Anagrams",
+    slug: "group-anagrams",
+    functionName: "groupAnagrams",
+
+    difficulty: "Medium",
+    topic: "Hash Maps",
+
+    pattern: "Hash Map",
+    sourceType: "core",
+
+    description: "...",
+
+    examples: [],
+
+    constraints: [],
+
+    starterCode: {},
+
+    visibleTestCases: [],
+
+    testcases: []
+  }
+
 ];
 
 export default problems;

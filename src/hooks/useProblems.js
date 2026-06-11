@@ -1,17 +1,20 @@
+/**
+ * useProblems.js
+ *
+ * Fetches problems from the MongoDB backend via GET /api/problems.
+ * Falls back to the static problems.js file if the API is unreachable.
+ */
+
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { apiFetch } from "../services/api";
 import staticProblems from "../data/problems";
 
 export function useProblems() {
   const [problems, setProblems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
 
   useEffect(() => {
-    // cancelled flag prevents setState after the component unmounts.
-    // Without this, navigating away during a Firestore fetch causes
-    // "Can't perform a React state update on an unmounted component".
     let cancelled = false;
 
     async function fetchProblems() {
@@ -19,50 +22,31 @@ export function useProblems() {
         setLoading(true);
         setError(null);
 
-        const q = query(
-          collection(db, "problems"),
-          orderBy("id", "asc")
-        );
-
-        const snapshot = await getDocs(q);
+        const data = await apiFetch("/api/problems");
 
         if (cancelled) return;
 
-        if (snapshot.empty) {
-          // Firestore collection exists but has no documents yet.
-          // Use static data as a safe fallback — page stays functional.
-          console.info(
-            "[useProblems] Firestore 'problems' collection is empty. " +
-            "Using static fallback. Add problems via Firebase Console or Admin SDK."
-          );
+        if (!data || data.length === 0) {
+          // DB seeded but empty — use static fallback so page stays functional
+          console.info("[useProblems] API returned 0 problems. Using static fallback.");
           setProblems(staticProblems);
         } else {
-          const fetched = snapshot.docs.map((doc) => ({
-            docId: doc.id, // Firestore document ID
-            ...doc.data(),
-          }));
-          setProblems(fetched);
+          setProblems(data);
         }
       } catch (err) {
         if (cancelled) return;
 
-        console.error("[useProblems] Firestore fetch failed:", err.message);
-
-        // Surface a non-breaking error — use static data so the page works.
+        console.error("[useProblems] API fetch failed:", err.message);
+        // Non-breaking: show static problems so the page still works
         setProblems(staticProblems);
-        setError(
-          "Could not load problems from the server. Showing cached problem set."
-        );
+        setError("Could not load problems from server. Showing cached problem set.");
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
     fetchProblems();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   return { problems, loading, error };

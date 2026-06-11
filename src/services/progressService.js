@@ -1,90 +1,90 @@
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  increment,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import { db } from "../firebase/firebase";
-
+import { apiFetch } from "./api";
+import { getSubmissions } from "./submissionService";
 const DEFAULT_PROGRESS = {
-  solvedProblems: [],
+  solvedSlugs: [],
+  topicStats: {},
   activityDates: [],
-  solvedDifficulty: { Easy: 0, Medium: 0, Hard: 0 },
+  solvedDifficulty: {
+    easy: 0,
+    medium: 0,
+    hard: 0,
+  },
+  recentActivity: [],
+  leetcodeUsername: "",
 };
 
-function getTodayString() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-// Returns user's progress from Firestore, or defaults if no document exists.
-export async function getProgress(userId) {
-  if (!userId) throw new Error("[progressService] userId required");
-
+export async function getProgress() {
   try {
-    const snap = await getDoc(doc(db, "progress", userId));
-
-    if (!snap.exists()) return { ...DEFAULT_PROGRESS };
-
-    return {
-      ...DEFAULT_PROGRESS,
-      ...snap.data(),
-    };
+    return await apiFetch("/api/progress");
   } catch (err) {
-    console.error("[progressService] getProgress failed:", err.message);
-    return { ...DEFAULT_PROGRESS };
+    console.error(
+      "[progressService] getProgress failed:",
+      err.message
+    );
+
+    return DEFAULT_PROGRESS;
   }
 }
 
-// Creates a blank progress document for first-time users.
-// Safe to call on every login — only writes if the document doesn't exist.
-export async function initProgress(userId) {
-  if (!userId) throw new Error("[progressService] userId required");
-
-  const ref = doc(db, "progress", userId);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    await setDoc(ref, {
-      ...DEFAULT_PROGRESS,
-      createdAt: serverTimestamp(),
-      lastActive: serverTimestamp(),
-    });
-  }
+export async function initProgress() {
+  // MongoDB user document already exists after login.
+  return getProgress();
 }
 
-// Atomically marks a problem as solved in Firestore.
-//
-// difficulty must be "Easy" | "Medium" | "Hard" (capitalized) — matching
-// problem.difficulty and appContext's solvedDifficulty keys.
-export async function markProblemSolved(userId, problemSlug, difficulty) {
-  if (!userId || !problemSlug || !difficulty) {
-    throw new Error(
-      "[progressService] markProblemSolved requires userId, problemSlug, difficulty"
-    );
-  }
-
-  const validDifficulties = ["Easy", "Medium", "Hard"];
-  if (!validDifficulties.includes(difficulty)) {
-    throw new Error(
-      `[progressService] Invalid difficulty: "${difficulty}". Must be one of: ${validDifficulties.join(", ")}`
-    );
-  }
-
-  await setDoc(
-    doc(db, "progress", userId),
-    {
-      solvedProblems: arrayUnion(problemSlug),
-      activityDates: arrayUnion(getTodayString()),
-      // e.g. "solvedDifficulty.Easy": increment(1)
-      [`solvedDifficulty.${difficulty}`]: increment(1),
-      lastActive: serverTimestamp(),
-    },
-    { merge: true }  // create or update without overwriting other fields
+export async function markProblemSolved(
+  currentProgress,
+  problemSlug,
+  difficulty
+) {
+  const solvedSlugs = Array.from(
+    new Set([
+      ...(currentProgress.solvedSlugs || []),
+      problemSlug,
+    ])
   );
+
+  const today = new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const activityDates = Array.from(
+    new Set([
+      ...(currentProgress.activityDates || []),
+      today,
+    ])
+  );
+
+  const solvedDifficulty = {
+    ...(currentProgress.solvedDifficulty || {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    }),
+  };
+
+  const key = difficulty.toLowerCase();
+
+  solvedDifficulty[key] =
+    (solvedDifficulty[key] || 0) + 1;
+
+  return apiFetch("/api/progress", {
+    method: "PUT",
+    body: JSON.stringify({
+      solvedSlugs,
+      activityDates,
+      solvedDifficulty,
+    }),
+  });
+}
+
+export async function syncProgressOnLogin() {
+  const [progress, submissions] = await Promise.all([
+    getProgress(),
+    getSubmissions(),
+  ]);
+
+  return {
+    progress,
+    submissions,
+  };
 }

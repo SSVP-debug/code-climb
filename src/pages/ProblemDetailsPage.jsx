@@ -195,6 +195,7 @@ function ProblemSolver({ problem, slug }) {
         visiblePassed: judgeResult.visiblePassed || 0, hiddenPassed: judgeResult.hiddenPassed || 0,
         expectedOutput: judgeResult.expectedOutput, actualOutput: judgeResult.actualOutput,
         executionTime: judgeResult.executionTime,
+        code,
       });
     } catch (err) {
       console.error(err);

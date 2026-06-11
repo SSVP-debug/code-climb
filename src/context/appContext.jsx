@@ -7,17 +7,10 @@ import {
 } from "react";
 
 import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+  getSubmissions,
+  createSubmission,
+} from "../services/submissionService";
 
-import { db } from "../firebase/firebase";
 import { useAuth } from "./authContext";
 import {
   getProgress,
@@ -108,8 +101,8 @@ function AppContextProvider({ children }) {
 
     async function hydrateFromFirestore() {
       try {
-        await initProgress(user.uid);
-        const fp = await getProgress(user.uid);
+        await initProgress();
+        const fp = await getProgress();
 
         const firestoreSubmissions =
           await loadUserSubmissions(user.uid);
@@ -169,20 +162,8 @@ function AppContextProvider({ children }) {
     localStorage.setItem("submissions", JSON.stringify(submissions));
   }, [submissions]);
 
-  async function loadUserSubmissions(userId) {
-    const q = query(
-      collection(db, "submissions"),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc"),
-      limit(100)
-    );
-
-    const snapshot = await getDocs(q);
-
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+  async function loadUserSubmissions() {
+    return getSubmissions();
   }
 
   // ── Actions ──────────────────────────────────────────────────────────────
@@ -192,22 +173,30 @@ function AppContextProvider({ children }) {
   // Firestore write is non-blocking — local state updates instantly.
   // If Firestore fails, localStorage still has the submission.
   async function addSubmission(submission) {
-    // 1. Instant local update (for SubmissionHistory component)
+    // Instant UI update
     setSubmissions((prev) => [submission, ...prev]);
 
-    // 2. Persist to Firestore (non-blocking)
-    if (user) {
-      try {
-        await addDoc(collection(db, "submissions"), {
-          ...submission,
-          userId: user.uid,
-          // serverTimestamp() is more reliable than client Date for ordering
-          createdAt: serverTimestamp(),
-        });
-      } catch (err) {
-        // Non-fatal: localStorage already has the submission.
-        console.warn("[AppContext] Submission Firestore save failed:", err.message);
-      }
+    if (!user) return;
+
+    try {
+      console.log("🚀 Saving submission", submission);
+      await createSubmission({
+        problemSlug: submission.problemSlug,
+        language: submission.language,
+        code: submission.code || "// code not stored",
+        status: submission.status,
+        passed: submission.passed || 0,
+        total: submission.total || 0,
+        executionTime: submission.executionTime || null,
+        output: submission.actualOutput || "",
+      });
+
+      console.log("✅ Submission saved to MongoDB");
+    } catch (err) {
+      console.warn(
+        "[AppContext] Submission MongoDB save failed:",
+        err.message
+      );
     }
   }
 
@@ -215,7 +204,7 @@ function AppContextProvider({ children }) {
   async function markProblemSolved({ slug, difficulty }) {
     // Update local state (instant, de-duplicated)
     setSolvedProblems((prev) =>
-      prev.includes(slug) ? prev : [...prev, slug]
+      Array.from(new Set([...prev, ...(fp.solvedSlugs || [])]))
     );
 
     const today = new Date().toISOString().split("T")[0];
@@ -232,9 +221,26 @@ function AppContextProvider({ children }) {
     // Persist to Firestore in background
     if (user) {
       try {
-        await persistSolvedToFirestore(user.uid, slug, difficulty);
+        await persistSolvedToFirestore(
+          {
+            solvedSlugs: solvedProblems,
+            activityDates,
+            solvedDifficulty: {
+              easy: solvedDifficulty.Easy || 0,
+              medium: solvedDifficulty.Medium || 0,
+              hard: solvedDifficulty.Hard || 0,
+            },
+          },
+          slug,
+          difficulty
+        );
+
+        console.log("✅ Progress saved to MongoDB");
       } catch (err) {
-        console.warn("[AppContext] Progress Firestore sync failed:", err.message);
+        console.warn(
+          "[AppContext] Progress MongoDB save failed:",
+          err.message
+        );
       }
     }
   }
