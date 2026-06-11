@@ -9,9 +9,8 @@ function LandingPage() {
             Code Club
           </h1>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            First Rule of Code Club: You do not talk about Code Club. Just kidding, tell everyone!
-            Practice DSA problems, track your progress, and your LeetCode journey all in one place.
-            All in one club. Join the club and level up your coding skills today!
+            Practice DSA problems in a themed coding universe. Track your progress,
+            sync your LeetCode stats, and build the consistency that gets you hired.
           </p>
           <div className="flex items-center justify-center gap-4 mt-10">
             <Link

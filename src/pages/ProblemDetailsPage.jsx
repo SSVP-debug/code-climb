@@ -35,6 +35,40 @@ function deriveForceTab(runResults, submitInfo) {
   return null;
 }
 
+// ── Mobile tab bar ────────────────────────────────────────────────────────────
+
+const MOBILE_TABS = [
+  { id: "problem", label: "Problem" },
+  { id: "code",    label: "Code" },
+  { id: "results", label: "Results" },
+];
+
+function MobileTabBar({ active, onChange, hasResults }) {
+  return (
+    <div className="flex border-b border-zinc-800 bg-zinc-900 flex-shrink-0">
+      {MOBILE_TABS.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onChange(tab.id)}
+          className={`
+            flex-1 py-3 text-xs font-semibold uppercase tracking-widest
+            transition-colors relative
+            ${active === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
+          `}
+        >
+          {tab.label}
+          {tab.id === "results" && hasResults && (
+            <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-green-400 align-middle" />
+          )}
+          {active === tab.id && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ── ProblemDetailsPage ────────────────────────────────────────────────────────
 
 function ProblemDetailsPage() {
@@ -84,10 +118,17 @@ function ProblemSolver({ problem, slug }) {
   const [runResults, setRunResults] = useState(null);
   const [submitInfo, setSubmitInfo] = useState(null);
   const { problemWidth, setProblemWidth } = usePanelResize();
+  const [mobileTab, setMobileTab] = useState("problem");
+
   const forceTab = useMemo(
     () => deriveForceTab(runResults, submitInfo),
     [runResults, submitInfo]
   );
+
+  // Auto-switch mobile to results after run/submit
+  useEffect(() => {
+    if (runResults || submitInfo) setMobileTab("results");
+  }, [runResults, submitInfo]);
 
   useEffect(() => { saveCode(slug, language, code); }, [slug, language, code]);
 
@@ -164,165 +205,62 @@ function ProblemSolver({ problem, slug }) {
     }
   };
 
+  const hasResults = !!(runResults || submitInfo);
+
   // ── Render ─────────────────────────────────────────────────────────────────
-  //
-  // LAYOUT CONTRACT:
-  //
-  //  position: fixed          — escapes DashboardLayout's scroll container.
-  //                             The page fills the viewport regardless of what
-  //                             DashboardLayout does above it. The navbar sits
-  //                             on top of this element, so we inset by the
-  //                             navbar height (top-16 = 4rem = 64px).
-  //                             Adjust top-16 if your navbar is a different height:
-  //                               top-14 = 56px  |  top-16 = 64px  |  top-12 = 48px
-  //
-  //  overflow-hidden          — nothing escapes this viewport-locked container.
-  //
-  //  Two-column grid:
-  //    Left  (5/12) — problem description, scrolls independently
-  //    Right (7/12) — flex column:
-  //                     [timer row]   flex-shrink-0
-  //                     [editor]      flex-shrink-0, fixed height
-  //                     [workspace]   flex-1 min-h-0, scrolls internally
-  //
   return (
     <DashboardLayout>
-      {/*
-        ╔══════════════════════════════════════════════════════════════════╗
-        ║  VIEWPORT LOCK                                                   ║
-        ║  position:fixed + inset-0 fills entire viewport.                ║
-        ║  top-16 pushes below the navbar (adjust if navbar height differs)║
-        ║  overflow-hidden: airtight — no ancestor can scroll this.       ║
-        ╚══════════════════════════════════════════════════════════════════╝
-      */}
-      <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
 
-        {/*
-          Padding wrapper — overflow-hidden so padding never causes scroll.
-          h-full passes the constrained height down.
-        */}
-        <div className="h-full overflow-hidden px-4 py-3 sm:px-6 lg:px-8">
+      {/* ── MOBILE LAYOUT (below lg) ──────────────────────────────────────── */}
+      <div className="flex flex-col lg:hidden h-[calc(100vh-56px)] overflow-hidden -m-4 sm:-m-6">
 
-          {/*
-            Two-column grid.
-            h-full: fills the padding wrapper.
-            overflow-hidden: grid never expands beyond its allocated height.
-            items-stretch: both columns fill the row height equally.
-          */}
-          <div className="hidden lg:flex h-full overflow-hidden relative">
+        <MobileTabBar
+          active={mobileTab}
+          onChange={setMobileTab}
+          hasResults={hasResults}
+        />
 
-            {/*
-              ════════════════════════════════════════════════════
-              LEFT COLUMN — Problem description
-              ════════════════════════════════════════════════════
-              h-full overflow-hidden: column is height-locked.
-              Inner div: h-full overflow-y-auto = the ONLY scroll
-              owner for problem description content.
-            */}
-            <div
-              className="h-full overflow-hidden"
-              style={{ width: `${problemWidth}%` }}
-            >
-              <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                <ProblemHeader problem={problem} isSolved={isSolved} />
-                <ProblemInfo problem={problem} />
-              </div>
-            </div>
-            <div
-              className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
-              onMouseDown={(e) => {
-                e.preventDefault();
+        <div className="flex-1 min-h-0 overflow-y-auto bg-zinc-950">
 
-                const startX = e.clientX;
-                const startWidth = problemWidth;
-
-                const handleMove = (moveEvent) => {
-                  const delta =
-                    ((moveEvent.clientX - startX) / window.innerWidth) * 100;
-
-                  const next = Math.min(
-                    60,
-                    Math.max(
-                      25,
-                      startWidth + delta
-                    )
-                  );
-
-                  setProblemWidth(next);
-                };
-
-                const handleUp = () => {
-                  window.removeEventListener("mousemove", handleMove);
-                  window.removeEventListener("mouseup", handleUp);
-                };
-
-                window.addEventListener("mousemove", handleMove);
-                window.addEventListener("mouseup", handleUp);
-              }}
-            />
-
-
-            {/*
-              ════════════════════════════════════════════════════
-              RIGHT COLUMN — Editor + Workspace
-              ════════════════════════════════════════════════════
-              h-full: fills the grid row.
-              flex flex-col: vertical stack.
-              overflow-hidden: column never expands beyond h-full.
-
-              Children:
-                flex-shrink-0 items → fixed height, never compress
-                flex-1 min-h-0 item → claims remaining space exactly
-            */}
-            <div
-              className="h-full flex flex-col overflow-hidden"
-              style={{ width: `${100 - problemWidth}%` }}
-            >
-
-              {/*
-                Timer + difficulty row.
-                flex-shrink-0: always exactly its natural height.
-                pb-2: spacing to editor below (replaces gap).
-              */}
-              <div className="flex items-center justify-between flex-shrink-0 pb-2">
-                <span className="text-xs text-zinc-500 font-mono tracking-widest">
+          {/* Problem tab */}
+          {mobileTab === "problem" && (
+            <div className="p-4 bg-zinc-900 min-h-full">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-mono text-zinc-500">
                   {isSolved
                     ? <span className="text-green-500">✓ Solved</span>
                     : <>⏱ {timerFormatted}</>
                   }
                 </span>
-                <span className="text-xs text-zinc-600">
+                <span className="text-xs text-zinc-500">
                   {problem.difficulty === "Easy" && "🟢 Easy"}
                   {problem.difficulty === "Medium" && "🟡 Medium"}
                   {problem.difficulty === "Hard" && "🔴 Hard"}
                 </span>
               </div>
+              <ProblemHeader problem={problem} isSolved={isSolved} />
+              <ProblemInfo problem={problem} />
+              <button
+                onClick={() => setMobileTab("code")}
+                className="mt-6 w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition"
+              >
+                Start Coding →
+              </button>
+            </div>
+          )}
 
-              {/*
-                Error banner — only rendered when present.
-                flex-shrink-0 + pb-2: does not compress siblings.
-              */}
+          {/* Code tab */}
+          {mobileTab === "code" && (
+            <div className="flex flex-col h-full min-h-[calc(100vh-108px)]">
               {error && (
-                <div className="flex-shrink-0 pb-2">
+                <div className="px-4 pt-3 flex-shrink-0">
                   <ErrorBanner message={error} />
                 </div>
               )}
-
-              {/*
-                Monaco editor.
-                flex-shrink-0: fixed height, never compressed by workspace.
-                h-[500px]: explicit height Monaco requires to render correctly.
-                pb-3: spacing between editor and workspace.
-                Do NOT add overflow here — Monaco renders decorations outside
-                its own bounds and needs to paint freely.
-              */}
-              <div
-                className="flex-shrink-0 pb-2"
-                style={{ height: `${editorHeight}px` }}
-              >
+              <div className="flex-1 min-h-0">
                 <ErrorBoundary
                   fallback={
-                    <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                    <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 m-4 rounded-2xl">
                       Editor failed to load.
                     </div>
                   }
@@ -341,92 +279,149 @@ function ProblemSolver({ problem, slug }) {
                   />
                 </ErrorBoundary>
               </div>
+            </div>
+          )}
 
+          {/* Results tab */}
+          {mobileTab === "results" && (
+            <div className="p-4">
+              <SubmissionResultBanner submitInfo={submitInfo} />
+              <WorkspacePanel
+                runResults={runResults}
+                submitInfo={submitInfo}
+                isRunning={running}
+                isSubmitting={submitting}
+                forceTab={forceTab}
+              />
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── DESKTOP LAYOUT (lg and above) ────────────────────────────────── */}
+      <div className="hidden lg:block -m-8">
+        <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
+          <div className="h-full overflow-hidden px-4 py-3 sm:px-6 lg:px-8">
+            <div className="flex h-full overflow-hidden relative">
+
+              {/* Left column — Problem description */}
               <div
-                className="
-    w-full
-    h-2
-    cursor-row-resize
-    flex-shrink-0
-    rounded
-    bg-zinc-800
-    hover:bg-green-500
-    transition-colors
-    mb-2
-  "
+                className="h-full overflow-hidden"
+                style={{ width: `${problemWidth}%` }}
+              >
+                <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                  <ProblemHeader problem={problem} isSolved={isSolved} />
+                  <ProblemInfo problem={problem} />
+                </div>
+              </div>
+
+              {/* Resize handle */}
+              <div
+                className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
                 onMouseDown={(e) => {
                   e.preventDefault();
-
-                  const startY = e.clientY;
-                  const startHeight = editorHeight;
-
+                  const startX = e.clientX;
+                  const startWidth = problemWidth;
                   const handleMove = (moveEvent) => {
-                    const delta = moveEvent.clientY - startY;
-
-                    const nextHeight = Math.min(
-                      800,
-                      Math.max(
-                        300,
-                        startHeight + delta
-                      )
-                    );
-
-                    setEditorHeight(nextHeight);
+                    const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+                    setProblemWidth(Math.min(60, Math.max(25, startWidth + delta)));
                   };
-
                   const handleUp = () => {
                     window.removeEventListener("mousemove", handleMove);
                     window.removeEventListener("mouseup", handleUp);
                   };
-
                   window.addEventListener("mousemove", handleMove);
                   window.addEventListener("mouseup", handleUp);
                 }}
               />
 
-              {/*
-                ════════════════════════════════════════════════
-                WORKSPACE WRAPPER — the critical scroll region
-                ════════════════════════════════════════════════
-                flex-1:          claims ALL remaining vertical space
-                                 after timer + editor + spacing.
-                min-h-0:         WITHOUT this, flex children default to
-                                 min-height:auto — the child refuses to
-                                 shrink below its content height, defeating
-                                 overflow-y-auto inside WorkspacePanel.
-                                 This is the #1 cause of workspace overflow
-                                 escaping into the page.
-                overflow-hidden: nothing escapes this wrapper.
-                                 WorkspacePanel's own overflow-y-auto is
-                                 the scroll owner — not this div.
+              {/* Right column — Editor + Workspace */}
+              <div
+                className="h-full flex flex-col overflow-hidden"
+                style={{ width: `${100 - problemWidth}%` }}
+              >
+                <div className="flex items-center justify-between flex-shrink-0 pb-2">
+                  <span className="text-xs text-zinc-500 font-mono tracking-widest">
+                    {isSolved
+                      ? <span className="text-green-500">✓ Solved</span>
+                      : <>⏱ {timerFormatted}</>
+                    }
+                  </span>
+                  <span className="text-xs text-zinc-600">
+                    {problem.difficulty === "Easy" && "🟢 Easy"}
+                    {problem.difficulty === "Medium" && "🟡 Medium"}
+                    {problem.difficulty === "Hard" && "🔴 Hard"}
+                  </span>
+                </div>
 
-                WorkspacePanel must be h-full to fill this wrapper.
-                It already is (set in WorkspacePanel.jsx).
-              */}
-              <div className="flex-1 min-h-0 flex flex-col">
+                {error && (
+                  <div className="flex-shrink-0 pb-2">
+                    <ErrorBanner message={error} />
+                  </div>
+                )}
 
-                <SubmissionResultBanner
-                  submitInfo={submitInfo}
+                <div className="flex-shrink-0 pb-2" style={{ height: `${editorHeight}px` }}>
+                  <ErrorBoundary
+                    fallback={
+                      <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                        Editor failed to load.
+                      </div>
+                    }
+                  >
+                    <ProblemEditor
+                      language={language}
+                      setLanguage={handleLanguageChange}
+                      code={code}
+                      setCode={setCode}
+                      customInput={customInput}
+                      setCustomInput={setCustomInput}
+                      onRun={handleRunCode}
+                      onSubmit={handleSubmitCode}
+                      running={running}
+                      submitting={submitting}
+                    />
+                  </ErrorBoundary>
+                </div>
+
+                <div
+                  className="w-full h-2 cursor-row-resize flex-shrink-0 rounded bg-zinc-800 hover:bg-green-500 transition-colors mb-2"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    const startY = e.clientY;
+                    const startHeight = editorHeight;
+                    const handleMove = (moveEvent) => {
+                      const delta = moveEvent.clientY - startY;
+                      setEditorHeight(Math.min(800, Math.max(300, startHeight + delta)));
+                    };
+                    const handleUp = () => {
+                      window.removeEventListener("mousemove", handleMove);
+                      window.removeEventListener("mouseup", handleUp);
+                    };
+                    window.addEventListener("mousemove", handleMove);
+                    window.addEventListener("mouseup", handleUp);
+                  }}
                 />
 
-                <div className="flex-1 min-h-0 overflow-hidden">
-                  <WorkspacePanel
-                    runResults={runResults}
-                    submitInfo={submitInfo}
-                    isRunning={running}
-                    isSubmitting={submitting}
-                    forceTab={forceTab}
-                  />
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <SubmissionResultBanner submitInfo={submitInfo} />
+                  <div className="flex-1 min-h-0 overflow-hidden">
+                    <WorkspacePanel
+                      runResults={runResults}
+                      submitInfo={submitInfo}
+                      isRunning={running}
+                      isSubmitting={submitting}
+                      forceTab={forceTab}
+                    />
+                  </div>
                 </div>
 
               </div>
-
             </div>
-            {/* end right column */}
-
           </div>
         </div>
       </div>
+
     </DashboardLayout>
   );
 }

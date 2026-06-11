@@ -1,5 +1,5 @@
 export const PROGRESS_KEYS = {
-  solved: "codeclimbSolved",
+  solved: "codeclubSolved",
   submissions: "allSubmissions",
   topicStats: "topicStats",
   activityDates: "activityDates",

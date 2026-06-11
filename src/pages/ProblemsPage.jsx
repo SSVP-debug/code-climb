@@ -90,7 +90,7 @@ function ProblemsPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-8 text-white">
+        <div className="text-white">
           Loading problems...
         </div>
       </DashboardLayout>
@@ -100,7 +100,7 @@ function ProblemsPage() {
   if (error) {
     return (
       <DashboardLayout>
-        <div className="p-8 text-red-400">
+        <div className="text-red-400">
           {error}
         </div>
       </DashboardLayout>
@@ -109,7 +109,7 @@ function ProblemsPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div>
 
         {/* Header */}
         <div className="mb-8">
