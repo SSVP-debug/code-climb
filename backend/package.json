@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "nodemon --ext js,mjs,json,env server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node scripts/seedProblems.js"
   },
   "keywords": [],
   "author": "",

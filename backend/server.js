@@ -10,6 +10,7 @@ import userRoutes from "./routes/users.js";
 import progressRoutes from "./routes/progress.js";
 import submissionRoutes from "./routes/submissions.js";
 import compilerRoutes from "./routes/compiler.js";
+import problemRoutes from "./routes/problemRoutes.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
@@ -62,6 +63,7 @@ app.use("/api/progress", requireAuth, apiLimiter, progressRoutes);
 app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
 app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
+app.use("/api/problems", problemRoutes);
 
 
 // ─── 404 handler ────────────────────────────────────────────────────────────

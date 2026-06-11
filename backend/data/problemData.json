@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "slug": "two-sum",
+    "title": "Two Sum",
+    "difficulty": "Easy",
+    "topic": "Arrays",
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+    "examples": [],
+    "constraints": [],
+    "visibleTestCases": [],
+    "starterCode": {}
+  }
+]
