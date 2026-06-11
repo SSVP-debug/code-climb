@@ -22,7 +22,7 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
     "https://ce.judge0.com/submissions?base64_encoded=false&wait=true";
 
   const response = await fetch(judge0Url, {
-    method:  "POST",
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       source_code: sourceCode,
@@ -33,8 +33,14 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
   });
 
   if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err?.message || `Judge0 returned HTTP ${response.status}`);
+    const raw = await response.text();
+
+    console.error("JUDGE0 ERROR RESPONSE:");
+    console.error(raw);
+
+    throw new Error(
+      `Judge0 returned HTTP ${response.status}: ${raw}`
+    );
   }
 
   return response.json();

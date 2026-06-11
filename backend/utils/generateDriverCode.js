@@ -57,8 +57,30 @@ function buildCallArgs(testcaseInput) {
   return Object.entries(normalized).map(([key, value]) => ({ key, value }));
 }
 
+function inferReturnType(userCode, language) {
+  if (language === "java") {
+    const match = userCode.match(
+      /public\s+(int\[\]|boolean|int|String)\s+\w+\s*\(/
+    );
+
+    return match?.[1] || "int";
+  }
+
+  if (language === "cpp") {
+    const match = userCode.match(
+      /(vector<int>|bool|int|string)\s+\w+\s*\(/
+    );
+
+    return match?.[1] || "int";
+  }
+
+  return null;
+}
+
 export function generateDriverCode(language, userCode, testcaseInput, functionName) {
-  const fn   = functionName || "solve";
+  const fn = functionName || "solve";
+  const returnType = inferReturnType(userCode, language);
+  console.log("JAVA RETURN TYPE:", returnType);
   const args = buildCallArgs(testcaseInput);
   const isDev = process.env.NODE_ENV !== "production"; // was: import.meta.env.DEV
 
@@ -75,7 +97,7 @@ export function generateDriverCode(language, userCode, testcaseInput, functionNa
       })
       .join(", ");
 
-    const hasClass   = userCode.includes("class Solution");
+    const hasClass = userCode.includes("class Solution");
     const invocation = hasClass
       ? `Solution().${fn}(${callArgs})`
       : `${fn}(${callArgs})`;
@@ -132,8 +154,8 @@ try {
     const declarations = args
       .map(({ key, value }) => {
         const javaValue = formatJavaValue(value);
-        if (Array.isArray(value))         return `int[] ${key} = ${javaValue};`;
-        if (typeof value === "number")    return `int ${key} = ${javaValue};`;
+        if (Array.isArray(value)) return `int[] ${key} = ${javaValue};`;
+        if (typeof value === "number") return `int ${key} = ${javaValue};`;
         return `Object ${key} = ${javaValue};`;
       })
       .join("\n    ");
@@ -149,9 +171,18 @@ class Main {
   public static void main(String[] args) {
     try {
       ${declarations}
+      ${returnType === "int[]"
+        ? `
       Solution solution = new Solution();
       int[] result = solution.${fn}(${javaCallArgs});
       System.out.println(Arrays.toString(result));
+      `
+        : `
+      Solution solution = new Solution();
+      ${returnType} result = solution.${fn}(${javaCallArgs});
+      System.out.println(result);
+      `
+      }
     } catch (Exception e) {
       System.out.println("RUNTIME_ERROR:" + e.getMessage());
     }
@@ -164,15 +195,15 @@ class Main {
     const declarations = args
       .map(({ key, value }) => {
         const cppValue = formatCppValue(value);
-        if (Array.isArray(value))         return `vector<int> ${key} = ${cppValue};`;
-        if (typeof value === "number")    return `int ${key} = ${cppValue};`;
+        if (Array.isArray(value)) return `vector<int> ${key} = ${cppValue};`;
+        if (typeof value === "number") return `int ${key} = ${cppValue};`;
         return `auto ${key} = ${cppValue};`;
       })
       .join("\n  ");
 
     const cppCallArgs = args.map((a) => a.key).join(", ");
 
-    return `
+    const generated = `
 #include <iostream>
 #include <vector>
 #include <string>
@@ -184,20 +215,37 @@ int main() {
   try {
     ${declarations}
     Solution solution;
+
+    ${returnType === "vector<int>"
+        ? `
+    ${returnType === "bool"
+          ? `
+auto result = solution.${fn}(${cppCallArgs});
+cout << (result ? "true" : "false") << endl;
+`
+          : `
+auto result = solution.${fn}(${cppCallArgs});
+cout << result << endl;
+`
+        }
+    `
+        : `
     auto result = solution.${fn}(${cppCallArgs});
-    cout << "[";
-    for (size_t i = 0; i < result.size(); ++i) {
-      if (i > 0) cout << ",";
-      cout << result[i];
-    }
-    cout << "]" << endl;
+    cout << result << endl;
+    `
+      }
+
   } catch (exception& e) {
     cout << "RUNTIME_ERROR:" << e.what();
   }
+
   return 0;
 }
 `;
+
+    console.log("CPP RETURN TYPE:", returnType);
+
+    return generated;
   }
 
-  return userCode;
 }

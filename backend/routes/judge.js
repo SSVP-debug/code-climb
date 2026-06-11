@@ -252,10 +252,6 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
           `expected="${expected}" actual="${actual}" match=${expected === actual}`
         );
       }
-      console.log("TESTCASE:", testcase.input);
-      console.log("EXPECTED:", expected);
-      console.log("ACTUAL:", actual);
-      console.log("RAW STDOUT:", result.stdout);
 
       if (!outputsMatch(expected, actual)) {
         return res.json({

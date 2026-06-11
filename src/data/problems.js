@@ -11,6 +11,7 @@ const problems = [
     topic: "Arrays",
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input has exactly one solution, and you may not use the same element twice.",
+    
     examples: [
       { input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "nums[0] + nums[1] = 9" },
       { input: "nums = [3,2,4], target = 6", output: "[1,2]" },
@@ -27,7 +28,7 @@ const problems = [
       { input: { nums: [3, 2, 4], target: 6 }, expectedOutput: [1, 2] },
       { input: { nums: [3, 3], target: 6 }, expectedOutput: [0, 1] },
     ],
-    
+
   },
 
   {
@@ -39,6 +40,7 @@ const problems = [
     topic: "Arrays",
     description:
       "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
+    
     examples: [
       { input: "nums = [1,2,3,1]", output: "true" },
       { input: "nums = [1,2,3,4]", output: "false" },
@@ -55,7 +57,7 @@ const problems = [
       { input: { nums: [1, 2, 3, 4] }, expectedOutput: false },
       { input: { nums: [1, 1, 1, 3, 3, 4, 3, 2, 4, 2] }, expectedOutput: true },
     ],
-    
+
   },
 
   {
@@ -67,6 +69,8 @@ const problems = [
     topic: "Arrays",
     description:
       "You are given an array prices where prices[i] is the price of a stock on day i. Maximize your profit by choosing a single day to buy and a different future day to sell. Return the maximum profit, or 0 if no profit is possible.",
+
+    
     examples: [
       { input: "prices = [7,1,5,3,6,4]", output: "5", explanation: "Buy day 2 (price=1), sell day 5 (price=6). Profit = 5." },
       { input: "prices = [7,6,4,3,1]", output: "0" },
@@ -83,7 +87,7 @@ const problems = [
       { input: { prices: [7, 6, 4, 3, 1] }, expectedOutput: 0 },
       { input: { prices: [1, 2] }, expectedOutput: 1 },
     ],
-    
+
   },
 
   {
@@ -112,7 +116,7 @@ const problems = [
       { input: { s: "()[]{}" }, expectedOutput: true },
       { input: { s: "(]" }, expectedOutput: false },
     ],
-    
+
   },
 
   {
@@ -141,7 +145,7 @@ const problems = [
       { input: { nums: [1] }, expectedOutput: 1 },
       { input: { nums: [5, 4, -1, 7, 8] }, expectedOutput: 23 },
     ],
-    
+
   },
 
   {
@@ -169,7 +173,7 @@ const problems = [
       { input: { n: 3 }, expectedOutput: 3 },
       { input: { n: 5 }, expectedOutput: 8 },
     ],
-    
+
   },
 
   {
@@ -197,7 +201,7 @@ const problems = [
       { input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 },
       { input: { nums: [1] }, expectedOutput: 1 },
     ],
-    
+
   },
 
   {
@@ -226,7 +230,7 @@ const problems = [
       { input: { n: 3 }, expectedOutput: 2 },
       { input: { n: 4 }, expectedOutput: 3 },
     ],
-    
+
   },
 
   // ── MEDIUM ────────────────────────────────────────────────────────────────
@@ -257,7 +261,7 @@ const problems = [
       { input: { s: "bbbbb" }, expectedOutput: 1 },
       { input: { s: "pwwkew" }, expectedOutput: 3 },
     ],
-    
+
   },
 
   {
@@ -285,7 +289,7 @@ const problems = [
       { input: { s: "rat", t: "car" }, expectedOutput: false },
       { input: { s: "ab", t: "a" }, expectedOutput: false },
     ],
-    
+
   },
 
   {
@@ -313,7 +317,7 @@ const problems = [
       { input: { height: [1, 1] }, expectedOutput: 1 },
       { input: { height: [4, 3, 2, 1, 4] }, expectedOutput: 16 },
     ],
-    
+
   },
 
   {
@@ -341,7 +345,7 @@ const problems = [
       { input: { nums: [2, 7, 9, 3, 1] }, expectedOutput: 12 },
       { input: { nums: [1, 2] }, expectedOutput: 2 },
     ],
-    
+
   },
 
   {
@@ -370,7 +374,7 @@ const problems = [
       { input: { coins: [2], amount: 3 }, expectedOutput: -1 },
       { input: { coins: [1, 2, 5], amount: 11 }, expectedOutput: 3 },
     ],
-    
+
   },
 
   {
@@ -399,7 +403,7 @@ const problems = [
       { input: { nums: [4, 5, 6, 7, 0, 1, 2] }, expectedOutput: 0 },
       { input: { nums: [11, 13, 15, 17] }, expectedOutput: 11 },
     ],
-    
+
   },
 
   {
@@ -427,7 +431,7 @@ const problems = [
       { input: { nums: [2, 2, 1, 1, 1, 2, 2] }, expectedOutput: 2 },
       { input: { nums: [1] }, expectedOutput: 1 },
     ],
-    
+
   },
 
   {
@@ -439,6 +443,7 @@ const problems = [
     topic: "Strings",
     description:
       "Write a function to find the longest common prefix string amongst an array of strings. If there is no common prefix, return an empty string.",
+    
     examples: [
       { input: 'strs = ["flower","flow","flight"]', output: '"fl"' },
       { input: 'strs = ["dog","racecar","car"]', output: '""', explanation: "No common prefix." },
@@ -455,7 +460,7 @@ const problems = [
       { input: { strs: ["dog", "racecar", "car"] }, expectedOutput: "" },
       { input: { strs: ["interview", "inter", "interest"] }, expectedOutput: "inter" },
     ],
-    
+
   },
 
   // ── HARD ─────────────────────────────────────────────────────────────────
@@ -485,7 +490,7 @@ const problems = [
       { input: { height: [4, 2, 0, 3, 2, 5] }, expectedOutput: 9 },
       { input: { height: [3, 0, 2, 0, 4] }, expectedOutput: 7 },
     ],
-    
+
   },
 
   {
@@ -514,7 +519,7 @@ const problems = [
       { input: { s: "applepenapple", wordDict: ["apple", "pen"] }, expectedOutput: true },
       { input: { s: "catsandog", wordDict: ["cats", "dog", "sand", "and", "cat"] }, expectedOutput: false },
     ],
-    
+
   },
 
   {
@@ -543,7 +548,7 @@ const problems = [
       { input: { s: "226" }, expectedOutput: 3 },
       { input: { s: "06" }, expectedOutput: 0 },
     ],
-    
+
   },
 
   {
@@ -571,7 +576,7 @@ const problems = [
       { input: { nums: [2, 3, 0, 1, 4] }, expectedOutput: 2 },
       { input: { nums: [1, 2, 3] }, expectedOutput: 2 },
     ],
-    
+
   },
 ];
 
