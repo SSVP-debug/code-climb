@@ -1,19 +1,48 @@
+/**
+ * seedProblems.js
+ *
+ * Seeds all problems from src/data/problems.js into MongoDB.
+ * Uses upsert on slug — safe to re-run without wiping existing data.
+ *
+ * Usage:
+ *   cd backend
+ *   node scripts/seedProblems.js
+ */
+
+import "../config/env.js";
 import connectDB from "../config/db.js";
 import Problem from "../models/Problem.js";
-
 import problems from "../../src/data/problems.js";
 
 const seedProblems = async () => {
   try {
     await connectDB();
+    console.log(`\n📦 Loaded ${problems.length} problems from problems.js\n`);
 
-    console.log(`📦 Loaded ${problems.length} problems`);
+    let inserted = 0;
+    let updated  = 0;
 
-    await Problem.deleteMany({});
+    for (const problem of problems) {
+      const existing = await Problem.findOne({ slug: problem.slug }).lean();
 
-    await Problem.insertMany(problems);
+      await Problem.findOneAndUpdate(
+        { slug: problem.slug },
+        { $set: problem },
+        { upsert: true, new: true }
+      );
 
-    console.log(`✅ Seeded ${problems.length} problems`);
+      if (!existing) {
+        inserted++;
+        console.log(`  + [${problem.difficulty.padEnd(6)}] #${String(problem.id).padStart(2, "0")} ${problem.title}`);
+      } else {
+        updated++;
+        console.log(`  ~ [${problem.difficulty.padEnd(6)}] #${String(problem.id).padStart(2, "0")} ${problem.title} (updated)`);
+      }
+    }
+
+    const total = await Problem.countDocuments();
+    console.log(`\n✅ Done. ${inserted} inserted, ${updated} updated.`);
+    console.log(`   Total problems in DB: ${total}\n`);
 
     process.exit(0);
   } catch (error) {
