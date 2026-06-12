@@ -14,7 +14,8 @@ import problemRoutes from "./routes/problemRoutes.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
-import { compilerLimiter, apiLimiter } from "./middleware/rateLimiter.js";
+import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter.js";
+import insightsRoutes from "./routes/insights.js";
 
 
 const app = express();
@@ -65,6 +66,7 @@ app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
 app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);
+app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
 
 
 // ─── 404 handler ────────────────────────────────────────────────────────────

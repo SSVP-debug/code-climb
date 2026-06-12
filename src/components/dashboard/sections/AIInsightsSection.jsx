@@ -1,91 +1,163 @@
-import {
-    getWeakestTopic,
-    getStrongestTopic,
-    getAcceptanceRate,
-} from "../../../utils/analyticsUtils";
-
+import { useState, useEffect, useCallback } from "react";
+import { apiFetch } from "../../../services/api";
 import { useTheme } from "../../../context/ThemeContext";
 
+// How long (ms) the Refresh button is disabled after a successful fetch
+const REFRESH_COOLDOWN = 2 * 60 * 1000; // 2 minutes
+
+function InsightCard({ label, value, accent = false }) {
+  return (
+    <div className={`rounded-xl p-4 ${accent ? "bg-zinc-700/60" : "bg-zinc-800"}`}>
+      <p className="text-zinc-400 text-xs uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-sm leading-relaxed text-zinc-100">{value}</p>
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="bg-zinc-800 rounded-xl p-4 animate-pulse">
+      <div className="h-3 w-24 bg-zinc-700 rounded mb-3" />
+      <div className="h-4 w-full bg-zinc-700 rounded mb-2" />
+      <div className="h-4 w-3/4 bg-zinc-700 rounded" />
+    </div>
+  );
+}
+
 function AIInsightsSection() {
-    const { theme } = useTheme();
-    
+  const { theme } = useTheme();
 
-    const weakestTopic =
-        getWeakestTopic();
+  const [status, setStatus] = useState("idle"); // idle | loading | success | empty | error
+  const [insights, setInsights] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [cooldownUntil, setCooldownUntil] = useState(0);
 
-    const strongestTopic =
-        getStrongestTopic();
+  const canRefresh = Date.now() >= cooldownUntil;
 
-    const acceptanceRate =
-        getAcceptanceRate();
+  const fetchInsights = useCallback(async () => {
+    setStatus("loading");
+    setErrorMsg("");
 
-    return (
+    try {
+      const data = await apiFetch("/api/insights");
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+      if (data.insights === null) {
+        setStatus("empty");
+      } else {
+        setInsights(data.insights);
+        setStatus("success");
+        setCooldownUntil(Date.now() + REFRESH_COOLDOWN);
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Something went wrong. Try again.");
+      setStatus("error");
+    }
+  }, []);
 
-            <h2 className="text-2xl font-semibold mb-6">
+  // Auto-fetch on mount
+  useEffect(() => {
+    fetchInsights();
+  }, [fetchInsights]);
 
-                {theme.words.aiInsights}
+  const secondsLeft = Math.max(
+    0,
+    Math.ceil((cooldownUntil - Date.now()) / 1000)
+  );
 
-            </h2>
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold">{theme.words.aiInsights}</h2>
 
-            <div className="space-y-4">
+        {(status === "success" || status === "error") && (
+          <button
+            onClick={fetchInsights}
+            disabled={!canRefresh || status === "loading"}
+            className="text-xs text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+            title={!canRefresh ? `Available in ${secondsLeft}s` : "Refresh insights"}
+          >
+            <svg
+              className={`w-3.5 h-3.5 ${status === "loading" ? "animate-spin" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            {!canRefresh && status === "success" ? `${secondsLeft}s` : "Refresh"}
+          </button>
+        )}
+      </div>
 
-                <div className="bg-zinc-800 rounded-xl p-4">
-
-                    <p className="text-zinc-400 text-sm">
-
-                        {theme.words.strongestTopic}
-
-                    </p>
-
-                    <h3 className="text-xl font-bold mt-2">
-
-                        {strongestTopic}
-
-                    </h3>
-
-                </div>
-
-                <div className="bg-zinc-800 rounded-xl p-4">
-
-                    <p className="text-zinc-400 text-sm">
-
-                        {theme.words.weakestTopic}
-
-                    </p>
-
-                    <h3 className="text-xl font-bold mt-2">
-
-                        {weakestTopic}
-
-                    </h3>
-
-                </div>
-
-                <div className="bg-zinc-800 rounded-xl p-4">
-
-                    <p className="text-zinc-400 text-sm">
-
-                        {theme.words.recommendation}
-
-                    </p>
-
-                    <h3 className="text-lg font-semibold mt-2">
-
-                        {acceptanceRate < 50
-                            ? `Practice more ${weakestTopic} problems.`
-                            : `Great progress. Push harder on medium and hard problems.`}
-
-                    </h3>
-
-                </div>
-
-            </div>
-
+      {/* Loading */}
+      {status === "loading" && (
+        <div className="space-y-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
+      )}
 
-    );
+      {/* Empty state — not enough data yet */}
+      {status === "empty" && (
+        <div className="bg-zinc-800 rounded-xl p-5 text-center">
+          <p className="text-zinc-400 text-sm">
+            Solve a few problems first — your personalised insights will appear here.
+          </p>
+        </div>
+      )}
+
+      {/* Error state */}
+      {status === "error" && (
+        <div className="bg-zinc-800 border border-red-900/40 rounded-xl p-4">
+          <p className="text-red-400 text-sm mb-3">{errorMsg}</p>
+          <button
+            onClick={fetchInsights}
+            className="text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
+      {/* Success */}
+      {status === "success" && insights && (
+        <div className="space-y-3">
+          <InsightCard
+            label={theme.words.strongestTopic}
+            value={insights.strongestArea}
+            accent
+          />
+          <InsightCard
+            label={theme.words.weakestTopic}
+            value={insights.weakestArea}
+          />
+          <InsightCard
+            label={theme.words.recommendation}
+            value={insights.nextStep}
+          />
+          <InsightCard
+            label="Coach's note"
+            value={insights.encouragement}
+          />
+        </div>
+      )}
+
+      {/* AI attribution */}
+      {status === "success" && (
+        <p className="text-zinc-600 text-xs mt-4 text-right">
+          Powered by Claude
+        </p>
+      )}
+    </div>
+  );
 }
 
 export default AIInsightsSection;

@@ -21,3 +21,16 @@ export const apiLimiter = rateLimit({
     error: "Too many requests. Please slow down.",
   },
 });
+
+// For AI Insights — each request costs tokens, so keep it tight
+// 5 requests per 10 minutes per IP
+export const aiLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
+  message: {
+    error: "You've requested insights too many times. Wait a few minutes before refreshing.",
+  },
+});
