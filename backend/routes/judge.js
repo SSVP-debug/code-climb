@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { validateBody } from "./compiler.js";
 import { callJudge0 } from "../controllers/compilerController.js";
-import hiddentestcases from "../data/hiddentestcases.js";
+import hiddenTestcases from "../data/hiddenTestcases.js";
 
 const router = Router();
 
