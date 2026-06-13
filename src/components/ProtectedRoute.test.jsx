@@ -28,7 +28,9 @@ describe("ProtectedRoute", () => {
   it("shows loading while auth is resolving", () => {
     renderWithAuth({ user: null, loading: true });
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(
+      document.querySelector('[class*="animate-spin"]')
+    ).not.toBeNull();
   });
 
   it("redirects to login when user is not authenticated", () => {

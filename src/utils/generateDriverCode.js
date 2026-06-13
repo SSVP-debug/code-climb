@@ -37,13 +37,23 @@ function formatJavaValue(value) {
       return "new int[] {}";
     }
 
-    if (value.every((v) => typeof v === "number")) {
+    if (
+      value.every((v) => typeof v === "number")
+    ) {
       return `new int[] {${value.join(", ")}}`;
+    }
+
+    if (
+      value.every((v) => typeof v === "string")
+    ) {
+      return `new String[] {${value
+        .map((v) => `"${v}"`)
+        .join(", ")}}`;
     }
 
     return JSON.stringify(value);
   }
-
+  
   if (typeof value === "number") {
     return String(value);
   }
@@ -109,6 +119,39 @@ function buildCallArgs(testcaseInput) {
   );
 }
 
+function inferJavaReturnType(userCode, fn) {
+  const regex = new RegExp(
+    `public\\s+([\\w\\[\\]]+)\\s+${fn}\\s*\\(`
+  );
+
+  const match = userCode.match(regex);
+
+  return match?.[1] || "int";
+}
+
+function inferJavaParamType(value) {
+  if (Array.isArray(value)) {
+    if (
+      value.length > 0 &&
+      value.every((v) => typeof v === "string")
+    ) {
+      return "String[]";
+    }
+
+    return "int[]";
+  }
+
+  if (typeof value === "number") {
+    return "int";
+  }
+
+  if (typeof value === "string") {
+    return "String";
+  }
+
+  return "Object";
+}
+
 export function generateDriverCode(
   language,
   userCode,
@@ -140,7 +183,12 @@ export function generateDriverCode(
           key.toLowerCase().includes("root") &&
           Array.isArray(value)
         ) {
-          return `build_tree(${formatPythonArg(value)})`;
+          const treeValues =
+            value.length > 3
+              ? value.map((v) => (v === -1 ? null : v))
+              : value;
+
+          return `build_tree(${formatPythonArg(treeValues)})`;
         }
 
         return formatPythonArg(value);
@@ -220,25 +268,38 @@ try {
   }
 
   if (language === "java") {
+    const returnType = inferJavaReturnType(
+      userCode,
+      fn
+    );
+
     const declarations = args
       .map(({ key, value }) => {
-        const javaValue = formatJavaValue(value);
+        const type = inferJavaParamType(value);
 
-        if (Array.isArray(value)) {
-          return `int[] ${key} = ${javaValue};`;
+        if (
+          type === "String[]" &&
+          Array.isArray(value)
+        ) {
+          return `String[] ${key} = new String[] {${value
+            .map((v) => `"${v}"`)
+            .join(", ")}};`;
         }
 
-        if (typeof value === "number") {
-          return `int ${key} = ${javaValue};`;
-        }
-
-        return `Object ${key} = ${javaValue};`;
+        return `${type} ${key} = ${formatJavaValue(
+          value
+        )};`;
       })
-      .join("\n    ");
+      .join("\n      ");
 
     const javaCallArgs = args
       .map((a) => a.key)
       .join(", ");
+
+    const printStatement =
+      returnType.endsWith("[]")
+        ? "System.out.println(Arrays.toString(result));"
+        : "System.out.println(result);";
 
     return `
 import java.util.Arrays;
@@ -252,12 +313,9 @@ class Main {
 
       Solution solution = new Solution();
 
-      int[] result =
-        solution.${fn}(${javaCallArgs});
+      ${returnType} result = solution.${fn}(${javaCallArgs});
 
-      System.out.println(
-        Arrays.toString(result)
-      );
+      ${printStatement}
 
     } catch (Exception e) {
       System.out.println(
@@ -275,6 +333,13 @@ class Main {
         const cppValue = formatCppValue(value);
 
         if (Array.isArray(value)) {
+          if (
+            value.length > 0 &&
+            value.every((v) => typeof v === "string")
+          ) {
+            return `auto ${key} = ${cppValue};`;
+          }
+
           return `vector<int> ${key} = ${cppValue};`;
         }
 
@@ -327,5 +392,5 @@ int main() {
 `;
   }
 
-  return userCode;
+  return undefined;
 }

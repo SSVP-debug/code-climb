@@ -1,68 +1,40 @@
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
+import { useAppContext } from "./useAppContext";
 
-function LandingPage() {
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-5xl mx-auto px-8 py-20">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4">
-            Code Club
-          </h1>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Practice DSA problems in a themed coding universe. Track your progress,
-            sync your LeetCode stats, and build the consistency that gets you hired.
-          </p>
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <Link
-              to="/login"
-              className="bg-green-500 text-black px-8 py-3 rounded-xl font-semibold hover:bg-green-600 transition"
-            >
-              Get Started
-            </Link>
-            <Link
-              to="/login"
-              className="bg-zinc-900 border border-zinc-800 px-8 py-3 rounded-xl font-semibold hover:bg-zinc-800 transition"
-            >
-              View Problems
-            </Link>
-          </div>
-        </header>
+function useDashboardData() {
+  const {
+    solvedProblems,
+    activityDates,
+    recentActivity,
+    solvedDifficulty,
+  } = useAppContext();
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-            <h2 className="text-xl font-semibold mb-3">
-              Practice
-            </h2>
-            <p className="text-zinc-400 leading-relaxed">
-              Solve curated problems with a built-in editor.
-              Run code and submit against visible and hidden
-              testcases.
-            </p>
-          </div>
+  const earnedBadges = useMemo(() => {
+    const badges = [];
+    if (solvedDifficulty.Easy   >= 1) badges.push("Beginner 🟢");
+    if (solvedDifficulty.Medium >= 1) badges.push("Intermediate 🟡");
+    if (solvedDifficulty.Hard   >= 1) badges.push("Advanced 🔴");
+    return badges;
+  }, [solvedDifficulty]);
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-            <h2 className="text-xl font-semibold mb-3">
-              Track Progress
-            </h2>
-            <p className="text-zinc-400 leading-relaxed">
-              Monitor solved problems, streaks, topic stats,
-              and submission history on your dashboard.
-            </p>
-          </div>
+  const recommendation = useMemo(() => {
+    if (solvedProblems.length < 3)  return "Start solving more Easy problems consistently.";
+    if (activityDates.length  < 3)  return "Build a stronger daily solving streak.";
+    if (solvedDifficulty.Hard === 0) return "Try solving Hard problems to level up.";
+    return "Excellent progress! Keep pushing consistency.";
+  }, [solvedProblems, activityDates, solvedDifficulty]);
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-            <h2 className="text-xl font-semibold mb-3">
-              LeetCode Sync
-            </h2>
-            <p className="text-zinc-400 leading-relaxed">
-              Connect your LeetCode username to pull external
-              stats alongside your Code Club activity.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const today      = new Date().toISOString().split("T")[0];
+  const dailySolved = activityDates.includes(today) ? 1 : 0;
+
+  return {
+    streak:         activityDates.length,
+    badges:         earnedBadges,
+    recommendation,
+    dailySolved,
+    recentActivity,
+    codeClubSolved: solvedProblems.length,
+  };
 }
 
-export default LandingPage;
+export default useDashboardData;
