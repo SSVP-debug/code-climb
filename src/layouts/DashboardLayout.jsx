@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import ProgressSync from "../components/ProgressSync";
 
 function DashboardLayout({ children }) {
   return (
