@@ -50,9 +50,9 @@ function AppContextProvider({ children }) {
   const [solvedDifficulty, setSolvedDifficulty] = useState(() => {
     try {
       const saved = localStorage.getItem("solvedDifficulty");
-      return saved ? JSON.parse(saved) : { Easy: 0, Medium: 0, Hard: 0 };
+      return saved ? JSON.parse(saved) : { easy: 0, medium: 0, hard: 0 };
     } catch {
-      return { Easy: 0, Medium: 0, Hard: 0 };
+      return { easy: 0, medium: 0, hard: 0 };
     }
   });
 
@@ -115,7 +115,7 @@ function AppContextProvider({ children }) {
 
         // Merge solvedProblems: union of both sources
         setSolvedProblems((prev) =>
-          Array.from(new Set([...prev, ...(fp.solvedProblems || [])]))
+          Array.from(new Set([...prev, ...(fp.solvedSlugs || [])]))
         );
 
         // Merge activityDates: union, keep sorted
@@ -128,9 +128,9 @@ function AppContextProvider({ children }) {
         setSolvedDifficulty((prev) => {
           const fd = fp.solvedDifficulty || {};
           return {
-            Easy: Math.max(prev.Easy || 0, fd.Easy || 0),
-            Medium: Math.max(prev.Medium || 0, fd.Medium || 0),
-            Hard: Math.max(prev.Hard || 0, fd.Hard || 0),
+            easy: Math.max(prev.easy || 0, fd.easy || 0),
+            medium: Math.max(prev.medium || 0, fd.medium || 0),
+            hard: Math.max(prev.hard || 0, fd.hard || 0),
           };
         });
       } catch (err) {
@@ -202,33 +202,36 @@ function AppContextProvider({ children }) {
 
   // markProblemSolved: updates local state + syncs to Firestore.
   async function markProblemSolved({ slug, difficulty }) {
-    // Update local state (instant, de-duplicated)
-    setSolvedProblems((prev) =>
-      Array.from(new Set([...prev, ...(fp.solvedSlugs || [])]))
-    );
-
     const today = new Date().toISOString().split("T")[0];
-    setActivityDates((prev) =>
-      prev.includes(today) ? prev : [...prev, today]
+
+    const nextSolvedProblems = Array.from(
+      new Set([...solvedProblems, slug])
     );
 
-    // difficulty is "Easy" | "Medium" | "Hard" — capital first letter
-    setSolvedDifficulty((prev) => ({
-      ...prev,
-      [difficulty]: (prev[difficulty] ?? 0) + 1,
-    }));
+    const nextActivityDates = activityDates.includes(today)
+      ? activityDates
+      : [...activityDates, today];
 
-    // Persist to Firestore in background
+    const nextSolvedDifficulty = {
+      ...solvedDifficulty,
+      [difficultyKey]: (solvedDifficulty[difficultyKey] ?? 0) + 1,
+    };
+
+    // Update UI immediately
+    setSolvedProblems(nextSolvedProblems);
+    setActivityDates(nextActivityDates);
+    setSolvedDifficulty(nextSolvedDifficulty);
+
     if (user) {
       try {
         await persistSolvedToFirestore(
           {
-            solvedSlugs: solvedProblems,
-            activityDates,
+            solvedSlugs: nextSolvedProblems,
+            activityDates: nextActivityDates,
             solvedDifficulty: {
-              easy: solvedDifficulty.Easy || 0,
-              medium: solvedDifficulty.Medium || 0,
-              hard: solvedDifficulty.Hard || 0,
+              easy: nextSolvedDifficulty.easy || 0,
+              medium: nextSolvedDifficulty.medium || 0,
+              hard: nextSolvedDifficulty.hard || 0,
             },
           },
           slug,

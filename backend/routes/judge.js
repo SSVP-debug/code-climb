@@ -155,7 +155,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
   const isDev = process.env.NODE_ENV !== "production";
 
   // ── Load hidden testcases ──────────────────────────────────────────────
-  const hidden = hiddentestcases[problemSlug];
+  const hidden = hiddenTestcases[problemSlug];
 
   if (!hidden || hidden.length === 0) {
     return res.status(404).json({
