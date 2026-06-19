@@ -44,6 +44,16 @@ export async function putProgress(req, res) {
       leetcodeUsername,
     } = req.body;
 
+    if (!req.userDoc) {
+      return res.status(503).json({
+        error: "Database unavailable",
+      });
+    }
+
+    if (Array.isArray(solvedSlugs)) {
+      req.userDoc.solvedSlugs = solvedSlugs;
+    }
+
     if (Array.isArray(activityDates)) {
       req.userDoc.activityDates = activityDates;
 

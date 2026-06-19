@@ -238,7 +238,9 @@ function AppContextProvider({ children }) {
 
     if (user) {
       try {
+        console.log("MARK PROBLEM SOLVED CALLED");
         const result = await persistSolvedToFirestore(
+        
           {
             solvedSlugs: nextSolvedProblems,
             activityDates: nextActivityDates,
@@ -249,6 +251,7 @@ function AppContextProvider({ children }) {
           slug,
           difficulty
         );
+      console.log("ABOUT TO CALL persistSolvedToFirestore");
 
         // ← FIX E: hydrate streak from server response
         if (result?.currentStreak !== undefined) setCurrentStreak(result.currentStreak);
