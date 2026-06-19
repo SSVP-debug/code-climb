@@ -39,7 +39,7 @@ function deriveForceTab(runResults, submitInfo) {
 
 const MOBILE_TABS = [
   { id: "problem", label: "Problem" },
-  { id: "code",    label: "Code" },
+  { id: "code", label: "Code" },
   { id: "results", label: "Results" },
 ];
 
@@ -157,8 +157,12 @@ function ProblemSolver({ problem, slug }) {
   };
 
   const handleSubmitCode = async () => {
+
     if (submitting) return;
     const wasAlreadySolved = isSolved;
+    console.log("wasAlreadySolved =", wasAlreadySolved);
+    console.log("isSolved =", isSolved);
+    
     try {
       setSubmitting(true);
       setError("");
@@ -166,6 +170,8 @@ function ProblemSolver({ problem, slug }) {
       setSubmitInfo(null);
 
       const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
+      console.log("judgeResult.status =", judgeResult.status);
+      console.log("wasAlreadySolved =", wasAlreadySolved);
 
       setSubmitInfo({
         status: judgeResult.status,
@@ -175,6 +181,7 @@ function ProblemSolver({ problem, slug }) {
       });
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
+        console.log("ENTERED markProblemSolved block");
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         stopTimer();
         confetti({

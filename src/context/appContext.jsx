@@ -204,46 +204,60 @@ function AppContextProvider({ children }) {
   async function markProblemSolved({ slug, difficulty }) {
     const today = new Date().toISOString().split("T")[0];
 
-    const nextSolvedProblems = Array.from(
-      new Set([...solvedProblems, slug])
-    );
+    const nextSolvedProblems = Array.from(new Set([...solvedProblems, slug]));
 
     const nextActivityDates = activityDates.includes(today)
       ? activityDates
       : [...activityDates, today];
 
+    const difficultyKey = difficulty.toLowerCase();
     const nextSolvedDifficulty = {
       ...solvedDifficulty,
       [difficultyKey]: (solvedDifficulty[difficultyKey] ?? 0) + 1,
     };
 
-    // Update UI immediately
+    // ← FIX C: compute topicStats update
+    const problemMeta = problems.find((p) => p.slug === slug);
+    const topic = problemMeta?.topic || problemMeta?.pattern || null;
+    const nextTopicStats = topic
+      ? { ...topicStats, [topic]: (topicStats[topic] || 0) + 1 }
+      : topicStats;
+
+    // ← FIX D: build recentActivity entry
+    const nextRecentActivity = [
+      { title: problemMeta?.title || slug, slug, time: new Date().toISOString(), status: "Accepted" },
+      ...recentActivity,
+    ].slice(0, 10);
+
+    // Instant UI update
     setSolvedProblems(nextSolvedProblems);
     setActivityDates(nextActivityDates);
     setSolvedDifficulty(nextSolvedDifficulty);
+    setTopicStats(nextTopicStats);
+    setRecentActivity(nextRecentActivity);
 
     if (user) {
       try {
-        await persistSolvedToFirestore(
+        const result = await persistSolvedToFirestore(
           {
             solvedSlugs: nextSolvedProblems,
             activityDates: nextActivityDates,
-            solvedDifficulty: {
-              easy: nextSolvedDifficulty.easy || 0,
-              medium: nextSolvedDifficulty.medium || 0,
-              hard: nextSolvedDifficulty.hard || 0,
-            },
+            solvedDifficulty: nextSolvedDifficulty, // service will NOT re-increment
+            topicStats: nextTopicStats,
+            recentActivity: nextRecentActivity,
           },
           slug,
           difficulty
         );
 
-        console.log("✅ Progress saved to MongoDB");
+        // ← FIX E: hydrate streak from server response
+        if (result?.currentStreak !== undefined) setCurrentStreak(result.currentStreak);
+        if (result?.longestStreak !== undefined) setLongestStreak(result.longestStreak);
+        if (result?.lastActivityDate !== undefined) setLastActivityDate(result.lastActivityDate);
+
+        console.log("✅ Progress saved to MongoDB", result);
       } catch (err) {
-        console.warn(
-          "[AppContext] Progress MongoDB save failed:",
-          err.message
-        );
+        console.error("FULL PROGRESS ERROR", err);
       }
     }
   }

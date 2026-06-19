@@ -42,6 +42,22 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    currentStreak: {
+      type: Number,
+      default: 0,
+    },
+
+    longestStreak: {
+      type: Number,
+      default: 0,
+    },
+
+    lastActivityDate: {
+      type: String,
+      default: null,
+    },
+
+
   },
   { timestamps: true }
 );
