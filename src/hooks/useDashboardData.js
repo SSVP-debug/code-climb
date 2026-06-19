@@ -7,33 +7,69 @@ function useDashboardData() {
     activityDates,
     recentActivity,
     solvedDifficulty,
+    currentStreak,
+    topicStats,
   } = useAppContext();
 
-  const earnedBadges = useMemo(() => {
-    const badges = [];
-    if (solvedDifficulty.Easy   >= 1) badges.push("Beginner 🟢");
-    if (solvedDifficulty.Medium >= 1) badges.push("Intermediate 🟡");
-    if (solvedDifficulty.Hard   >= 1) badges.push("Advanced 🔴");
-    return badges;
-  }, [solvedDifficulty]);
+  const badges = useMemo(() => {
+    const list = [];
+
+    if ((solvedDifficulty.easy ?? 0) > 0) {
+      list.push("Beginner 🟢");
+    }
+
+    if ((solvedDifficulty.medium ?? 0) > 0) {
+      list.push("Intermediate 🟡");
+    }
+
+    if ((solvedDifficulty.hard ?? 0) > 0) {
+      list.push("Advanced 🔴");
+    }
+
+    if (currentStreak >= 7) {
+      list.push("7 Day Streak 🔥");
+    }
+
+    return list;
+  }, [solvedDifficulty, currentStreak]);
 
   const recommendation = useMemo(() => {
-    if (solvedProblems.length < 3)  return "Start solving more Easy problems consistently.";
-    if (activityDates.length  < 3)  return "Build a stronger daily solving streak.";
-    if (solvedDifficulty.Hard === 0) return "Try solving Hard problems to level up.";
-    return "Excellent progress! Keep pushing consistency.";
-  }, [solvedProblems, activityDates, solvedDifficulty]);
+    if (solvedProblems.length < 3) {
+      return "Start solving more problems consistently.";
+    }
 
-  const today      = new Date().toISOString().split("T")[0];
-  const dailySolved = activityDates.includes(today) ? 1 : 0;
+    if (currentStreak < 3) {
+      return "Build a stronger daily streak.";
+    }
+
+    if ((solvedDifficulty.hard ?? 0) === 0) {
+      return "Try solving Hard problems.";
+    }
+
+    return "Excellent progress. Keep going.";
+  }, [
+    solvedProblems,
+    currentStreak,
+    solvedDifficulty,
+  ]);
+
+  const today = new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const dailySolved =
+    activityDates.includes(today)
+      ? 1
+      : 0;
 
   return {
-    streak:         activityDates.length,
-    badges:         earnedBadges,
+    streak: currentStreak,
+    badges,
     recommendation,
     dailySolved,
     recentActivity,
     codeClubSolved: solvedProblems.length,
+    topicStats,
   };
 }
 

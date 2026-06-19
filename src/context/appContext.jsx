@@ -6,283 +6,402 @@ import {
   useState,
 } from "react";
 
+import { useAuth } from "./authContext";
+
+import {
+  getProgress,
+  initProgress,
+  markProblemSolved as persistSolvedToMongo,
+} from "../services/progressService";
+
 import {
   getSubmissions,
   createSubmission,
 } from "../services/submissionService";
 
-import { useAuth } from "./authContext";
-import {
-  getProgress,
-  initProgress,
-  markProblemSolved as persistSolvedToFirestore,
-} from "../services/progressService";
 import problems from "../data/problems";
 
-
-
-// Named export — required by useAppContext.js import
 export const AppContext = createContext(null);
+
+function calculateCurrentStreak(activityDates = []) {
+  if (!activityDates.length) return 0;
+
+  const sorted = [...new Set(activityDates)].sort();
+
+  const today = new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const yesterday = new Date(
+    Date.now() - 86400000
+  )
+    .toISOString()
+    .split("T")[0];
+
+  const lastDate = sorted[sorted.length - 1];
+
+  if (
+    lastDate !== today &&
+    lastDate !== yesterday
+  ) {
+    return 0;
+  }
+
+  let streak = 1;
+
+  for (let i = sorted.length - 1; i > 0; i--) {
+    const curr = new Date(sorted[i]);
+    const prev = new Date(sorted[i - 1]);
+
+    const diff =
+      (curr - prev) /
+      (1000 * 60 * 60 * 24);
+
+    if (diff === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
 
 function AppContextProvider({ children }) {
   const { user } = useAuth();
 
-  // ── State (localStorage as initial source) ──────────────────────────────
-  const [solvedProblems, setSolvedProblems] = useState(() => {
-    try {
-      const saved = localStorage.getItem("solvedProblems");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [solvedProblems, setSolvedProblems] =
+    useState([]);
 
-  const [activityDates, setActivityDates] = useState(() => {
-    try {
-      const saved = localStorage.getItem("activityDates");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [topicStats, setTopicStats] =
+    useState({});
 
-  // Keys are "Easy" | "Medium" | "Hard" — matches problem.difficulty exactly.
-  const [solvedDifficulty, setSolvedDifficulty] = useState(() => {
-    try {
-      const saved = localStorage.getItem("solvedDifficulty");
-      return saved ? JSON.parse(saved) : { easy: 0, medium: 0, hard: 0 };
-    } catch {
-      return { easy: 0, medium: 0, hard: 0 };
-    }
-  });
+  const [activityDates, setActivityDates] =
+    useState([]);
 
-  const [submissions, setSubmissions] = useState(() => {
-    try {
-      const saved = localStorage.getItem("submissions");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [solvedDifficulty, setSolvedDifficulty] =
+    useState({
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    });
 
-  // ── Derived state ────────────────────────────────────────────────────────
-  // recentActivity: last 7 submissions as rich objects for Profile display.
-  // FIX: was previously date strings — now { title, time, status, slug }.
-  const recentActivity = useMemo(() => {
-    return [...submissions]
-      .sort((a, b) => {
-        const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return tb - ta;
-      })
-      .slice(0, 7)
-      .map((sub) => ({
-        title: sub.problemTitle || sub.problemSlug || "Unknown Problem",
-        time: sub.date || (sub.createdAt ? sub.createdAt.split("T")[0] : "Recently"),
-        status: sub.status || "",
-        slug: sub.problemSlug || "",
-      }));
-  }, [submissions]);
+  const [recentActivity, setRecentActivity] =
+    useState([]);
 
-  // ── Firestore hydration ──────────────────────────────────────────────────
-  // FIX: MERGE strategy — never overwrite with less data than localStorage has.
-  //
-  // Why merge, not replace:
-  //   If a Firestore write failed silently (network, quota), Firestore has fewer
-  //   items than localStorage. Replacing would silently lose the user's progress.
-  //   Taking the union: if localStorage has ["a","b"] and Firestore has ["a"],
-  //   result is ["a","b"] — no data is ever lost.
-  //
-  // Cross-device sync:
-  //   If Firestore has ["a","b","c"] (solved on another device) and localStorage
-  //   has ["a"], result is ["a","b","c"] — cross-device additions are picked up.
+  const [currentStreak, setCurrentStreak] =
+    useState(0);
+
+  const [longestStreak, setLongestStreak] =
+    useState(0);
+
+  const [lastActivityDate, setLastActivityDate] =
+    useState(null);
+
+  const [submissions, setSubmissions] =
+    useState([]);
+
+  // --------------------------------------------------
+  // HYDRATE FROM MONGODB
+  // --------------------------------------------------
+
   useEffect(() => {
     if (!user) return;
 
-    async function hydrateFromFirestore() {
+    async function hydrate() {
       try {
         await initProgress();
-        const fp = await getProgress();
 
-        const firestoreSubmissions =
-          await loadUserSubmissions(user.uid);
+        const progress =
+          await getProgress();
 
-        setSubmissions((prev) => {
-          if (prev.length > 0) return prev;
+        const mongoSubmissions =
+          await getSubmissions();
 
-          return firestoreSubmissions;
-        });
-
-        // Merge solvedProblems: union of both sources
-        setSolvedProblems((prev) =>
-          Array.from(new Set([...prev, ...(fp.solvedSlugs || [])]))
+        setSolvedProblems(
+          progress.solvedSlugs || []
         );
 
-        // Merge activityDates: union, keep sorted
-        setActivityDates((prev) =>
-          Array.from(new Set([...prev, ...(fp.activityDates || [])]))
-            .sort((a, b) => a.localeCompare(b))
+        setTopicStats(
+          progress.topicStats || {}
         );
 
-        // Merge difficulty counts: take the higher of each source
-        setSolvedDifficulty((prev) => {
-          const fd = fp.solvedDifficulty || {};
-          return {
-            easy: Math.max(prev.easy || 0, fd.easy || 0),
-            medium: Math.max(prev.medium || 0, fd.medium || 0),
-            hard: Math.max(prev.hard || 0, fd.hard || 0),
-          };
-        });
+        setActivityDates(
+          progress.activityDates || []
+        );
+
+        setSolvedDifficulty(
+          progress.solvedDifficulty || {
+            easy: 0,
+            medium: 0,
+            hard: 0,
+          }
+        );
+
+        setRecentActivity(
+          progress.recentActivity || []
+        );
+
+        setCurrentStreak(
+          progress.currentStreak || 0
+        );
+
+        setLongestStreak(
+          progress.longestStreak || 0
+        );
+
+        setLastActivityDate(
+          progress.lastActivityDate || null
+        );
+
+        setSubmissions(
+          mongoSubmissions || []
+        );
+
+        console.log(
+          "[AppContext] Hydrated from MongoDB"
+        );
       } catch (err) {
-        // Non-fatal: localStorage values stay active.
-        console.warn(
-          "[AppContext] Firestore hydration failed — using localStorage:",
-          err.message
+        console.error(
+          "[AppContext] Hydration failed:",
+          err
         );
       }
     }
 
-    hydrateFromFirestore();
+    hydrate();
   }, [user]);
 
-  // ── Persist to localStorage ──────────────────────────────────────────────
-  useEffect(() => {
-    localStorage.setItem("solvedProblems", JSON.stringify(solvedProblems));
-  }, [solvedProblems]);
+  // --------------------------------------------------
+  // SUBMISSIONS
+  // --------------------------------------------------
 
-  useEffect(() => {
-    localStorage.setItem("activityDates", JSON.stringify(activityDates));
-  }, [activityDates]);
-
-  useEffect(() => {
-    localStorage.setItem("solvedDifficulty", JSON.stringify(solvedDifficulty));
-  }, [solvedDifficulty]);
-
-  useEffect(() => {
-    localStorage.setItem("submissions", JSON.stringify(submissions));
-  }, [submissions]);
-
-  async function loadUserSubmissions() {
-    return getSubmissions();
-  }
-
-  // ── Actions ──────────────────────────────────────────────────────────────
-
-  // addSubmission: updates local state AND persists to Firestore.
-  // FIX: previous version only wrote to localStorage/state.
-  // Firestore write is non-blocking — local state updates instantly.
-  // If Firestore fails, localStorage still has the submission.
   async function addSubmission(submission) {
-    // Instant UI update
-    setSubmissions((prev) => [submission, ...prev]);
+    setSubmissions((prev) => [
+      submission,
+      ...prev,
+    ]);
 
     if (!user) return;
 
     try {
-      console.log("🚀 Saving submission", submission);
       await createSubmission({
-        problemSlug: submission.problemSlug,
-        language: submission.language,
-        code: submission.code || "// code not stored",
-        status: submission.status,
-        passed: submission.passed || 0,
-        total: submission.total || 0,
-        executionTime: submission.executionTime || null,
-        output: submission.actualOutput || "",
+        problemSlug:
+          submission.problemSlug,
+        language:
+          submission.language,
+        code:
+          submission.code ||
+          "// code not stored",
+        status:
+          submission.status,
+        passed:
+          submission.passed || 0,
+        total:
+          submission.total || 0,
+        executionTime:
+          submission.executionTime ||
+          null,
+        output:
+          submission.actualOutput ||
+          "",
       });
 
-      console.log("✅ Submission saved to MongoDB");
+      console.log(
+        "✅ Submission saved to MongoDB"
+      );
     } catch (err) {
-      console.warn(
-        "[AppContext] Submission MongoDB save failed:",
-        err.message
+      console.error(
+        "[AppContext] Submission save failed:",
+        err
       );
     }
   }
 
-  // markProblemSolved: updates local state + syncs to Firestore.
-  async function markProblemSolved({ slug, difficulty }) {
-    const today = new Date().toISOString().split("T")[0];
+  // --------------------------------------------------
+  // PROGRESS
+  // --------------------------------------------------
 
-    const nextSolvedProblems = Array.from(new Set([...solvedProblems, slug]));
+  async function markProblemSolved({
+    slug,
+    topic,
+    difficulty,
+    title,
+  }) {
+    if (solvedProblems.includes(slug)) {
+      return;
+    }
 
-    const nextActivityDates = activityDates.includes(today)
-      ? activityDates
-      : [...activityDates, today];
+    const today = new Date()
+      .toISOString()
+      .split("T")[0];
 
-    const difficultyKey = difficulty.toLowerCase();
-    const nextSolvedDifficulty = {
-      ...solvedDifficulty,
-      [difficultyKey]: (solvedDifficulty[difficultyKey] ?? 0) + 1,
+    const nextSolvedProblems = [
+      ...solvedProblems,
+      slug,
+    ];
+
+    const nextTopicStats = {
+      ...topicStats,
+      [topic]:
+        (topicStats[topic] || 0) + 1,
     };
 
-    // ← FIX C: compute topicStats update
-    const problemMeta = problems.find((p) => p.slug === slug);
-    const topic = problemMeta?.topic || problemMeta?.pattern || null;
-    const nextTopicStats = topic
-      ? { ...topicStats, [topic]: (topicStats[topic] || 0) + 1 }
-      : topicStats;
+    const nextActivityDates =
+      activityDates.includes(today)
+        ? activityDates
+        : [...activityDates, today];
 
-    // ← FIX D: build recentActivity entry
+    const difficultyKey =
+      difficulty.toLowerCase();
+
+    const nextSolvedDifficulty = {
+      ...solvedDifficulty,
+      [difficultyKey]:
+        (solvedDifficulty[
+          difficultyKey
+        ] || 0) + 1,
+    };
+
     const nextRecentActivity = [
-      { title: problemMeta?.title || slug, slug, time: new Date().toISOString(), status: "Accepted" },
+      {
+        title,
+        time: today,
+      },
       ...recentActivity,
     ].slice(0, 10);
 
-    // Instant UI update
-    setSolvedProblems(nextSolvedProblems);
-    setActivityDates(nextActivityDates);
-    setSolvedDifficulty(nextSolvedDifficulty);
-    setTopicStats(nextTopicStats);
-    setRecentActivity(nextRecentActivity);
+    const nextCurrentStreak =
+      calculateCurrentStreak(
+        nextActivityDates
+      );
 
-    if (user) {
-      try {
-        console.log("MARK PROBLEM SOLVED CALLED");
-        const result = await persistSolvedToFirestore(
-        
+    const nextLongestStreak =
+      Math.max(
+        longestStreak,
+        nextCurrentStreak
+      );
+
+    // Local UI update first
+
+    setSolvedProblems(
+      nextSolvedProblems
+    );
+
+    setTopicStats(
+      nextTopicStats
+    );
+
+    setActivityDates(
+      nextActivityDates
+    );
+
+    setSolvedDifficulty(
+      nextSolvedDifficulty
+    );
+
+    setRecentActivity(
+      nextRecentActivity
+    );
+
+    setCurrentStreak(
+      nextCurrentStreak
+    );
+
+    setLongestStreak(
+      nextLongestStreak
+    );
+
+    setLastActivityDate(today);
+
+    // MongoDB
+
+    try {
+      const response =
+        await persistSolvedToMongo(
           {
-            solvedSlugs: nextSolvedProblems,
-            activityDates: nextActivityDates,
-            solvedDifficulty: nextSolvedDifficulty, // service will NOT re-increment
-            topicStats: nextTopicStats,
-            recentActivity: nextRecentActivity,
+            solvedSlugs:
+              nextSolvedProblems,
+
+            topicStats:
+              nextTopicStats,
+
+            activityDates:
+              nextActivityDates,
+
+            solvedDifficulty:
+              nextSolvedDifficulty,
+
+            recentActivity:
+              nextRecentActivity,
           },
           slug,
           difficulty
         );
-      console.log("ABOUT TO CALL persistSolvedToFirestore");
 
-        // ← FIX E: hydrate streak from server response
-        if (result?.currentStreak !== undefined) setCurrentStreak(result.currentStreak);
-        if (result?.longestStreak !== undefined) setLongestStreak(result.longestStreak);
-        if (result?.lastActivityDate !== undefined) setLastActivityDate(result.lastActivityDate);
+      if (response) {
+        setCurrentStreak(
+          response.currentStreak ??
+            nextCurrentStreak
+        );
 
-        console.log("✅ Progress saved to MongoDB", result);
-      } catch (err) {
-        console.error("FULL PROGRESS ERROR", err);
+        setLongestStreak(
+          response.longestStreak ??
+            nextLongestStreak
+        );
+
+        setLastActivityDate(
+          response.lastActivityDate ??
+            today
+        );
       }
+
+      console.log(
+        "✅ Progress saved to MongoDB"
+      );
+    } catch (err) {
+      console.error(
+        "[AppContext] Progress save failed:",
+        err
+      );
     }
   }
 
-  const totalXP = solvedProblems.reduce(
-    (sum, slug) => {
-      const p = problems.find(
-        (x) => x.slug === slug
-      );
+  // --------------------------------------------------
+  // XP
+  // --------------------------------------------------
 
-      return sum + (p?.xp || 0);
-    },
-    0
-  );
+  const totalXP = useMemo(() => {
+    return solvedProblems.reduce(
+      (sum, slug) => {
+        const p = problems.find(
+          (x) => x.slug === slug
+        );
 
-  // ── Context value ────────────────────────────────────────────────────────
+        return (
+          sum + (p?.xp || 0)
+        );
+      },
+      0
+    );
+  }, [solvedProblems]);
+
+  // --------------------------------------------------
+  // CONTEXT
+  // --------------------------------------------------
+
   const value = {
     solvedProblems,
+    topicStats,
     activityDates,
     solvedDifficulty,
-    submissions,
     recentActivity,
+    currentStreak,
+    longestStreak,
+    lastActivityDate,
+    submissions,
+    totalXP,
+
     addSubmission,
     markProblemSolved,
   };
@@ -294,15 +413,13 @@ function AppContextProvider({ children }) {
   );
 }
 
-// Single source of truth for useAppContext.
-// useAppContext.js re-exports this.
 export function useAppContext() {
-  const context = useContext(AppContext);
+  const context =
+    useContext(AppContext);
 
   if (!context) {
     throw new Error(
-      "[useAppContext] Must be used inside <AppContextProvider>. " +
-      "Check provider order in main.jsx: AuthProvider must wrap AppContextProvider."
+      "useAppContext must be used inside AppContextProvider"
     );
   }
 

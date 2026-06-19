@@ -2,7 +2,6 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
-import { getUserLevel, getUserRank } from "../utils/analyticsUtils";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 import { useTheme } from "../context/ThemeContext";
 import { canChangeTheme, getThemeUnlockProgress } from "../utils/themeRules";
@@ -12,40 +11,40 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 const INTEGRATIONS = [
   {
-    id:          "google",
-    name:        "Google Account",
+    id: "google",
+    name: "Google Account",
     description: "Sign in and sync your identity across devices.",
-    status:      "connected",
-    icon:        "G",
-    iconBg:      "bg-white",
-    iconColor:   "text-zinc-900",
+    status: "connected",
+    icon: "G",
+    iconBg: "bg-white",
+    iconColor: "text-zinc-900",
   },
   {
-    id:          "leetcode",
-    name:        "LeetCode",
+    id: "leetcode",
+    name: "LeetCode",
     description: "Cross-platform coding analytics and unified progress insights.",
-    status:      "coming-soon",
-    icon:        "L",
-    iconBg:      "bg-orange-500",
-    iconColor:   "text-white",
+    status: "coming-soon",
+    icon: "L",
+    iconBg: "bg-orange-500",
+    iconColor: "text-white",
   },
   {
-    id:          "codeforces",
-    name:        "Codeforces",
+    id: "codeforces",
+    name: "Codeforces",
     description: "Track competitive programming performance and ratings.",
-    status:      "planned",
-    icon:        "CF",
-    iconBg:      "bg-blue-600",
-    iconColor:   "text-white",
+    status: "planned",
+    icon: "CF",
+    iconBg: "bg-blue-600",
+    iconColor: "text-white",
   },
   {
-    id:          "gfg",
-    name:        "GeeksforGeeks",
+    id: "gfg",
+    name: "GeeksforGeeks",
     description: "Import coding activity, streaks, and achievements.",
-    status:      "planned",
-    icon:        "G",
-    iconBg:      "bg-green-600",
-    iconColor:   "text-white",
+    status: "planned",
+    icon: "G",
+    iconBg: "bg-green-600",
+    iconColor: "text-white",
   },
 ];
 
@@ -100,28 +99,41 @@ function IntegrationRow({ integration }) {
 // ── Profile page ──────────────────────────────────────────────────────────────
 
 function Profile() {
-  const navigate   = useNavigate();
-  const { user }   = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { theme, themeInfo } = useTheme();
   const {
     solvedProblems,
     activityDates,
     recentActivity,
     submissions,
+    currentStreak,
   } = useAppContext();
 
   const canSwitchUniverse = canChangeTheme({
     solvedCount: solvedProblems.length,
-    selectedAt:  themeInfo?.lastChangedAt,
+    selectedAt: themeInfo?.lastChangedAt,
   });
 
   const unlockProgress = getThemeUnlockProgress({
     solvedCount: solvedProblems.length,
-    selectedAt:  themeInfo?.lastChangedAt,
+    selectedAt: themeInfo?.lastChangedAt,
   });
 
-  const joinedDate       = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
+  const joinedDate = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
   const recentSubmissions = submissions.slice(0, 5);
+  const level = solvedProblems.length;
+
+  const rank =
+    level < 5
+      ? "Beginner"
+      : level < 15
+        ? "Learner"
+        : level < 30
+          ? "Intermediate"
+          : level < 60
+            ? "Advanced"
+            : "Expert";
 
   return (
     <DashboardLayout>
@@ -163,11 +175,10 @@ function Profile() {
             <button
               disabled={!canSwitchUniverse}
               onClick={() => navigate("/theme-selection")}
-              className={`px-4 py-2 rounded-xl font-medium transition ${
-                canSwitchUniverse
-                  ? "bg-green-500 text-black hover:bg-green-600"
-                  : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-              }`}
+              className={`px-4 py-2 rounded-xl font-medium transition ${canSwitchUniverse
+                ? "bg-green-500 text-black hover:bg-green-600"
+                : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                }`}
             >
               {canSwitchUniverse ? "Change Universe" : "Locked"}
             </button>
@@ -197,13 +208,13 @@ function Profile() {
             <p className="text-3xl font-bold mt-1">{solvedProblems.length}</p>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-zinc-400 text-sm">Streak days</p>
-            <p className="text-3xl font-bold mt-1">{activityDates.length}</p>
+            <p className="text-zinc-400 text-sm">Current Streak</p>
+            <p className="text-3xl font-bold mt-1">{currentStreak}</p>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <p className="text-zinc-400 text-sm">Rank</p>
-            <p className="text-3xl font-bold mt-1">{getUserRank()}</p>
-            <p className="text-zinc-500 text-sm mt-1">Level {getUserLevel()}</p>
+            <p className="text-3xl font-bold mt-1">{rank}</p>
+            <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
           </div>
         </div>
 
@@ -239,9 +250,8 @@ function Profile() {
                   className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
                 >
                   <div className="flex items-center gap-3">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      item.status?.includes("Accepted") ? "bg-green-500" : "bg-red-500"
-                    }`} />
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted") ? "bg-green-500" : "bg-red-500"
+                      }`} />
                     <span className="text-sm">{item.title}</span>
                   </div>
                   <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">{item.time}</span>
