@@ -100,6 +100,8 @@ function AppContextProvider({ children }) {
 
   const [submissions, setSubmissions] =
     useState([]);
+  const [achievements, setAchievements] =
+    useState([]);
 
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
@@ -144,6 +146,10 @@ function AppContextProvider({ children }) {
 
         setCurrentStreak(
           progress.currentStreak || 0
+        );
+
+        setAchievements(
+          progress.achievements || []
         );
 
         setLongestStreak(
@@ -342,17 +348,17 @@ function AppContextProvider({ children }) {
       if (response) {
         setCurrentStreak(
           response.currentStreak ??
-            nextCurrentStreak
+          nextCurrentStreak
         );
 
         setLongestStreak(
           response.longestStreak ??
-            nextLongestStreak
+          nextLongestStreak
         );
 
         setLastActivityDate(
           response.lastActivityDate ??
-            today
+          today
         );
       }
 
@@ -393,6 +399,7 @@ function AppContextProvider({ children }) {
   const value = {
     solvedProblems,
     topicStats,
+    achievements,
     activityDates,
     solvedDifficulty,
     recentActivity,
@@ -401,7 +408,6 @@ function AppContextProvider({ children }) {
     lastActivityDate,
     submissions,
     totalXP,
-
     addSubmission,
     markProblemSolved,
   };

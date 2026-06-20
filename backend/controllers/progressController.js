@@ -1,4 +1,5 @@
 import { calculateStreak } from "../utils/calculateStreak.js";
+import { evaluateAchievements } from "../services/achievementService.js";
 function mapTopicStats(topicStats) {
   if (topicStats instanceof Map) {
     return Object.fromEntries(topicStats);
@@ -12,6 +13,8 @@ export function progressToClient(user) {
     solvedSlugs: user.solvedSlugs || [],
     topicStats: mapTopicStats(user.topicStats),
     activityDates: user.activityDates || [],
+    achievements:
+      user.achievements || [],
     solvedDifficulty: user.solvedDifficulty || {
       easy: 0,
       medium: 0,
@@ -102,7 +105,18 @@ export async function putProgress(req, res) {
       req.userDoc.leetcodeUsername = leetcodeUsername;
     }
 
+    const newlyUnlocked =
+      evaluateAchievements(req.userDoc);
+
+    for (const key of newlyUnlocked) {
+      req.userDoc.achievements.push({
+        key,
+        unlockedAt: new Date(),
+      });
+    }
+
     await req.userDoc.save();
+
     console.log("BEFORE SAVE USERDOC:", {
       solvedSlugs: req.userDoc.solvedSlugs,
       topicStats: req.userDoc.topicStats,

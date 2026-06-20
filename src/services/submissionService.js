@@ -1,6 +1,7 @@
 import { apiFetch } from "./api";
 
 export async function getSubmissions(problemSlug = null) {
+  
   let url = "/api/submissions";
 
   if (problemSlug) {
@@ -11,6 +12,8 @@ export async function getSubmissions(problemSlug = null) {
 }
 
 export async function createSubmission(data) {
+  console.log("SUBMISSION BODY:", data);
+
   return apiFetch("/api/submissions", {
     method: "POST",
     body: JSON.stringify(data),

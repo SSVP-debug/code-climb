@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-
+import { ACHIEVEMENTS } from "../../../data/achievements";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 
@@ -7,91 +7,12 @@ function AchievementGallery() {
   const { theme } = useTheme();
 
   const {
-    solvedProblems,
-    solvedDifficulty,
-    currentStreak,
-    submissions,
+    achievements,
   } = useAppContext();
 
-  const achievements = useMemo(() => {
-    const list = [];
-
-    // First Solve
-    if (solvedProblems.length >= 1) {
-      list.push({
-        title: "First Blood",
-        description:
-          "Solved your first problem.",
-      });
-    }
-
-    // Consistency
-    if (solvedProblems.length >= 5) {
-      list.push({
-        title: "Consistency Begins",
-        description:
-          "Solved 5 problems.",
-      });
-    }
-
-    if (solvedProblems.length >= 25) {
-      list.push({
-        title: "Problem Crusher",
-        description:
-          "Solved 25 problems.",
-      });
-    }
-
-    if (solvedProblems.length >= 50) {
-      list.push({
-        title: "DSA Warrior",
-        description:
-          "Solved 50 problems.",
-      });
-    }
-
-    // First Hard
-    if ((solvedDifficulty.hard ?? 0) >= 1) {
-      list.push({
-        title: "Maximum Security",
-        description:
-          "Solved your first Hard problem.",
-      });
-    }
-
-    // Streak
-    if (currentStreak >= 7) {
-      list.push({
-        title: "Hot Streak",
-        description:
-          "Maintained a 7 day streak.",
-      });
-    }
-
-    // Fast Runtime
-    const fastSubmission =
-      submissions.find(
-        (submission) =>
-          Number(
-            submission.executionTime || 0
-          ) < 100
-      );
-
-    if (fastSubmission) {
-      list.push({
-        title: "Speed Demon",
-        description:
-          "Achieved runtime below 100 ms.",
-      });
-    }
-
-    return list;
-  }, [
-    solvedProblems,
-    solvedDifficulty,
-    currentStreak,
-    submissions,
-  ]);
+  const unlocked = new Set(
+    achievements.map((a) => a.key)
+  );
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
@@ -107,23 +28,35 @@ function AchievementGallery() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {achievements.map(
-            (achievement, index) => (
+          {ACHIEVEMENTS.map((achievement) => {
+            const isUnlocked =
+              unlocked.has(achievement.key);
+
+            return (
               <div
-                key={index}
-                className="bg-zinc-800 rounded-xl p-4"
+                key={achievement.key}
+                className={`rounded-xl p-4 ${isUnlocked
+                    ? "bg-zinc-800"
+                    : "bg-zinc-900 opacity-50"
+                  }`}
               >
                 <h3 className="text-lg font-bold">
-                  {theme.words.achievementIcon}{" "}
+                  {achievement.icon}{" "}
                   {achievement.title}
                 </h3>
 
                 <p className="text-zinc-400 text-sm mt-2">
                   {achievement.description}
                 </p>
+
+                <p className="mt-2 text-xs">
+                  {isUnlocked
+                    ? "✅ Unlocked"
+                    : "🔒 Locked"}
+                </p>
               </div>
-            )
-          )}
+            );
+          })}
 
         </div>
       )}
