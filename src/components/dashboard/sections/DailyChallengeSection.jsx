@@ -1,7 +1,7 @@
 import {
   Link,
 } from "react-router-dom";
-
+import { useAppContext } from "../../../hooks/useAppContext";
 import {
   getDailyChallenge,
 } from "../../../utils/dailyChallenge";
@@ -15,6 +15,20 @@ function DailyChallengeSection() {
 
   const challenge =
     getDailyChallenge();
+  const {
+    dailyChallengeHistory,
+  } = useAppContext();
+
+  const today = new Date()
+    .toISOString()
+    .split("T")[0];
+
+  const completedToday =
+    dailyChallengeHistory.some(
+      (entry) =>
+        entry.date === today &&
+        entry.slug === challenge.slug
+    );
 
   return (
 
@@ -62,14 +76,18 @@ function DailyChallengeSection() {
 
       </p>
 
-      <Link
-        to={`/problems/${challenge.slug}`}
-        className="inline-block bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
-      >
-
-        {theme.words.solveChallenge}
-
-      </Link>
+      {completedToday ? (
+        <div className="inline-flex items-center bg-green-500 text-black px-6 py-3 rounded-xl font-semibold">
+          ✅ Completed Today
+        </div>
+      ) : (
+        <Link
+          to={`/problems/${challenge.slug}`}
+          className="inline-block bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
+        >
+          {theme.words.solveChallenge}
+        </Link>
+      )}
 
     </div>
 
