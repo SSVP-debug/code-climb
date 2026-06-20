@@ -1,28 +1,39 @@
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useTheme } from "../../../context/ThemeContext";
-
+import {
+  getLevel,
+  getLevelProgress,
+  getXPForNextLevel,
+} from "../../../utils/levelUtils";
 function RankProgressSection() {
   const { theme } = useTheme();
 
   const {
-    solvedProblems,
+    totalXP,
     currentStreak,
   } = useAppContext();
 
-  const level = solvedProblems.length;
+  console.log("[XP-TRACE 11] RankProgressSection totalXP", totalXP);
+
+  const level = getLevel(totalXP);
+
+  const progress =
+    getLevelProgress(totalXP);
+
+  const xpRemaining =
+    getXPForNextLevel(totalXP);
 
   function getRank() {
-    if (level < 5) return "Beginner";
-    if (level < 15) return "Learner";
-    if (level < 30) return "Intermediate";
-    if (level < 60) return "Advanced";
+    if (level < 3) return "Beginner";
+    if (level < 5) return "Learner";
+    if (level < 10) return "Intermediate";
+    if (level < 20) return "Advanced";
 
     return "Expert";
   }
 
   const rank = getRank();
 
-  const progress = (level % 10) * 10;
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
@@ -47,6 +58,10 @@ function RankProgressSection() {
           <h2 className="text-3xl font-bold mt-2">
             {level}
           </h2>
+
+          <p className="text-zinc-400 text-sm mt-1">
+            {totalXP} XP
+          </p>
         </div>
 
       </div>
@@ -63,7 +78,7 @@ function RankProgressSection() {
       <div className="flex justify-between mt-3 text-sm">
 
         <p className="text-zinc-400">
-          {10 - (level % 10)} {theme.words.nextMilestone}
+          {xpRemaining} XP until Level {level + 1}
         </p>
 
         <p className="text-orange-400">

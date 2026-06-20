@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
 
+    totalXP: {
+      type: Number,
+      default: 0,
+    },
+
     longestStreak: {
       type: Number,
       default: 0,

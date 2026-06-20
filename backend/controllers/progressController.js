@@ -27,6 +27,7 @@ export function progressToClient(user) {
     currentStreak: user.currentStreak || 0,
     longestStreak: user.longestStreak || 0,
     lastActivityDate: user.lastActivityDate || null,
+    totalXP: user.totalXP || 0,
 
     joinedDate: user.joinedDate,
     leetcodeUsername: user.leetcodeUsername || "",
@@ -34,11 +35,13 @@ export function progressToClient(user) {
 }
 
 export async function getProgress(req, res) {
-  res.json(progressToClient(req.userDoc));
+  const payload = progressToClient(req.userDoc);
+  console.log("[XP-TRACE 8b] getProgress progressToClient totalXP", payload.totalXP);
+  res.json(payload);
 }
 
 export async function putProgress(req, res) {
-  console.log("PUT PROGRESS BODY:", req.body);
+  console.log("[XP-TRACE 6] progressController.putProgress req.body.totalXP", req.body.totalXP);
   try {
     const {
       solvedSlugs,
@@ -47,7 +50,12 @@ export async function putProgress(req, res) {
       solvedDifficulty,
       recentActivity,
       leetcodeUsername,
+      totalXP,
     } = req.body;
+    console.log(
+      "[XP-TRACE] controller received:",
+      totalXP
+    );
 
     if (!req.userDoc) {
       return res.status(503).json({
@@ -116,9 +124,19 @@ export async function putProgress(req, res) {
         unlockedAt: new Date(),
       });
     }
+    if (
+      typeof totalXP === "number"
+    ) {
+      req.userDoc.totalXP =
+        totalXP;
+    }
 
+    console.log("[XP-TRACE 7] before save req.userDoc.totalXP", req.userDoc.totalXP, "destructured totalXP", totalXP);
+    
     await req.userDoc.save();
 
+
+    console.log("[XP-TRACE 8] after save userDoc.totalXP", req.userDoc.totalXP);
     console.log("BEFORE SAVE USERDOC:", {
       solvedSlugs: req.userDoc.solvedSlugs,
       topicStats: req.userDoc.topicStats,
@@ -127,7 +145,7 @@ export async function putProgress(req, res) {
       currentStreak: req.userDoc.currentStreak,
       longestStreak: req.userDoc.longestStreak,
       lastActivityDate: req.userDoc.lastActivityDate,
-      newAchievements: unlocked,
+      newAchievements: newlyUnlocked,
     });
 
     res.json(progressToClient(req.userDoc));

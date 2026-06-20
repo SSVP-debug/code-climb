@@ -20,6 +20,7 @@ import {
 } from "../services/submissionService";
 
 import problems from "../data/problems";
+import { getEarnedXP } from "../utils/xpUtils";
 
 export const AppContext = createContext(null);
 
@@ -177,6 +178,11 @@ function AppContextProvider({ children }) {
           mongoSubmissions || []
         );
 
+        setTotalXP(
+          progress.totalXP || 0
+        );
+
+        console.log("[XP-TRACE 9] AppContext hydrate totalXP", progress.totalXP);
         console.log(
           "[AppContext] Hydrated from MongoDB"
         );
@@ -333,30 +339,48 @@ function AppContextProvider({ children }) {
 
     setLastActivityDate(today);
 
+    const earnedXP = getEarnedXP(difficulty);
+    const nextTotalXP =
+      totalXP + earnedXP;
+
+    console.log("[XP-TRACE 2] AppContext markProblemSolved", {
+      totalXP,
+      earnedXP,
+      nextTotalXP,
+      difficulty,
+    });
+
+    const persistPayload = {
+      solvedSlugs:
+        nextSolvedProblems,
+
+      topicStats:
+        nextTopicStats,
+
+      activityDates:
+        nextActivityDates,
+
+      solvedDifficulty:
+        nextSolvedDifficulty,
+
+      totalXP: nextTotalXP,
+
+      recentActivity:
+        nextRecentActivity,
+    };
+
+    console.log("[XP-TRACE 3] AppContext → persistSolvedToMongo payload.totalXP", persistPayload.totalXP);
+
     // MongoDB
 
     try {
       const response =
         await persistSolvedToMongo(
-          {
-            solvedSlugs:
-              nextSolvedProblems,
-
-            topicStats:
-              nextTopicStats,
-
-            activityDates:
-              nextActivityDates,
-
-            solvedDifficulty:
-              nextSolvedDifficulty,
-
-            recentActivity:
-              nextRecentActivity,
-          },
+          persistPayload,
           slug,
           difficulty
         );
+
 
       if (
         response?.newAchievements?.length
@@ -381,6 +405,16 @@ function AppContextProvider({ children }) {
           response.lastActivityDate ??
           today
         );
+
+        setTotalXP(
+          response.totalXP ??
+          nextTotalXP
+        );
+
+        console.log("[XP-TRACE 10] AppContext after save setTotalXP", {
+          responseTotalXP: response.totalXP,
+          nextTotalXP,
+        });
       }
 
       console.log(
@@ -398,20 +432,8 @@ function AppContextProvider({ children }) {
   // XP
   // --------------------------------------------------
 
-  const totalXP = useMemo(() => {
-    return solvedProblems.reduce(
-      (sum, slug) => {
-        const p = problems.find(
-          (x) => x.slug === slug
-        );
-
-        return (
-          sum + (p?.xp || 0)
-        );
-      },
-      0
-    );
-  }, [solvedProblems]);
+  const [totalXP, setTotalXP] =
+    useState(0);
 
   // --------------------------------------------------
   // CONTEXT

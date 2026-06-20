@@ -18,7 +18,9 @@ const DEFAULT_PROGRESS = {
 
 export async function getProgress() {
   try {
-    return await apiFetch("/api/progress");
+    const data = await apiFetch("/api/progress");
+    console.log("[XP-TRACE 8c] progressService.getProgress totalXP", data?.totalXP);
+    return data;
   } catch (err) {
     console.error("[progressService] getProgress failed:", err.message);
     return DEFAULT_PROGRESS;
@@ -42,9 +44,9 @@ export async function markProblemSolved(currentProgress, problemSlug, difficulty
 
   // ← FIX B: don't re-increment — appContext already did it
   const solvedDifficulty = {
-    easy:   currentProgress.solvedDifficulty?.easy   ?? 0,
+    easy: currentProgress.solvedDifficulty?.easy ?? 0,
     medium: currentProgress.solvedDifficulty?.medium ?? 0,
-    hard:   currentProgress.solvedDifficulty?.hard   ?? 0,
+    hard: currentProgress.solvedDifficulty?.hard ?? 0,
   };
 
   // ← FIX C: pass topicStats through so it persists
@@ -53,9 +55,20 @@ export async function markProblemSolved(currentProgress, problemSlug, difficulty
   // ← FIX D: pass recentActivity through
   const recentActivity = currentProgress.recentActivity || [];
 
+  const requestBody = {
+    solvedSlugs,
+    activityDates,
+    solvedDifficulty,
+    topicStats,
+    recentActivity,
+    totalXP: currentProgress.totalXP,
+  };
+
+  console.log("[XP-TRACE 4] progressService PUT /api/progress body.totalXP", requestBody.totalXP, requestBody);
+
   return apiFetch("/api/progress", {
     method: "PUT",
-    body: JSON.stringify({ solvedSlugs, activityDates, solvedDifficulty, topicStats, recentActivity }),
+    body: JSON.stringify(requestBody),
   });
 }
 

@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "nodemon --ext js,mjs,json,env server.js",
     "start": "node server.js",
-    "seed": "node scripts/seedProblems.js"
+    "seed": "node scripts/seedProblems.js",
+    "backfill-xp": "node scripts/backfillXP.js"
   },
   "keywords": [],
   "author": "",

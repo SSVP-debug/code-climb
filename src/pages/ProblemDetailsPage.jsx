@@ -183,7 +183,10 @@ function ProblemSolver({ problem, slug }) {
       });
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
-        console.log("ENTERED markProblemSolved block");
+        console.log("[XP-TRACE 1] ProblemDetailsPage → markProblemSolved", {
+          slug,
+          difficulty: problem.difficulty,
+        });
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =

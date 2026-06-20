@@ -75,6 +75,9 @@ const progressSchema = z.object({
 
   // Optional LeetCode username
   leetcodeUsername: z.string().max(100).optional(),
+
+  totalXP: z.number().int().min(0).max(1_000_000).optional(),
+  
 });
 
 // ── Slug existence middleware ──────────────────────────────────────────────────
@@ -118,6 +121,10 @@ router.put(
   "/",
   requireAuth,
   validateBody(progressSchema),
+  (req, res, next) => {
+    console.log("[XP-TRACE 5] after Zod validateBody req.body.totalXP", req.body.totalXP);
+    next();
+  },
   validateSlugs,
   putProgress
 );
