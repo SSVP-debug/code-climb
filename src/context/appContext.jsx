@@ -102,6 +102,8 @@ function AppContextProvider({ children }) {
     useState([]);
   const [achievements, setAchievements] =
     useState([]);
+  const [dailyChallengeHistory, setDailyChallengeHistory,] =
+    useState([]);
 
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
@@ -150,6 +152,10 @@ function AppContextProvider({ children }) {
 
         setAchievements(
           progress.achievements || []
+        );
+
+        setDailyChallengeHistory(
+          progress.dailyChallengeHistory || []
         );
 
         setLongestStreak(
@@ -400,6 +406,7 @@ function AppContextProvider({ children }) {
     solvedProblems,
     topicStats,
     achievements,
+    dailyChallengeHistory,
     activityDates,
     solvedDifficulty,
     recentActivity,

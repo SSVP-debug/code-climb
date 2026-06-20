@@ -2,10 +2,12 @@ import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
 import SubmissionResultBanner from "../components/workspace/SubmissionResultBanner";
 import { formatDate } from "../utils/formatters";
+import { getDailyChallenge,} from "../utils/dailyChallenge";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
+import { completeDailyChallenge, } from "../services/dailyChallengeService";
 import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePanelResize } from "../hooks/usePanelResize";
@@ -162,7 +164,7 @@ function ProblemSolver({ problem, slug }) {
     const wasAlreadySolved = isSolved;
     console.log("wasAlreadySolved =", wasAlreadySolved);
     console.log("isSolved =", isSolved);
-    
+
     try {
       setSubmitting(true);
       setError("");
@@ -183,6 +185,24 @@ function ProblemSolver({ problem, slug }) {
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
         console.log("ENTERED markProblemSolved block");
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
+        try {
+          const todayChallenge =
+            getDailyChallenge();
+
+          if (
+            todayChallenge?.slug ===
+            problem.slug
+          ) {
+            await completeDailyChallenge(
+              problem.slug
+            );
+          }
+        } catch (err) {
+          console.error(
+            "Daily challenge save failed:",
+            err
+          );
+        }
         stopTimer();
         confetti({
           particleCount: 120, spread: 80, origin: { y: 0.6 },

@@ -15,6 +15,8 @@ export function progressToClient(user) {
     activityDates: user.activityDates || [],
     achievements:
       user.achievements || [],
+    dailyChallengeHistory:
+      user.dailyChallengeHistory || [],
     solvedDifficulty: user.solvedDifficulty || {
       easy: 0,
       medium: 0,

@@ -65,6 +65,17 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    dailyChallengeHistory: {
+      type: [
+        {
+          date: String,
+          slug: String,
+          completed: Boolean,
+          completedAt: Date,
+        },
+      ],
+      default: [],
+    },
 
 
   },

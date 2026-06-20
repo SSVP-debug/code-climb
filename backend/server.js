@@ -16,7 +16,7 @@ import problemRoutes from "./routes/problemRoutes.js";
 import { requireAuth } from "./middleware/auth.js";
 import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter.js";
 import insightsRoutes from "./routes/insights.js";
-
+import dailyChallengeRoutes from "./routes/dailyChallenge.js";
 
 const app = express();
 
@@ -67,7 +67,12 @@ app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
-
+app.use(
+  "/api/daily-challenge",
+  requireAuth,
+  apiLimiter,
+  dailyChallengeRoutes
+);
 
 // ─── 404 handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
