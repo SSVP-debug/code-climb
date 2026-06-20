@@ -3,7 +3,7 @@ import { ErrorBoundary } from "@sentry/react";
 
 import { ThemeProvider } from "./context/ThemeContext";
 
-
+import AchievementToastContainer from "./components/ui/AchievementToastContainer";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -95,6 +95,7 @@ ReactDOM.createRoot(
                   },
                 }}
               />
+              <AchievementToastContainer />
 
               <App />
 

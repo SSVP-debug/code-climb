@@ -127,6 +127,7 @@ export async function putProgress(req, res) {
       currentStreak: req.userDoc.currentStreak,
       longestStreak: req.userDoc.longestStreak,
       lastActivityDate: req.userDoc.lastActivityDate,
+      newAchievements: unlocked,
     });
 
     res.json(progressToClient(req.userDoc));

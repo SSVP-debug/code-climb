@@ -55,6 +55,9 @@ function calculateCurrentStreak(activityDates = []) {
 
     const diff =
       (curr - prev) /
+
+
+
       (1000 * 60 * 60 * 24);
 
     if (diff === 1) {
@@ -104,6 +107,10 @@ function AppContextProvider({ children }) {
     useState([]);
   const [dailyChallengeHistory, setDailyChallengeHistory,] =
     useState([]);
+  const [
+    newAchievements,
+    setNewAchievements,
+  ] = useState([]);
 
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
@@ -351,6 +358,14 @@ function AppContextProvider({ children }) {
           difficulty
         );
 
+      if (
+        response?.newAchievements?.length
+      ) {
+        setNewAchievements(
+          response.newAchievements
+        );
+      }
+
       if (response) {
         setCurrentStreak(
           response.currentStreak ??
@@ -417,6 +432,8 @@ function AppContextProvider({ children }) {
     totalXP,
     addSubmission,
     markProblemSolved,
+    newAchievements,
+    setNewAchievements,
   };
 
   return (
