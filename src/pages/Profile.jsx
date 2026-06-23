@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { apiFetch } from "../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -101,6 +103,10 @@ function IntegrationRow({ integration }) {
 function Profile() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [currentUsername, setCurrentUsername] =
+    useState("");
+  const [username, setUsername] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
   const { theme, themeInfo } = useTheme();
   const {
     solvedProblems,
@@ -158,6 +164,78 @@ function Profile() {
             <h2 className="text-2xl font-semibold">{user?.displayName || "User"}</h2>
             <p className="text-zinc-400">{user?.email}</p>
             <p className="text-zinc-500 text-sm mt-1">Joined {joinedDate}</p>
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            Public Profile
+          </h2>
+
+          <div className="space-y-4">
+
+            <input
+              type="text"
+              value={username}
+              onChange={(e) =>
+                setUsername(e.target.value)
+              }
+              placeholder="Choose a username"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
+            />
+
+            <button
+              disabled={savingUsername}
+              onClick={async () => {
+                try {
+                  setSavingUsername(true);
+
+                  const result =
+                    await apiFetch(
+                      "/api/users/me",
+                      {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                          username,
+                        }),
+                      }
+                    );
+
+                  setCurrentUsername(
+                    result.username
+                  );
+
+                  toast.success(
+                    "Username saved"
+                  );
+                } catch (err) {
+                  toast.error(
+                    err.message ||
+                    "Failed to save username"
+                  );
+                } finally {
+                  setSavingUsername(false);
+                }
+              }}
+              className="bg-green-500 text-black px-4 py-2 rounded-xl font-medium"
+            >
+              Save Username
+            </button>
+
+            {currentUsername && (
+              <div className="bg-zinc-800 rounded-xl p-4">
+
+                <p className="text-sm text-zinc-400">
+                  Public URL
+                </p>
+
+                <p className="font-mono mt-1">
+                  /u/{currentUsername}
+                </p>
+
+              </div>
+            )}
+
           </div>
         </div>
 

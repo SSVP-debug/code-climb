@@ -11,6 +11,7 @@ import progressRoutes from "./routes/progress.js";
 import submissionRoutes from "./routes/submissions.js";
 import compilerRoutes from "./routes/compiler.js";
 import problemRoutes from "./routes/problemRoutes.js";
+import publicProfileRoutes from "./routes/publicProfile.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
@@ -72,6 +73,10 @@ app.use(
   requireAuth,
   apiLimiter,
   dailyChallengeRoutes
+);
+app.use(
+  "/api/public",
+  publicProfileRoutes
 );
 
 // ─── 404 handler ────────────────────────────────────────────────────────────

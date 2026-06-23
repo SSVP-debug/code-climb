@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-
+import PublicProfile from "./pages/PublicProfile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ThemeSelectionPage from "./pages/ThemeSelectionPage";
 import ThemeConfirmationPage from "./pages/ThemeConfirmationPage";
@@ -70,6 +70,11 @@ function App() {
       />
 
       <Route
+        path="/u/:username"
+        element={<PublicProfile />}
+      />
+
+      <Route
         path="/problems"
         element={
           <ProtectedRoute>
@@ -79,9 +84,9 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
 
-      
+
+
 
       <Route
         path="/problems/:slug"

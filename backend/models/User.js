@@ -10,11 +10,28 @@ const userSchema = new mongoose.Schema(
     },
     email: String,
     displayName: String,
+
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    isProfilePublic: {
+      type: Boolean,
+      default: true,
+    },
+
     leetcodeUsername: String,
+
+
     joinedDate: {
       type: Date,
       default: Date.now,
     },
+
     solvedSlugs: {
       type: [String],
       default: [],
