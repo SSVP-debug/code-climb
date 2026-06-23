@@ -1,61 +1,32 @@
 import admin from "firebase-admin";
-import { readFileSync, existsSync } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const backendRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  ".."
-);
 
 let initialized = false;
 
-function resolveServiceAccountPath() {
-  const configured =
-    process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
-    "./serviceAccountKey.json";
-
-  if (path.isAbsolute(configured)) {
-    return configured;
-  }
-
-  return path.resolve(backendRoot, configured);
-}
-
 export function initFirebaseAdmin() {
-  if (initialized) {
-    return admin;
-  }
+  if (initialized) return admin;
 
-  const serviceAccountPath =
-    resolveServiceAccountPath();
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
-  if (!existsSync(serviceAccountPath)) {
+  if (!projectId || !clientEmail || !privateKey) {
     throw new Error(
-      `Firebase service account not found at ${serviceAccountPath}. Download it from Firebase Console and save as backend/serviceAccountKey.json`
-    );
-  }
-
-  const serviceAccount = JSON.parse(
-    readFileSync(serviceAccountPath, "utf8")
-  );
-
-  if (!serviceAccount.private_key || !serviceAccount.client_email) {
-    throw new Error(
-      "Invalid serviceAccountKey.json — missing private_key or client_email"
+      "Missing FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL or FIREBASE_PRIVATE_KEY"
     );
   }
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    projectId:
-      process.env.FIREBASE_PROJECT_ID ||
-      serviceAccount.project_id,
+    credential: admin.credential.cert({
+      projectId,
+      clientEmail,
+      privateKey,
+    }),
   });
 
   initialized = true;
+
   console.log(
-    `[Firebase Admin] Initialized for project ${serviceAccount.project_id}`
+    `[Firebase Admin] Initialized for project ${projectId}`
   );
 
   return admin;
