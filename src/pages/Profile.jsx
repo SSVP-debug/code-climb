@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiFetch } from "../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -107,6 +107,28 @@ function Profile() {
     useState("");
   const [username, setUsername] = useState("");
   const [savingUsername, setSavingUsername] = useState(false);
+  useEffect(() => {
+    async function loadProfileInfo() {
+      try {
+        const data =
+          await apiFetch(
+            "/api/users/me"
+          );
+
+        setCurrentUsername(
+          data.username || ""
+        );
+
+        setUsername(
+          data.username || ""
+        );
+      } catch {
+        // ignore
+      }
+    }
+
+    loadProfileInfo();
+  }, []);
   const { theme, themeInfo } = useTheme();
   const {
     solvedProblems,
@@ -229,9 +251,24 @@ function Profile() {
                   Public URL
                 </p>
 
-                <p className="font-mono mt-1">
-                  /u/{currentUsername}
+                <p className="font-mono mt-1 break-all">
+                  {window.location.origin}/u/{currentUsername}
                 </p>
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/u/${currentUsername}`
+                    );
+
+                    toast.success(
+                      "Profile link copied!"
+                    );
+                  }}
+                  className="mt-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm"
+                >
+                  Copy Profile Link
+                </button>
 
               </div>
             )}
