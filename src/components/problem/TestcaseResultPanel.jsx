@@ -10,7 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 function normaliseResults(results) {
   if (!results) return results;
   return results.map((r) => {
-    
+
     // Already has a real stderr error — leave it
     if (r.error) return r;
 
@@ -112,7 +112,7 @@ export default function TestcaseResultPanel({
 }) {
   const [activeTab, setActiveTab] = useState(0);
   const { theme } = useTheme();
-  
+
 
   // Normalise once — promotes "RUNTIME_ERROR:" stdout strings to r.error
   const results = useMemo(
@@ -197,7 +197,7 @@ export default function TestcaseResultPanel({
           return (
             <button
               key={i}
-              onClick={() => {                
+              onClick={() => {
                 setActiveTab(i);
               }}
               className={`
@@ -223,11 +223,38 @@ export default function TestcaseResultPanel({
         })}
       </div>
 
-      {/* ── Active testcase body ──────────────────────────────────────── */}
-      <div className="space-y-3">
+
+      {/* ── Active testcase body ──────────────────────── */}
+      <div className="space-y-4">
+
+        {/* Status Banner */}
+        <div
+          className={`
+      rounded-xl
+      px-4 py-3
+      font-medium
+      ${active.error
+              ? "bg-red-500/10 border border-red-500/30 text-red-400"
+              : active.passed
+                ? "bg-green-500/10 border border-green-500/30 text-green-400"
+                : "bg-red-500/10 border border-red-500/30 text-red-400"
+            }
+    `}
+        >
+          {active.error
+            ? "⚠ Runtime Error"
+            : active.passed
+              ? "✓ Passed"
+              : "✗ Wrong Answer"}
+        </div>
+
         {active.error ? (
           <>
-            <DataRow label="Input" value={formatInput(active.input)} />
+            <DataRow
+              label="Input"
+              value={formatInput(active.input)}
+            />
+
             <div className="rounded-lg border border-red-500/25 bg-red-500/5 p-4">
               <p className="text-red-400 font-medium">
                 {theme.words.runtimeError}
@@ -240,9 +267,22 @@ export default function TestcaseResultPanel({
           </>
         ) : (
           <>
-            <DataRow label="Input" value={formatInput(active.input)} />
-            <DataRow label="Expected Output" value={formatExpected(active.expected)} highlight="pass" />
-            <DataRow label="Your Output" value={formatActual(active.actual)} highlight={active.passed ? "pass" : "fail"} />
+            <DataRow
+              label="Input"
+              value={formatInput(active.input)}
+            />
+
+            <DataRow
+              label="Expected Output"
+              value={formatExpected(active.expected)}
+              highlight="pass"
+            />
+
+            <DataRow
+              label="Your Output"
+              value={formatActual(active.actual)}
+              highlight={active.passed ? "pass" : "fail"}
+            />
           </>
         )}
       </div>

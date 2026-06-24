@@ -4,7 +4,7 @@ function ProblemInfo({ problem }) {
   if (!problem) return null;
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 pb-8">
       {/* Description */}
       <section>
         <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
@@ -21,7 +21,7 @@ function ProblemInfo({ problem }) {
             {problem.examples.map((example, index) => (
               <div key={index} className="space-y-2">
                 <p className="text-sm font-medium text-zinc-400">Example {index + 1}:</p>
-                <div className="bg-zinc-800/30 border border-zinc-700/50 rounded-xl p-4 font-mono text-sm space-y-2">
+                <div className="bg-zinc-900 border border-zinc-700/50 rounded-xl p-4 font-mono text-sm space-y-2">
                   <div>
                     <span className="text-zinc-500">Input: </span>
                     <span className="text-zinc-200">{example.input}</span>

@@ -4,9 +4,9 @@ function ProblemHeader({ problem, isSolved }) {
   if (!problem) return null;
 
   return (
-    <div className="mb-6">
+    <div className="mb-5">
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-3xl font-bold text-white leading-tight">
+        <h1 className="text-2xl xl:text-3xl font-bold text-white leading-tight">
           {problem.title}
         </h1>
         {isSolved && (

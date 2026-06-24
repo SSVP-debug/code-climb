@@ -14,8 +14,8 @@ function DebugPanel({
     if (isRunning || isSubmitting) {
         return (
             <div className="p-5 space-y-3 animate-pulse">
-                <div className="h-4 w-32 rounded bg-zinc-800" />
-                <div className="h-24 rounded-lg bg-zinc-800" />
+                <div className="h-4 w-32 rounded bg-zinc-950" />
+                <div className="h-24 rounded-lg bg-zinc-950" />
             </div>
         );
     }
@@ -203,11 +203,16 @@ export default function WorkspacePanel({
 
     return (
         /* h-full fills the flex-1 wrapper. flex flex-col: tab bar fixed, content flex-1. */
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden h-full flex flex-col">
+        <div className="
+h-full
+flex
+flex-col
+overflow-hidden
+">
 
             {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
             <div
-                className="flex items-center border-b border-zinc-800 px-1 pt-1 flex-shrink-0"
+                className="flex items-center border-b border-zinc-700 px-1 pt-1 flex-shrink-0"
             >
 
                 {TABS.map((tab) => {
@@ -234,7 +239,7 @@ export default function WorkspacePanel({
                                 setActiveTab(tab);
                             }}
                             className={`
-                relative px-4 py-2.5 text-xs font-mono font-medium
+                relative px-5 py-3 text-sm font-mono font-medium
                 flex items-center gap-2 transition-colors duration-150
                 ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
               `}
@@ -244,7 +249,7 @@ export default function WorkspacePanel({
                                 : theme.words.debug}
 
                             {badge && (
-                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${badgeColor}`}>
+                                <span className={`px-2 py-0.5 rounded text-xs font-mono font-semibold ${badgeColor}`}>
                                     {badge}
                                 </span>
                             )}

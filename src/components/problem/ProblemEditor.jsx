@@ -18,7 +18,15 @@ function ProblemEditor(
   const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
   const { theme } = useTheme();
   return (
-    <div className="flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+    <div className="
+  flex flex-col
+  h-full
+  bg-zinc-900
+  border border-zinc-800
+  rounded-2xl
+  overflow-hidden
+  shadow-xl
+">
       {/* Editor Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
 

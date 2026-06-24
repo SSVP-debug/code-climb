@@ -286,11 +286,6 @@ function ProblemSolver({ problem, slug }) {
                     : <>⏱ {timerFormatted}</>
                   }
                 </span>
-                <span className="text-xs text-zinc-500">
-                  {problem.difficulty === "Easy" && "🟢 Easy"}
-                  {problem.difficulty === "Medium" && "🟡 Medium"}
-                  {problem.difficulty === "Hard" && "🔴 Hard"}
-                </span>
               </div>
               <ProblemHeader problem={problem} isSolved={isSolved} />
               <ProblemInfo problem={problem} />
@@ -357,14 +352,32 @@ function ProblemSolver({ problem, slug }) {
       <div className="hidden lg:block -m-8">
         <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
           <div className="h-full overflow-hidden px-4 py-3 sm:px-6 lg:px-8">
-            <div className="flex h-full overflow-hidden relative">
+            <div className="
+flex
+h-full
+overflow-hidden
+relative
+
+gap-6
+px-2
+pb-2
+">
 
               {/* Left column — Problem description */}
               <div
                 className="h-full overflow-hidden"
                 style={{ width: `${problemWidth}%` }}
               >
-                <div className="h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <div className="
+  h-full
+  overflow-y-auto
+  custom-scrollbar
+  bg-zinc-900
+  border border-zinc-800
+  rounded-2xl
+  p-6
+  shadow-xl
+">
                   <ProblemHeader problem={problem} isSolved={isSolved} />
                   <ProblemInfo problem={problem} />
                 </div>
@@ -372,7 +385,7 @@ function ProblemSolver({ problem, slug }) {
 
               {/* Resize handle */}
               <div
-                className="w-1 mx-2 cursor-col-resize bg-zinc-800 hover:bg-green-500 transition-colors"
+                className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-green-500 transition-colors"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   const startX = e.clientX;
@@ -402,11 +415,7 @@ function ProblemSolver({ problem, slug }) {
                       : <>⏱ {timerFormatted}</>
                     }
                   </span>
-                  <span className="text-xs text-zinc-600">
-                    {problem.difficulty === "Easy" && "🟢 Easy"}
-                    {problem.difficulty === "Medium" && "🟡 Medium"}
-                    {problem.difficulty === "Hard" && "🔴 Hard"}
-                  </span>
+
                 </div>
 
                 {error && (
@@ -439,7 +448,7 @@ function ProblemSolver({ problem, slug }) {
                 </div>
 
                 <div
-                  className="w-full h-2 cursor-row-resize flex-shrink-0 rounded bg-zinc-800 hover:bg-green-500 transition-colors mb-2"
+                  className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-green-500 transition-colors mb-2"
                   onMouseDown={(e) => {
                     e.preventDefault();
                     const startY = e.clientY;
@@ -459,7 +468,15 @@ function ProblemSolver({ problem, slug }) {
 
                 <div className="flex-1 min-h-0 flex flex-col">
                   <SubmissionResultBanner submitInfo={submitInfo} />
-                  <div className="flex-1 min-h-0 overflow-hidden">
+                  <div className="
+  flex-1
+  min-h-0
+  overflow-hidden
+  bg-zinc-900
+  border border-zinc-800
+  rounded-2xl
+  shadow-xl
+">
                     <WorkspacePanel
                       runResults={runResults}
                       submitInfo={submitInfo}
