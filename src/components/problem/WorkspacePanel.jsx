@@ -181,6 +181,7 @@ export default function WorkspacePanel({
     isRunning,
     isSubmitting,
     forceTab,
+    problem,
 }) {
     const [activeTab, setActiveTab] = useState("testcases");
     const { theme } = useTheme();
@@ -279,6 +280,7 @@ overflow-hidden
                             compileFailed={runResults?.compileFailed ?? false}
                             compileError={runResults?.error ?? null}
                             isRunning={isRunning}
+                            examples={problem?.examples ?? []}
                         />
                     </div>
                 ) : (

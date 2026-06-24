@@ -109,6 +109,7 @@ export default function TestcaseResultPanel({
   compileFailed,
   compileError,
   isRunning,
+  examples = [],
 }) {
   const [activeTab, setActiveTab] = useState(0);
   const { theme } = useTheme();
@@ -130,11 +131,39 @@ export default function TestcaseResultPanel({
   if (isRunning) return <LoadingSkeleton />;
 
   if (!results && !compileFailed) {
+    if (examples.length === 0) {
+      return (
+        <div className="flex items-center justify-center min-h-[160px]">
+          <p className="text-zinc-600 text-sm font-mono">
+            Click {theme.words.run} to test against examples
+          </p>
+        </div>
+      );
+    }
     return (
-      <div className="flex items-center justify-center min-h-[160px]">
-        <p className="text-zinc-600 text-sm font-mono">
-          Click {theme.words.run} to test against examples
-        </p>
+      <div className="space-y-3">
+        {examples.map((ex, i) => (
+          <div key={i} className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+              Example {i + 1}
+            </span>
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-600">Input</span>
+              <div className="rounded-lg px-3 py-2 text-sm font-mono bg-zinc-900 border border-zinc-800 text-zinc-300 whitespace-pre-wrap break-all">
+                {ex.input}
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-600">Expected</span>
+              <div className="rounded-lg px-3 py-2 text-sm font-mono bg-zinc-900 border border-zinc-800 text-zinc-300">
+                {ex.output}
+              </div>
+            </div>
+            {ex.explanation && (
+              <p className="text-xs text-zinc-500 font-mono pt-0.5">{ex.explanation}</p>
+            )}
+          </div>
+        ))}
       </div>
     );
   }

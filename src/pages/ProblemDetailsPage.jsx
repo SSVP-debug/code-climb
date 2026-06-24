@@ -280,8 +280,8 @@ function ProblemSolver({ problem, slug }) {
           {mobileTab === "problem" && (
             <div className="p-4 bg-zinc-900 min-h-full">
               {!isSolved && (
-                <div className="flex justify-end pb-2">
-                  <span className="text-xs text-zinc-500 font-mono tracking-widest">
+                <div className="mb-4">
+                  <span className="text-xs font-mono text-zinc-500">
                     ⏱ {timerFormatted}
                   </span>
                 </div>
@@ -340,6 +340,7 @@ function ProblemSolver({ problem, slug }) {
                 isRunning={running}
                 isSubmitting={submitting}
                 forceTab={forceTab}
+                problem={problem}
               />
             </div>
           )}
@@ -348,18 +349,16 @@ function ProblemSolver({ problem, slug }) {
       </div>
 
       {/* ── DESKTOP LAYOUT (lg and above) ────────────────────────────────── */}
-      <div className="hidden lg:block">
-        <div className="h-[calc(100vh-120px)] overflow-hidden bg-zinc-950 rounded-2xl">
-          <div className="h-full overflow-hidden px-4 pt-8 pb-3 sm:px-6 lg:px-8">
+      <div className="hidden lg:block -m-8">
+        <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
+          <div className="h-full overflow-hidden px-3 py-2">
             <div className="
 flex
 h-full
 overflow-hidden
 relative
 
-gap-2
-px-2
-pb-2
+gap-3
 ">
 
               {/* Left column — Problem description */}
@@ -374,7 +373,7 @@ pb-2
   bg-zinc-900
   border border-zinc-800
   rounded-2xl
-  p-6
+  p-4
   shadow-xl
 ">
                   <ProblemHeader problem={problem} isSolved={isSolved} />
@@ -407,14 +406,6 @@ pb-2
                 className="h-full flex flex-col overflow-hidden"
                 style={{ width: `${100 - problemWidth}%` }}
               >
-                {!isSolved && (
-                  <div className="flex justify-end pb-2">
-                    <span className="text-xs text-zinc-500 font-mono tracking-widest">
-                      ⏱ {timerFormatted}
-                    </span>
-                  </div>
-                )}
-
                 {error && (
                   <div className="flex-shrink-0 pb-2">
                     <ErrorBanner message={error} />
@@ -480,6 +471,7 @@ pb-2
                       isRunning={running}
                       isSubmitting={submitting}
                       forceTab={forceTab}
+                      problem={problem}
                     />
                   </div>
                 </div>
