@@ -27,3 +27,17 @@ export function saveCode(
     code
   );
 }
+
+export function saveLanguage(slug, language) {
+  localStorage.setItem(
+    `language-${slug}`,
+    language
+  );
+}
+
+export function loadLanguage(slug) {
+  return (
+    localStorage.getItem(`language-${slug}`) ||
+    "python"
+  );
+}

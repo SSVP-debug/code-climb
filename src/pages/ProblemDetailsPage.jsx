@@ -2,7 +2,7 @@ import ErrorBanner from "../components/ErrorBanner";
 import ErrorBoundary from "../components/ErrorBoundary";
 import SubmissionResultBanner from "../components/workspace/SubmissionResultBanner";
 import { formatDate } from "../utils/formatters";
-import { getDailyChallenge,} from "../utils/dailyChallenge";
+import { getDailyChallenge, } from "../utils/dailyChallenge";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -12,7 +12,12 @@ import problems from "../data/problems";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePanelResize } from "../hooks/usePanelResize";
 import { useVerticalResize } from "../hooks/useVerticalResize";
-import { loadSavedCode, saveCode } from "../utils/editorStorage";
+import {
+  loadSavedCode,
+  saveCode,
+  loadLanguage,
+  saveLanguage,
+} from "../utils/editorStorage";
 import { useTimer } from "../hooks/useTimer";
 import confetti from "canvas-confetti";
 
@@ -109,10 +114,18 @@ function ProblemSolver({ problem, slug }) {
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
   const { editorHeight, setEditorHeight } = useVerticalResize();
-  const [language, setLanguage] = useState("python");
-  const [code, setCode] = useState(() =>
-    loadSavedCode(slug, "python", problem.starterCode.python)
+  const [language, setLanguage] = useState(() =>
+    loadLanguage(slug)
   );
+  const [code, setCode] = useState(() => {
+    const savedLanguage = loadLanguage(slug);
+
+    return loadSavedCode(
+      slug,
+      savedLanguage,
+      problem.starterCode[savedLanguage] || ""
+    );
+  });
   const [customInput, setCustomInput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -136,8 +149,18 @@ function ProblemSolver({ problem, slug }) {
 
   const handleLanguageChange = (nextLanguage) => {
     saveCode(slug, language, code);
+
+    saveLanguage(slug, nextLanguage);
+
     setLanguage(nextLanguage);
-    setCode(loadSavedCode(slug, nextLanguage, problem.starterCode[nextLanguage] || ""));
+
+    setCode(
+      loadSavedCode(
+        slug,
+        nextLanguage,
+        problem.starterCode[nextLanguage] || ""
+      )
+    );
   };
 
   const handleRunCode = async () => {
