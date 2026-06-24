@@ -29,15 +29,56 @@ function formatJavaValue(value) {
   return JSON.stringify(value);
 }
 
+function escapeCppString(str) {
+  return String(str).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 function formatCppValue(value) {
   if (Array.isArray(value)) {
     if (value.length === 0) return "{}";
-    if (value.every((v) => typeof v === "number")) return `{${value.join(", ")}}`;
+
+    if (Array.isArray(value[0])) {
+      return `{${value.map((v) => formatCppValue(v)).join(", ")}}`;
+    }
+
+    if (typeof value[0] === "string") {
+      return `{${value.map((v) => `"${escapeCppString(v)}"`).join(", ")}}`;
+    }
+
+    if (value.every((v) => typeof v === "number")) {
+      return `{${value.join(", ")}}`;
+    }
+
     return JSON.stringify(value);
   }
+
+  if (typeof value === "boolean") return value ? "true" : "false";
   if (typeof value === "number") return String(value);
-  if (typeof value === "string") return `"${value}"`;
+  if (typeof value === "string") return `"${escapeCppString(value)}"`;
+
   return JSON.stringify(value);
+}
+
+function inferCppType(value) {
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "vector<int>";
+
+    if (Array.isArray(value[0])) {
+      return "vector<vector<int>>";
+    }
+
+    if (typeof value[0] === "string") {
+      return "vector<string>";
+    }
+
+    return "vector<int>";
+  }
+
+  if (typeof value === "boolean") return "bool";
+  if (typeof value === "number") return "int";
+  if (typeof value === "string") return "string";
+
+  return "auto";
 }
 
 function normalizeTestcaseInput(testcaseInput) {
@@ -68,7 +109,7 @@ function inferReturnType(userCode, language) {
 
   if (language === "cpp") {
     const match = userCode.match(
-      /(vector<int>|bool|int|string)\s+\w+\s*\(/
+      /(vector<vector<int>>|vector<string>|vector<int>|bool|string|int)\s+\w+\s*\(/
     );
 
     return match?.[1] || "int";
@@ -194,10 +235,10 @@ class Main {
   if (language === "cpp") {
     const declarations = args
       .map(({ key, value }) => {
+        const cppType = inferCppType(value);
         const cppValue = formatCppValue(value);
-        if (Array.isArray(value)) return `vector<int> ${key} = ${cppValue};`;
-        if (typeof value === "number") return `int ${key} = ${cppValue};`;
-        return `auto ${key} = ${cppValue};`;
+
+        return `${cppType} ${key} = ${cppValue};`;
       })
       .join("\n  ");
 
@@ -207,31 +248,45 @@ class Main {
 #include <bits/stdc++.h>
 using namespace std;
 
+void printResult(int x) { cout << x; }
+void printResult(long long x) { cout << x; }
+void printResult(double x) { cout << x; }
+
+void printResult(bool x) {
+  cout << (x ? "true" : "false");
+}
+
+void printResult(const string& x) {
+  cout << "\\"";
+  for (char c : x) {
+    if (c == '"' || c == '\\\\') cout << '\\\\';
+    cout << c;
+  }
+  cout << "\\"";
+}
+
+template<typename T>
+void printResult(const vector<T>& v) {
+  cout << "[";
+  for (size_t i = 0; i < v.size(); i++) {
+    if (i) cout << ",";
+    printResult(v[i]);
+  }
+  cout << "]";
+}
+
 ${userCode}
 
 int main() {
   try {
     ${declarations}
+
     Solution solution;
 
-    ${returnType === "vector<int>"
-        ? `
-    ${returnType === "bool"
-          ? `
-auto result = solution.${fn}(${cppCallArgs});
-cout << (result ? "true" : "false") << endl;
-`
-          : `
-auto result = solution.${fn}(${cppCallArgs});
-cout << result << endl;
-`
-        }
-    `
-        : `
     auto result = solution.${fn}(${cppCallArgs});
-    cout << result << endl;
-    `
-      }
+
+    printResult(result);
+    cout << endl;
 
   } catch (exception& e) {
     cout << "RUNTIME_ERROR:" << e.what();
@@ -240,8 +295,6 @@ cout << result << endl;
   return 0;
 }
 `;
-
-    console.log("CPP RETURN TYPE:", returnType);
 
     return generated;
   }
