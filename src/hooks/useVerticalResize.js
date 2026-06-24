@@ -5,7 +5,7 @@ const STORAGE_KEY = "workspace.editorHeight";
 export function useVerticalResize() {
   const [editorHeight, setEditorHeight] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? Number(saved) : 500;
+    return saved ? Number(saved) : 380;
   });
 
   useEffect(() => {

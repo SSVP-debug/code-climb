@@ -5,7 +5,7 @@ const STORAGE_KEY = "workspace.problemWidth";
 export function usePanelResize() {
   const [problemWidth, setProblemWidth] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? Number(saved) : 40;
+    return saved ? Number(saved) : 30;
   });
 
   useEffect(() => {

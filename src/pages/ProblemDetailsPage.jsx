@@ -392,7 +392,7 @@ pb-2
                   const startWidth = problemWidth;
                   const handleMove = (moveEvent) => {
                     const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
-                    setProblemWidth(Math.min(60, Math.max(25, startWidth + delta)));
+                    setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
                   };
                   const handleUp = () => {
                     window.removeEventListener("mousemove", handleMove);
@@ -455,7 +455,7 @@ pb-2
                     const startHeight = editorHeight;
                     const handleMove = (moveEvent) => {
                       const delta = moveEvent.clientY - startY;
-                      setEditorHeight(Math.min(800, Math.max(300, startHeight + delta)));
+                      setEditorHeight(Math.min(600, Math.max(200, startHeight + delta)));
                     };
                     const handleUp = () => {
                       window.removeEventListener("mousemove", handleMove);
