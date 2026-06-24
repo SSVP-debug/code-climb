@@ -107,12 +107,25 @@ function ProblemDetailsPage() {
     );
   }
 
-  return <ProblemSolver key={slug} problem={problem} slug={slug} />;
+  return (
+    <ProblemSolver
+      key={slug}
+      problem={problem}
+      slug={slug}
+      prevSlug={prevSlug}
+      nextSlug={nextSlug}
+    />
+  );
 }
 
 // ── ProblemSolver ─────────────────────────────────────────────────────────────
 
-function ProblemSolver({ problem, slug }) {
+function ProblemSolver({
+  problem,
+  slug,
+  prevSlug,
+  nextSlug,
+}) {
   const { solvedProblems, addSubmission, markProblemSolved } = useAppContext();
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
@@ -483,7 +496,7 @@ gap-3
           </div>
         </div>
       </div>
-    
+
 
     </ProblemLayout >
   );
