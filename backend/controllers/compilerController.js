@@ -16,18 +16,48 @@ const LANGUAGE_STRINGS = {
 
 // ── Shared Judge0 fetch ───────────────────────────────────────────────────────
 // Internal utility — not exported as a route handler.
+//
+// Always uses base64_encoded=true to avoid Judge0's UTF-8 conversion error.
+// Root cause: if JUDGE0_API_URL in the environment omits the base64_encoded param,
+// Judge0 defaults to base64_encoded=true on most hosted instances. Sending plain
+// text in that case causes Judge0 to try to base64-decode it, producing invalid
+// UTF-8 bytes and the error "some attributes cannot be converted to UTF-8".
+//
+// Fix: we base64-encode all input fields unconditionally and force
+// base64_encoded=true in the URL regardless of what JUDGE0_API_URL contains.
+// Response fields (stdout, stderr, compile_output, message) are decoded back to
+// plain strings before returning, so all callers are unaffected.
+function b64Encode(str) {
+  return Buffer.from(str ?? "", "utf-8").toString("base64");
+}
+
+function b64Decode(str) {
+  if (!str) return str; // preserve null/undefined
+  return Buffer.from(str, "base64").toString("utf-8");
+}
+
 async function fetchJudge0(sourceCode, languageId, stdin = "") {
-  const judge0Url =
+  // Build the URL from the env var (or default), then force base64_encoded=true.
+  // This means the fix works even if JUDGE0_API_URL in Railway is missing the param.
+  const rawUrl =
     process.env.JUDGE0_API_URL ||
-    "https://ce.judge0.com/submissions?base64_encoded=false&wait=true";
+    "https://ce.judge0.com/submissions?wait=true";
+
+  const url = new URL(rawUrl);
+  url.searchParams.set("base64_encoded", "true");
+  // Ensure wait=true is present so we get a result synchronously, not a token.
+  if (!url.searchParams.has("wait")) {
+    url.searchParams.set("wait", "true");
+  }
+  const judge0Url = url.toString();
 
   const response = await fetch(judge0Url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      source_code: sourceCode,
+      source_code: b64Encode(sourceCode),
       language_id: languageId,
-      stdin,
+      stdin:        b64Encode(stdin),
     }),
     signal: AbortSignal.timeout(20000),
   });
@@ -43,7 +73,16 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
     );
   }
 
-  return response.json();
+  const data = await response.json();
+
+  // Decode the base64-encoded output fields back to plain strings.
+  return {
+    ...data,
+    stdout:         b64Decode(data.stdout),
+    stderr:         b64Decode(data.stderr),
+    compile_output: b64Decode(data.compile_output),
+    message:        b64Decode(data.message),
+  };
 }
 
 // ── callJudge0 ────────────────────────────────────────────────────────────────
