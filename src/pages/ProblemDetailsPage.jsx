@@ -6,6 +6,7 @@ import { getDailyChallenge, } from "../utils/dailyChallenge";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
+import ProblemLayout from "../layouts/ProblemLayout";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import { completeDailyChallenge, } from "../services/dailyChallengeService";
 import problems from "../data/problems";
@@ -81,6 +82,9 @@ function MobileTabBar({ active, onChange, hasResults }) {
 function ProblemDetailsPage() {
   const { slug } = useParams();
   const problem = useMemo(() => problems.find((p) => p.slug === slug), [slug]);
+  const problemIndex = useMemo(() => problems.findIndex((p) => p.slug === slug), [slug]);
+  const prevSlug = problemIndex > 0 ? problems[problemIndex - 1].slug : null;
+  const nextSlug = problemIndex < problems.length - 1 ? problems[problemIndex + 1].slug : null;
 
   if (!problem) {
     return (
@@ -263,10 +267,10 @@ function ProblemSolver({ problem, slug }) {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <DashboardLayout>
+    <ProblemLayout title={problem.title} prevSlug={prevSlug} nextSlug={nextSlug}>
 
       {/* ── MOBILE LAYOUT (below lg) ──────────────────────────────────────── */}
-      <div className="flex flex-col lg:hidden h-[calc(100vh-56px)] overflow-hidden -m-4 sm:-m-6">
+      <div className="flex flex-col lg:hidden h-full overflow-hidden">
 
         <MobileTabBar
           active={mobileTab}
@@ -349,10 +353,9 @@ function ProblemSolver({ problem, slug }) {
       </div>
 
       {/* ── DESKTOP LAYOUT (lg and above) ────────────────────────────────── */}
-      <div className="hidden lg:block -m-8">
-        <div className="fixed inset-0 top-16 overflow-hidden bg-zinc-950">
-          <div className="h-full overflow-hidden px-3 py-2">
-            <div className="
+      <div className="hidden lg:flex h-full overflow-hidden bg-zinc-950">
+        <div className="h-full w-full overflow-hidden px-3 py-2">
+          <div className="
 flex
 h-full
 overflow-hidden
@@ -361,12 +364,12 @@ relative
 gap-3
 ">
 
-              {/* Left column — Problem description */}
-              <div
-                className="h-full overflow-hidden"
-                style={{ width: `${problemWidth}%` }}
-              >
-                <div className="
+            {/* Left column — Problem description */}
+            <div
+              className="h-full overflow-hidden"
+              style={{ width: `${problemWidth}%` }}
+            >
+              <div className="
   h-full
   overflow-y-auto
   custom-scrollbar
@@ -376,21 +379,74 @@ gap-3
   p-4
   shadow-xl
 ">
-                  <ProblemHeader problem={problem} isSolved={isSolved} />
-                  <ProblemInfo problem={problem} />
+                <ProblemHeader problem={problem} isSolved={isSolved} />
+                <ProblemInfo problem={problem} />
+              </div>
+            </div>
+
+            {/* Resize handle */}
+            <div
+              className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-green-500 transition-colors"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const startX = e.clientX;
+                const startWidth = problemWidth;
+                const handleMove = (moveEvent) => {
+                  const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+                  setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
+                };
+                const handleUp = () => {
+                  window.removeEventListener("mousemove", handleMove);
+                  window.removeEventListener("mouseup", handleUp);
+                };
+                window.addEventListener("mousemove", handleMove);
+                window.addEventListener("mouseup", handleUp);
+              }}
+            />
+
+            {/* Right column — Editor + Workspace */}
+            <div
+              className="h-full flex flex-col overflow-hidden"
+              style={{ width: `${100 - problemWidth}%` }}
+            >
+              {error && (
+                <div className="flex-shrink-0 pb-2">
+                  <ErrorBanner message={error} />
                 </div>
+              )}
+
+              <div className="flex-shrink-0 pb-2" style={{ height: `${editorHeight}px` }}>
+                <ErrorBoundary
+                  fallback={
+                    <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                      Editor failed to load.
+                    </div>
+                  }
+                >
+                  <ProblemEditor
+                    language={language}
+                    setLanguage={handleLanguageChange}
+                    code={code}
+                    setCode={setCode}
+                    customInput={customInput}
+                    setCustomInput={setCustomInput}
+                    onRun={handleRunCode}
+                    onSubmit={handleSubmitCode}
+                    running={running}
+                    submitting={submitting}
+                  />
+                </ErrorBoundary>
               </div>
 
-              {/* Resize handle */}
               <div
-                className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-green-500 transition-colors"
+                className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-green-500 transition-colors mb-2"
                 onMouseDown={(e) => {
                   e.preventDefault();
-                  const startX = e.clientX;
-                  const startWidth = problemWidth;
+                  const startY = e.clientY;
+                  const startHeight = editorHeight;
                   const handleMove = (moveEvent) => {
-                    const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
-                    setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
+                    const delta = moveEvent.clientY - startY;
+                    setEditorHeight(Math.min(600, Math.max(200, startHeight + delta)));
                   };
                   const handleUp = () => {
                     window.removeEventListener("mousemove", handleMove);
@@ -401,62 +457,9 @@ gap-3
                 }}
               />
 
-              {/* Right column — Editor + Workspace */}
-              <div
-                className="h-full flex flex-col overflow-hidden"
-                style={{ width: `${100 - problemWidth}%` }}
-              >
-                {error && (
-                  <div className="flex-shrink-0 pb-2">
-                    <ErrorBanner message={error} />
-                  </div>
-                )}
-
-                <div className="flex-shrink-0 pb-2" style={{ height: `${editorHeight}px` }}>
-                  <ErrorBoundary
-                    fallback={
-                      <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
-                        Editor failed to load.
-                      </div>
-                    }
-                  >
-                    <ProblemEditor
-                      language={language}
-                      setLanguage={handleLanguageChange}
-                      code={code}
-                      setCode={setCode}
-                      customInput={customInput}
-                      setCustomInput={setCustomInput}
-                      onRun={handleRunCode}
-                      onSubmit={handleSubmitCode}
-                      running={running}
-                      submitting={submitting}
-                    />
-                  </ErrorBoundary>
-                </div>
-
-                <div
-                  className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-green-500 transition-colors mb-2"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    const startY = e.clientY;
-                    const startHeight = editorHeight;
-                    const handleMove = (moveEvent) => {
-                      const delta = moveEvent.clientY - startY;
-                      setEditorHeight(Math.min(600, Math.max(200, startHeight + delta)));
-                    };
-                    const handleUp = () => {
-                      window.removeEventListener("mousemove", handleMove);
-                      window.removeEventListener("mouseup", handleUp);
-                    };
-                    window.addEventListener("mousemove", handleMove);
-                    window.addEventListener("mouseup", handleUp);
-                  }}
-                />
-
-                <div className="flex-1 min-h-0 flex flex-col">
-                  <SubmissionResultBanner submitInfo={submitInfo} />
-                  <div className="
+              <div className="flex-1 min-h-0 flex flex-col">
+                <SubmissionResultBanner submitInfo={submitInfo} />
+                <div className="
   flex-1
   min-h-0
   overflow-hidden
@@ -465,24 +468,24 @@ gap-3
   rounded-2xl
   shadow-xl
 ">
-                    <WorkspacePanel
-                      runResults={runResults}
-                      submitInfo={submitInfo}
-                      isRunning={running}
-                      isSubmitting={submitting}
-                      forceTab={forceTab}
-                      problem={problem}
-                    />
-                  </div>
+                  <WorkspacePanel
+                    runResults={runResults}
+                    submitInfo={submitInfo}
+                    isRunning={running}
+                    isSubmitting={submitting}
+                    forceTab={forceTab}
+                    problem={problem}
+                  />
                 </div>
-
               </div>
+
             </div>
           </div>
         </div>
       </div>
+    
 
-    </DashboardLayout>
+    </ProblemLayout >
   );
 }
 
