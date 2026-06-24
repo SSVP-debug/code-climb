@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 
 const exampleSchema = new mongoose.Schema(
   {
-    input:       { type: String, required: true },
-    output:      { type: String, required: true },
+    input: { type: String, required: true },
+    output: { type: String, required: true },
     explanation: { type: String },
   },
   { _id: false }
@@ -13,17 +13,17 @@ const exampleSchema = new mongoose.Schema(
 
 const starterCodeSchema = new mongoose.Schema(
   {
-    python:     { type: String, default: "" },
+    python: { type: String, default: "" },
     javascript: { type: String, default: "" },
-    java:       { type: String, default: "" },
-    cpp:        { type: String, default: "" },
+    java: { type: String, default: "" },
+    cpp: { type: String, default: "" },
   },
   { _id: false }
 );
 
 const testcaseSchema = new mongoose.Schema(
   {
-    input:          { type: mongoose.Schema.Types.Mixed, required: true },
+    input: { type: mongoose.Schema.Types.Mixed, required: true },
     expectedOutput: { type: mongoose.Schema.Types.Mixed, required: true },
   },
   { _id: false }
@@ -34,66 +34,66 @@ const testcaseSchema = new mongoose.Schema(
 const problemSchema = new mongoose.Schema(
   {
     id: {
-      type:     Number,
+      type: Number,
       required: true,
-      unique:   true,
-      index:    true,
+      unique: true,
+      index: true,
     },
 
     title: {
-      type:     String,
+      type: String,
       required: true,
-      trim:     true,
+      trim: true,
     },
 
     slug: {
-      type:      String,
-      required:  true,
-      unique:    true,
-      index:     true,
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
       lowercase: true,
-      trim:      true,
+      trim: true,
     },
 
     functionName: {
-      type:     String,
+      type: String,
       required: true,
-      trim:     true,
+      trim: true,
     },
 
     difficulty: {
-      type:     String,
+      type: String,
       required: true,
-      enum:     ["Easy", "Medium", "Hard"],
+      enum: ["Easy", "Medium", "Hard"],
     },
 
     topic: {
-      type:     String,
+      type: String,
       required: true,
-      trim:     true,
+      trim: true,
     },
 
     // Learning pattern taught by this problem
     pattern: {
-      type:    String,
-      trim:    true,
+      type: String,
+      trim: true,
       default: "",
     },
 
     // Problem origin: core interview, variant, or Code Club original
     sourceType: {
-      type:    String,
-      enum:    ["core", "variant", "original"],
+      type: String,
+      enum: ["core", "variant", "original"],
       default: "core",
     },
 
     description: {
-      type:     String,
+      type: String,
       required: true,
     },
 
-    examples:    { type: [exampleSchema],  default: [] },
-    constraints: { type: [String],         default: [] },
+    examples: { type: [exampleSchema], default: [] },
+    constraints: { type: [String], default: [] },
     starterCode: { type: starterCodeSchema },
 
     // Visible testcases — returned to the client for "Run" mode
@@ -102,6 +102,37 @@ const problemSchema = new mongoose.Schema(
     // Hidden testcases — NEVER sent to the client.
     // Only read server-side by the judge route.
     hiddentestcases: { type: [testcaseSchema], default: [] },
+
+    // ── Metadata ──────────────────────────────────────────────────────────────
+
+    // Rough time budget for a prepared candidate, e.g. "10–15 min"
+    estimatedTime: {
+      type: String,
+      default: "",
+    },
+
+    // Companies known to ask this problem in interviews
+    companies: {
+      type: [String],
+      default: [],
+    },
+
+    // Slugs of thematically related problems on the platform
+    relatedProblems: {
+      type: [String],
+      default: [],
+    },
+
+    // Progressive hints — shown one at a time on the problem page
+    hints: {
+      type: [
+        {
+          level: Number,
+          text: String
+        }
+      ],
+      default: []
+    },
   },
   { timestamps: true }
 );

@@ -9,9 +9,15 @@
  * Fields:
  *   testcases        — visible to client, used in Run mode
  *   hiddentestcases  — server-only, used in Submit mode (never sent to client)
+ *   estimatedTime    — rough time budget for a prepared candidate
+ *   companies        — companies known to ask this in interviews
+ *   relatedProblems  — slugs of thematically linked problems on this platform
+ *   hints            — progressive hints, ordered from vague → specific
  */
 
-const problems = [
+import problemMetadata from "./problemMetadata.js";
+
+const rawProblems = [
 
   // ── ARRAYS ────────────────────────────────────────────────────────────────
 
@@ -1716,5 +1722,20 @@ const problems = [
   },
 
 ];
+
+// Merge metadata into each problem.
+// All fields have safe defaults so problems with missing metadata entries still work.
+// pattern prefers the metadata value (allows override) but falls back to p.pattern from raw data.
+const problems = rawProblems.map((p) => {
+  const meta = problemMetadata[p.slug] ?? {};
+  return {
+    ...p,
+    pattern:         meta.pattern         ?? p.pattern ?? "",
+    estimatedTime:   meta.estimatedTime   ?? "",
+    companies:       meta.companies       ?? [],
+    relatedProblems: meta.relatedProblems ?? [],
+    hints:           meta.hints           ?? [],
+  };
+});
 
 export default problems;

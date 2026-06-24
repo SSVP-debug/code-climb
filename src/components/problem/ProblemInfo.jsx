@@ -1,4 +1,6 @@
 import React from "react";
+import HintSystem from "./HintSystem.jsx";
+import RelatedProblems from "./RelatedProblems.jsx";
 
 function ProblemInfo({ problem }) {
   if (!problem) return null;
@@ -58,6 +60,32 @@ function ProblemInfo({ problem }) {
           </ul>
         </section>
       )}
+
+      {/* Companies */}
+      {problem.companies && problem.companies.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold text-white mb-3">Asked By</h3>
+          <div className="flex flex-wrap gap-2">
+            {problem.companies.map((company) => (
+              <span
+                key={company}
+                className="px-3 py-1 rounded-full text-xs font-medium bg-zinc-800/60 text-zinc-400 border border-zinc-700/50"
+              >
+                {company}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Progressive hints */}
+      <HintSystem hints={problem.hints} />
+
+      {/* Related problems */}
+      <RelatedProblems
+        relatedSlugs={problem.relatedProblems}
+        currentSlug={problem.slug}
+      />
     </div>
   );
 }

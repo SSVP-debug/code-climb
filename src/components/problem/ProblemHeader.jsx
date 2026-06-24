@@ -16,9 +16,9 @@ function ProblemHeader({ problem, isSolved }) {
         )}
       </div>
 
-      <div className="flex items-center gap-3 mt-3">
+      <div className="flex items-center gap-3 mt-3 flex-wrap">
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium border ${
+          className={`px-3 py-1 rounded-full text-xs font-medium border ${ 
             problem.difficulty === "Easy"
               ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
               : problem.difficulty === "Medium"
@@ -31,6 +31,15 @@ function ProblemHeader({ problem, isSolved }) {
         <span className="px-3 py-1 bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 rounded-full text-xs font-medium">
           {problem.topic}
         </span>
+        {problem.estimatedTime && (
+          <span className="flex items-center gap-1.5 text-zinc-500 text-xs font-mono">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0">
+              <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M6 3.5V6L7.5 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            {problem.estimatedTime}
+          </span>
+        )}
       </div>
     </div>
   );
