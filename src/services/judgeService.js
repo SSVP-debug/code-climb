@@ -15,10 +15,10 @@ export const judgeSubmission = async ({
     const result = await apiFetch("/api/judge/submit", {
       method: "POST",
       body: JSON.stringify({
-        problemSlug:      problem.slug,
+        problemSlug: problem.slug,
         code,
         language,
-        functionName:     problem.functionName,
+        functionName: problem.functionName,
         // Visible testcases are NOT secret — safe to send from frontend.
         // Hidden testcases are loaded server-side by the backend.
         visibletestcases: problem.testcases || [],
@@ -33,9 +33,9 @@ export const judgeSubmission = async ({
     // Return a Judge-shaped error so ProblemDetailsPage doesn't crash
     return {
       status: "Judge Error ❌",
-      error:  error.message,
+      error: error.message,
       passed: 0,
-      total:  0,
+      total: 0,
     };
   }
 };
@@ -49,18 +49,19 @@ export const runTestcases = async ({ problem, code, language }) => {
         code,
         language,
         functionName: problem.functionName,
-        testcases:    problem.testcases || [],
+        testcases: problem.testcases || [],
       }),
     });
 
     return result; // { results: [...], compileFailed: bool, error?: string }
 
   } catch (error) {
-    console.error("[runtestcases] Error:", error.message);
+    console.error("[runTestcases] Error:", error);
+
     return {
       results: [],
       compileFailed: false,
-      error: error.message,
+      error: "Failed to execute test cases.",
     };
   }
 };

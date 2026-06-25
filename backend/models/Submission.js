@@ -22,14 +22,46 @@ const submissionSchema = new mongoose.Schema(
 
     memory: {
       type: Number,
+      default: 0,
+      min: 0,
     },
     problemTitle: String,
-    language: String,
-    status: String,
-    passed: Number,
-    total: Number,
-    visiblePassed: Number,
-    hiddenPassed: Number,
+    language: {
+      type: String,
+      enum: ["javascript", "python", "java", "cpp"],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: [
+        "Accepted",
+        "Wrong Answer",
+        "Compilation Error",
+        "Runtime Error",
+        "Time Limit Exceeded",
+      ],
+      required: true,
+    },
+    passed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    total: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    visiblePassed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    hiddenPassed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     executionTime: String,
     expectedOutput: mongoose.Schema.Types.Mixed,
     actualOutput: String,
@@ -37,9 +69,21 @@ const submissionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+submissionSchema.index({
+  userId: 1,
+  createdAt: -1,
+});
+
+submissionSchema.index({
+  userId: 1,
+  problemSlug: 1,
+});
+
 const Submission = mongoose.model(
   "Submission",
   submissionSchema
 );
+
+
 
 export default Submission;

@@ -8,8 +8,15 @@ const userSchema = new mongoose.Schema(
       unique: true,
       index: true,
     },
-    email: String,
-    displayName: String,
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    displayName: {
+      type: String,
+      trim: true,
+    },
 
     username: {
       type: String,
@@ -46,9 +53,9 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
     solvedDifficulty: {
-      easy: { type: Number, default: 0 },
-      medium: { type: Number, default: 0 },
-      hard: { type: Number, default: 0 },
+      easy: { type: Number, default: 0, min: 0 },
+      medium: { type: Number, default: 0, min: 0 },
+      hard: { type: Number, default: 0, min: 0 },
     },
     recentActivity: {
       type: [
@@ -62,16 +69,19 @@ const userSchema = new mongoose.Schema(
     currentStreak: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     totalXP: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     longestStreak: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     lastActivityDate: {

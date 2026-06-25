@@ -36,12 +36,12 @@ export function progressToClient(user) {
 
 export async function getProgress(req, res) {
   const payload = progressToClient(req.userDoc);
-  
+
   res.json(payload);
 }
 
 export async function putProgress(req, res) {
-  
+
   try {
     const {
       solvedSlugs,
@@ -52,7 +52,7 @@ export async function putProgress(req, res) {
       leetcodeUsername,
       totalXP,
     } = req.body;
-    
+
 
     if (!req.userDoc) {
       return res.status(503).json({
@@ -128,18 +128,25 @@ export async function putProgress(req, res) {
         totalXP;
     }
 
-    
-    
+
+
     await req.userDoc.save();
 
 
-    
-    
+
+
 
     res.json(progressToClient(req.userDoc));
   } catch (err) {
     console.error("PUT PROGRESS ERROR:", err);
-    res.status(500).json({
+
+    if (process.env.NODE_ENV === "production") {
+      return res.status(500).json({
+        error: "Internal Server Error",
+      });
+    }
+
+    return res.status(500).json({
       error: err.message,
       stack: err.stack,
     });

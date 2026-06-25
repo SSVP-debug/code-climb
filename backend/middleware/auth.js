@@ -20,6 +20,9 @@ export async function requireAuth(req, res, next) {
     req.auth = {
       uid: decoded.uid,
       email: decoded.email,
+      name: decoded.name,
+      picture: decoded.picture,
+      provider: decoded.firebase?.sign_in_provider,
     };
 
     try {
@@ -51,7 +54,7 @@ export async function requireAuth(req, res, next) {
     console.error("[Auth] FULL ERROR:", error);
 
     return res.status(401).json({
-      error: error.message,
+      error: "Unauthorized",
     });
   }
 }
