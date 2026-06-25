@@ -67,10 +67,7 @@ export async function updateMe(req, res) {
     req.userDoc.username =
       normalized;
   }
-  console.log(
-    "Saving username:",
-    req.userDoc.username
-  );
+  
 
   await req.userDoc.save();
 

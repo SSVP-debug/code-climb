@@ -27,14 +27,14 @@ async function backfillXP() {
   await connectDB();
 
   const difficultyMap = buildDifficultyMap(problems);
-  console.log(`\n📚 Loaded ${difficultyMap.size} problems from problems.js`);
+  
 
   if (DRY_RUN) {
     console.log("🔍 DRY RUN — no writes will occur\n");
   }
 
   const users = await User.find({}, "email displayName solvedSlugs totalXP").lean();
-  console.log(`👥 Found ${users.length} user(s) to process\n`);
+  
 
   let updated = 0;
   let skipped = 0;
@@ -53,7 +53,7 @@ async function backfillXP() {
       continue;
     }
 
-    console.log(`  🔧 ${label}  ${solvedSlugs.length} solves → ${currentXP} XP (stored) → ${correctXP} XP (correct)`);
+    
 
     if (!DRY_RUN) {
       try {
@@ -71,15 +71,6 @@ async function backfillXP() {
     }
   }
 
-  console.log(`
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${DRY_RUN ? "DRY RUN " : ""}Results
-  Users processed : ${users.length}
-  ${DRY_RUN ? "Would update" : "Updated"}     : ${updated}
-  Already correct : ${skipped}
-  Errors          : ${errors}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`);
 
   await mongoose.disconnect();
 }

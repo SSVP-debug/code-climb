@@ -15,9 +15,7 @@ if (result.error) {
     `[env] Could not load ${envPath}:`,
     result.error.message
   );
-} else {
-  console.log(`[env] Loaded ${envPath}`);
-}
+} 
 
 export function getMongoUri() {
   const uri = process.env.MONGODB_URI?.trim();

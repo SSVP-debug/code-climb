@@ -36,12 +36,12 @@ export function progressToClient(user) {
 
 export async function getProgress(req, res) {
   const payload = progressToClient(req.userDoc);
-  console.log("[XP-TRACE 8b] getProgress progressToClient totalXP", payload.totalXP);
+  
   res.json(payload);
 }
 
 export async function putProgress(req, res) {
-  console.log("[XP-TRACE 6] progressController.putProgress req.body.totalXP", req.body.totalXP);
+  
   try {
     const {
       solvedSlugs,
@@ -52,10 +52,7 @@ export async function putProgress(req, res) {
       leetcodeUsername,
       totalXP,
     } = req.body;
-    console.log(
-      "[XP-TRACE] controller received:",
-      totalXP
-    );
+    
 
     if (!req.userDoc) {
       return res.status(503).json({
@@ -131,22 +128,13 @@ export async function putProgress(req, res) {
         totalXP;
     }
 
-    console.log("[XP-TRACE 7] before save req.userDoc.totalXP", req.userDoc.totalXP, "destructured totalXP", totalXP);
+    
     
     await req.userDoc.save();
 
 
-    console.log("[XP-TRACE 8] after save userDoc.totalXP", req.userDoc.totalXP);
-    console.log("BEFORE SAVE USERDOC:", {
-      solvedSlugs: req.userDoc.solvedSlugs,
-      topicStats: req.userDoc.topicStats,
-      activityDates: req.userDoc.activityDates,
-      solvedDifficulty: req.userDoc.solvedDifficulty,
-      currentStreak: req.userDoc.currentStreak,
-      longestStreak: req.userDoc.longestStreak,
-      lastActivityDate: req.userDoc.lastActivityDate,
-      newAchievements: newlyUnlocked,
-    });
+    
+    
 
     res.json(progressToClient(req.userDoc));
   } catch (err) {

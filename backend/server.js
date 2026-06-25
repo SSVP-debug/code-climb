@@ -46,7 +46,7 @@ app.use(cors({
 })
 );
 
-console.log("[CORS] Allowed origins:", allowedOrigins.join(", "));
+
 
 app.use(express.json({ limit: "1mb" }));
 
@@ -116,15 +116,15 @@ async function start() {
   }
 
   const server = app.listen(PORT, () => {
-    console.log(`[Server] Running on port ${PORT}`);
+    
   });
 
   // Graceful shutdown — Railway sends SIGTERM before restarting containers.
   // Without this, in-flight Judge0 requests are killed mid-execution.
   process.on("SIGTERM", () => {
-    console.log("[Server] SIGTERM received — shutting down gracefully");
+    
     server.close(() => {
-      console.log("[Server] Closed. Exiting.");
+      
       process.exit(0);
     });
   });

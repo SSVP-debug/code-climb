@@ -202,8 +202,7 @@ function ProblemSolver({
 
     if (submitting) return;
     const wasAlreadySolved = isSolved;
-    console.log("wasAlreadySolved =", wasAlreadySolved);
-    console.log("isSolved =", isSolved);
+    
 
     try {
       setSubmitting(true);
@@ -212,8 +211,7 @@ function ProblemSolver({
       setSubmitInfo(null);
 
       const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
-      console.log("judgeResult.status =", judgeResult.status);
-      console.log("wasAlreadySolved =", wasAlreadySolved);
+
 
       setSubmitInfo({
         status: judgeResult.status,
@@ -223,10 +221,7 @@ function ProblemSolver({
       });
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
-        console.log("[XP-TRACE 1] ProblemDetailsPage → markProblemSolved", {
-          slug,
-          difficulty: problem.difficulty,
-        });
+        
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =

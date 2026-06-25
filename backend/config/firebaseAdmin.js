@@ -25,9 +25,7 @@ export function initFirebaseAdmin() {
 
   initialized = true;
 
-  console.log(
-    `[Firebase Admin] Initialized for project ${projectId}`
-  );
+
 
   return admin;
 }

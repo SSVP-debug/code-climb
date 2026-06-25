@@ -124,19 +124,13 @@ export async function runCode(req, res) {
 
   const langName = JUDGE0_LANGUAGE_NAMES[language_id] || `id:${language_id}`;
 
-  console.log(
-    `[Compiler] Run request — language=${langName} (${language_id}), ` +
-    `source_length=${source_code.length}, stdin_length=${stdin.length}`
-  );
+  
 
   try {
     const data = await fetchJudge0(source_code, language_id, stdin);
 
     const statusDesc = data.status?.description || "Unknown";
-    console.log(
-      `[Compiler] Judge0 status=${statusDesc}, ` +
-      `stdout_len=${(data.stdout || "").length}, stderr_len=${(data.stderr || "").length}`
-    );
+    
 
     if (process.env.NODE_ENV !== "production") {
       console.log(`[Compiler] stdout preview:`, (data.stdout || "").slice(0, 120));

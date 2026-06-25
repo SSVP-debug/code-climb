@@ -4,18 +4,14 @@ import { getMongoUri, maskMongoUri } from "./env.js";
 export default async function connectDB() {
   const uri = getMongoUri();
 
-  console.log(
-    `[MongoDB] Connecting to ${maskMongoUri(uri)}`
-  );
+  
 
   try {
     await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 10000,
     });
 
-    console.log(
-      `[MongoDB] Connected (database: ${mongoose.connection.name})`
-    );
+    
   } catch (error) {
     console.error("[MongoDB] Connection failed:");
     console.error(`  Message: ${error.message}`);

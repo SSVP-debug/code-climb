@@ -122,7 +122,7 @@ router.put(
   requireAuth,
   validateBody(progressSchema),
   (req, res, next) => {
-    console.log("[XP-TRACE 5] after Zod validateBody req.body.totalXP", req.body.totalXP);
+    
     next();
   },
   validateSlugs,

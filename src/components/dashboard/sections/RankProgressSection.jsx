@@ -13,7 +13,7 @@ function RankProgressSection() {
     currentStreak,
   } = useAppContext();
 
-  console.log("[XP-TRACE 11] RankProgressSection totalXP", totalXP);
+  
 
   const level = getLevel(totalXP);
 

@@ -182,10 +182,7 @@ function AppContextProvider({ children }) {
           progress.totalXP || 0
         );
 
-        console.log("[XP-TRACE 9] AppContext hydrate totalXP", progress.totalXP);
-        console.log(
-          "[AppContext] Hydrated from MongoDB"
-        );
+        
       } catch (err) {
         console.error(
           "[AppContext] Hydration failed:",
@@ -232,9 +229,7 @@ function AppContextProvider({ children }) {
           "",
       });
 
-      console.log(
-        "✅ Submission saved to MongoDB"
-      );
+      
     } catch (err) {
       console.error(
         "[AppContext] Submission save failed:",
@@ -343,12 +338,7 @@ function AppContextProvider({ children }) {
     const nextTotalXP =
       totalXP + earnedXP;
 
-    console.log("[XP-TRACE 2] AppContext markProblemSolved", {
-      totalXP,
-      earnedXP,
-      nextTotalXP,
-      difficulty,
-    });
+    
 
     const persistPayload = {
       solvedSlugs:
@@ -369,7 +359,7 @@ function AppContextProvider({ children }) {
         nextRecentActivity,
     };
 
-    console.log("[XP-TRACE 3] AppContext → persistSolvedToMongo payload.totalXP", persistPayload.totalXP);
+    
 
     // MongoDB
 
@@ -411,15 +401,10 @@ function AppContextProvider({ children }) {
           nextTotalXP
         );
 
-        console.log("[XP-TRACE 10] AppContext after save setTotalXP", {
-          responseTotalXP: response.totalXP,
-          nextTotalXP,
-        });
+        
       }
 
-      console.log(
-        "✅ Progress saved to MongoDB"
-      );
+      
     } catch (err) {
       console.error(
         "[AppContext] Progress save failed:",

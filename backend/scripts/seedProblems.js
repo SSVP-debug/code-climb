@@ -17,7 +17,7 @@ import problems from "../../src/data/problems.js";
 const seedProblems = async () => {
   try {
     await connectDB();
-    console.log(`\n📦 Loaded ${problems.length} problems from problems.js\n`);
+    
 
     let inserted = 0;
     let updated  = 0;
@@ -41,8 +41,7 @@ const seedProblems = async () => {
     }
 
     const total = await Problem.countDocuments();
-    console.log(`\n✅ Done. ${inserted} inserted, ${updated} updated.`);
-    console.log(`   Total problems in DB: ${total}\n`);
+
 
     process.exit(0);
   } catch (error) {

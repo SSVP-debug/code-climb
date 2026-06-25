@@ -12,7 +12,7 @@ export async function getSubmissions(problemSlug = null) {
 }
 
 export async function createSubmission(data) {
-  console.log("SUBMISSION BODY:", data);
+  
 
   return apiFetch("/api/submissions", {
     method: "POST",

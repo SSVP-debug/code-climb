@@ -21,7 +21,7 @@ function toClientSubmission(doc) {
 }
 
 export async function createSubmission(req, res) {
-  console.log("🔥 CREATE SUBMISSION HIT");
+  
   const submission = await Submission.create({
     userId: req.userDoc._id,
     ...req.body,
@@ -29,7 +29,7 @@ export async function createSubmission(req, res) {
     judge0Time: req.body.judge0Time || req.body.executionTime,
     memory: req.body.memory || null,
   });
-  console.log("🔥 SAVED:", submission._id);
+  
 
   res.status(201).json(toClientSubmission(submission));
 }

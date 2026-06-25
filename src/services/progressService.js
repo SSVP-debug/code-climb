@@ -19,7 +19,7 @@ const DEFAULT_PROGRESS = {
 export async function getProgress() {
   try {
     const data = await apiFetch("/api/progress");
-    console.log("[XP-TRACE 8c] progressService.getProgress totalXP", data?.totalXP);
+    
     return data;
   } catch (err) {
     console.error("[progressService] getProgress failed:", err.message);
@@ -64,7 +64,7 @@ export async function markProblemSolved(currentProgress, problemSlug, difficulty
     totalXP: currentProgress.totalXP,
   };
 
-  console.log("[XP-TRACE 4] progressService PUT /api/progress body.totalXP", requestBody.totalXP, requestBody);
+  
 
   return apiFetch("/api/progress", {
     method: "PUT",

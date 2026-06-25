@@ -121,7 +121,6 @@ function inferReturnType(userCode, language) {
 export function generateDriverCode(language, userCode, testcaseInput, functionName) {
   const fn = functionName || "solve";
   const returnType = inferReturnType(userCode, language);
-  console.log("JAVA RETURN TYPE:", returnType);
   const args = buildCallArgs(testcaseInput);
   const isDev = process.env.NODE_ENV !== "production"; // was: import.meta.env.DEV
 
