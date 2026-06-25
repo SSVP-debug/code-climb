@@ -9,7 +9,12 @@ import { useTheme } from "../context/ThemeContext";
 import { canChangeTheme, getThemeUnlockProgress } from "../utils/themeRules";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-// ── Integrations data ─────────────────────────────────────────────────────────
+// ── UI foundation ──────────────────────────────────────────────────────────────
+import SectionCard from "../components/ui/layout/SectionCard";
+import EmptyState  from "../components/ui/feedback/EmptyState";
+import ContentSlot from "../components/ui/slots/ContentSlot";
+
+// ── Integrations data ──────────────────────────────────────────────────────────
 
 const INTEGRATIONS = [
   {
@@ -50,7 +55,7 @@ const INTEGRATIONS = [
   },
 ];
 
-// ── Status badge ──────────────────────────────────────────────────────────────
+// ── StatusBadge — unchanged ────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
   if (status === "connected") {
@@ -75,15 +80,16 @@ function StatusBadge({ status }) {
   );
 }
 
-// ── Integration row ───────────────────────────────────────────────────────────
+// ── IntegrationRow — unchanged ─────────────────────────────────────────────────
 
 function IntegrationRow({ integration }) {
-  const { id, name, description, status, icon, iconBg, iconColor } = integration;
-
+  const { name, description, status, icon, iconBg, iconColor } = integration;
   return (
     <div className="flex items-center justify-between py-4 border-b border-zinc-800 last:border-0">
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center text-sm font-bold ${iconColor} flex-shrink-0`}>
+        <div
+          className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center text-sm font-bold ${iconColor} flex-shrink-0`}
+        >
           {icon}
         </div>
         <div>
@@ -98,41 +104,32 @@ function IntegrationRow({ integration }) {
   );
 }
 
-// ── Profile page ──────────────────────────────────────────────────────────────
+// ── Profile ────────────────────────────────────────────────────────────────────
 
 function Profile() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [currentUsername, setCurrentUsername] =
-    useState("");
-  const [username, setUsername] = useState("");
-  const [savingUsername, setSavingUsername] = useState(false);
+
+  const [currentUsername, setCurrentUsername] = useState("");
+  const [username, setUsername]               = useState("");
+  const [savingUsername, setSavingUsername]   = useState(false);
+
   useEffect(() => {
     async function loadProfileInfo() {
       try {
-        const data =
-          await apiFetch(
-            "/api/users/me"
-          );
-
-        setCurrentUsername(
-          data.username || ""
-        );
-
-        setUsername(
-          data.username || ""
-        );
+        const data = await apiFetch("/api/users/me");
+        setCurrentUsername(data.username || "");
+        setUsername(data.username || "");
       } catch {
-        // ignore
+        // ignore — username is cosmetic, not critical
       }
     }
-
     loadProfileInfo();
   }, []);
+
   const { theme, themeInfo } = useTheme();
   const {
     solvedProblems,
-    activityDates,
     recentActivity,
     submissions,
     currentStreak,
@@ -148,20 +145,40 @@ function Profile() {
     selectedAt: themeInfo?.lastChangedAt,
   });
 
-  const joinedDate = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
+  const joinedDate       = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
   const recentSubmissions = submissions.slice(0, 5);
-  const level = solvedProblems.length;
+  const level            = solvedProblems.length;
 
   const rank =
-    level < 5
-      ? "Beginner"
-      : level < 15
-        ? "Learner"
-        : level < 30
-          ? "Intermediate"
-          : level < 60
-            ? "Advanced"
-            : "Expert";
+    level < 5  ? "Beginner"     :
+    level < 15 ? "Learner"      :
+    level < 30 ? "Intermediate" :
+    level < 60 ? "Advanced"     : "Expert";
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  async function handleSaveUsername() {
+    try {
+      setSavingUsername(true);
+      const result = await apiFetch("/api/users/me", {
+        method: "PATCH",
+        body: JSON.stringify({ username }),
+      });
+      setCurrentUsername(result.username);
+      toast.success("Username saved");
+    } catch (err) {
+      toast.error(err.message || "Failed to save username");
+    } finally {
+      setSavingUsername(false);
+    }
+  }
+
+  function handleCopyProfileLink() {
+    navigator.clipboard.writeText(`${window.location.origin}/u/${currentUsername}`);
+    toast.success("Profile link copied!");
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <DashboardLayout>
@@ -169,240 +186,240 @@ function Profile() {
 
         <h1 className="text-4xl font-bold">Profile</h1>
 
-        {/* User info */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 flex items-center gap-6">
-          {user?.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={user.displayName || "User"}
-              className="w-20 h-20 rounded-full"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-2xl font-bold">
-              {(user?.displayName || "U")[0]}
-            </div>
-          )}
-          <div>
-            <h2 className="text-2xl font-semibold">{user?.displayName || "User"}</h2>
-            <p className="text-zinc-400">{user?.email}</p>
-            <p className="text-zinc-500 text-sm mt-1">Joined {joinedDate}</p>
-          </div>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            Public Profile
-          </h2>
-
-          <div className="space-y-4">
-
-            <input
-              type="text"
-              value={username}
-              onChange={(e) =>
-                setUsername(e.target.value)
-              }
-              placeholder="Choose a username"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
-            />
-
-            <button
-              disabled={savingUsername}
-              onClick={async () => {
-                try {
-                  setSavingUsername(true);
-
-                  const result =
-                    await apiFetch(
-                      "/api/users/me",
-                      {
-                        method: "PATCH",
-                        body: JSON.stringify({
-                          username,
-                        }),
-                      }
-                    );
-
-                  setCurrentUsername(
-                    result.username
-                  );
-
-                  toast.success(
-                    "Username saved"
-                  );
-                } catch (err) {
-                  toast.error(
-                    err.message ||
-                    "Failed to save username"
-                  );
-                } finally {
-                  setSavingUsername(false);
-                }
-              }}
-              className="bg-green-500 text-black px-4 py-2 rounded-xl font-medium"
-            >
-              Save Username
-            </button>
-
-            {currentUsername && (
-              <div className="bg-zinc-800 rounded-xl p-4">
-
-                <p className="text-sm text-zinc-400">
-                  Public URL
-                </p>
-
-                <p className="font-mono mt-1 break-all">
-                  {window.location.origin}/u/{currentUsername}
-                </p>
-
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      `${window.location.origin}/u/${currentUsername}`
-                    );
-
-                    toast.success(
-                      "Profile link copied!"
-                    );
-                  }}
-                  className="mt-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm"
-                >
-                  Copy Profile Link
-                </button>
-
+        {/* ── 1. User identity card ─────────────────────────────────────── */}
+        {/*
+          No title prop → SectionCard renders no header, matching the original
+          layout where the avatar IS the visual hierarchy anchor.
+        */}
+        <ContentSlot id="profile-identity">
+          <SectionCard className="flex items-center gap-6">
+            {user?.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt={user.displayName || "User"}
+                className="w-20 h-20 rounded-full flex-shrink-0"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                {(user?.displayName || "U")[0]}
               </div>
             )}
+            <div>
+              <h2 className="text-2xl font-semibold">{user?.displayName || "User"}</h2>
+              <p className="text-zinc-400">{user?.email}</p>
+              <p className="text-zinc-500 text-sm mt-1">Joined {joinedDate}</p>
+            </div>
+          </SectionCard>
+        </ContentSlot>
 
-          </div>
-        </div>
+        {/* ── 2. Public profile / username ──────────────────────────────── */}
+        <ContentSlot id="profile-public">
+          <SectionCard title="Public Profile">
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a username"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
+              />
 
-        {/* Universe */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Current Universe</h2>
-          <div className="flex items-center justify-between">
+              <button
+                disabled={savingUsername}
+                onClick={handleSaveUsername}
+                className="bg-green-500 text-black px-4 py-2 rounded-xl font-medium"
+              >
+                Save Username
+              </button>
+
+              {currentUsername && (
+                <div className="bg-zinc-800 rounded-xl p-4">
+                  <p className="text-sm text-zinc-400">Public URL</p>
+                  <p className="font-mono mt-1 break-all">
+                    {window.location.origin}/u/{currentUsername}
+                  </p>
+                  <button
+                    onClick={handleCopyProfileLink}
+                    className="mt-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm"
+                  >
+                    Copy Profile Link
+                  </button>
+                </div>
+              )}
+            </div>
+          </SectionCard>
+        </ContentSlot>
+
+        {/* ── 3. Current Universe ───────────────────────────────────────── */}
+        <ContentSlot id="profile-universe">
+          <SectionCard
+            title="Current Universe"
+            action={
+              <button
+                disabled={!canSwitchUniverse}
+                onClick={() => navigate("/theme-selection")}
+                className={`px-4 py-2 rounded-xl font-medium transition ${
+                  canSwitchUniverse
+                    ? "bg-green-500 text-black hover:bg-green-600"
+                    : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                }`}
+              >
+                {canSwitchUniverse ? "Change Universe" : "Locked"}
+              </button>
+            }
+          >
             <div>
               <p className="text-2xl font-bold">{theme.name}</p>
               <p className="text-zinc-400 mt-2">{theme.description}</p>
               <p className="text-zinc-400 mt-1">
                 Your Code Club experience is currently running in this universe.
               </p>
+
+              <div className="text-zinc-500 text-sm mt-4">
+                <div>
+                  Selected:{" "}
+                  {themeInfo?.lastChangedAt
+                    ? new Date(themeInfo.lastChangedAt).toLocaleDateString()
+                    : "Unknown"}
+                </div>
+                {!canSwitchUniverse && (
+                  <div className="mt-2">
+                    Universe change available in:
+                    <br />{unlockProgress.problemsRemaining} more solved problems
+                    <br />OR
+                    <br />{unlockProgress.daysRemaining} more days
+                  </div>
+                )}
+              </div>
             </div>
-            <button
-              disabled={!canSwitchUniverse}
-              onClick={() => navigate("/theme-selection")}
-              className={`px-4 py-2 rounded-xl font-medium transition ${canSwitchUniverse
-                ? "bg-green-500 text-black hover:bg-green-600"
-                : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                }`}
-            >
-              {canSwitchUniverse ? "Change Universe" : "Locked"}
-            </button>
+          </SectionCard>
+        </ContentSlot>
+
+        {/* ── 4. Stats row ──────────────────────────────────────────────── */}
+        {/*
+          Three equal-width stat cards — kept as a raw grid because these
+          are not individually wrapped sections; they form one visual unit.
+          Future: extract into a <StatGrid> if it grows beyond 3 items.
+        */}
+        <ContentSlot id="profile-stats">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <SectionCard>
+              <p className="text-zinc-400 text-sm">Solved</p>
+              <p className="text-3xl font-bold mt-1">{solvedProblems.length}</p>
+            </SectionCard>
+
+            <SectionCard>
+              <p className="text-zinc-400 text-sm">Current Streak</p>
+              <p className="text-3xl font-bold mt-1">{currentStreak}</p>
+            </SectionCard>
+
+            <SectionCard>
+              <p className="text-zinc-400 text-sm">Rank</p>
+              <p className="text-3xl font-bold mt-1">{rank}</p>
+              <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
+            </SectionCard>
           </div>
-          <div className="text-zinc-500 text-sm mt-4">
-            <div>
-              Selected:{" "}
-              {themeInfo?.lastChangedAt
-                ? new Date(themeInfo.lastChangedAt).toLocaleDateString()
-                : "Unknown"}
+        </ContentSlot>
+
+        {/* ── 5. Integrations ───────────────────────────────────────────── */}
+        <ContentSlot id="profile-integrations">
+          <SectionCard
+            title="Integrations"
+            subtitle="Connect your coding profiles to unlock unified analytics and cross-platform insights."
+            action={
+              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-lg">
+                More platforms coming
+              </span>
+            }
+          >
+            <div className="divide-y divide-zinc-800">
+              {INTEGRATIONS.map((integration) => (
+                <IntegrationRow key={integration.id} integration={integration} />
+              ))}
             </div>
-            {!canSwitchUniverse && (
-              <div className="mt-2">
-                Universe change available in:
-                <br />{unlockProgress.problemsRemaining} more solved problems
-                <br />OR
-                <br />{unlockProgress.daysRemaining} more days
+          </SectionCard>
+        </ContentSlot>
+
+        {/* ── 6. Recent Activity ────────────────────────────────────────── */}
+        <ContentSlot id="profile-activity">
+          <SectionCard title="Recent Activity">
+            {recentActivity.length === 0 ? (
+              <EmptyState
+                icon="📭"
+                title="No activity yet"
+                description="Solve a problem to start building your activity history."
+                actionLabel="Browse Problems"
+                actionHref="/problems"
+                compact
+              />
+            ) : (
+              <div className="space-y-3">
+                {recentActivity.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          item.status?.includes("Accepted")
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      />
+                      <span className="text-sm">{item.title}</span>
+                    </div>
+                    <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
+                      {item.time}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
-          </div>
-        </div>
+          </SectionCard>
+        </ContentSlot>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-zinc-400 text-sm">Solved</p>
-            <p className="text-3xl font-bold mt-1">{solvedProblems.length}</p>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-zinc-400 text-sm">Current Streak</p>
-            <p className="text-3xl font-bold mt-1">{currentStreak}</p>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <p className="text-zinc-400 text-sm">Rank</p>
-            <p className="text-3xl font-bold mt-1">{rank}</p>
-            <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
-          </div>
-        </div>
-
-        {/* ── Integrations ─────────────────────────────────────────────── */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <div className="flex items-start justify-between mb-1">
-            <h2 className="text-xl font-semibold">Integrations</h2>
-            <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-lg">
-              More platforms coming
-            </span>
-          </div>
-          <p className="text-zinc-500 text-sm mb-6">
-            Connect your coding profiles to unlock unified analytics and cross-platform insights.
-          </p>
-
-          <div className="divide-y divide-zinc-800">
-            {INTEGRATIONS.map((integration) => (
-              <IntegrationRow key={integration.id} integration={integration} />
-            ))}
-          </div>
-        </div>
-
-        {/* Recent activity */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-          {recentActivity.length === 0 ? (
-            <p className="text-zinc-400">No activity yet. Solve a problem to get started.</p>
-          ) : (
-            <div className="space-y-3">
-              {recentActivity.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted") ? "bg-green-500" : "bg-red-500"
-                      }`} />
-                    <span className="text-sm">{item.title}</span>
+        {/* ── 7. Recent Submissions ─────────────────────────────────────── */}
+        <ContentSlot id="profile-submissions">
+          <SectionCard title="Recent Submissions">
+            {recentSubmissions.length === 0 ? (
+              <EmptyState
+                icon="📝"
+                title="No submissions yet"
+                description="Submit your first solution to see your history here."
+                actionLabel="Start solving"
+                actionHref="/problems"
+                compact
+              />
+            ) : (
+              <div className="space-y-3">
+                {recentSubmissions.map((submission) => (
+                  <div
+                    key={submission.id || submission.createdAt || Math.random()}
+                    className="flex justify-between items-center border-b border-zinc-800 pb-2 last:border-0"
+                  >
+                    <div>
+                      <p className="font-medium">{submission.problemTitle}</p>
+                      <p className="text-xs text-zinc-500">{submission.language}</p>
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={
+                          submission.status?.includes("Accepted")
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }
+                      >
+                        {submission.status}
+                      </p>
+                      <p className="text-xs text-zinc-500">{submission.date}</p>
+                    </div>
                   </div>
-                  <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">{item.time}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent submissions */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Submissions</h2>
-          {recentSubmissions.length === 0 ? (
-            <p className="text-zinc-500">No submissions yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {recentSubmissions.map((submission) => (
-                <div
-                  key={submission.id || submission.createdAt || Math.random()}
-                  className="flex justify-between items-center border-b border-zinc-800 pb-2 last:border-0"
-                >
-                  <div>
-                    <p className="font-medium">{submission.problemTitle}</p>
-                    <p className="text-xs text-zinc-500">{submission.language}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={submission.status?.includes("Accepted") ? "text-green-500" : "text-red-500"}>
-                      {submission.status}
-                    </p>
-                    <p className="text-xs text-zinc-500">{submission.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        </ContentSlot>
 
       </div>
     </DashboardLayout>
