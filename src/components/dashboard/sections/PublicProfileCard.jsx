@@ -1,5 +1,6 @@
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useTheme } from "../../../context/ThemeContext";
+import SectionCard from "../../ui/layout/SectionCard";
 
 function PublicProfileCard() {
   const { theme } = useTheme();
@@ -54,7 +55,7 @@ function PublicProfileCard() {
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+    <SectionCard>
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-zinc-400 text-sm">
@@ -151,7 +152,7 @@ function PublicProfileCard() {
           ))}
         </div>
       </div>
-    </div>
+    </SectionCard>
   );
 }
 

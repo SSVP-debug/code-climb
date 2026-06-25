@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "../../../services/api";
 import { useTheme } from "../../../context/ThemeContext";
+import SectionCard from "../../ui/layout/SectionCard";
+import EmptyState from "../../ui/feedback/EmptyState";
 
 // How long (ms) the Refresh button is disabled after a successful fetch
 const REFRESH_COOLDOWN = 2 * 60 * 1000; // 2 minutes
@@ -65,12 +67,10 @@ function AIInsightsSection() {
   );
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">{theme.words.aiInsights}</h2>
-
-        {(status === "success" || status === "error") && (
+    <SectionCard
+      title={theme.words.aiInsights}
+      action={
+        (status === "success" || status === "error") && (
           <button
             onClick={fetchInsights}
             disabled={!canRefresh || status === "loading"}
@@ -90,10 +90,13 @@ function AIInsightsSection() {
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            {!canRefresh && status === "success" ? `${secondsLeft}s` : "Refresh"}
+            {!canRefresh && status === "success"
+              ? `${secondsLeft}s`
+              : "Refresh"}
           </button>
-        )}
-      </div>
+        )
+      }
+    >
 
       {/* Loading */}
       {status === "loading" && (
@@ -107,11 +110,10 @@ function AIInsightsSection() {
 
       {/* Empty state — not enough data yet */}
       {status === "empty" && (
-        <div className="bg-zinc-800 rounded-xl p-5 text-center">
-          <p className="text-zinc-400 text-sm">
-            Solve a few problems first — your personalised insights will appear here.
-          </p>
-        </div>
+        <EmptyState
+          message="Solve a few problems first — your personalised insights will appear here."
+          compact
+        />
       )}
 
       {/* Error state */}
@@ -144,7 +146,7 @@ function AIInsightsSection() {
             value={insights.nextStep}
           />
           <InsightCard
-            label="Coach's note"
+            label={theme.words.coachNote}
             value={insights.encouragement}
           />
         </div>
@@ -156,7 +158,7 @@ function AIInsightsSection() {
           Powered by Claude
         </p>
       )}
-    </div>
+    </SectionCard>
   );
 }
 

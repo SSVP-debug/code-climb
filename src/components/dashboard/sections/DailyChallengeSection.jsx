@@ -7,11 +7,12 @@ import {
 } from "../../../utils/dailyChallenge";
 
 import { useTheme } from "../../../context/ThemeContext";
+import SectionCard from "../../ui/layout/SectionCard";
 
 function DailyChallengeSection() {
   const { theme } = useTheme();
 
-  const { words } = useTheme();
+  
 
   const challenge =
     getDailyChallenge();
@@ -32,7 +33,7 @@ function DailyChallengeSection() {
 
   return (
 
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+    <SectionCard>
 
       <div className="flex items-center justify-between mb-6">
 
@@ -89,7 +90,7 @@ function DailyChallengeSection() {
         </Link>
       )}
 
-    </div>
+    </SectionCard>
 
   );
 }
