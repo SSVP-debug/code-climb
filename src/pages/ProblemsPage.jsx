@@ -1,269 +1,146 @@
-import {
-  useMemo,
-  useState,
-} from "react";
+import { useMemo, useState } from "react";
 
 import { useTheme } from "../context/ThemeContext";
-
-import DashboardLayout from "../layouts/DashboardLayout";
-
-import ProblemCard from "../components/ProblemCard";
-
+import { useAppContext } from "../hooks/useAppContext";
 import { useProblems } from "../hooks/useProblems";
 
-import { useAppContext } from "../hooks/useAppContext";
+import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
+import ProblemsNavigation from "../components/problem/navigation/ProblemsNavigation";
+import LearningWorkspace from "../components/problem/learning/LearningWorkspace";
 
-import LearningWorkspace from "../components/learning/LearningWorkspace";
+import BrowseView from "../components/problem/browse/BrowseView";
+import PatternView from "../components/problem/patterns/PatternView";
+import PlaylistView from "../components/problem/playlists/PlaylistView";
+import SavedView from "../components/problem/saved/SavedView";
 
-import ContinueLearningCard from "../components/learning/ContinueLearningCard";
+// View registry — add Roadmaps, Company Tracks, Revision, AI Picks here only.
+const VIEWS = {
+  browse:    BrowseView,
+  patterns:  PatternView,
+  playlists: PlaylistView,
+  saved:     SavedView,
+};
 
-
-// ---------------------------------------------------------------------------
-// ProblemCardSkeleton
-// Mirrors ProblemCard's exact DOM structure + spacing so the grid never shifts
-// when real cards arrive.
-//   - bg-zinc-900 border border-zinc-800 rounded-2xl p-6  ← matches ProblemCard
-//   - Each placeholder div matches the approximate height of the real element
-// ---------------------------------------------------------------------------
-function ProblemCardSkeleton() {
-  return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 animate-pulse">
-
-      {/* Row 1: title + difficulty badge */}
-      <div className="flex items-center justify-between">
-        {/* Title placeholder — ~60% width, same line-height as text-2xl */}
-        <div className="h-7 w-3/5 bg-zinc-700 rounded-lg" />
-        {/* Badge placeholder */}
-        <div className="h-5 w-14 bg-zinc-700 rounded-md" />
-      </div>
-
-      {/* Row 2: "Topic: …" line — mt-4 matches ProblemCard */}
-      <div className="mt-4 h-4 w-2/5 bg-zinc-800 rounded-md" />
-
-      {/* Row 3: button — mt-6 px-5 py-3 rounded-xl matches ProblemCard */}
-      <div className="mt-6 h-11 w-32 bg-zinc-700 rounded-xl" />
-
-    </div>
-  );
-}
-
-// How many skeleton cards to show while loading.
-// 6 fills a typical viewport on both desktop (3 rows × 2 cols) and mobile.
-const SKELETON_COUNT = 8;
-
-// ---------------------------------------------------------------------------
-// ProblemsPage
-// ---------------------------------------------------------------------------
 function ProblemsPage() {
   const { theme } = useTheme();
-  const {
-    problems,
-    loading,
-    error,
-  } = useProblems();
-
-  const [
-    selectedDifficulty,
-    setSelectedDifficulty,
-  ] = useState("All");
-
-  const [
-    searchTerm,
-    setSearchTerm,
-  ] = useState("");
-
-  const [
-    selectedTopic,
-    setSelectedTopic,
-  ] = useState("All");
-
+  const { problems, loading, error } = useProblems();
   const { solvedProblems } = useAppContext();
+
+  const [activeView, setActiveView] = useState("browse");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+  const [selectedTopic, setSelectedTopic] = useState("All");
 
   const solvedCount = solvedProblems.length;
 
   const progress =
     problems.length > 0
-      ? Math.round(
-        (solvedCount / problems.length) * 100
-      )
+      ? Math.round((solvedCount / problems.length) * 100)
       : 0;
 
-  // Derived values — hooks must all run before any early return
   const topics = useMemo(() => {
     const unique = [
-      ...new Set(
-        problems
-          .map((p) => p.topic)
-          .filter(Boolean)
-      ),
+      ...new Set(problems.map((p) => p.topic).filter(Boolean)),
     ];
-
-    return [
-      "All",
-      ...unique.sort(),
-    ];
+    return ["All", ...unique.sort()];
   }, [problems]);
 
   const filtered = useMemo(() => {
-    return problems.filter(
-      (problem) => {
-        const matchesDifficulty =
-          selectedDifficulty === "All" ||
-          problem.difficulty === selectedDifficulty;
-
-        const matchesTopic =
-          selectedTopic === "All" ||
-          problem.topic === selectedTopic;
-
-        const matchesSearch =
-          problem.title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-
-        return matchesDifficulty && matchesTopic && matchesSearch;
-      }
-    );
+    return problems.filter((problem) => {
+      const matchesDifficulty =
+        selectedDifficulty === "All" ||
+        problem.difficulty === selectedDifficulty;
+      const matchesTopic =
+        selectedTopic === "All" || problem.topic === selectedTopic;
+      const matchesSearch = problem.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return matchesDifficulty && matchesTopic && matchesSearch;
+    });
   }, [problems, selectedDifficulty, selectedTopic, searchTerm]);
 
-  // -------------------------------------------------------------------------
-  // Render
-  // The page shell (header, search, filters) is ALWAYS rendered so there is
-  // zero layout shift when loading resolves. Only the grid body changes.
-  // -------------------------------------------------------------------------
+  const ActiveView = VIEWS[activeView] ?? null;
+
+  const browseProps =
+    activeView === "browse"
+      ? {
+          loading,
+          error,
+          filtered,
+          topics,
+          selectedTopic,
+          setSelectedTopic,
+          selectedDifficulty,
+          setSelectedDifficulty,
+          searchTerm,
+          setSearchTerm,
+        }
+      : {};
+
   return (
-    <DashboardLayout>
-      <div>
+    <div className="h-screen flex flex-col bg-black text-white overflow-hidden">
 
-        {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div className="flex items-end justify-between mb-5">
+      {/* Slim topbar — replaces global Navbar */}
+      <ProblemsTopbar
+        totalProblems={problems.length}
+        solvedCount={solvedCount}
+        progress={progress}
+      />
 
-          <div>
-            <h1 className="text-4xl font-bold">
-              {theme.words.problems}
-            </h1>
+      {/* 3-column body */}
+      <div className="flex flex-1 min-h-0">
 
-            <p className="text-zinc-400 mt-1">
-              {theme.description}
+        {/* ── LEFT: workspace nav ── */}
+        <aside
+          className="w-56 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
+          <div className="p-3 pt-4">
+            <p className="text-[10px] uppercase tracking-widest text-zinc-600 px-3 mb-3">
+              Workspace
             </p>
+            <ProblemsNavigation
+              activeView={activeView}
+              setActiveView={setActiveView}
+            />
           </div>
+        </aside>
 
-          <div className="text-right">
-            <p className="text-lg font-semibold">
-              {problems.length} Vaults
-            </p>
+        {/* ── CENTER: only this column scrolls ── */}
+        <main
+          className="flex-1 min-w-0 bg-black overflow-y-auto"
+          style={{ scrollbarWidth: "thin", scrollbarColor: "#3f3f46 transparent" }}
+        >
+          <div className="px-7 py-6 max-w-4xl">
 
-            <p className="text-sm text-zinc-500">
-              {solvedCount} Cleared • {progress}%
-            </p>
+            {/* Page header — tighter than before */}
+            <div className="mb-5">
+              <h1 className="text-2xl font-bold tracking-tight">
+                {theme.words.problems}
+              </h1>
+              <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
+            </div>
+
+            {ActiveView && <ActiveView {...browseProps} />}
+
           </div>
+        </main>
 
-        </div>
-
-
-        {/* ── Search ─────────────────────────────────────────────────────── */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder={theme.words.searchProblems}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-[520px] bg-zinc-900 border border-zinc-800 px-4 py-2.5 rounded-xl outline-none focus:border-green-500 transition"
+        {/* ── RIGHT: learning hub ── */}
+        <aside
+          className="w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
+          <LearningWorkspace
+            problems={problems}
+            solvedCount={solvedCount}
+            progress={progress}
           />
-        </div>
-
-        {/* ── Topic Filters ───────────────────────────────────────────────── */}
-        {/* While loading, topics is [] so this section collapses naturally.  */}
-        {topics.length > 0 && (
-          <div className="flex gap-4 mb-5 flex-wrap">
-            {topics.map((topic) => (
-              <button
-                key={topic}
-                onClick={() => setSelectedTopic(topic)}
-                className={`px-4 py-2 rounded-xl transition font-semibold ${selectedTopic === topic
-                  ? "bg-blue-500 text-white"
-                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-blue-500"
-                  }`}
-              >
-                {topic}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Difficulty Filters ──────────────────────────────────────────── */}
-        <div className="flex gap-4 mb-5 flex-wrap">
-          {[
-            { value: "All", label: theme.words.all },
-            { value: "Easy", label: theme.words.easy },
-            { value: "Medium", label: theme.words.medium },
-            { value: "Hard", label: theme.words.hard },
-          ].map((level) => (
-            <button
-              key={level.value}
-              onClick={() => setSelectedDifficulty(level.value)}
-              className={`px-4 py-2 rounded-xl transition font-semibold ${selectedDifficulty === level.value
-                ? "bg-green-500 text-black"
-                : "bg-zinc-900 border border-zinc-800 text-white hover:border-green-500"
-                }`}
-            >
-              {level.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ── Results Count ───────────────────────────────────────────────── */}
-        {/* Hidden while loading — avoids a "0 problems found" flash */}
-
-
-        {/* ── Error Banner (non-blocking) ─────────────────────────────────── */}
-        {error && (
-          <div className="mb-4 text-amber-400 text-sm bg-amber-400/10 border border-amber-400/20 rounded-xl px-4 py-3">
-            {error}
-          </div>
-        )}
-
-        {/* ── Grid body ───────────────────────────────────────────────────── */}
-        {loading ? (
-          /* Skeleton — same 2-col grid as the real cards */
-          <div className="flex flex-col gap-3"
-            aria-busy={loading}>
-            {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-              <ProblemCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : filtered.length > 0 ? (
-          /* Real cards — fade in so the skeleton→data switch feels smooth */
-          <div className="flex flex-col gap-3 animate-fadeIn"
-            aria-busy={loading}>
-            {filtered.map((problem) => (
-              <ProblemCard
-                key={problem.id}
-                problem={problem}
-              />
-            ))}
-          </div>
-        ) : (
-          /* Empty state */
-          <div className="text-center py-16 text-zinc-500">
-            <p className="text-lg">
-              {theme.words.noProblemsFound}
-            </p>
-
-            <button
-              onClick={() => {
-                setSelectedDifficulty("All");
-                setSelectedTopic("All");
-                setSearchTerm("");
-              }}
-              className="mt-4 text-green-500 hover:underline text-sm"
-            >
-              {theme.words.clearFilters}
-            </button>
-          </div>
-        )}
+        </aside>
 
       </div>
-    </DashboardLayout>
+
+    </div>
   );
 }
 
