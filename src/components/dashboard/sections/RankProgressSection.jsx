@@ -14,7 +14,7 @@ function RankProgressSection() {
     currentStreak,
   } = useAppContext();
 
-  
+
 
   const level = getLevel(totalXP);
 
@@ -24,16 +24,26 @@ function RankProgressSection() {
   const xpRemaining =
     getXPForNextLevel(totalXP);
 
-  function getRank() {
-    if (level < 3) return "Beginner";
-    if (level < 5) return "Learner";
-    if (level < 10) return "Intermediate";
-    if (level < 20) return "Advanced";
+  const RANKS = [
+    "Beginner",
+    "Learner",
+    "Intermediate",
+    "Advanced",
+    "Expert",
+  ];
 
-    return "Expert";
-  }
+  const rank =
+    level < 3
+      ? RANKS[0]
+      : level < 5
+        ? RANKS[1]
+        : level < 10
+          ? RANKS[2]
+          : level < 20
+            ? RANKS[3]
+            : RANKS[4];
 
-  const rank = getRank();
+
 
 
   return (
@@ -63,23 +73,30 @@ function RankProgressSection() {
           <p className="text-zinc-400 text-sm mt-1">
             {totalXP} XP
           </p>
+          <p className="text-xs text-green-400 mt-1">
+            {progress.toFixed(0)}% to Level {level + 1}
+          </p>
         </div>
 
       </div>
 
       <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
         <div
-          className="bg-green-500 h-full transition-all duration-500"
+          className="bg-green-500 h-full rounded-full transition-all duration-700"
           style={{
             width: `${progress}%`,
           }}
         />
       </div>
 
+      <p className="text-xs text-zinc-500 mt-2">
+        Keep solving problems to reach the next level.
+      </p>
+
       <div className="flex justify-between mt-3 text-sm">
 
         <p className="text-zinc-400">
-          {xpRemaining} XP until Level {level + 1}
+          {xpRemaining} XP to Level {level + 1}
         </p>
 
         <p className="text-orange-400">

@@ -2,13 +2,13 @@ import RankProgressSection from "./sections/RankProgressSection";
 
 import DailyChallengeSection from "./sections/DailyChallengeSection";
 
-import AdvancedStatsSection from "./sections/AdvancedStatsSection";
+import WelcomeBanner from "./sections/WelcomeBanner";
 
-import AIInsightsSection from "./sections/AIInsightsSection";
+import ContinueLearningSection from "./sections/ContinueLearningSection";
 
-import AchievementGallery from "./sections/AchievementGallery";
+import WeeklyGoalSection from "./sections/WeeklyGoalSection";
 
-import PublicProfileCard from "./sections/PublicProfileCard";
+import RecentAchievementCard from "./sections/RecentAchievementCard";
 
 function DashboardSections() {
 
@@ -16,17 +16,23 @@ function DashboardSections() {
 
     <div className="space-y-8">
 
+      <WelcomeBanner />
+
       <RankProgressSection />
+
+      <WeeklyGoalSection />
 
       <DailyChallengeSection />
 
-      <AdvancedStatsSection />
+      <ContinueLearningSection />
 
-      <AIInsightsSection />
+     {/* <AdvancedStatsSection /> */}
 
-      <AchievementGallery />
+      {/*<AIInsightsSection />*/}
 
-      <PublicProfileCard />
+      <RecentAchievementCard />
+
+      {/*<PublicProfileCard />*/}
 
     </div>
 

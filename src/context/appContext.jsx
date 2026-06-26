@@ -113,6 +113,8 @@ function AppContextProvider({ children }) {
     setNewAchievements,
   ] = useState([]);
 
+  const [weeklySolved, setWeeklySolved] = useState(0);
+
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
   // --------------------------------------------------
@@ -141,6 +143,17 @@ function AppContextProvider({ children }) {
         setActivityDates(
           progress.activityDates || []
         );
+
+        const today = new Date();
+
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - 6);
+
+        const solvedThisWeek = (progress.activityDates || []).filter((date) => {
+          return new Date(date) >= weekStart;
+        }).length;
+
+        setWeeklySolved(solvedThisWeek);
 
         setSolvedDifficulty(
           progress.solvedDifficulty || {
@@ -182,7 +195,7 @@ function AppContextProvider({ children }) {
           progress.totalXP || 0
         );
 
-        
+
       } catch (err) {
         console.error(
           "[AppContext] Hydration failed:",
@@ -229,7 +242,7 @@ function AppContextProvider({ children }) {
           "",
       });
 
-      
+
     } catch (err) {
       console.error(
         "[AppContext] Submission save failed:",
@@ -271,6 +284,8 @@ function AppContextProvider({ children }) {
       activityDates.includes(today)
         ? activityDates
         : [...activityDates, today];
+
+
 
     const difficultyKey =
       difficulty.toLowerCase();
@@ -334,11 +349,15 @@ function AppContextProvider({ children }) {
 
     setLastActivityDate(today);
 
+    if (!activityDates.includes(today)) {
+      setWeeklySolved((prev) => prev + 1);
+    }
+
     const earnedXP = getEarnedXP(difficulty);
     const nextTotalXP =
       totalXP + earnedXP;
 
-    
+
 
     const persistPayload = {
       solvedSlugs:
@@ -359,7 +378,7 @@ function AppContextProvider({ children }) {
         nextRecentActivity,
     };
 
-    
+
 
     // MongoDB
 
@@ -401,10 +420,10 @@ function AppContextProvider({ children }) {
           nextTotalXP
         );
 
-        
+
       }
 
-      
+
     } catch (err) {
       console.error(
         "[AppContext] Progress save failed:",
@@ -435,6 +454,8 @@ function AppContextProvider({ children }) {
     currentStreak,
     longestStreak,
     lastActivityDate,
+    weeklySolved,
+    weeklyGoal: 10,
     submissions,
     totalXP,
     addSubmission,
