@@ -11,6 +11,13 @@ import ProblemCard from "../components/ProblemCard";
 
 import { useProblems } from "../hooks/useProblems";
 
+import { useAppContext } from "../hooks/useAppContext";
+
+import LearningWorkspace from "../components/learning/LearningWorkspace";
+
+import ContinueLearningCard from "../components/learning/ContinueLearningCard";
+
+
 // ---------------------------------------------------------------------------
 // ProblemCardSkeleton
 // Mirrors ProblemCard's exact DOM structure + spacing so the grid never shifts
@@ -70,6 +77,17 @@ function ProblemsPage() {
     setSelectedTopic,
   ] = useState("All");
 
+  const { solvedProblems } = useAppContext();
+
+  const solvedCount = solvedProblems.length;
+
+  const progress =
+    problems.length > 0
+      ? Math.round(
+        (solvedCount / problems.length) * 100
+      )
+      : 0;
+
   // Derived values — hooks must all run before any early return
   const topics = useMemo(() => {
     const unique = [
@@ -117,38 +135,53 @@ function ProblemsPage() {
       <div>
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold">
-            {theme.words.problems}
-          </h1>
+        <div className="flex items-end justify-between mb-5">
 
-          <p className="text-zinc-400 mt-2">
-            {theme.description}
-          </p>
+          <div>
+            <h1 className="text-4xl font-bold">
+              {theme.words.problems}
+            </h1>
+
+            <p className="text-zinc-400 mt-1">
+              {theme.description}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p className="text-lg font-semibold">
+              {problems.length} Vaults
+            </p>
+
+            <p className="text-sm text-zinc-500">
+              {solvedCount} Cleared • {progress}%
+            </p>
+          </div>
+
         </div>
 
+
         {/* ── Search ─────────────────────────────────────────────────────── */}
-        <div className="mb-8">
+        <div className="mb-4">
           <input
             type="text"
             placeholder={theme.words.searchProblems}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-[400px] bg-zinc-900 border border-zinc-800 px-5 py-3 rounded-xl outline-none focus:border-green-500 transition"
+            className="w-full md:w-[520px] bg-zinc-900 border border-zinc-800 px-4 py-2.5 rounded-xl outline-none focus:border-green-500 transition"
           />
         </div>
 
         {/* ── Topic Filters ───────────────────────────────────────────────── */}
         {/* While loading, topics is [] so this section collapses naturally.  */}
         {topics.length > 0 && (
-          <div className="flex gap-4 mb-8 flex-wrap">
+          <div className="flex gap-4 mb-5 flex-wrap">
             {topics.map((topic) => (
               <button
                 key={topic}
                 onClick={() => setSelectedTopic(topic)}
-                className={`px-5 py-2 rounded-xl transition font-semibold ${selectedTopic === topic
-                    ? "bg-blue-500 text-white"
-                    : "bg-zinc-900 border border-zinc-800 text-white hover:border-blue-500"
+                className={`px-4 py-2 rounded-xl transition font-semibold ${selectedTopic === topic
+                  ? "bg-blue-500 text-white"
+                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-blue-500"
                   }`}
               >
                 {topic}
@@ -158,7 +191,7 @@ function ProblemsPage() {
         )}
 
         {/* ── Difficulty Filters ──────────────────────────────────────────── */}
-        <div className="flex gap-4 mb-8 flex-wrap">
+        <div className="flex gap-4 mb-5 flex-wrap">
           {[
             { value: "All", label: theme.words.all },
             { value: "Easy", label: theme.words.easy },
@@ -168,9 +201,9 @@ function ProblemsPage() {
             <button
               key={level.value}
               onClick={() => setSelectedDifficulty(level.value)}
-              className={`px-5 py-2 rounded-xl transition font-semibold ${selectedDifficulty === level.value
-                  ? "bg-green-500 text-black"
-                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-green-500"
+              className={`px-4 py-2 rounded-xl transition font-semibold ${selectedDifficulty === level.value
+                ? "bg-green-500 text-black"
+                : "bg-zinc-900 border border-zinc-800 text-white hover:border-green-500"
                 }`}
             >
               {level.label}
@@ -180,18 +213,11 @@ function ProblemsPage() {
 
         {/* ── Results Count ───────────────────────────────────────────────── */}
         {/* Hidden while loading — avoids a "0 problems found" flash */}
-        {!loading && (
-          <p className="text-zinc-500 text-sm mb-6">
-            {filtered.length}{" "}
-            {filtered.length === 1
-              ? theme.words.problemFound
-              : theme.words.problemsFound}
-          </p>
-        )}
+
 
         {/* ── Error Banner (non-blocking) ─────────────────────────────────── */}
         {error && (
-          <div className="mb-6 text-amber-400 text-sm bg-amber-400/10 border border-amber-400/20 rounded-xl px-4 py-3">
+          <div className="mb-4 text-amber-400 text-sm bg-amber-400/10 border border-amber-400/20 rounded-xl px-4 py-3">
             {error}
           </div>
         )}
@@ -199,7 +225,7 @@ function ProblemsPage() {
         {/* ── Grid body ───────────────────────────────────────────────────── */}
         {loading ? (
           /* Skeleton — same 2-col grid as the real cards */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          <div className="flex flex-col gap-3"
             aria-busy={loading}>
             {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
               <ProblemCardSkeleton key={i} />
@@ -207,15 +233,12 @@ function ProblemsPage() {
           </div>
         ) : filtered.length > 0 ? (
           /* Real cards — fade in so the skeleton→data switch feels smooth */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fadeIn"
+          <div className="flex flex-col gap-3 animate-fadeIn"
             aria-busy={loading}>
             {filtered.map((problem) => (
               <ProblemCard
                 key={problem.id}
-                title={problem.title}
-                slug={problem.slug}
-                difficulty={problem.difficulty}
-                topic={problem.topic}
+                problem={problem}
               />
             ))}
           </div>
