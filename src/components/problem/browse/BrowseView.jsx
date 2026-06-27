@@ -12,6 +12,8 @@ function BrowseView({
   setSelectedDifficulty,
   searchTerm,
   setSearchTerm,
+  hideSolved,
+  toggleHideSolved,
 }) {
   return (
     <>
@@ -23,6 +25,8 @@ function BrowseView({
         setSelectedDifficulty={setSelectedDifficulty}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        hideSolved={hideSolved}
+        toggleHideSolved={toggleHideSolved}
       />
 
       {/* Error banner */}

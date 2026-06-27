@@ -8,7 +8,10 @@ if (process.env.SENTRY_DSN) {
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || "development",
     // Capture 100% of transactions in dev, 10% in prod (adjust as traffic grows)
-    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 0.3,
+    tracesSampleRate:
+      process.env.NODE_ENV === "production"
+        ? 0.1
+        : 1.0,
   });
 } else {
   console.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
@@ -33,6 +36,7 @@ import { requireAuth } from "./middleware/auth.js";
 import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter.js";
 import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
+import initRoutes from "./routes/init.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -104,7 +108,12 @@ app.use(
   "/api/public",
   publicProfileRoutes
 );
-
+app.use(
+  "/api/init",
+  requireAuth,
+  apiLimiter,
+  initRoutes
+);
 // ─── 404 handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
@@ -151,21 +160,36 @@ async function start() {
   // Graceful shutdown — Railway sends SIGTERM before restarting containers.
   // Without this, in-flight Judge0 requests are killed mid-execution.
   process.on("SIGTERM", () => {
+    console.log("[SIGTERM] Shutting down server...");
 
     server.close(() => {
-
+      console.log("[SIGTERM] Server closed.");
       process.exit(0);
     });
   });
 
   process.on("SIGINT", () => {
+    console.log("[SIGINT] Shutting down server...");
+
+    server.close(() => {
+      console.log("[SIGINT] Server closed.");
+      process.exit(0);
+    });
+  });
+
+  process.on("SIGUSR2", () => {
     server.close(() => process.exit(0));
   });
 }
 
 // Global process-level error handlers
 process.on("unhandledRejection", (reason) => {
-  console.error("[Unhandled Rejection]", reason);
+  console.error(
+    "[Unhandled Rejection]",
+    reason instanceof Error
+      ? reason.stack
+      : reason
+  );
 
   if (process.env.SENTRY_DSN) {
     Sentry.captureException(
@@ -177,7 +201,10 @@ process.on("unhandledRejection", (reason) => {
 });
 
 process.on("uncaughtException", (err) => {
-  console.error("[Uncaught Exception]", err);
+  console.error(
+    "[Uncaught Exception]",
+    err.stack
+  );
 
   if (process.env.SENTRY_DSN) {
     Sentry.captureException(err);

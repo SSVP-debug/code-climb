@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
@@ -15,10 +19,10 @@ import SavedView from "../components/problem/saved/SavedView";
 
 // View registry — add Roadmaps, Company Tracks, Revision, AI Picks here only.
 const VIEWS = {
-  browse:    BrowseView,
-  patterns:  PatternView,
+  browse: BrowseView,
+  patterns: PatternView,
   playlists: PlaylistView,
-  saved:     SavedView,
+  saved: SavedView,
 };
 
 function ProblemsPage() {
@@ -26,23 +30,114 @@ function ProblemsPage() {
   const { problems, loading, error } = useProblems();
   const { solvedProblems } = useAppContext();
 
-  const [activeView, setActiveView] = useState("browse");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
-  const [selectedTopic, setSelectedTopic] = useState("All");
+  const [activeView, setActiveView] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_activeView") || "browse";
+    } catch {
+      return "browse";
+    }
+  });
+
+  const [searchTerm, setSearchTerm] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_search") || "";
+    } catch {
+      return "";
+    }
+  });
+
+  const [selectedDifficulty, setSelectedDifficulty] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_difficulty") || "All";
+    } catch {
+      return "All";
+    }
+  });
+
+  const [selectedTopic, setSelectedTopic] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_topic") || "All";
+    } catch {
+      return "All";
+    }
+  });
+
+  const [hideSolved, setHideSolved] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_hideSolved") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("cc_activeView", activeView);
+    } catch { }
+  }, [activeView]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("cc_search", searchTerm);
+    } catch { }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        "cc_difficulty",
+        selectedDifficulty
+      );
+    } catch { }
+  }, [selectedDifficulty]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        "cc_topic",
+        selectedTopic
+      );
+    } catch { }
+  }, [selectedTopic]);
+
+  function toggleHideSolved() {
+    setHideSolved((prev) => {
+      const next = !prev;
+
+      try {
+        sessionStorage.setItem(
+          "cc_hideSolved",
+          String(next)
+        );
+      } catch { }
+
+      return next;
+    });
+  }
 
   const solvedCount = solvedProblems.length;
 
   const progress =
     problems.length > 0
-      ? Math.round((solvedCount / problems.length) * 100)
+      ? Math.round(
+        (solvedCount / problems.length) * 100
+      )
       : 0;
+
 
   const topics = useMemo(() => {
     const unique = [
-      ...new Set(problems.map((p) => p.topic).filter(Boolean)),
+      ...new Set(
+        problems.map((p) => p.topic).filter(Boolean)
+      ),
     ];
-    return ["All", ...unique.sort()];
+
+    return [
+      "All",
+      ...unique.sort((a, b) =>
+        a.localeCompare(b)
+      ),
+    ];
   }, [problems]);
 
   const filtered = useMemo(() => {
@@ -50,31 +145,53 @@ function ProblemsPage() {
       const matchesDifficulty =
         selectedDifficulty === "All" ||
         problem.difficulty === selectedDifficulty;
+
       const matchesTopic =
-        selectedTopic === "All" || problem.topic === selectedTopic;
+        selectedTopic === "All" ||
+        problem.topic === selectedTopic;
+
       const matchesSearch = problem.title
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-      return matchesDifficulty && matchesTopic && matchesSearch;
+
+      const matchesSolved =
+        !hideSolved ||
+        !solvedProblems.includes(problem.slug);
+
+      return (
+        matchesDifficulty &&
+        matchesTopic &&
+        matchesSearch &&
+        matchesSolved
+      );
     });
-  }, [problems, selectedDifficulty, selectedTopic, searchTerm]);
+  }, [
+    problems,
+    selectedDifficulty,
+    selectedTopic,
+    searchTerm,
+    hideSolved,
+    solvedProblems,
+  ]);
 
   const ActiveView = VIEWS[activeView] ?? null;
 
   const browseProps =
     activeView === "browse"
       ? {
-          loading,
-          error,
-          filtered,
-          topics,
-          selectedTopic,
-          setSelectedTopic,
-          selectedDifficulty,
-          setSelectedDifficulty,
-          searchTerm,
-          setSearchTerm,
-        }
+        loading,
+        error,
+        filtered,
+        topics,
+        selectedTopic,
+        setSelectedTopic,
+        selectedDifficulty,
+        setSelectedDifficulty,
+        searchTerm,
+        setSearchTerm,
+        hideSolved,
+        toggleHideSolved,
+      }
       : {};
 
   return (
@@ -119,6 +236,9 @@ function ProblemsPage() {
                 {theme.words.problems}
               </h1>
               <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
+              <p className="text-xs text-zinc-600 mt-2">
+                Showing {filtered.length} of {problems.length} problems
+              </p>
             </div>
 
             {ActiveView && <ActiveView {...browseProps} />}

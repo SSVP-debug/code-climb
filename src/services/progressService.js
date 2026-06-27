@@ -55,13 +55,15 @@ export async function markProblemSolved(currentProgress, problemSlug, difficulty
   // ← FIX D: pass recentActivity through
   const recentActivity = currentProgress.recentActivity || [];
 
+  // NOTE: totalXP is intentionally NOT included.
+  // The backend computes XP server-side from solvedSlugs × difficulty weights.
+  // Sending it from the client would be ignored and is a security risk.
   const requestBody = {
     solvedSlugs,
     activityDates,
     solvedDifficulty,
     topicStats,
     recentActivity,
-    totalXP: currentProgress.totalXP,
   };
 
   

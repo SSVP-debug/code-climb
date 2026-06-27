@@ -1,33 +1,76 @@
-import React, { useState } from "react";
+import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "../../context/ThemeContext";
 
-function ProblemEditor(
-  {
-    language,
-    setLanguage,
-    code,
-    setCode,
-    customInput,
-    setCustomInput,
-    onRun,
-    onSubmit,
-    running,
-    submitting,
-  }) {
+function ProblemEditor({
+  language,
+  setLanguage,
+  code,
+  setCode,
+  customInput,
+  setCustomInput,
+  onRun,
+  onSubmit,
+  running,
+  submitting,
+}) {
   const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
   const { theme } = useTheme();
+  const editorRef = useRef(null);
+
+  /**
+   * Called once when Monaco mounts.
+   * Registers keyboard shortcuts:
+   *   Ctrl+Enter (Mac: Cmd+Enter)        → Run code
+   *   Ctrl+Shift+Enter (Mac: Cmd+Shift+Enter) → Submit code
+   *
+   * These are the de-facto standard shortcuts for any coding platform.
+   * Their absence signals an unfinished product to experienced developers.
+   */
+  function handleEditorMount(editor, monaco) {
+    editorRef.current = editor;
+
+    // ── Ctrl+Enter → Run ────────────────────────────────────────────────────
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+      () => {
+        if (!running && !submitting) onRun();
+      }
+    );
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd |
+      monaco.KeyCode.KeyS,
+      () => {
+        saveCode(slug, language, code);
+      }
+    );
+    editor.addCommand(
+      monaco.KeyCode.Escape,
+      () => {
+        setShowAdvancedTesting(false);
+      }
+    );
+
+    // ── Ctrl+Shift+Enter → Submit ───────────────────────────────────────────
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Enter,
+      () => {
+        if (!running && !submitting) onSubmit();
+      }
+    );
+  }
+
   return (
     <div className="
-  flex flex-col
-  h-full
-  bg-zinc-900
-  border border-zinc-800
-  rounded-2xl
-  overflow-hidden
-  shadow-xl
-">
-      {/* Editor Header */}
+      flex flex-col
+      h-full
+      bg-zinc-900
+      border border-zinc-800
+      rounded-2xl
+      overflow-hidden
+      shadow-xl
+    ">
+      {/* ── Editor Header ────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
 
         <div className="flex items-center gap-2">
@@ -48,14 +91,23 @@ function ProblemEditor(
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Keyboard shortcut hints — visible to power users, unobtrusive */}
+          <span className="text-xs text-zinc-600 hidden sm:block select-none">
+            <kbd className="font-mono">{navigator.platform.includes("Mac")
+              ? "⌘+↵"
+              : "Ctrl+↵"}</kbd> Run &nbsp;·&nbsp;
+            <kbd className="font-mono">{navigator.platform.includes("Mac")
+              ? "⌘+⇧+↵"
+              : "Ctrl+⇧+↵"}</kbd> Submit
+          </span>
+
           <button
             onClick={onRun}
             disabled={running || submitting}
             className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50"
+            title="Run code (Ctrl+Enter)"
           >
-            {running
-              ? theme.words.running
-              : theme.words.run}
+            {running ? theme.words.running : theme.words.run}
           </button>
 
           <button
@@ -65,23 +117,23 @@ function ProblemEditor(
               ? "bg-green-500/20 text-green-500 border border-green-500/30"
               : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
               }`}
+            title="Submit solution (Ctrl+Shift+Enter)"
           >
-            {submitting
-              ? theme.words.submitting
-              : theme.words.submit}
+            {submitting ? theme.words.submitting : theme.words.submit}
           </button>
         </div>
-
       </div>
 
-      {/* Editor Content */}
+      {/* ── Editor Content ───────────────────────────────────────────────── */}
       <div className="flex-grow min-h-[400px]">
         <Editor
           height="100%"
-          language={language === "cpp" ? "cpp" : language === "python" ? "python" : language}
+          language={language}
           value={code}
           onChange={(value) => setCode(value || "")}
           theme="vs-dark"
+          onMount={handleEditorMount}
+          saveViewState={true}
           options={{
             fontSize: 14,
             minimap: { enabled: false },
@@ -89,12 +141,37 @@ function ProblemEditor(
             scrollBeyondLastLine: false,
             automaticLayout: true,
             tabSize: language === "javascript" ? 2 : 4,
+            // Accessibility
+            accessibilitySupport: "auto",
+            wordWrap: "on",
+            occurrencesHighlight: "off",
+            selectionHighlight: false,
+            // Performance
+            renderWhitespace: "none",
+            smoothScrolling: true,
+            guides: {
+              bracketPairs: true,
+            },
+            bracketPairColorization: {
+              enabled: true,
+            },
+            fontFamily:
+              "'JetBrains Mono', 'Fira Code', monospace",
+            fontLigatures: true,
+            cursorBlinking: "smooth",
+            cursorSmoothCaretAnimation: "on",
+            renderLineHighlight: "all",
+            mouseWheelZoom: true,
+            scrollbar: {
+              verticalScrollbarSize: 10,
+              horizontalScrollbarSize: 10,
+            },
           }}
         />
       </div>
 
-      {/* Editor Footer / Controls */}
-      <div className="mb-2">
+      {/* ── Advanced Testing Footer ──────────────────────────────────────── */}
+      <div className="mb-2 px-4">
         <button
           type="button"
           onClick={() => setShowAdvancedTesting(!showAdvancedTesting)}
@@ -106,7 +183,7 @@ function ProblemEditor(
       </div>
 
       {showAdvancedTesting && (
-        <div className="mb-4">
+        <div className="mb-4 px-4">
           <label
             htmlFor="custom-input"
             className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
@@ -124,8 +201,6 @@ function ProblemEditor(
           />
         </div>
       )}
-
-
     </div>
   );
 }

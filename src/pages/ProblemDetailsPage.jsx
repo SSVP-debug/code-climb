@@ -3,13 +3,13 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import SubmissionResultBanner from "../components/workspace/SubmissionResultBanner";
 import { formatDate } from "../utils/formatters";
 import { getDailyChallenge, } from "../utils/dailyChallenge";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProblemLayout from "../layouts/ProblemLayout";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import { completeDailyChallenge, } from "../services/dailyChallengeService";
-import problems from "../data/problems";
+import { apiFetch } from "../services/api";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePanelResize } from "../hooks/usePanelResize";
 import { useVerticalResize } from "../hooks/useVerticalResize";
@@ -77,30 +77,137 @@ function MobileTabBar({ active, onChange, hasResults }) {
   );
 }
 
+const ProblemLoader = () => (
+  <DashboardLayout>
+    ...
+  </DashboardLayout>
+);
+
+
 // ── ProblemDetailsPage ────────────────────────────────────────────────────────
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
-  const problem = useMemo(() => problems.find((p) => p.slug === slug), [slug]);
-  const problemIndex = useMemo(() => problems.findIndex((p) => p.slug === slug), [slug]);
-  const prevSlug = problemIndex > 0 ? problems[problemIndex - 1].slug : null;
-  const nextSlug = problemIndex < problems.length - 1 ? problems[problemIndex + 1].slug : null;
 
-  if (!problem) {
+  // ── Problem data — fetched from API (not local file) ───────────────────
+  // This ensures newly seeded problems appear without a frontend redeploy.
+  const [problem, setProblem] = useState(null);
+  const [problemLoading, setProblemLoading] = useState(true);
+  const [problemError, setProblemError] = useState(null);
+  const [adjacentSlugs, setAdjacentSlugs] = useState({ prev: null, next: null });
+  const [loadedSlug, setLoadedSlug] =
+    useState(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+
+    async function fetchProblem() {
+      try {
+        setProblem(null);
+        setAdjacentSlugs({
+          prev: null,
+          next: null,
+        });
+
+        setProblemLoading(true);
+        setProblemError(null);
+
+        // Fetch current problem + sibling slugs for prev/next navigation
+        const data = await apiFetch(`/api/problems/${slug}`);
+
+        setProblem(data.problem);
+        setAdjacentSlugs({
+          prev: data.prevSlug,
+          next: data.nextSlug,
+        });
+        if (loadedSlug === slug) return;
+        setLoadedSlug(slug);
+
+        window.scrollTo({
+          top: 0,
+          behavior: "instant",
+        });
+
+        try {
+          const allProblems = await apiFetch(
+            "/api/problems"
+          );
+
+
+        } catch {
+          setAdjacentSlugs({
+            prev: null,
+            next: null,
+          });
+        }
+
+        if (cancelled) return;
+
+      } catch (err) {
+        if (cancelled) return;
+        setProblemError(err.message || "Failed to load problem.");
+      } finally {
+        if (!cancelled) setProblemLoading(false);
+      }
+    }
+
+    fetchProblem();
+    return () => {
+      cancelled = true;
+      setProblem(null);
+    };
+  }, [slug]);
+
+  const prevSlug = adjacentSlugs.prev;
+  const nextSlug = adjacentSlugs.next;
+
+  useEffect(() => {
+    if (nextSlug) {
+      import("./ProblemDetailsPage");
+    }
+  }, [nextSlug]);
+
+  // ── Loading state ───────────────────────────────────────────────────────
+  if (problemLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-[70vh]">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-zinc-500 text-sm">
+              Loading {slug}...
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (problemError || !problem) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Problem Not Found</h2>
             <p className="text-zinc-500 mb-6">
-              The problem you're looking for doesn't exist or has been moved.
+              {problemError || "The problem you're looking for doesn't exist or has been moved."}
             </p>
-            <button
-              onClick={() => window.history.back()}
-              className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors"
-            >
-              Go Back
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl"
+              >
+                Retry
+              </button>
+
+              <button
+                onClick={() => window.history.back()}
+                className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl"
+              >
+                Go Back
+              </button>
+            </div>
           </div>
         </div>
       </DashboardLayout>
@@ -178,7 +285,11 @@ function ProblemSolver({
         problem.starterCode[nextLanguage] || ""
       )
     );
+    setTimeout(() => {
+      editorRef.current?.focus();
+    }, 0);
   };
+  const editorRef = useRef(null);
 
   const handleRunCode = async () => {
     if (running) return;
@@ -187,8 +298,10 @@ function ProblemSolver({
       setError("");
       setRunResults(null);
       setSubmitInfo(null);
+      saveCode(slug, language, code);
       const response = await runTestcases({ problem, code, language });
       setRunResults(response);
+      editorRef.current?.focus();
     } catch (err) {
       console.error(err);
       setError("Execution failed. Please try again.");
@@ -202,13 +315,14 @@ function ProblemSolver({
 
     if (submitting) return;
     const wasAlreadySolved = isSolved;
-    
+
 
     try {
       setSubmitting(true);
       setError("");
       setRunResults(null);
       setSubmitInfo(null);
+      saveCode(slug, language, code);
 
       const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
 
@@ -219,9 +333,10 @@ function ProblemSolver({
         passed: judgeResult.passed ?? 0,
         total: judgeResult.total ?? 0,
       });
+      editorRef.current?.focus();
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
-        
+
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =
