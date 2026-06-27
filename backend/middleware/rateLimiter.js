@@ -1,8 +1,28 @@
 import rateLimit from "express-rate-limit";
 
+/**
+ * Key generator: prefer authenticated user UID so rate limits are per-user,
+ * not per-IP. This prevents one user from blocking an entire college network
+ * that shares a single NAT IP (very common in Indian engineering colleges).
+ *
+ * Falls back to req.ip for unauthenticated routes.
+ */
+function userOrIpKey(req) {
+  return (
+    req.auth?.uid ||
+    req.user?.uid ||
+    req.ip
+  );
+}
+
+/**
+ * Code execution limiter — applied to /compiler and /judge routes.
+ * 10 runs per minute per user. Generous for real use; blocks hammering.
+ */
 export const compilerLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10,              // 10 code submissions per minute per IP
+  windowMs: 60 * 1000,   // 1 minute
+  max: 10,
+  keyGenerator: userOrIpKey,
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => process.env.NODE_ENV === "test",
@@ -11,10 +31,14 @@ export const compilerLimiter = rateLimit({
   },
 });
 
-// For regular API routes — generous but prevents abuse
+/**
+ * General API limiter — applied to progress, submissions, user routes.
+ * 200 requests per 15 minutes per user.
+ */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
+  keyGenerator: userOrIpKey,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -22,11 +46,14 @@ export const apiLimiter = rateLimit({
   },
 });
 
-// For AI Insights — each request costs tokens, so keep it tight
-// 5 requests per 10 minutes per IP
+/**
+ * AI Insights limiter — each call costs Anthropic API tokens.
+ * 5 requests per 10 minutes per user. Prevents runaway costs.
+ */
 export const aiLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5,
+  keyGenerator: userOrIpKey,
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => process.env.NODE_ENV === "test",

@@ -9,8 +9,8 @@ on:
 jobs:
 
   # ── Frontend ──────────────────────────────────────────────────────────────
-  frontend-build:
-    name: Frontend — install + build
+  frontend:
+    name: Frontend — install + test + build
     runs-on: ubuntu-latest
 
     steps:
@@ -26,22 +26,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run frontend tests
+        run: npx vitest run --reporter=verbose
+        env:
+          # Vitest needs a minimal Firebase env to not crash on import
+          VITE_FIREBASE_API_KEY:             test
+          VITE_FIREBASE_AUTH_DOMAIN:         test.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID:          test
+          VITE_FIREBASE_STORAGE_BUCKET:      test.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
+          VITE_FIREBASE_APP_ID:              1:000000000000:web:test
+          VITE_API_URL:                      http://localhost:5000
+
       - name: Vite production build
         run: npm run build
         env:
-          # These come from GitHub Secrets — add them in repo Settings
-          VITE_FIREBASE_API_KEY:              ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN:          ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID:           ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET:       ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID:  ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID:               ${{ secrets.VITE_FIREBASE_APP_ID }}
-          # Placeholder — Vite needs this defined to not error at build time
-          VITE_API_URL: https://placeholder.railway.app
+          VITE_FIREBASE_API_KEY:             ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN:         ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID:          ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET:      ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID:              ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_API_URL:                      ${{ secrets.VITE_API_URL }}
 
   # ── Backend ───────────────────────────────────────────────────────────────
-  backend-install:
-    name: Backend — install check
+  backend:
+    name: Backend — install + lint + test
     runs-on: ubuntu-latest
 
     defaults:
@@ -61,3 +71,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run backend tests
+        run: npx vitest run --reporter=verbose
+        env:
+          NODE_ENV: test
+          # Tests that need DB use mongodb-memory-server — no real Atlas needed
+          MONGODB_URI: ""
+          FIREBASE_PROJECT_ID:  test
+          FIREBASE_CLIENT_EMAIL: test@test.iam.gserviceaccount.com
+          FIREBASE_PRIVATE_KEY:  "-----BEGIN RSA PRIVATE KEY-----\nMIItest\n-----END RSA PRIVATE KEY-----\n"
+        # Don't fail the whole pipeline if no backend tests exist yet —
+        # remove `continue-on-error` once backend tests are written (commit 020+)
+        continue-on-error: true

@@ -6,6 +6,20 @@ import hiddenTestcases from "../data/hiddenTestcases.js";
 
 const router = Router();
 
+/**
+ * Sanitize stderr output from Judge0 before sending to the client.
+ * Strips internal system paths, env variable names, and other runtime
+ * internals that shouldn't be exposed in a browser console.
+ */
+function sanitizeStderr(stderr) {
+  if (!stderr) return null;
+
+  return stderr
+    .replace(/\/[a-zA-Z0-9._/-]{5,}/g, "[path]")
+    .replace(/[A-Z]:\\[^\s]+/g, "[path]")
+    .trim();
+}
+
 const submitSchema = z.object({
   problemSlug: z
     .string({ required_error: "problemSlug is required" })
@@ -116,7 +130,7 @@ router.post("/run", validateBody(runSchema), async (req, res) => {
       expected: testcase.expectedOutput,
       actual: result.stdout?.trim() ?? "",
       passed: hasError ? false : passed,
-      error: result.stderr || null,
+      error: sanitizeStderr(result.stderr),
       time: result.time ?? null,
       memory: result.memory ?? null,
     });
@@ -202,9 +216,12 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
           functionName,
         });
       } catch (callErr) {
-        console.error(`[Judge] callJudge0 threw on testcase ${index}:`, callErr.message);
+        console.error(
+          `[Judge] callJudge0 threw on testcase ${index}:`,
+          callErr
+        );
         return res.json({
-          status: "Judge Error ❌",
+          status: "Judge Error",
           passed: passedCount,
           total: alltestcases.length,
           error: callErr.message,
@@ -213,7 +230,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
 
       if (!result) {
         return res.json({
-          status: "Judge Error ❌",
+          status: "Judge Error",
           passed: passedCount,
           total: alltestcases.length,
           error: "Judge0 returned no result",
@@ -223,7 +240,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       // ── Compile error ────────────────────────────────────────────────
       if (result.compile_output) {
         return res.json({
-          status: "Compilation Error ❌",
+          status: "Compilation Error",
           passed: passedCount,
           total: alltestcases.length,
           error: result.compile_output,
@@ -234,10 +251,10 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       if (result.stderr) {
         const isInfra = /code runner unavailable|ECONNREFUSED|502|fetch failed/i.test(result.stderr);
         return res.json({
-          status: isInfra ? "Judge Error ❌" : "Runtime Error ❌",
+          status: isInfra ? "Judge Error" : "Runtime Error",
           passed: passedCount,
           total: alltestcases.length,
-          error: result.stderr,
+          error: sanitizeStderr(result.stderr),
         });
       }
 
@@ -245,17 +262,19 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
       const actual = normalizeOutput(result.stdout || "");
 
+      const matched = outputsMatch(expected, actual);
+
       if (isDev) {
         console.log(
           `[Judge] Testcase ${index + 1}/${alltestcases.length} ` +
           `(${isVisible ? "visible" : "hidden"}) | ` +
-          `expected="${expected}" actual="${actual}" match=${expected === actual}`
+          `expected="${expected}" actual="${actual}" match=${matched}`
         );
       }
 
-      if (!outputsMatch(expected, actual)) {
+      if (!matched(expected, actual)) {
         return res.json({
-          status: "Wrong Answer ❌",
+          status: "Wrong Answer",
           passed: passedCount,
           total: alltestcases.length,
           visiblePassed,
@@ -278,7 +297,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
     }
 
     return res.json({
-      status: "Accepted 🎉",
+      status: "Accepted",
       passed: passedCount,
       total: alltestcases.length,
       visiblePassed,
@@ -287,9 +306,9 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Judge] Unhandled error:", err.message);
+    console.error("[Judge] Unhandled error:", err);
     return res.json({
-      status: "Judge Error ❌",
+      status: "Judge Error",
       passed: passedCount,
       total: alltestcases.length,
       error: "An unexpected error occurred during judging.",

@@ -1,3 +1,8 @@
+/**
+ * IMPORTANT:
+ * Frontend and backend copies of this file must remain identical.
+ * Update both whenever changing driver generation logic.
+ */
 function formatJsArg(value) {
   return JSON.stringify(value);
 }
@@ -122,7 +127,10 @@ export function generateDriverCode(language, userCode, testcaseInput, functionNa
   const fn = functionName || "solve";
   const returnType = inferReturnType(userCode, language);
   const args = buildCallArgs(testcaseInput);
-  const isDev = process.env.NODE_ENV !== "production"; // was: import.meta.env.DEV
+  const isDev =
+    typeof process !== "undefined"
+      ? process.env.NODE_ENV !== "production"
+      : import.meta.env?.DEV; // was: import.meta.env.DEV
 
   if (isDev) console.log("[generateDriverCode] TESTCASE INPUT:", testcaseInput);
   if (isDev) console.log("[generateDriverCode] ARGS:", args);
@@ -298,4 +306,7 @@ int main() {
     return generated;
   }
 
+  throw new Error(
+    `Unsupported language: ${language}`
+  );
 }

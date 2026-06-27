@@ -21,13 +21,13 @@ import { generateDriverCode } from "./generateDriverCode";
 
 // ── Shared fixtures ────────────────────────────────────────────────────────────
 
-const INT_ARRAY_INPUT   = { nums: [2, 7, 11, 15], target: 9 };
-const STRING_INPUT      = { s: "abcabcbb" };
-const BOOL_INPUT        = { nums: [1, 2, 3, 1] };
+const INT_ARRAY_INPUT = { nums: [2, 7, 11, 15], target: 9 };
+const STRING_INPUT = { s: "abcabcbb" };
+const BOOL_INPUT = { nums: [1, 2, 3, 1] };
 const EMPTY_ARRAY_INPUT = { nums: [] };
-const MULTI_INPUT       = { list1: [1, 2, 4], list2: [1, 3, 4] };
-const TREE_INPUT        = { root: [3, 9, 20, -1, -1, 15, 7] };
-const NESTED_INPUT      = { coins: [1, 5, 11], amount: 15 };
+const MULTI_INPUT = { list1: [1, 2, 4], list2: [1, 3, 4] };
+const TREE_INPUT = { root: [3, 9, 20, -1, -1, 15, 7] };
+const NESTED_INPUT = { coins: [1, 5, 11], amount: 15 };
 
 // ── Python ────────────────────────────────────────────────────────────────────
 
@@ -437,9 +437,15 @@ describe("generateDriverCode — cpp", () => {
 // ── Edge cases ────────────────────────────────────────────────────────────────
 
 describe("generateDriverCode — edge cases", () => {
-  it("returns undefined for an unsupported language", () => {
-    const code = generateDriverCode("ruby", "def f; end", { n: 1 }, "f");
-    expect(code).toBeUndefined();
+  it("throws for an unsupported language", () => {
+    expect(() =>
+      generateDriverCode(
+        "ruby",
+        "def solve(n)\n return n\nend",
+        { n: 1 },
+        "solve"
+      )
+    ).toThrow("Unsupported language: ruby");
   });
 
   it("handles nested object input (e.g. coins + amount)", () => {
