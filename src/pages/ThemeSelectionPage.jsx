@@ -1,19 +1,26 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
 
 export default function ThemeSelectionPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { setTheme, themeId: currentThemeId } = useTheme();
+    // Destination after theme is picked — defaults to /dashboard
+    const nextPath = searchParams.get("next")
+      ? decodeURIComponent(searchParams.get("next"))
+      : "/dashboard";
 
     const handleSelect = (themeId) => {
+        setTheme(themeId);
+        // If already had a theme, go straight to destination (no confirmation needed)
         if (themeId === currentThemeId) {
-            navigate("/profile");
+            navigate(nextPath, { replace: true });
             return;
         }
-
-        setTheme(themeId);
-        navigate("/theme-confirmation");
+        // First-time selection: show confirmation page, then land on next
+        const confirmDest = encodeURIComponent(nextPath);
+        navigate(`/theme-confirmation?next=${confirmDest}`);
     };
 
     return (

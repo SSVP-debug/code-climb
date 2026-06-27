@@ -5,6 +5,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 import AchievementToastContainer from "./components/ui/AchievementToastContainer";
 import React from "react";
+import { HelmetProvider } from "react-helmet-async";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
@@ -55,6 +56,7 @@ ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
   <React.StrictMode>
+    <HelmetProvider>
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
@@ -105,6 +107,7 @@ ReactDOM.createRoot(
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
+    </HelmetProvider>
   </React.StrictMode>
 );
 

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 import DashboardSections from "../components/dashboard/DashboardSections";
+import OnboardingTour from "../components/onboarding/OnboardingTour";
 
 function Dashboard() {
   useEffect(() => {
@@ -17,6 +18,7 @@ function Dashboard() {
 
   return (
     <DashboardLayout>
+      <OnboardingTour />
       <div className="space-y-8">
         <DashboardSections />
       </div>

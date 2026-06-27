@@ -1,10 +1,14 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
 
 export default function ThemeConfirmationPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { themeId } = useTheme();
+  const nextPath = searchParams.get("next")
+    ? decodeURIComponent(searchParams.get("next"))
+    : "/dashboard";
 
   const theme = THEME_OPTIONS.find((t) => t.id === themeId);
 
@@ -42,7 +46,7 @@ export default function ThemeConfirmationPage() {
         </p>
 
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(nextPath, { replace: true })}
           className="px-8 py-4 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition"
         >
           Begin Journey

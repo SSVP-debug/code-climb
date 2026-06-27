@@ -8,10 +8,7 @@ if (process.env.SENTRY_DSN) {
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || "development",
     // Capture 100% of transactions in dev, 10% in prod (adjust as traffic grows)
-    tracesSampleRate:
-      process.env.NODE_ENV === "production"
-        ? 0.1
-        : 1.0,
+    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   });
 } else {
   console.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
@@ -21,7 +18,6 @@ import helmet from "helmet";
 import judgeRoutes from "./routes/judge.js";
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/users.js";
@@ -37,6 +33,7 @@ import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter
 import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
 import initRoutes from "./routes/init.js";
+import statsRoutes from "./routes/stats.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -73,19 +70,10 @@ app.use(express.json({ limit: "1mb" }));
 app.get("/", (req, res) => res.send("Code Club Backend Running"));
 
 app.get("/api/health", (req, res) => {
-  const states = {
-    0: "disconnected",
-    1: "connected",
-    2: "connecting",
-    3: "disconnecting",
-  };
-
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    mongo: states[mongoose.connection.readyState],
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV,
+    mongo: process.env.MONGODB_URI?.startsWith("mongodb") ? "configured" : "missing",
   });
 });
 
@@ -97,6 +85,10 @@ app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
 app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);
+// Public stats endpoint — no auth, used by landing page social proof
+app.use("/api/stats", statsRoutes);
+// Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
+app.use("/api/init", requireAuth, apiLimiter, initRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
 app.use(
   "/api/daily-challenge",
@@ -108,12 +100,7 @@ app.use(
   "/api/public",
   publicProfileRoutes
 );
-app.use(
-  "/api/init",
-  requireAuth,
-  apiLimiter,
-  initRoutes
-);
+
 // ─── 404 handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
@@ -154,63 +141,22 @@ async function start() {
   }
 
   const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on ${PORT}`);
+    
   });
 
   // Graceful shutdown — Railway sends SIGTERM before restarting containers.
   // Without this, in-flight Judge0 requests are killed mid-execution.
   process.on("SIGTERM", () => {
-    console.log("[SIGTERM] Shutting down server...");
-
+    
     server.close(() => {
-      console.log("[SIGTERM] Server closed.");
+      
       process.exit(0);
     });
   });
 
   process.on("SIGINT", () => {
-    console.log("[SIGINT] Shutting down server...");
-
-    server.close(() => {
-      console.log("[SIGINT] Server closed.");
-      process.exit(0);
-    });
-  });
-
-  process.on("SIGUSR2", () => {
     server.close(() => process.exit(0));
   });
 }
-
-// Global process-level error handlers
-process.on("unhandledRejection", (reason) => {
-  console.error(
-    "[Unhandled Rejection]",
-    reason instanceof Error
-      ? reason.stack
-      : reason
-  );
-
-  if (process.env.SENTRY_DSN) {
-    Sentry.captureException(
-      reason instanceof Error
-        ? reason
-        : new Error(String(reason))
-    );
-  }
-});
-
-process.on("uncaughtException", (err) => {
-  console.error(
-    "[Uncaught Exception]",
-    err.stack
-  );
-
-  if (process.env.SENTRY_DSN) {
-    Sentry.captureException(err);
-  }
-
-  process.exit(1);
-});
 
 start();

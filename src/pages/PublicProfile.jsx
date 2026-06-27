@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PageMeta from "../components/seo/PageMeta";
 import { useParams } from "react-router-dom";
 import ActivityHeatmap
     from "../components/profile/ActivityHeatmap";
@@ -238,7 +239,60 @@ function PublicProfile() {
                         Topic Coverage
                     </h2>
 
-                    <div className="grid gap-3">
+                    
+              {/* ── Language Breakdown ────────────────────────────────────── */}
+              {profile.languageBreakdown && profile.languageBreakdown.length > 0 && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+                    Languages
+                  </h3>
+                  <div className="space-y-3">
+                    {profile.languageBreakdown.map((item) => {
+                      const total = profile.solvedCount || 1;
+                      const pct = Math.round((item.solved / total) * 100);
+                      const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", cpp: "C++" };
+                      return (
+                        <div key={item.language}>
+                          <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                            <span className="font-medium text-white">{LANG_LABELS[item.language] ?? item.language}</span>
+                            <span>{item.solved} solved</span>
+                          </div>
+                          <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-green-500 rounded-full transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Recent Solves ─────────────────────────────────────────── */}
+              {profile.recentSolves && profile.recentSolves.length > 0 && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+                    Recent Solves
+                  </h3>
+                  <div className="space-y-2">
+                    {profile.recentSolves.map((solve, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
+                        <span className="text-sm text-zinc-300">{solve.title}</span>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                          solve.difficulty === "Easy"   ? "bg-green-500/10 text-green-400" :
+                          solve.difficulty === "Medium" ? "bg-yellow-500/10 text-yellow-400" :
+                          "bg-red-500/10 text-red-400"
+                        }`}>
+                          {solve.difficulty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+<div className="grid gap-3">
 
                         {Object.entries(
                             profile.topicStats || {}
