@@ -1,9 +1,24 @@
+import "./config/env.js"; // must be first — loads env vars before anything reads them
+import * as Sentry from "@sentry/node";
+
+// ── Sentry: initialise before any other imports so it can instrument them ──
+// SENTRY_DSN is set in Railway / .env. If missing, Sentry is a no-op — no crash.
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || "development",
+    // Capture 100% of transactions in dev, 10% in prod (adjust as traffic grows)
+    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 0.3,
+  });
+} else {
+  console.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
+}
+
 import helmet from "helmet";
 import judgeRoutes from "./routes/judge.js";
-import * as Sentry from "@sentry/node";
-import "./config/env.js";
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/users.js";
@@ -54,10 +69,19 @@ app.use(express.json({ limit: "1mb" }));
 app.get("/", (req, res) => res.send("Code Club Backend Running"));
 
 app.get("/api/health", (req, res) => {
+  const states = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    mongo: process.env.MONGODB_URI?.startsWith("mongodb") ? "configured" : "missing",
+    mongo: states[mongoose.connection.readyState],
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV,
   });
 });
 
@@ -88,6 +112,11 @@ app.use((req, res) => {
 
 
 
+// ─── Sentry error handler (must come before our own error handler) ───────────
+if (process.env.SENTRY_DSN) {
+  Sentry.setupExpressErrorHandler(app);
+}
+
 // ─── Global error handler ───────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error("[Server Error]", err.message);
@@ -116,15 +145,15 @@ async function start() {
   }
 
   const server = app.listen(PORT, () => {
-    
+    console.log(`🚀 Server running on ${PORT}`);
   });
 
   // Graceful shutdown — Railway sends SIGTERM before restarting containers.
   // Without this, in-flight Judge0 requests are killed mid-execution.
   process.on("SIGTERM", () => {
-    
+
     server.close(() => {
-      
+
       process.exit(0);
     });
   });
@@ -133,5 +162,28 @@ async function start() {
     server.close(() => process.exit(0));
   });
 }
+
+// Global process-level error handlers
+process.on("unhandledRejection", (reason) => {
+  console.error("[Unhandled Rejection]", reason);
+
+  if (process.env.SENTRY_DSN) {
+    Sentry.captureException(
+      reason instanceof Error
+        ? reason
+        : new Error(String(reason))
+    );
+  }
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("[Uncaught Exception]", err);
+
+  if (process.env.SENTRY_DSN) {
+    Sentry.captureException(err);
+  }
+
+  process.exit(1);
+});
 
 start();

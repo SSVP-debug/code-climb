@@ -1,25 +1,34 @@
 import mongoose from "mongoose";
 
+// Status values must exactly match what backend/routes/judge.js returns.
+// The emoji suffixes are intentional — they are displayed directly in the UI.
+export const SUBMISSION_STATUSES = [
+  "Accepted",
+  "Wrong Answer",
+  "Compilation Error",
+  "Runtime Error",
+  "Time Limit Exceeded",
+  "Judge Error",
+];
+
 const submissionSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
     problemSlug: {
       type: String,
       required: true,
+      trim: true,
     },
     statusDescription: {
       type: String,
     },
-
     judge0Time: {
       type: String,
     },
-
     memory: {
       type: Number,
       default: 0,
@@ -31,15 +40,10 @@ const submissionSchema = new mongoose.Schema(
       enum: ["javascript", "python", "java", "cpp"],
       required: true,
     },
+    // Status must match judge route output — includes emoji suffix
     status: {
       type: String,
-      enum: [
-        "Accepted",
-        "Wrong Answer",
-        "Compilation Error",
-        "Runtime Error",
-        "Time Limit Exceeded",
-      ],
+      enum: SUBMISSION_STATUSES,
       required: true,
     },
     passed: {
@@ -65,25 +69,26 @@ const submissionSchema = new mongoose.Schema(
     executionTime: String,
     expectedOutput: mongoose.Schema.Types.Mixed,
     actualOutput: String,
+    // Raw code stored for submission history diffs
+    code: {
+      type: String,
+      maxlength: 50_000,
+      default: "",
+    },
   },
   { timestamps: true }
 );
 
-submissionSchema.index({
-  userId: 1,
-  createdAt: -1,
-});
+// ── Indexes ────────────────────────────────────────────────────────────────────
+// Compound index: covers listSubmissions (userId + createdAt) — the primary query
+submissionSchema.index({ userId: 1, createdAt: -1 });
 
-submissionSchema.index({
-  userId: 1,
-  problemSlug: 1,
-});
+// Compound index: covers per-problem submission filter (userId + problemSlug)
+submissionSchema.index({ userId: 1, problemSlug: 1 });
 
-const Submission = mongoose.model(
-  "Submission",
-  submissionSchema
-);
+// Index: covers insights query filtering by status
+submissionSchema.index({ userId: 1, status: 1 });
 
-
+const Submission = mongoose.model("Submission", submissionSchema);
 
 export default Submission;

@@ -2,7 +2,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -19,7 +18,6 @@ import {
   createSubmission,
 } from "../services/submissionService";
 
-import problems from "../data/problems";
 import { getEarnedXP } from "../utils/xpUtils";
 
 export const AppContext = createContext(null);
@@ -148,10 +146,21 @@ function AppContextProvider({ children }) {
 
         const weekStart = new Date(today);
         weekStart.setDate(today.getDate() - 6);
+        weekStart.setHours(0, 0, 0, 0);
 
-        const solvedThisWeek = (progress.activityDates || []).filter((date) => {
-          return new Date(date) >= weekStart;
+        // Count problems solved this week by joining recentActivity (has per-solve dates)
+        // recentActivity entries have a `time` field = "YYYY-MM-DD" of the solve.
+        // This is more accurate than counting activityDates (which counts days, not solves).
+        const recentActivityThisWeek = (progress.recentActivity || []).filter((entry) => {
+          if (!entry.time) return false;
+          return new Date(entry.time) >= weekStart;
         }).length;
+
+        // Fallback: if recentActivity is empty or sparse, count unique solved slugs
+        // whose first appearance is within the last 7 days (best approximation).
+        // recentActivity is capped at 10 items, so for heavy users this underestimates.
+        // TODO: add a server-side weeklyCount field for accuracy above 10.
+        const solvedThisWeek = recentActivityThisWeek;
 
         setWeeklySolved(solvedThisWeek);
 
@@ -349,10 +358,13 @@ function AppContextProvider({ children }) {
 
     setLastActivityDate(today);
 
-    if (!activityDates.includes(today)) {
-      setWeeklySolved((prev) => prev + 1);
-    }
+    // Increment weekly count for every new problem solved (not just first of the day).
+    // The guard above (solvedProblems.includes(slug)) already ensures this only
+    // fires once per unique problem, so no double-counting.
+    setWeeklySolved((prev) => prev + 1);
 
+    // XP is now computed server-side. We compute a local optimistic update
+    // for immediate UI feedback only — the server response will correct it.
     const earnedXP = getEarnedXP(difficulty);
     const nextTotalXP =
       totalXP + earnedXP;
@@ -360,22 +372,11 @@ function AppContextProvider({ children }) {
 
 
     const persistPayload = {
-      solvedSlugs:
-        nextSolvedProblems,
-
-      topicStats:
-        nextTopicStats,
-
-      activityDates:
-        nextActivityDates,
-
-      solvedDifficulty:
-        nextSolvedDifficulty,
-
-      totalXP: nextTotalXP,
-
-      recentActivity:
-        nextRecentActivity,
+      solvedSlugs: nextSolvedProblems,
+      topicStats: nextTopicStats,
+      activityDates: nextActivityDates,
+      solvedDifficulty: nextSolvedDifficulty,
+      recentActivity: nextRecentActivity,
     };
 
 

@@ -14,40 +14,52 @@ function toClientSubmission(doc) {
     executionTime: doc.executionTime,
     expectedOutput: doc.expectedOutput,
     actualOutput: doc.actualOutput,
-    time: new Date(doc.createdAt).toLocaleTimeString(),
-    date: new Date(doc.createdAt).toLocaleDateString(),
+    time: new Date(doc.createdAt).toISOString(),
+    date: new Date(doc.createdAt).toISOString().split("T")[0],
     createdAt: doc.createdAt,
   };
 }
 
 export async function createSubmission(req, res) {
-  
-  const submission = await Submission.create({
-    userId: req.userDoc._id,
-    ...req.body,
-    statusDescription: req.body.statusDescription || req.body.status,
-    judge0Time: req.body.judge0Time || req.body.executionTime,
-    memory: req.body.memory || null,
-  });
-  
+  if (!req.userDoc) {
+    return res.status(503).json({ error: "Database unavailable. Try again shortly." });
+  }
 
-  res.status(201).json(toClientSubmission(submission));
+  try {
+    const submission = await Submission.create({
+      userId: req.userDoc._id,
+      ...req.body,
+      statusDescription: req.body.statusDescription || req.body.status,
+      judge0Time: req.body.judge0Time || req.body.executionTime,
+      memory: req.body.memory || null,
+    });
+
+    return res.status(201).json(toClientSubmission(submission));
+  } catch (err) {
+    console.error("[Submissions] createSubmission error:", err.message);
+    return res.status(500).json({ error: "Failed to save submission. Try again." });
+  }
 }
 
 export async function listSubmissions(req, res) {
-  const { problemSlug } = req.query;
-
-  const filter = {
-    userId: req.userDoc._id,
-  };
-
-  if (problemSlug) {
-    filter.problemSlug = problemSlug;
+  if (!req.userDoc) {
+    return res.status(503).json({ error: "Database unavailable. Try again shortly." });
   }
 
-  const submissions = await Submission.find(filter)
-    .sort({ createdAt: -1 })
-    .limit(100);
+  try {
+    const { problemSlug } = req.query;
 
-  res.json(submissions.map(toClientSubmission));
+    const filter = { userId: req.userDoc._id };
+    if (problemSlug) filter.problemSlug = problemSlug;
+
+    const submissions = await Submission.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+
+    return res.json(submissions.map(toClientSubmission));
+  } catch (err) {
+    console.error("[Submissions] listSubmissions error:", err.message);
+    return res.status(500).json({ error: "Failed to fetch submissions. Try again." });
+  }
 }

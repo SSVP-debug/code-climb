@@ -49,12 +49,12 @@ const progressSchema = z.object({
   // Zod normalises to lowercase before hitting the controller.
   solvedDifficulty: z
     .object({
-      Easy:   z.number().int().min(0).max(10_000).optional().default(0),
+      Easy: z.number().int().min(0).max(10_000).optional().default(0),
       Medium: z.number().int().min(0).max(10_000).optional().default(0),
-      Hard:   z.number().int().min(0).max(10_000).optional().default(0),
-      easy:   z.number().int().min(0).max(10_000).optional().default(0),
+      Hard: z.number().int().min(0).max(10_000).optional().default(0),
+      easy: z.number().int().min(0).max(10_000).optional().default(0),
       medium: z.number().int().min(0).max(10_000).optional().default(0),
-      hard:   z.number().int().min(0).max(10_000).optional().default(0),
+      hard: z.number().int().min(0).max(10_000).optional().default(0),
     })
     .optional()
     .default({}),
@@ -63,10 +63,10 @@ const progressSchema = z.object({
   recentActivity: z
     .array(
       z.object({
-        title:  z.string().max(200).optional().default(""),
-        time:   z.string().max(50).optional().default(""),
+        title: z.string().max(200).optional().default(""),
+        time: z.string().max(50).optional().default(""),
         status: z.string().max(100).optional().default(""),
-        slug:   z.string().max(200).optional().default(""),
+        slug: z.string().max(200).optional().default(""),
       })
     )
     .max(10)
@@ -76,8 +76,8 @@ const progressSchema = z.object({
   // Optional LeetCode username
   leetcodeUsername: z.string().max(100).optional(),
 
-  totalXP: z.number().int().min(0).max(1_000_000).optional(),
-  
+  // NOTE: totalXP is intentionally NOT accepted from the client.
+  // It is computed server-side in putProgress from solvedSlugs × difficulty weights.
 });
 
 // ── Slug existence middleware ──────────────────────────────────────────────────
@@ -90,13 +90,15 @@ async function validateSlugs(req, res, next) {
 
   try {
     // Fetch only the slugs that exist in DB — O(1) index lookup
+    const uniqueSlugs = [...new Set(solvedSlugs)];
     const existingDocs = await Problem
-      .find({ slug: { $in: solvedSlugs } })
+      .find({ slug: { $in: uniqueSlugs } })
       .select("slug")
       .lean();
 
     const existingSlugs = new Set(existingDocs.map((p) => p.slug));
     const fakeSlugs = solvedSlugs.filter((s) => !existingSlugs.has(s));
+    
 
     if (fakeSlugs.length > 0) {
       return res.status(400).json({
@@ -108,7 +110,10 @@ async function validateSlugs(req, res, next) {
     next();
   } catch (err) {
     // If DB check fails, don't block the save — log and continue
-    console.error("[progress] Slug validation DB error:", err.message);
+    console.error(
+      "[Progress] Slug validation DB error:",
+      err
+    );
     next();
   }
 }
@@ -121,10 +126,6 @@ router.put(
   "/",
   requireAuth,
   validateBody(progressSchema),
-  (req, res, next) => {
-    
-    next();
-  },
   validateSlugs,
   putProgress
 );
