@@ -1,4 +1,5 @@
-import rateLimit from "express-rate-limit";
+import { rateLimit, ipKeyGenerator } from "express-rate-limit";
+
 
 /**
  * Key generator: prefer authenticated user UID so rate limits are per-user,
@@ -11,7 +12,7 @@ function userOrIpKey(req) {
   return (
     req.auth?.uid ||
     req.user?.uid ||
-    req.ip
+    ipKeyGenerator(req)
   );
 }
 

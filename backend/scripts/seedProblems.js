@@ -17,10 +17,10 @@ import problems from "../../src/data/problems.js";
 const seedProblems = async () => {
   try {
     await connectDB();
-    
+
 
     let inserted = 0;
-    let updated  = 0;
+    let updated = 0;
 
     for (const problem of problems) {
       const existing = await Problem.findOne({ slug: problem.slug }).lean();
@@ -38,6 +38,14 @@ const seedProblems = async () => {
         updated++;
         console.log(`  ~ [${problem.difficulty.padEnd(6)}] #${String(problem.id).padStart(2, "0")} ${problem.title} (updated)`);
       }
+    }
+    for (const [index, problem] of problems.entries()) {
+      if (!problem) {
+        console.log(`Problem at index ${index} is undefined`);
+        continue;
+      }
+
+      console.log(problem.slug);
     }
 
     const total = await Problem.countDocuments();
