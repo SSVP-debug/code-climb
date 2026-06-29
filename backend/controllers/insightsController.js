@@ -26,7 +26,7 @@ export async function getInsights(req, res) {
   // ── 2. Summarise the data so the prompt stays concise ─────────────────
   const totalSubmissions = recentSubmissions.length;
   const acceptedCount = recentSubmissions.filter(
-    (s) => s.status === "Accepted 🎉"
+    (s) => s.status === "Accepted"
   ).length;
   const acceptanceRate =
     totalSubmissions > 0
@@ -41,7 +41,7 @@ export async function getInsights(req, res) {
   // Per-problem attempt/pass summary
   const problemSummary = attemptedSlugs.slice(0, 20).map((slug) => {
     const attempts = recentSubmissions.filter((s) => s.problemSlug === slug);
-    const solved = attempts.some((s) => s.status === "Accepted 🎉");
+    const solved = attempts.some((s) => s.status === "Accepted");
     const languages = [...new Set(attempts.map((s) => s.language))];
     return { slug, attempts: attempts.length, solved, languages };
   });
