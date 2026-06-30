@@ -21,6 +21,7 @@ function Navbar() {
     { to: "/dashboard", label: theme.words.dashboard },
     { to: "/problems",  label: theme.words.problems },
     { to: "/analytics", label: theme.words.analytics },
+    { to: "/leaderboard", label: "Leaderboard" },
     { to: "/profile",   label: theme.words.profile },
   ];
 

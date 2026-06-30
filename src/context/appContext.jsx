@@ -2,22 +2,23 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { useAuth } from "./authContext";
 
 import {
-  getProgress,
-  initProgress,
   markProblemSolved as persistSolvedToMongo,
 } from "../services/progressService";
 
 import {
-  getSubmissions,
   createSubmission,
 } from "../services/submissionService";
 
+import { apiFetch } from "../services/api";
+
+import problems from "../data/problems";
 import { getEarnedXP } from "../utils/xpUtils";
 
 export const AppContext = createContext(null);
@@ -113,6 +114,11 @@ function AppContextProvider({ children }) {
 
   const [weeklySolved, setWeeklySolved] = useState(0);
 
+  // XP — declared here (top of state block) so it's available throughout
+  // the component. Value is server-authoritative: set on hydrate from API
+  // response. Optimistic update in markProblemSolved is corrected by server.
+  const [totalXP, setTotalXP] = useState(0);
+
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
   // --------------------------------------------------
@@ -122,13 +128,14 @@ function AppContextProvider({ children }) {
 
     async function hydrate() {
       try {
-        await initProgress();
+        // Single boot call — replaces 3 sequential API calls:
+        // initProgress() + getProgress() + getSubmissions()
+        // One token refresh, one HTTP round-trip, parallel MongoDB queries.
+        const { progress, submissions: mongoSubmissions, _dbDown } = await apiFetch("/api/init");
 
-        const progress =
-          await getProgress();
-
-        const mongoSubmissions =
-          await getSubmissions();
+        if (_dbDown) {
+          console.warn("[AppContext] Database unavailable on boot — using empty defaults.");
+        }
 
         setSolvedProblems(
           progress.solvedSlugs || []
@@ -365,18 +372,33 @@ function AppContextProvider({ children }) {
 
     // XP is now computed server-side. We compute a local optimistic update
     // for immediate UI feedback only — the server response will correct it.
-    const earnedXP = getEarnedXP(difficulty);
+    // Streak multiplier: 2x XP if streak >= 3 consecutive days
+    // This rewards consistency and makes the streak counter feel meaningful.
+    const baseXP = getEarnedXP(difficulty);
+    const streakMultiplier = currentStreak >= 3 ? 2 : 1;
+    const earnedXP = baseXP * streakMultiplier;
     const nextTotalXP =
       totalXP + earnedXP;
 
 
 
     const persistPayload = {
-      solvedSlugs: nextSolvedProblems,
-      topicStats: nextTopicStats,
-      activityDates: nextActivityDates,
-      solvedDifficulty: nextSolvedDifficulty,
-      recentActivity: nextRecentActivity,
+      solvedSlugs:
+        nextSolvedProblems,
+
+      topicStats:
+        nextTopicStats,
+
+      activityDates:
+        nextActivityDates,
+
+      solvedDifficulty:
+        nextSolvedDifficulty,
+
+      totalXP: nextTotalXP,
+
+      recentActivity:
+        nextRecentActivity,
     };
 
 
@@ -434,12 +456,6 @@ function AppContextProvider({ children }) {
   }
 
   // --------------------------------------------------
-  // XP
-  // --------------------------------------------------
-
-  const [totalXP, setTotalXP] =
-    useState(0);
-
   // --------------------------------------------------
   // CONTEXT
   // --------------------------------------------------

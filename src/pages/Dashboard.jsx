@@ -1,3 +1,4 @@
+import LevelUpModal from "../components/gamification/LevelUpModal";
 import { useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
@@ -19,6 +20,7 @@ function Dashboard() {
   return (
     <DashboardLayout>
       <OnboardingTour />
+      <LevelUpModal />
       <div className="space-y-8">
         <DashboardSections />
       </div>

@@ -1,4 +1,5 @@
 import ErrorBanner from "../components/ErrorBanner";
+import PageMeta from "../components/seo/PageMeta";
 import ErrorBoundary from "../components/ErrorBoundary";
 import SubmissionResultBanner from "../components/workspace/SubmissionResultBanner";
 import { formatDate } from "../utils/formatters";
@@ -77,13 +78,6 @@ function MobileTabBar({ active, onChange, hasResults }) {
   );
 }
 
-const ProblemLoader = () => (
-  <DashboardLayout>
-    ...
-  </DashboardLayout>
-);
-
-
 // ── ProblemDetailsPage ────────────────────────────────────────────────────────
 
 function ProblemDetailsPage() {
@@ -95,8 +89,6 @@ function ProblemDetailsPage() {
   const [problemLoading, setProblemLoading] = useState(true);
   const [problemError, setProblemError] = useState(null);
   const [adjacentSlugs, setAdjacentSlugs] = useState({ prev: null, next: null });
-  const [loadedSlug, setLoadedSlug] =
-    useState(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -104,46 +96,25 @@ function ProblemDetailsPage() {
 
     async function fetchProblem() {
       try {
-        setProblem(null);
-        setAdjacentSlugs({
-          prev: null,
-          next: null,
-        });
-
         setProblemLoading(true);
         setProblemError(null);
 
         // Fetch current problem + sibling slugs for prev/next navigation
-        const data = await apiFetch(`/api/problems/${slug}`);
-
-        setProblem(data.problem);
-        setAdjacentSlugs({
-          prev: data.prevSlug,
-          next: data.nextSlug,
-        });
-        if (loadedSlug === slug) return;
-        setLoadedSlug(slug);
-
-        window.scrollTo({
-          top: 0,
-          behavior: "instant",
-        });
-
-        try {
-          const allProblems = await apiFetch(
-            "/api/problems"
-          );
-
-
-        } catch {
-          setAdjacentSlugs({
-            prev: null,
-            next: null,
-          });
-        }
+        const [problemData, allProblems] = await Promise.all([
+          apiFetch(`/api/problems/${slug}`),
+          apiFetch("/api/problems"),
+        ]);
 
         if (cancelled) return;
 
+        setProblem(problemData);
+
+        // Compute prev/next slugs from the ordered list
+        const idx = allProblems.findIndex((p) => p.slug === slug);
+        setAdjacentSlugs({
+          prev: idx > 0 ? allProblems[idx - 1].slug : null,
+          next: idx < allProblems.length - 1 ? allProblems[idx + 1].slug : null,
+        });
       } catch (err) {
         if (cancelled) return;
         setProblemError(err.message || "Failed to load problem.");
@@ -153,20 +124,44 @@ function ProblemDetailsPage() {
     }
 
     fetchProblem();
-    return () => {
-      cancelled = true;
-      setProblem(null);
-    };
+    return () => { cancelled = true; };
   }, [slug]);
 
+
+  // ── AI Hints ───────────────────────────────────────────────────────────────
+  const [hintLevel, setHintLevel] = useState(0);       // 0=hidden, 1/2/3=shown
+  const [hintText, setHintText]   = useState("");
+  const [hintLoading, setHintLoading] = useState(false);
+
+  async function requestHint(level) {
+    if (hintLoading) return;
+    setHintLoading(true);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const { getIdToken } = await import("../services/auth");
+      const token = await getIdToken();
+      const r = await fetch(`${API_URL}/api/hints/${slug}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ level }),
+      });
+      const d = await r.json();
+      if (d.hint) { setHintText(d.hint); setHintLevel(level); }
+    } catch { setHintText("Could not load hint. Try again."); }
+    setHintLoading(false);
+  }
   const prevSlug = adjacentSlugs.prev;
   const nextSlug = adjacentSlugs.next;
 
-  useEffect(() => {
-    if (nextSlug) {
-      import("./ProblemDetailsPage");
-    }
-  }, [nextSlug]);
+  // SEO meta for this problem page
+  const pageMeta = problem ? (
+    <PageMeta
+      title={`${problem.title} · Code Club`}
+      description={`Solve ${problem.title} (${problem.difficulty}) in Python, JavaScript, Java, or C++. ${problem.description?.slice(0, 100) ?? ""}…`}
+      path={`/problems/${problem.slug}`}
+      type="article"
+    />
+  ) : null;
 
   // ── Loading state ───────────────────────────────────────────────────────
   if (problemLoading) {
@@ -175,9 +170,7 @@ function ProblemDetailsPage() {
         <div className="flex items-center justify-center h-[70vh]">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-zinc-500 text-sm">
-              Loading {slug}...
-            </p>
+            <p className="text-zinc-500 text-sm">Loading problem…</p>
           </div>
         </div>
       </DashboardLayout>
@@ -193,21 +186,12 @@ function ProblemDetailsPage() {
             <p className="text-zinc-500 mb-6">
               {problemError || "The problem you're looking for doesn't exist or has been moved."}
             </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl"
-              >
-                Retry
-              </button>
-
-              <button
-                onClick={() => window.history.back()}
-                className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl"
-              >
-                Go Back
-              </button>
-            </div>
+            <button
+              onClick={() => window.history.back()}
+              className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors"
+            >
+              Go Back
+            </button>
           </div>
         </div>
       </DashboardLayout>
@@ -285,11 +269,7 @@ function ProblemSolver({
         problem.starterCode[nextLanguage] || ""
       )
     );
-    setTimeout(() => {
-      editorRef.current?.focus();
-    }, 0);
   };
-  const editorRef = useRef(null);
 
   const handleRunCode = async () => {
     if (running) return;
@@ -298,10 +278,8 @@ function ProblemSolver({
       setError("");
       setRunResults(null);
       setSubmitInfo(null);
-      saveCode(slug, language, code);
       const response = await runTestcases({ problem, code, language });
       setRunResults(response);
-      editorRef.current?.focus();
     } catch (err) {
       console.error(err);
       setError("Execution failed. Please try again.");
@@ -315,14 +293,13 @@ function ProblemSolver({
 
     if (submitting) return;
     const wasAlreadySolved = isSolved;
-
+    
 
     try {
       setSubmitting(true);
       setError("");
       setRunResults(null);
       setSubmitInfo(null);
-      saveCode(slug, language, code);
 
       const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
 
@@ -333,10 +310,9 @@ function ProblemSolver({
         passed: judgeResult.passed ?? 0,
         total: judgeResult.total ?? 0,
       });
-      editorRef.current?.focus();
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
-
+        
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =

@@ -1,95 +1,65 @@
 import { ACHIEVEMENTS } from "../config/achievements.js";
 
+function xpToLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
+
 export function evaluateAchievements(user) {
-  const unlocked = [];
+  const unlocked  = [];
+  const existing  = new Set((user.achievements || []).map(a => a.key));
+  const solved    = user.solvedSlugs?.length ?? 0;
+  const easy      = user.solvedDifficulty?.easy   ?? 0;
+  const medium    = user.solvedDifficulty?.medium  ?? 0;
+  const hard      = user.solvedDifficulty?.hard    ?? 0;
+  const streak    = user.currentStreak ?? 0;
+  const xp        = user.totalXP ?? 0;
+  const level     = xpToLevel(xp);
+  const topicMap  = user.topicStats instanceof Map
+    ? Object.fromEntries(user.topicStats)
+    : (user.topicStats ?? {});
+  const maxTopic  = Math.max(0, ...Object.values(topicMap));
 
-  const existing = new Set(
-    (user.achievements || []).map(
-      (a) => a.key
-    )
-  );
-
-  // First Solve
-  if (
-    user.solvedSlugs.length >= 1 &&
-    !existing.has(
-      ACHIEVEMENTS.FIRST_SOLVE
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.FIRST_SOLVE
-    );
+  function award(key) {
+    if (!existing.has(key)) unlocked.push(key);
   }
 
-  // First Hard
-  if (
-    (user.solvedDifficulty?.hard || 0) >= 1 &&
-    !existing.has(
-      ACHIEVEMENTS.FIRST_HARD
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.FIRST_HARD
-    );
-  }
+  // ── Solve milestones ──────────────────────────────────────────────────────
+  if (solved >= 1)   award(ACHIEVEMENTS.FIRST_SOLVE);
+  if (solved >= 10)  award(ACHIEVEMENTS.SOLVE_10);
+  if (solved >= 25)  award(ACHIEVEMENTS.SOLVE_25);
+  if (solved >= 50)  award(ACHIEVEMENTS.SOLVE_50);
+  if (solved >= 100) award(ACHIEVEMENTS.SOLVE_100);
+  if (solved >= 200) award(ACHIEVEMENTS.SOLVE_200);
+  if (solved >= 250) award(ACHIEVEMENTS.SOLVE_250);
 
-  // 7 Day Streak
-  if (
-    (user.currentStreak || 0) >= 7 &&
-    !existing.has(
-      ACHIEVEMENTS.STREAK_7
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.STREAK_7
-    );
-  }
+  // ── Difficulty milestones ─────────────────────────────────────────────────
+  if (hard >= 1)   award(ACHIEVEMENTS.FIRST_HARD);
+  if (hard >= 10)  award(ACHIEVEMENTS.HARD_10);
+  if (hard >= 25)  award(ACHIEVEMENTS.HARD_25);
+  if (easy >= 50)  award(ACHIEVEMENTS.EASY_SWEEP);
+  if (medium >= 50) award(ACHIEVEMENTS.MEDIUM_MASTER);
 
-  // 25 Solves
-  if (
-    (user.solvedSlugs?.length || 0) >= 25 &&
-    !existing.has(
-      ACHIEVEMENTS.SOLVE_25
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.SOLVE_25
-    );
-  }
+  // ── Streak milestones ─────────────────────────────────────────────────────
+  if (streak >= 3)   award(ACHIEVEMENTS.STREAK_3);
+  if (streak >= 7)   award(ACHIEVEMENTS.STREAK_7);
+  if (streak >= 14)  award(ACHIEVEMENTS.STREAK_14);
+  if (streak >= 30)  award(ACHIEVEMENTS.STREAK_30);
+  if (streak >= 100) award(ACHIEVEMENTS.STREAK_100);
 
-  // 50 Solves
-  if (
-    (user.solvedSlugs?.length || 0) >= 50 &&
-    !existing.has(
-      ACHIEVEMENTS.SOLVE_50
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.SOLVE_50
-    );
-  }
+  // ── Topic mastery ─────────────────────────────────────────────────────────
+  if (maxTopic >= 10) award(ACHIEVEMENTS.TOPIC_MASTER_10);
+  if (maxTopic >= 20) award(ACHIEVEMENTS.TOPIC_MASTER_20);
+  if (topicMap["Dynamic Programming"] >= 15) award(ACHIEVEMENTS.DP_LOVER);
+  if (topicMap["Graphs"] >= 10)              award(ACHIEVEMENTS.GRAPH_GURU);
+  if (topicMap["Trees"] >= 10)               award(ACHIEVEMENTS.TREE_CLIMBER);
 
-  // Topic Master (10 solves in one topic)
-  const topicStats =
-    user.topicStats instanceof Map
-      ? Object.fromEntries(user.topicStats)
-      : user.topicStats || {};
+  // ── XP / Level milestones ─────────────────────────────────────────────────
+  if (xp >= 500)   award(ACHIEVEMENTS.XP_500);
+  if (xp >= 1000)  award(ACHIEVEMENTS.XP_1000);
+  if (xp >= 5000)  award(ACHIEVEMENTS.XP_5000);
+  if (level >= 10) award(ACHIEVEMENTS.LEVEL_10);
+  if (level >= 25) award(ACHIEVEMENTS.LEVEL_25);
 
-  const topicCounts =
-    Object.values(topicStats);
-
-  if (
-    topicCounts.some(
-      (count) => count >= 10
-    ) &&
-    !existing.has(
-      ACHIEVEMENTS.TOPIC_MASTER_10
-    )
-  ) {
-    unlocked.push(
-      ACHIEVEMENTS.TOPIC_MASTER_10
-    );
-  }
+  // ── Profile complete ──────────────────────────────────────────────────────
+  if (user.username && user.isProfilePublic) award(ACHIEVEMENTS.PROFILE_COMPLETE);
 
   return unlocked;
 }

@@ -1,4 +1,8 @@
 import { useMemo } from "react";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis,
+} from "recharts";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAppContext } from "../hooks/useAppContext";
 
@@ -9,6 +13,7 @@ function Analytics() {
     topicStats,
     currentStreak,
     longestStreak,
+    recentActivity,
   } = useAppContext();
 
   const level = solvedProblems.length;
@@ -90,6 +95,40 @@ function Analytics() {
         topicStats[b] -
         topicStats[a]
     )[0] || null;
+
+  // ── Solve velocity: problems solved per week for last 8 weeks ────────────
+  const velocityData = useMemo(() => {
+    const weeks = [];
+    const now = new Date();
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - i * 7);
+      weekStart.setHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+
+      const count = (recentActivity || []).filter(a => {
+        const d = new Date(a.time);
+        return d >= weekStart && d < weekEnd;
+      }).length;
+
+      const label = `W${8 - i}`;
+      weeks.push({ week: label, solved: count });
+    }
+    return weeks;
+  }, [recentActivity]);
+
+  // ── Topic radar data ──────────────────────────────────────────────────────
+  const radarData = useMemo(() => {
+    const entries = Object.entries(topicStats || {})
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8);
+    return entries.map(([topic, count]) => ({
+      topic: topic.length > 12 ? topic.slice(0, 12) + "…" : topic,
+      count,
+    }));
+  }, [topicStats]);
+
 
   return (
     <DashboardLayout>
@@ -251,10 +290,10 @@ function Analytics() {
               {Object.keys(
                 languageStats
               ).length === 0 && (
-                <p className="text-zinc-400">
-                  No submissions yet.
-                </p>
-              )}
+                  <p className="text-zinc-400">
+                    No submissions yet.
+                  </p>
+                )}
 
             </div>
 
@@ -301,14 +340,62 @@ function Analytics() {
 
             {submissions.length ===
               0 && (
-              <p className="text-zinc-400">
-                No submissions yet.
-              </p>
-            )}
+                <p className="text-zinc-400">
+                  No submissions yet.
+                </p>
+              )}
 
           </div>
 
         </div>
+
+        {/* ── Solve Velocity Chart ─────────────────────────────────────── */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+            Solve Velocity (last 8 weeks)
+          </h3>
+          {velocityData.every(d => d.solved === 0) ? (
+            <p className="text-zinc-600 text-sm text-center py-8">
+              No recent activity to chart. Start solving!
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={velocityData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                <XAxis dataKey="week" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, color: "#fff" }}
+                  labelStyle={{ color: "#a1a1aa" }}
+                  cursor={{ fill: "#27272a" }}
+                />
+                <Bar dataKey="solved" fill="#22c55e" radius={[4, 4, 0, 0]} maxBarSize={32} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* ── Topic Coverage Radar ──────────────────────────────────────── */}
+        {radarData.length >= 3 && (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+              Topic Coverage
+            </h3>
+            <ResponsiveContainer width="100%" height={260}>
+              <RadarChart data={radarData}>
+                <PolarGrid stroke="#27272a" />
+                <PolarAngleAxis dataKey="topic" tick={{ fill: "#71717a", fontSize: 10 }} />
+                <Radar
+                  name="Solved"
+                  dataKey="count"
+                  stroke="#22c55e"
+                  fill="#22c55e"
+                  fillOpacity={0.15}
+                  strokeWidth={2}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
 
       </div>
     </DashboardLayout>

@@ -1,0 +1,78 @@
+import { createTheme } from "../themeSchema";
+
+/**
+ * Debug Dynasty — inspired by Silicon Valley (HBO)
+ * Blue + Black. Startup grind, compression ratios, pivot culture.
+ * "Always be coding. Never stop pivoting."
+ */
+export const debugDynastyTheme = createTheme({
+  id: "debugDynasty",
+
+  name: "Debug Dynasty",
+
+  description: "Build the next big thing. One algorithm at a time.",
+
+  colors: {
+    primary:   "#3b82f6",   // electric blue
+    secondary: "#0a0f1e",
+    border:    "#1e3a5f",
+    accent:    "#60a5fa",
+  },
+
+  words: {
+    run:                  "Compile & Ship",
+    submit:               "Push to Prod",
+    accepted:             "Deployed ✅",
+    wrongAnswer:          "Build Failed ❌",
+    runtimeError:         "Server Crashed 💀",
+    compileError:         "Lint Error ❌",
+    testcases:            "Test Suites",
+    debug:                "Debug Console",
+    dashboard:            "Founder Dashboard",
+    problems:             "Engineering Tickets",
+    analytics:            "KPI Dashboard",
+    profile:              "LinkedIn",
+    judgeError:           "CI/CD Failure",
+    rank:                 "Valuation",
+    level:                "Series",
+    nextMilestone:        "more tickets to next Series",
+    acceptanceRate:       "Merge Rate",
+    averageRuntime:       "Deploy Speed",
+    favoriteLanguage:     "Primary Stack",
+    totalSubmissions:     "PRs Submitted",
+    dailyChallenge:       "Daily Sprint",
+    difficulty:           "Engineering Complexity",
+    solveChallenge:       "Close Ticket",
+    aiInsights:           "AI Product Insights",
+    strongestTopic:       "Core Competency",
+    weakestTopic:         "Technical Debt",
+    recommendation:       "Sprint Backlog",
+    achievements:         "Engineering Milestones",
+    noAchievements:       "No milestones shipped yet. Start sprinting.",
+    achievementIcon:      "🚀",
+    publicProfile:        "Dev Profile",
+    totalSolved:          "Tickets Closed",
+    easySolved:           "Junior Tasks",
+    mediumSolved:         "Mid Tasks",
+    hardSolved:           "Staff Tasks",
+    topics:               "Tech Stack",
+    joined:               "Onboarded",
+    recentActivity:       "Commit History",
+    connectLeetcode:      "Import Dev History",
+    searchProblems:       "Search tickets...",
+    all:                  "All",
+    easy:                 "Junior",
+    medium:               "Mid-Level",
+    hard:                 "Staff",
+    problemFound:         "ticket found",
+    problemsFound:        "tickets found",
+    noProblemsFound:      "No tickets match your filters.",
+    clearFilters:         "Reset Filters",
+    topic:                "Tech Domain",
+    solveProblem:         "Close Ticket",
+    language:             "Language",
+    advancedTesting:      "Staging Environment",
+    customInput:          "Custom Test Case",
+    customInputPlaceholder: "Enter test data...",
+  },
+});

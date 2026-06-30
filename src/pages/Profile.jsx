@@ -11,8 +11,9 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
 import SectionCard from "../components/ui/layout/SectionCard";
-import EmptyState  from "../components/ui/feedback/EmptyState";
+import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
+
 
 // ── Integrations data ──────────────────────────────────────────────────────────
 
@@ -111,8 +112,29 @@ function Profile() {
   const { user } = useAuth();
 
   const [currentUsername, setCurrentUsername] = useState("");
-  const [username, setUsername]               = useState("");
-  const [savingUsername, setSavingUsername]   = useState(false);
+  const [username, setUsername] = useState("");
+  const [savingUsername, setSavingUsername] = useState(false);
+
+  function downloadProfilePDF() {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    import("../services/auth").then(({ getIdToken }) => {
+      getIdToken().then(token => {
+        fetch(`${API_URL}/api/profile/pdf`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then(r => r.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${currentUsername || "profile"}_CodeClub_Profile.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+          })
+          .catch(() => alert("PDF generation failed. Try again."));
+      });
+    });
+  }
 
   useEffect(() => {
     async function loadProfileInfo() {
@@ -145,15 +167,15 @@ function Profile() {
     selectedAt: themeInfo?.lastChangedAt,
   });
 
-  const joinedDate       = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
+  const joinedDate = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
   const recentSubmissions = submissions.slice(0, 5);
-  const level            = solvedProblems.length;
+  const level = solvedProblems.length;
 
   const rank =
-    level < 5  ? "Beginner"     :
-    level < 15 ? "Learner"      :
-    level < 30 ? "Intermediate" :
-    level < 60 ? "Advanced"     : "Expert";
+    level < 5 ? "Beginner" :
+      level < 15 ? "Learner" :
+        level < 30 ? "Intermediate" :
+          level < 60 ? "Advanced" : "Expert";
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -244,6 +266,12 @@ function Profile() {
                   >
                     Copy Profile Link
                   </button>
+                  <button
+                    onClick={downloadProfilePDF}
+                    className="mt-3 ml-3 bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg text-sm font-medium"
+                  >
+                    Export Profile
+                  </button>
                 </div>
               )}
             </div>
@@ -258,11 +286,10 @@ function Profile() {
               <button
                 disabled={!canSwitchUniverse}
                 onClick={() => navigate("/theme-selection")}
-                className={`px-4 py-2 rounded-xl font-medium transition ${
-                  canSwitchUniverse
-                    ? "bg-green-500 text-black hover:bg-green-600"
-                    : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                }`}
+                className={`px-4 py-2 rounded-xl font-medium transition ${canSwitchUniverse
+                  ? "bg-green-500 text-black hover:bg-green-600"
+                  : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                  }`}
               >
                 {canSwitchUniverse ? "Change Universe" : "Locked"}
               </button>
@@ -361,11 +388,10 @@ function Profile() {
                   >
                     <div className="flex items-center gap-3">
                       <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          item.status?.includes("Accepted")
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted")
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                          }`}
                       />
                       <span className="text-sm">{item.title}</span>
                     </div>

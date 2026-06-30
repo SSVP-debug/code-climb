@@ -34,6 +34,11 @@ import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
 import initRoutes from "./routes/init.js";
 import statsRoutes from "./routes/stats.js";
+import leaderboardRoutes from "./routes/leaderboard.js";
+import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
+import hintsRoutes from "./routes/hints.js";
+import notesRoutes from "./routes/notes.js";
+import profilePdfRoutes from "./routes/profilePdf.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -87,6 +92,13 @@ app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);
 // Public stats endpoint — no auth, used by landing page social proof
 app.use("/api/stats", statsRoutes);
+// Leaderboard — public (no auth required, cached 5 min)
+app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/weekly", weeklyChallengeRoutes);
+// AI hints — auth + AI rate limiter (shares quota with insights)
+app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);
+app.use("/api/notes", requireAuth, apiLimiter, notesRoutes);
+app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
