@@ -46,21 +46,21 @@ const FEATURES = [
     icon: "⚡",
     title: "Multi-language Judge",
     description:
-      "Submit in Python, JavaScript, Java, or C++. Your code runs against hidden test cases on our Judge0 backend — same as production interviews.",
+      "Submit in Python, JavaScript, Java, or C++. Your code runs against hidden test cases on our Judge0 backend same as production interviews.",
     badge: null,
   },
   {
     icon: "🤖",
     title: "AI Coaching",
     description:
-      "Stuck? Get topic-level insights powered by Claude. Understand your weak patterns and what to practice next — not just \"try harder.\"",
+      "Stuck? Get topic-level insights powered by Claude. Understand your weak patterns and what to practice next not just \"try harder.\"",
     badge: "Live",
   },
   {
     icon: "🔥",
     title: "Streaks & XP",
     description:
-      "Daily challenges, streak tracking, XP levels, and unlockable themes. Built to keep you coming back — not just once a week before an interview.",
+      "Daily challenges, streak tracking, XP levels, and unlockable themes. Built to keep you coming back not just once a week before an interview.",
     badge: null,
   },
   {
@@ -74,7 +74,7 @@ const FEATURES = [
     icon: "🏆",
     title: "Public Profile",
     description:
-      "Share your solve history at code-club.com/u/yourname. Built to impress recruiters — show your consistency, not just a resume line.",
+      "Share your solve history at code-club.com/u/yourname. Built to impress recruiters show your consistency, not just a resume line.",
     badge: "Beta",
   },
 ];
@@ -90,7 +90,7 @@ const CODE_PREVIEW = `def twoSum(nums, target):
     return []
 
 # Test: nums=[2,7,11,15], target=9
-# Output: [0, 1]  ✅ Vault Breached`;
+# Output: [0, 1]  ✅ Yahoo`;
 
 // ── Theme preview cards ───────────────────────────────────────────────────────
 const THEMES_PREVIEW = [
@@ -123,8 +123,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <PageMeta
-        title="Code Club — DSA Practice for Indian Placement Season"
-        description="Solve curated DSA problems in themed universes. Track streaks, earn XP, get AI coaching. Free for Indian engineering students preparing for campus placements."
+        title="Code Club DSA Practice for Placement Season"
+        description="Solve curated DSA problems in themed universes. Track streaks, earn XP, get AI coaching. Free for engineering students preparing for campus placements."
         path="/"
       />
 
@@ -160,7 +160,7 @@ export default function LandingPage() {
           <div>
             <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-400 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              Built for Indian placement season
+              Built for placement season
             </div>
 
             <h1 className="text-4xl md:text-5xl font-black leading-tight mb-5">
@@ -171,8 +171,8 @@ export default function LandingPage() {
 
             <p className="text-zinc-400 text-lg leading-relaxed mb-8">
               Solve real interview problems in themed universes. Track streaks,
-              earn XP, get AI coaching. LeetCode is cold —
-              <strong className="text-white"> Code Club is yours.</strong>
+              earn XP, get AI coaching. No overwhelm, Just your
+              <strong className="text-white"> Code Club.</strong>
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
@@ -217,7 +217,7 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-green-500/60" />
                 <span className="ml-3 text-xs text-zinc-500 font-mono">two-sum.py</span>
                 <span className="ml-auto text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full font-semibold">
-                  Vault Breached ✅
+                  Submitted
                 </span>
               </div>
 
@@ -262,7 +262,7 @@ export default function LandingPage() {
             Pick your universe. Own your grind.
           </h2>
           <p className="text-zinc-400 max-w-xl mx-auto">
-            LeetCode has problems. Code Club has <em>worlds</em>. Same DSA — 
+            Note just problems. Code Club has <em>worlds</em>. Same DSA 
             completely different experience.
           </p>
         </div>
@@ -314,8 +314,7 @@ export default function LandingPage() {
               Everything you need. Nothing you don't.
             </h2>
             <p className="text-zinc-400 max-w-xl mx-auto">
-              Built from scratch for placement-focused Indian engineering students.
-              Not ported from a US platform.
+              Built from scratch for placement-focused engineering students.
             </p>
           </div>
 
