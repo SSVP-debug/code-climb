@@ -69,6 +69,21 @@ app.use(cors({
 
 
 
+// Razorpay webhook needs the RAW request body for HMAC signature verification.
+// Must be mounted BEFORE express.json() — otherwise the body is already parsed
+// into an object and signature verification will always fail.
+import billingRoutes from "./routes/billing.js";
+import premiumFeaturesRoutes from "./routes/premiumFeatures.js";
+import { attachPremiumStatus, requirePremium } from "./middleware/premiumGate.js";
+import interviewRoutes from "./routes/interview.js";
+import referralRoutes from "./routes/referral.js";
+import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
+app.post(
+  "/api/billing/webhook",
+  express.raw({ type: "application/json" }),
+  billingRoutes
+);
+
 app.use(express.json({ limit: "1mb" }));
 
 // ─── Public routes (no auth needed) ────────────────────────────────────────
@@ -96,9 +111,22 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/weekly", weeklyChallengeRoutes);
 // AI hints — auth + AI rate limiter (shares quota with insights)
-app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);
+app.use("/api/hints", requireAuth, aiLimiter, attachPremiumStatus, hintsRoutes);
 app.use("/api/notes", requireAuth, apiLimiter, notesRoutes);
 app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
+// Billing routes — public plans endpoint + auth-required order/verify/cancel.
+// Note: /api/billing/webhook is mounted separately above with raw body parser.
+app.use("/api/premium/features", premiumFeaturesRoutes);
+app.use("/api/interview", requireAuth, aiLimiter, interviewRoutes);
+app.use("/api/referral", requireAuth, apiLimiter, referralRoutes);
+// B2B / TPO routes — gated by B2B_ENABLED flag
+app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
+app.use("/api/assignments", requireAuth, apiLimiter, studentAssignmentsRouter);
+app.use("/api/billing", (req, res, next) => {
+  // Skip auth for /plans (public pricing display)
+  if (req.path === "/plans") return next();
+  return requireAuth(req, res, next);
+}, apiLimiter, billingRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);

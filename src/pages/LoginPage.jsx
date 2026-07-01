@@ -1,23 +1,36 @@
 import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { signInWithGoogle } from "../services/auth";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref");
+
+  // Apply referral code after login if present in URL
+  async function applyReferralIfPresent() {
+    if (!refCode) return;
+    try {
+      await apiFetch("/api/referral/apply", {
+        method: "POST",
+        body: JSON.stringify({ code: refCode }),
+      });
+    } catch {}
+  }
   const { user } = useAuth();
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      applyReferralIfPresent().then(() => navigate("/dashboard"));
     }
   }, [user, navigate]);
 
   const handleGoogleLogin = async () => {
     const loggedInUser = await signInWithGoogle();
     if (loggedInUser) {
-      navigate("/dashboard");
+      applyReferralIfPresent().then(() => navigate("/dashboard"));
     }
   };
 

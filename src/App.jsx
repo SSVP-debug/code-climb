@@ -27,6 +27,10 @@ const PublicProfile        = lazy(() => import("./pages/PublicProfile"));
 const ThemeSelectionPage   = lazy(() => import("./pages/ThemeSelectionPage"));
 const ThemeConfirmationPage = lazy(() => import("./pages/ThemeConfirmationPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
+const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
+const PricingPage       = lazy(() => import("./pages/PricingPage"));
+const TpoSignupPage    = lazy(() => import("./pages/TpoSignupPage"));
+const TpoDashboardPage = lazy(() => import("./pages/TpoDashboardPage"));
 
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
@@ -98,6 +102,30 @@ function App() {
           element={
             <ProtectedRoute>
               <ThemeGate><ProblemsPage /></ThemeGate>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/tpo/signup"   element={<TpoSignupPage />} />
+        <Route
+          path="/tpo/dashboard"
+          element={<ProtectedRoute><TpoDashboardPage /></ProtectedRoute>}
+        />
+
+        <Route
+          path="/pricing"
+          element={
+            <ProtectedRoute>
+              <ThemeGate><PricingPage /></ThemeGate>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/interview/:slug"
+          element={
+            <ProtectedRoute>
+              <ThemeGate><InterviewModePage /></ThemeGate>
             </ProtectedRoute>
           }
         />

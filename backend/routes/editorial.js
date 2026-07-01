@@ -10,6 +10,7 @@
  */
 import { Router } from "express";
 import Problem from "../models/Problem.js";
+import { isUserPremium } from "./billing.js";
 
 const router = Router({ mergeParams: true });
 
@@ -21,10 +22,12 @@ router.get("/", async (req, res) => {
     if (!problem) return res.status(404).json({ error: "Problem not found." });
 
     // Check if user has solved this problem (userDoc populated by requireAuth)
-    const solved = req.userDoc?.solvedSlugs?.includes(slug) ?? false;
-    const isAdmin = req.auth?.email?.endsWith("@codeclub.admin") ?? false;
+    const solved   = req.userDoc?.solvedSlugs?.includes(slug) ?? false;
+    const isAdmin  = req.auth?.email?.endsWith("@codeclub.admin") ?? false;
+    // Premium users can read any editorial without solving first — see PREMIUM_FEATURES.EDITORIAL_ACCESS
+    const premium  = isUserPremium(req.userDoc);
 
-    if (!solved && !isAdmin) {
+    if (!solved && !isAdmin && !premium) {
       return res.status(403).json({
         error: "Solve this problem first to unlock the editorial.",
         locked: true,

@@ -15,6 +15,7 @@
 import { Router } from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import Problem from "../models/Problem.js";
+import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 
 const router = Router({ mergeParams: true });
 const claude = new Anthropic();
@@ -45,6 +46,24 @@ router.post("/", async (req, res) => {
     const { slug }  = req.params;
     const level     = parseInt(req.body.level) || 1;
     const validLevel = Math.min(3, Math.max(1, level));
+
+    // ── Free tier limit: 3 hints/day (resets at midnight UTC) ───────────────
+    // Premium users (or everyone, while MONETIZATION_ENABLED=false) skip this.
+    if (!req.isPremium && req.userDoc) {
+      const today = new Date().toISOString().split("T")[0];
+      const hintLog = req.userDoc.dailyHintLog || {};
+      const usedToday = hintLog.date === today ? (hintLog.count || 0) : 0;
+
+      if (usedToday >= PREMIUM_FEATURES.UNLIMITED_AI_HINTS.freeLimitPerDay) {
+        return res.status(402).json({
+          error: `Free plan includes ${PREMIUM_FEATURES.UNLIMITED_AI_HINTS.freeLimitPerDay} hints/day. Upgrade to Pro for unlimited hints.`,
+          upgradeUrl: "/pricing",
+        });
+      }
+
+      req.userDoc.dailyHintLog = { date: today, count: usedToday + 1 };
+      await req.userDoc.save();
+    }
 
     // Cache check
     const cacheKey = `${slug}-${validLevel}`;

@@ -17,6 +17,8 @@
  */
 import { Router } from "express";
 import { createRequire } from "module";
+import { isUserPremium } from "./billing.js";
+import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 
 const require = createRequire(import.meta.url);
 const router  = Router();
@@ -39,6 +41,23 @@ router.get("/", async (req, res) => {
   try {
     const user = req.userDoc;
     if (!user) return res.status(503).json({ error: "Database unavailable." });
+
+    // ── Free tier: 1 PDF download/month. Premium: unlimited. ────────────────
+    if (!isUserPremium(user)) {
+      const thisMonth = new Date().toISOString().slice(0, 7); // "2026-06"
+      const log = user.pdfDownloadLog || {};
+      const usedThisMonth = log.month === thisMonth ? (log.count || 0) : 0;
+
+      if (usedThisMonth >= PREMIUM_FEATURES.PROFILE_PDF_UNLIMITED.freeLimitPerMonth) {
+        return res.status(402).json({
+          error: "Free plan includes 1 profile PDF download/month. Upgrade to Pro for unlimited downloads.",
+          upgradeUrl: "/pricing",
+        });
+      }
+
+      user.pdfDownloadLog = { month: thisMonth, count: usedThisMonth + 1 };
+      await user.save();
+    }
 
     const level        = xpToLevel(user.totalXP || 0);
     const solved       = user.solvedSlugs?.length ?? 0;
