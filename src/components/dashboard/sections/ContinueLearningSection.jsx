@@ -5,8 +5,11 @@ import { useAppContext } from "../../../hooks/useAppContext";
 function ContinueLearningSection() {
   const { submissions } = useAppContext();
 
-  const latestSubmission = submissions[0] ?? null;
-  console.log(latestSubmission);
+  const latestSubmission =
+    submissions?.length > 0
+      ? submissions[submissions.length - 1]
+      : null;
+
 
   if (!latestSubmission) {
     return (
@@ -38,9 +41,7 @@ function ContinueLearningSection() {
 
         <div>
 
-          <pre className="text-xs text-white">
-            {JSON.stringify(latestSubmission, null, 2)}
-          </pre>
+          {/* Debug output removed */}
 
           <h3 className="text-2xl font-bold">
             {latestSubmission.problemTitle}
@@ -60,7 +61,7 @@ function ContinueLearningSection() {
         </div>
 
         <Link
-          to={`/problems/${latestSubmission.problemSlug}`}
+          to={`/problems/${latestSubmission.problemSlug ?? latestSubmission.problemId}`}
           className="bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
         >
           Continue →
@@ -68,9 +69,7 @@ function ContinueLearningSection() {
 
       </div>
 
-      <pre className="text-xs text-white">
-        {JSON.stringify(latestSubmission, null, 2)}
-      </pre>
+      {/* Debug output removed */}
     </SectionCard>
   );
 }
