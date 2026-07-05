@@ -35,13 +35,13 @@ function SectionCard({
 
   return (
     <div
-      className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-6 ${className}`}
+      className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-6 ${className}`}
     >
       {/* ── Header ─────────────────────────────────────────────────────── */}
       {hasHeader && (
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between gap-3 mb-4">
           {/* Title group */}
-          <div>
+          <div className="min-w-0">
             {title && (
               <h2 className="text-xl font-semibold text-white leading-tight">
                 {title}
@@ -54,7 +54,7 @@ function SectionCard({
 
           {/* Right-aligned action slot */}
           {action && (
-            <div className="flex-shrink-0 ml-4">{action}</div>
+            <div className="flex-shrink-0">{action}</div>
           )}
         </div>
       )}

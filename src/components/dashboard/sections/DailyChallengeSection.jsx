@@ -35,9 +35,9 @@ function DailyChallengeSection() {
 
     <SectionCard>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
 
-        <div>
+        <div className="min-w-0">
 
           <p className="text-zinc-400 text-sm">
 
@@ -45,7 +45,7 @@ function DailyChallengeSection() {
 
           </p>
 
-          <h2 className="text-3xl font-bold mt-2">
+          <h2 className="text-xl sm:text-3xl font-bold mt-2 break-words">
 
             {challenge.title}
 
@@ -53,7 +53,7 @@ function DailyChallengeSection() {
 
         </div>
 
-        <div className="text-right">
+        <div className="text-right flex-shrink-0">
 
           <p className="text-zinc-400 text-sm">
 

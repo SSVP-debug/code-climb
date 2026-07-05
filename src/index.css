@@ -36,4 +36,15 @@
   .animate-fadeIn {
     animation: fadeIn 0.2s ease-out both;
   }
+
+  /* Hides scrollbar on horizontally-scrolling mobile nav strips while
+     keeping the element scrollable (touch/drag still works). */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

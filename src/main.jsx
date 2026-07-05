@@ -17,6 +17,7 @@ import AppContextProvider from "./context/appContext";
 import { Toaster } from "react-hot-toast";
 
 import "./index.css";
+import { registerServiceWorker } from "./utils/registerServiceWorker";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -47,6 +48,8 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+
+registerServiceWorker();
 
 // ─────────────────────────────────────────────────────────────
 // React App Render

@@ -35,11 +35,12 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
           </span>
         </div>
 
-        {/* Divider */}
-        <div className="h-6 w-px bg-zinc-700 flex-shrink-0" />
+        {/* Divider — hidden on mobile since the chip row scrolls independently */}
+        <div className="hidden sm:block h-6 w-px bg-zinc-700 flex-shrink-0" />
 
-        {/* Stat chips — fill available space, always rendered */}
-        <div className="flex items-center gap-2 flex-1">
+        {/* Stat chips — horizontally scrollable so 4 chips never force page
+            overflow or get crushed below their min-width on narrow screens */}
+        <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
           <StatChip label="Vaults"   value={totalProblems} />
           <StatChip label="Cleared"  value={solvedCount} />
           <StatChip

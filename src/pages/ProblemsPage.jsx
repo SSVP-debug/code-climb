@@ -3,6 +3,7 @@ import {
   useMemo,
   useState
 } from "react";
+import { X } from "lucide-react";
 
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
@@ -174,6 +175,11 @@ function ProblemsPage() {
     solvedProblems,
   ]);
 
+  // Learning hub (right rail) collapses off-screen below the `xl` breakpoint —
+  // there simply isn't width for a 3-column layout on tablet/phone. This
+  // state drives it as a slide-over sheet instead, toggled from the topbar.
+  const [learningHubOpen, setLearningHubOpen] = useState(false);
+
   const ActiveView = VIEWS[activeView] ?? null;
 
   const browseProps =
@@ -204,12 +210,22 @@ function ProblemsPage() {
         progress={progress}
       />
 
-      {/* 3-column body */}
-      <div className="flex flex-1 min-h-0">
+      {/* ── Mobile/tablet workspace nav — horizontal pill strip, replaces
+             the left sidebar below `lg`. Sits right under the topbar. ── */}
+      <div className="lg:hidden border-b border-zinc-800 bg-zinc-950">
+        <ProblemsNavigation
+          activeView={activeView}
+          setActiveView={setActiveView}
+          orientation="horizontal"
+        />
+      </div>
 
-        {/* ── LEFT: workspace nav ── */}
+      {/* 3-column body on desktop; single column + slide-over on mobile */}
+      <div className="flex flex-1 min-h-0 relative">
+
+        {/* ── LEFT: workspace nav — desktop only, `lg` swaps in the strip above ── */}
         <aside
-          className="w-56 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto"
+          className="hidden lg:block w-56 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <div className="p-3 pt-4">
@@ -228,17 +244,27 @@ function ProblemsPage() {
           className="flex-1 min-w-0 bg-black overflow-y-auto"
           style={{ scrollbarWidth: "thin", scrollbarColor: "#3f3f46 transparent" }}
         >
-          <div className="px-7 py-6 max-w-4xl">
+          <div className="px-4 sm:px-7 py-4 sm:py-6 max-w-4xl">
 
             {/* Page header — tighter than before */}
-            <div className="mb-5">
-              <h1 className="text-2xl font-bold tracking-tight">
-                {theme.words.problems}
-              </h1>
-              <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
-              <p className="text-xs text-zinc-600 mt-2">
-                Showing {filtered.length} of {problems.length} problems
-              </p>
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+                  {theme.words.problems}
+                </h1>
+                <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
+                <p className="text-xs text-zinc-600 mt-2">
+                  Showing {filtered.length} of {problems.length} problems
+                </p>
+              </div>
+
+              {/* Learning hub toggle — only needed where the right rail is hidden */}
+              <button
+                onClick={() => setLearningHubOpen(true)}
+                className="xl:hidden flex-shrink-0 flex items-center gap-1.5 rounded-full bg-zinc-900 border border-zinc-700 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition"
+              >
+                Learning Hub
+              </button>
             </div>
 
             {ActiveView && <ActiveView {...browseProps} />}
@@ -246,9 +272,9 @@ function ProblemsPage() {
           </div>
         </main>
 
-        {/* ── RIGHT: learning hub ── */}
+        {/* ── RIGHT: learning hub — desktop (xl+) inline sidebar ── */}
         <aside
-          className="w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
+          className="hidden xl:block w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <LearningWorkspace
@@ -257,6 +283,33 @@ function ProblemsPage() {
             progress={progress}
           />
         </aside>
+
+        {/* ── Learning hub — mobile/tablet slide-over sheet ── */}
+        {learningHubOpen && (
+          <>
+            <div
+              className="xl:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              onClick={() => setLearningHubOpen(false)}
+            />
+            <aside className="xl:hidden fixed top-0 right-0 h-full w-full sm:w-96 z-50 bg-zinc-950 border-l border-zinc-800 overflow-y-auto shadow-2xl">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 sticky top-0 bg-zinc-950">
+                <span className="text-sm font-bold text-white">Learning Hub</span>
+                <button
+                  onClick={() => setLearningHubOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-zinc-800 transition text-zinc-400"
+                  aria-label="Close learning hub"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <LearningWorkspace
+                problems={problems}
+                solvedCount={solvedCount}
+                progress={progress}
+              />
+            </aside>
+          </>
+        )}
 
       </div>
 

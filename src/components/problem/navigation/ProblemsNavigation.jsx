@@ -36,7 +36,38 @@ const navigationItems = [
 // { id: "roadmaps", label: "Roadmaps", description: "Structured learning paths", icon: Map }
 // { id: "company",  label: "Company Tracks", description: "Interview prep by company", icon: Building2 }
 
-function ProblemsNavigation({ activeView, setActiveView }) {
+// orientation="vertical" (default): full card list, used in the desktop
+// left sidebar. orientation="horizontal": compact scrollable pill row,
+// used as the mobile/tablet replacement for that sidebar (icon + label
+// only — no room for the description line at pill size, and a touch
+// target of ~40px tall keeps it comfortably tappable).
+function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical" }) {
+  if (orientation === "horizontal") {
+    return (
+      <nav className="flex items-center gap-2 px-3 py-2.5 overflow-x-auto no-scrollbar">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const active = activeView === item.id;
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveView(item.id)}
+              className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all whitespace-nowrap ${
+                active
+                  ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
+                  : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              }`}
+            >
+              <Icon size={14} />
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
+    );
+  }
+
   return (
     <nav className="flex flex-col gap-0.5">
       {navigationItems.map((item) => {
