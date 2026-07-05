@@ -27,10 +27,13 @@ const PublicProfile        = lazy(() => import("./pages/PublicProfile"));
 const ThemeSelectionPage   = lazy(() => import("./pages/ThemeSelectionPage"));
 const ThemeConfirmationPage = lazy(() => import("./pages/ThemeConfirmationPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
-const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
-const PricingPage       = lazy(() => import("./pages/PricingPage"));
-const TpoSignupPage    = lazy(() => import("./pages/TpoSignupPage"));
-const TpoDashboardPage = lazy(() => import("./pages/TpoDashboardPage"));
+const RecruiterSignupPage  = lazy(() => import("./pages/RecruiterSignupPage"));
+const RecruiterDashboardPage = lazy(() => import("./pages/RecruiterDashboardPage"));
+const CandidateTestsPage   = lazy(() => import("./pages/CandidateTestsPage"));
+const CertificationsPage   = lazy(() => import("./pages/CertificationsPage"));
+const CertVerifyPage       = lazy(() => import("./pages/CertVerifyPage"));
+const ContestsPage         = lazy(() => import("./pages/ContestsPage"));
+const ContestDetailPage    = lazy(() => import("./pages/ContestDetailPage"));
 
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
@@ -106,30 +109,6 @@ function App() {
           }
         />
 
-        <Route path="/tpo/signup"   element={<TpoSignupPage />} />
-        <Route
-          path="/tpo/dashboard"
-          element={<ProtectedRoute><TpoDashboardPage /></ProtectedRoute>}
-        />
-
-        <Route
-          path="/pricing"
-          element={
-            <ProtectedRoute>
-              <ThemeGate><PricingPage /></ThemeGate>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/interview/:slug"
-          element={
-            <ProtectedRoute>
-              <ThemeGate><InterviewModePage /></ThemeGate>
-            </ProtectedRoute>
-          }
-        />
-
         {/* ProblemDetailsPage contains Monaco Editor (~3MB chunk).         */}
         {/* Lazy-loading this route alone saves ~60% of initial bundle.     */}
         <Route
@@ -141,6 +120,21 @@ function App() {
           }
         />
 
+
+        {/* ── Phase 7: Recruiter ──────────────────────────────────────── */}
+        <Route path="/recruiter/signup"    element={<ProtectedRoute><RecruiterSignupPage /></ProtectedRoute>} />
+        <Route path="/recruiter/dashboard" element={<ProtectedRoute><RecruiterDashboardPage /></ProtectedRoute>} />
+
+        {/* ── Phase 7: Candidate tests ────────────────────────────────── */}
+        <Route path="/candidate/tests"     element={<ProtectedRoute><CandidateTestsPage /></ProtectedRoute>} />
+
+        {/* ── Phase 7: Certifications ─────────────────────────────────── */}
+        <Route path="/certifications"      element={<ProtectedRoute><ThemeGate><CertificationsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/verify/:code"        element={<CertVerifyPage />} />
+
+        {/* ── Phase 7: Contests ───────────────────────────────────────── */}
+        <Route path="/contests"            element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/contests/:id"        element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
 
       </Routes>

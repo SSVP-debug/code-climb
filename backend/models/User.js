@@ -97,6 +97,50 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
+
+    // ── Role system (Phase 7) ─────────────────────────────────────────────
+    role: {
+      type: String,
+      enum: ["student", "recruiter", "tpo", "admin"],
+      default: "student",
+      index: true,
+    },
+
+    // ── Recruiter-specific fields ─────────────────────────────────────────
+    recruiterProfile: {
+      companyName:  { type: String, default: null },
+      designation:  { type: String, default: null },
+      companyDomain:{ type: String, default: null }, // e.g. "google.com"
+      verified:     { type: Boolean, default: false },
+      verifiedAt:   { type: Date,    default: null },
+    },
+
+    // ── TPO-specific fields ───────────────────────────────────────────────
+    collegeDomain: { type: String, default: null },
+    collegeName:   { type: String, default: null },
+
+    // ── Profile verification hash (commit 085) ────────────────────────────
+    // HMAC-SHA256 of (userId + solvedCount + timestamp) — proves data wasn't
+    // tampered. Recruiters can verify at /verify/:username.
+    profileSignature: {
+      hash:        { type: String, default: null },
+      signedAt:    { type: Date,   default: null },
+      solvedCount: { type: Number, default: 0 },
+    },
+
+    // ── Certifications earned (commit 087) ───────────────────────────────
+    certificates: [{
+      trackId:    { type: String },   // e.g. "arrays", "dynamic-programming"
+      trackName:  { type: String },
+      issuedAt:   { type: Date },
+      verifyCode: { type: String },   // short unique code for QR verification
+    }],
+
+    // ── Referrals (Phase 6 — add here if missing) ────────────────────────
+    referralCode:       { type: String, default: null, unique: true, sparse: true },
+    referredBy:         { type: String, default: null },
+    referralRewardDays: { type: Number, default: 0 },
+
     dailyChallengeHistory: {
       type: [
         {

@@ -29,6 +29,13 @@ import publicProfileRoutes from "./routes/publicProfile.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
+// ── Phase 7 imports ──────────────────────────────────────────────────────────
+import recruiterRoutes, { candidateTestsRouter } from "./routes/recruiter.js";
+import certificationRoutes from "./routes/certification.js";
+import contestRoutes from "./routes/contests.js";
+import profileSignRoutes from "./routes/profileSign.js";
+import { requireRole } from "./middleware/roleGuard.js";
+
 import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter.js";
 import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
@@ -69,21 +76,6 @@ app.use(cors({
 
 
 
-// Razorpay webhook needs the RAW request body for HMAC signature verification.
-// Must be mounted BEFORE express.json() — otherwise the body is already parsed
-// into an object and signature verification will always fail.
-import billingRoutes from "./routes/billing.js";
-import premiumFeaturesRoutes from "./routes/premiumFeatures.js";
-import { attachPremiumStatus, requirePremium } from "./middleware/premiumGate.js";
-import interviewRoutes from "./routes/interview.js";
-import referralRoutes from "./routes/referral.js";
-import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
-app.post(
-  "/api/billing/webhook",
-  express.raw({ type: "application/json" }),
-  billingRoutes
-);
-
 app.use(express.json({ limit: "1mb" }));
 
 // ─── Public routes (no auth needed) ────────────────────────────────────────
@@ -111,22 +103,9 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/weekly", weeklyChallengeRoutes);
 // AI hints — auth + AI rate limiter (shares quota with insights)
-app.use("/api/hints", requireAuth, aiLimiter, attachPremiumStatus, hintsRoutes);
+app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);
 app.use("/api/notes", requireAuth, apiLimiter, notesRoutes);
 app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
-// Billing routes — public plans endpoint + auth-required order/verify/cancel.
-// Note: /api/billing/webhook is mounted separately above with raw body parser.
-app.use("/api/premium/features", premiumFeaturesRoutes);
-app.use("/api/interview", requireAuth, aiLimiter, interviewRoutes);
-app.use("/api/referral", requireAuth, apiLimiter, referralRoutes);
-// B2B / TPO routes — gated by B2B_ENABLED flag
-app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
-app.use("/api/assignments", requireAuth, apiLimiter, studentAssignmentsRouter);
-app.use("/api/billing", (req, res, next) => {
-  // Skip auth for /plans (public pricing display)
-  if (req.path === "/plans") return next();
-  return requireAuth(req, res, next);
-}, apiLimiter, billingRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
@@ -142,6 +121,14 @@ app.use(
 );
 
 // ─── 404 handler ────────────────────────────────────────────────────────────
+
+// ── Phase 7 mounts ───────────────────────────────────────────────────────────
+app.use("/api/recruiter",    requireAuth, apiLimiter, recruiterRoutes);
+app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
+app.use("/api/cert",         requireAuth, apiLimiter, certificationRoutes);
+app.use("/api/contests",     requireAuth, apiLimiter, contestRoutes);
+app.use("/api/profile",      requireAuth, apiLimiter, profileSignRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
