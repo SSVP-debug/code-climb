@@ -100,21 +100,16 @@ function ProblemDetailsPage() {
         setProblemError(null);
 
         // Fetch current problem + sibling slugs for prev/next navigation
-        const [problemData, allProblems] = await Promise.all([
+        const [problemResponse] = await Promise.all([
           apiFetch(`/api/problems/${slug}`),
-          apiFetch("/api/problems"),
         ]);
 
-        if (cancelled) return;
-
-        setProblem(problemData);
-
-        // Compute prev/next slugs from the ordered list
-        const idx = allProblems.findIndex((p) => p.slug === slug);
+        setProblem(problemResponse.problem);
         setAdjacentSlugs({
-          prev: idx > 0 ? allProblems[idx - 1].slug : null,
-          next: idx < allProblems.length - 1 ? allProblems[idx + 1].slug : null,
+          prev: problemResponse.prevSlug,
+          next: problemResponse.nextSlug,
         });
+
       } catch (err) {
         if (cancelled) return;
         setProblemError(err.message || "Failed to load problem.");
@@ -130,7 +125,7 @@ function ProblemDetailsPage() {
 
   // ── AI Hints ───────────────────────────────────────────────────────────────
   const [hintLevel, setHintLevel] = useState(0);       // 0=hidden, 1/2/3=shown
-  const [hintText, setHintText]   = useState("");
+  const [hintText, setHintText] = useState("");
   const [hintLoading, setHintLoading] = useState(false);
 
   async function requestHint(level) {
@@ -231,7 +226,7 @@ function ProblemSolver({
     return loadSavedCode(
       slug,
       savedLanguage,
-      problem.starterCode[savedLanguage] || ""
+      problem.starterCode?.[savedLanguage] ?? ""
     );
   });
   const [customInput, setCustomInput] = useState("");
@@ -257,16 +252,14 @@ function ProblemSolver({
 
   const handleLanguageChange = (nextLanguage) => {
     saveCode(slug, language, code);
-
     saveLanguage(slug, nextLanguage);
-
     setLanguage(nextLanguage);
 
     setCode(
       loadSavedCode(
         slug,
         nextLanguage,
-        problem.starterCode[nextLanguage] || ""
+        problem.starterCode?.[nextLanguage] ?? ""
       )
     );
   };
@@ -293,7 +286,7 @@ function ProblemSolver({
 
     if (submitting) return;
     const wasAlreadySolved = isSolved;
-    
+
 
     try {
       setSubmitting(true);
@@ -312,7 +305,7 @@ function ProblemSolver({
       });
 
       if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
-        
+
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =
@@ -363,6 +356,8 @@ function ProblemSolver({
   };
 
   const hasResults = !!(runResults || submitInfo);
+
+  console.log(problem);
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
