@@ -28,6 +28,5 @@ const contestSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 contestSchema.index({ status: 1, startsAt: 1 });
-contestSchema.index({ inviteCode: 1 });
 
 export default mongoose.model("Contest", contestSchema);

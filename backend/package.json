@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "nodemon --ext js,mjs,json,env server.js",
+    "dev": "nodemon --exec \"node --import ./instrument.js\" --ext js,mjs,json,env server.js",
     "start": "node server.js",
     "seed": "node scripts/seedProblems.js",
     "backfill-xp": "node scripts/backfillXP.js"
@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.107.0",
-    "@sentry/node": "^10.56.0",
+    "@sentry/node": "^10.63.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -28,9 +28,9 @@
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.2",
     "pdfkit": "^0.19.1",
-    "zod": "^4.4.3",
     "qrcode": "^1.5.3",
-    "razorpay": "^2.9.4"
+    "razorpay": "^2.9.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
