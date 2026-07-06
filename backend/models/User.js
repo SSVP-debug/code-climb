@@ -33,6 +33,23 @@ const userSchema = new mongoose.Schema(
 
     leetcodeUsername: String,
 
+    // Solve-history stats, separate from leetcodeUsername above (which
+    // predates this and is already wired through progress.js/userController.js
+    // — left untouched). Populated either by manual entry or by the
+    // /api/leetcode/fetch proxy pre-filling the form for the student to
+    // confirm. Not fed into totalXP/solvedSlugs — LeetCode problems aren't
+    // in this platform's own catalog, so there's nothing to map them to;
+    // this exists purely as recruiter-facing supplementary proof of work
+    // on the public profile.
+    leetcodeStats: {
+      easySolved:    { type: Number, default: 0, min: 0 },
+      mediumSolved:  { type: Number, default: 0, min: 0 },
+      hardSolved:    { type: Number, default: 0, min: 0 },
+      totalSolved:   { type: Number, default: 0, min: 0 },
+      source:        { type: String, enum: ["manual", "api"], default: "manual" },
+      lastSyncedAt:  { type: Date, default: null },
+    },
+
 
     joinedDate: {
       type: Date,

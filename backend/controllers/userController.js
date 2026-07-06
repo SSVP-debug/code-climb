@@ -9,6 +9,7 @@ export async function getMe(req, res) {
 
 
     leetcodeUsername: req.userDoc.leetcodeUsername || "",
+    leetcodeStats: req.userDoc.leetcodeStats || null,
     joinedDate: req.userDoc.joinedDate,
   });
 }
@@ -81,6 +82,7 @@ export async function updateMe(req, res) {
     isProfilePublic:
       req.userDoc.isProfilePublic,
     leetcodeUsername: req.userDoc.leetcodeUsername || "",
+    leetcodeStats: req.userDoc.leetcodeStats || null,
     joinedDate: req.userDoc.joinedDate,
   });
 }

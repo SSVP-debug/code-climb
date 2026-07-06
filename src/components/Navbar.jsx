@@ -22,6 +22,7 @@ function Navbar() {
     { to: "/problems",  label: theme.words.problems },
     { to: "/analytics", label: theme.words.analytics },
     { to: "/leaderboard", label: "Leaderboard" },
+    { to: "/ambassador", label: "Ambassador" },
     { to: "/profile",   label: theme.words.profile },
   ];
 

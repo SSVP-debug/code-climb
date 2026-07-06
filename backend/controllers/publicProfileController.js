@@ -116,6 +116,15 @@ async function fetchProfile(username) {
       languageBreakdown,
       recentSolves,
       totalSubmissions: acceptedSubmissions.length,
+      // Recruiter-facing supplementary info only — never fed into totalXP
+      // or this platform's own solve count. See routes/leetcode.js header
+      // for why.
+      leetcode: user.leetcodeUsername
+        ? {
+            username: user.leetcodeUsername,
+            ...user.leetcodeStats,
+          }
+        : null,
     },
   };
 }

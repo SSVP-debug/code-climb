@@ -7,11 +7,11 @@ if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || "development",
-    // Capture 100% of transactions in dev, 10% in prod (adjust as traffic grows)
-    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+    tracesSampleRate:
+      process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   });
 } else {
-  logger.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
+  console.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
 }
 
 import helmet from "helmet";
@@ -43,6 +43,9 @@ import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
 import initRoutes from "./routes/init.js";
 import statsRoutes from "./routes/stats.js";
+import referralRoutes from "./routes/referral.js";
+import ambassadorRoutes from "./routes/ambassador.js";
+import leetcodeRoutes from "./routes/leetcode.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
 import hintsRoutes from "./routes/hints.js";
@@ -111,6 +114,9 @@ app.use("/api/notes", requireAuth, apiLimiter, notesRoutes);
 app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);
+app.use("/api/referral", requireAuth, apiLimiter, referralRoutes);
+app.use("/api/ambassador", requireAuth, apiLimiter, ambassadorRoutes);
+app.use("/api/leetcode", requireAuth, apiLimiter, leetcodeRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);
 app.use(
   "/api/daily-challenge",
@@ -124,7 +130,7 @@ app.use(
 );
 
 // ─── 404 handler ────────────────────────────────────────────────────────────
-
+logger.info(`[Server] 404 handler initialized`);
 // ── Phase 7 mounts ───────────────────────────────────────────────────────────
 app.use("/api/recruiter",    requireAuth, apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
@@ -173,21 +179,25 @@ async function start() {
   }
 
   const server = app.listen(PORT, () => {
-    
+    logger.info(`[Server] Listening on port ${PORT}`);
   });
 
   // Graceful shutdown — Railway sends SIGTERM before restarting containers.
   // Without this, in-flight Judge0 requests are killed mid-execution.
   process.on("SIGTERM", () => {
-    
+    logger.info(`[Server] Received SIGTERM, shutting down gracefully`);
     server.close(() => {
-      
+      logger.info(`[Server] Process terminated`);
       process.exit(0);
     });
   });
 
   process.on("SIGINT", () => {
-    server.close(() => process.exit(0));
+    logger.info(`[Server] Received SIGINT, shutting down gracefully`);
+    server.close(() => {
+      logger.info(`[Server] Process terminated`);
+      process.exit(0);
+    });
   });
 }
 

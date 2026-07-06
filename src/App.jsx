@@ -34,6 +34,7 @@ const CertificationsPage   = lazy(() => import("./pages/CertificationsPage"));
 const CertVerifyPage       = lazy(() => import("./pages/CertVerifyPage"));
 const ContestsPage         = lazy(() => import("./pages/ContestsPage"));
 const ContestDetailPage    = lazy(() => import("./pages/ContestDetailPage"));
+const AmbassadorPage       = lazy(() => import("./pages/AmbassadorPage"));
 
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
@@ -135,6 +136,10 @@ function App() {
         {/* ── Phase 7: Contests ───────────────────────────────────────── */}
         <Route path="/contests"            element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
         <Route path="/contests/:id"        element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
+
+        {/* ── Phase 8: Campus Ambassador Portal ──────────────────────── */}
+        <Route path="/ambassador"          element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />
+
         <Route path="*" element={<NotFoundPage />} />
 
       </Routes>

@@ -13,6 +13,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import SectionCard from "../components/ui/layout/SectionCard";
 import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
+import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
 
 
 // ── Integrations data ──────────────────────────────────────────────────────────
@@ -26,15 +27,6 @@ const INTEGRATIONS = [
     icon: "G",
     iconBg: "bg-white",
     iconColor: "text-zinc-900",
-  },
-  {
-    id: "leetcode",
-    name: "LeetCode",
-    description: "Cross-platform coding analytics and unified progress insights.",
-    status: "coming-soon",
-    icon: "L",
-    iconBg: "bg-orange-500",
-    iconColor: "text-white",
   },
   {
     id: "codeforces",
@@ -114,6 +106,7 @@ function Profile() {
   const [currentUsername, setCurrentUsername] = useState("");
   const [username, setUsername] = useState("");
   const [savingUsername, setSavingUsername] = useState(false);
+  const [leetcodeInitial, setLeetcodeInitial] = useState(null);
 
   function downloadProfilePDF() {
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -142,6 +135,12 @@ function Profile() {
         const data = await apiFetch("/api/users/me");
         setCurrentUsername(data.username || "");
         setUsername(data.username || "");
+        if (data.leetcodeUsername) {
+          setLeetcodeInitial({
+            username: data.leetcodeUsername,
+            ...data.leetcodeStats,
+          });
+        }
       } catch {
         // ignore — username is cosmetic, not critical
       }
@@ -359,6 +358,9 @@ function Profile() {
               </span>
             }
           >
+            <div className="pb-4 mb-4 border-b border-zinc-800">
+              <ConnectLeetCodeSection initial={leetcodeInitial} />
+            </div>
             <div className="divide-y divide-zinc-800">
               {INTEGRATIONS.map((integration) => (
                 <IntegrationRow key={integration.id} integration={integration} />

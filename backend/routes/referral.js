@@ -24,32 +24,41 @@ function generateCode(name) {
   return `${base || "cc"}${suffix}`;
 }
 
+/**
+ * Shared by /my-code below and by routes/ambassador.js's dashboard — an
+ * ambassador's referral tracking IS this referral system, not a parallel
+ * one. Exported so ambassador.js doesn't reimplement code generation.
+ */
+export async function getOrCreateReferralCode(userDoc) {
+  if (!userDoc.referralCode) {
+    let code;
+    let attempts = 0;
+    do {
+      code = generateCode(userDoc.displayName);
+      attempts++;
+    } while (await User.exists({ referralCode: code }) && attempts < 5);
+
+    userDoc.referralCode = code;
+    await userDoc.save();
+  }
+  return userDoc.referralCode;
+}
+
 // ── GET /api/referral/my-code ───────────────────────────────────────────────
 router.get("/my-code", async (req, res) => {
   try {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
-    if (!req.userDoc.referralCode) {
-      let code;
-      let attempts = 0;
-      do {
-        code = generateCode(req.userDoc.displayName);
-        attempts++;
-      } while (await User.exists({ referralCode: code }) && attempts < 5);
-
-      req.userDoc.referralCode = code;
-      await req.userDoc.save();
-    }
-
-    const shareUrl = `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/login?ref=${req.userDoc.referralCode}`;
+    const code = await getOrCreateReferralCode(req.userDoc);
+    const shareUrl = `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/login?ref=${code}`;
 
     return res.json({
-      code: req.userDoc.referralCode,
+      code,
       shareUrl,
       rewardDays: REFERRAL_REWARD_DAYS,
     });
   } catch (err) {
-    console.error("[Referral] my-code error:", err.message);
+    req.log.error({ err }, "[Referral] my-code failed");
     return res.status(500).json({ error: "Failed to get referral code." });
   }
 });
@@ -82,7 +91,7 @@ router.post("/apply", async (req, res) => {
       message: `Referral applied! You'll both get ${REFERRAL_REWARD_DAYS} bonus days when you upgrade to Pro.`,
     });
   } catch (err) {
-    console.error("[Referral] apply error:", err.message);
+    req.log.error({ err }, "[Referral] apply failed");
     return res.status(500).json({ error: "Failed to apply referral code." });
   }
 });
