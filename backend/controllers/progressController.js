@@ -2,6 +2,9 @@ import { calculateStreak } from "../utils/calculateStreak.js";
 import { evaluateAchievements } from "../services/achievementService.js";
 import { computeXPFromSlugs, buildDifficultyMap, XP_BY_DIFFICULTY } from "../utils/computeXP.js";
 import Problem from "../models/Problem.js";
+import { invalidateLeaderboardCaches } from "../routes/leaderboard.js";
+import { invalidateProfileCache } from "./publicProfileController.js";
+import { logger } from "../config/logger.js";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -27,10 +30,7 @@ async function recomputeXP(solvedSlugs) {
     const difficultyMap = buildDifficultyMap(problems);
     return computeXPFromSlugs(solvedSlugs, difficultyMap);
   } catch (err) {
-    console.error(
-      "[Progress] XP recompute failed:",
-      err
-    );
+    logger.error({ err }, "[Progress] XP recompute failed");
     return null; // null = keep existing, don't overwrite
   }
 }
@@ -137,6 +137,20 @@ export async function putProgress(req, res) {
 
     await req.userDoc.save();
 
+    // Invalidate caches so the leaderboard and this user's public profile
+    // reflect the new XP/streak/solved count on the next request, instead
+    // of waiting out the 5-minute (leaderboard) / 2-minute (profile) TTL.
+    // Fire-and-forget deliberately — a cache-invalidation hiccup shouldn't
+    // fail the user's actual progress save, which has already succeeded.
+    invalidateLeaderboardCaches().catch((err) =>
+      req.log.warn({ err }, "[Progress] Leaderboard cache invalidation failed")
+    );
+    if (req.userDoc.username) {
+      invalidateProfileCache(req.userDoc.username).catch((err) =>
+        req.log.warn({ err }, "[Progress] Profile cache invalidation failed")
+      );
+    }
+
     const response = progressToClient(req.userDoc);
     if (newlyUnlocked.length > 0) {
       response.newAchievements = newlyUnlocked;
@@ -145,7 +159,7 @@ export async function putProgress(req, res) {
     return res.json(response);
 
   } catch (err) {
-    console.error("[Progress] PUT error:", err.message);
+    req.log.error({ err }, "[Progress] PUT error");
 
     return res.status(500).json({
       error: process.env.NODE_ENV === "production"

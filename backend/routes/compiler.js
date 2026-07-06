@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
-import { runCode } from "../controllers/compilerController.js";
+import {
+  runCode,
+  submitSolution,
+} from "../controllers/compilerController.js";
+
 
 const router = Router();
 
@@ -50,6 +54,17 @@ export function validateBody(schema) {
 // ── Routes ────────────────────────────────────────────────────────────────────
 // Note: requireAuth is applied at the server.js level via app.use("/api/compiler", ...)
 // so it does not need to be repeated here.
-router.post("/run", validateBody(runCodeSchema), runCode);
+router.post(
+  "/run",
+  compilerRateLimiter,
+  validateBody(runCodeSchema),
+  runCode
+);
+
+router.post(
+  "/submit",
+  compilerRateLimiter,
+  submitSolution
+);
 
 export default router;

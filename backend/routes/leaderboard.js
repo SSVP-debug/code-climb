@@ -3,18 +3,20 @@
  * GET /api/leaderboard/college  — top users grouped by email domain
  *
  * Public endpoints — no auth required (profiles are already public).
- * Heavy caching: leaderboard recomputed max once every 5 minutes.
+ * Heavy caching: leaderboard recomputed max once every 5 minutes, via the
+ * shared Redis-backed cache helper (backend/utils/cache.js) so multiple
+ * Railway instances agree on the same ranking instead of each keeping its
+ * own in-memory snapshot.
  */
 import { Router } from "express";
 import User from "../models/User.js";
+import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
 
 const router = Router();
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-let globalCache = null;
-let globalCacheAt = 0;
-let collegeCache = {};
-let collegeCacheAt = 0;
+const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes
+const GLOBAL_CACHE_KEY = "leaderboard:global";
+const COLLEGE_CACHE_PREFIX = "leaderboard:college:";
 
 // ── GET /api/leaderboard/global ─────────────────────────────────────────────
 router.get("/global", async (req, res) => {
@@ -22,44 +24,40 @@ router.get("/global", async (req, res) => {
     const page  = Math.max(1, parseInt(req.query.page)  || 1);
     const limit = Math.min(50, parseInt(req.query.limit) || 20);
     const skip  = (page - 1) * limit;
-    const now   = Date.now();
 
-    // Serve from cache if fresh
-    if (globalCache && now - globalCacheAt < CACHE_TTL) {
-      const slice = globalCache.slice(skip, skip + limit);
-      return res.json({ users: slice, total: globalCache.length, page, limit });
-    }
+    const { value: ranked } = await getOrSetCache(
+      GLOBAL_CACHE_KEY,
+      CACHE_TTL_SECONDS,
+      async () => {
+        const users = await User.find({ isProfilePublic: true })
+          .sort({ totalXP: -1, solvedSlugs: -1 })
+          .limit(500)            // cap at top 500 — enough for any college leaderboard
+          .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty email joinedDate")
+          .lean();
 
-    const users = await User.find({ isProfilePublic: true })
-      .sort({ totalXP: -1, solvedSlugs: -1 })
-      .limit(500)            // cap at top 500 — enough for any college leaderboard
-      .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty email joinedDate")
-      .lean();
-
-    // Compute level + medal server-side
-    const ranked = users.map((u, i) => ({
-      rank:           i + 1,
-      username:       u.username || u.displayName?.toLowerCase().replace(/\s+/g, "_") || "anonymous",
-      displayName:    u.displayName || "Anonymous",
-      totalXP:        u.totalXP || 0,
-      level:          Math.floor((u.totalXP || 0) / 100) + 1,
-      solvedCount:    u.solvedSlugs?.length ?? 0,
-      currentStreak:  u.currentStreak || 0,
-      easy:           u.solvedDifficulty?.easy   || 0,
-      medium:         u.solvedDifficulty?.medium || 0,
-      hard:           u.solvedDifficulty?.hard   || 0,
-      // College extracted from email domain
-      college:        u.email ? u.email.split("@")[1]?.replace(".ac.in","").replace(".edu","") : null,
-    }));
-
-    globalCache   = ranked;
-    globalCacheAt = now;
+        // Compute level + medal server-side
+        return users.map((u, i) => ({
+          rank:           i + 1,
+          username:       u.username || u.displayName?.toLowerCase().replace(/\s+/g, "_") || "anonymous",
+          displayName:    u.displayName || "Anonymous",
+          totalXP:        u.totalXP || 0,
+          level:          Math.floor((u.totalXP || 0) / 100) + 1,
+          solvedCount:    u.solvedSlugs?.length ?? 0,
+          currentStreak:  u.currentStreak || 0,
+          easy:           u.solvedDifficulty?.easy   || 0,
+          medium:         u.solvedDifficulty?.medium || 0,
+          hard:           u.solvedDifficulty?.hard   || 0,
+          // College extracted from email domain
+          college:        u.email ? u.email.split("@")[1]?.replace(".ac.in","").replace(".edu","") : null,
+        }));
+      }
+    );
 
     const slice = ranked.slice(skip, skip + limit);
     return res.json({ users: slice, total: ranked.length, page, limit });
 
   } catch (err) {
-    console.error("[Leaderboard] global error:", err.message);
+    req.log.error({ err }, "[Leaderboard] global endpoint failed");
     return res.status(500).json({ error: "Failed to load leaderboard." });
   }
 });
@@ -68,47 +66,45 @@ router.get("/global", async (req, res) => {
 router.get("/college", async (req, res) => {
   try {
     const domain = (req.query.domain || "").toLowerCase().trim();
-    const now    = Date.now();
 
     if (!domain) {
       return res.status(400).json({ error: "domain query param required." });
     }
 
-    // Cache per domain
-    if (collegeCache[domain] && now - collegeCacheAt < CACHE_TTL) {
-      return res.json(collegeCache[domain]);
-    }
+    const { value: result } = await getOrSetCache(
+      `${COLLEGE_CACHE_PREFIX}${domain}`,
+      CACHE_TTL_SECONDS,
+      async () => {
+        const users = await User.find({
+          email:            { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+          isProfilePublic:  true,
+        })
+          .sort({ totalXP: -1 })
+          .limit(100)
+          .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty joinedDate")
+          .lean();
 
-    const users = await User.find({
-      email:            { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-      isProfilePublic:  true,
-    })
-      .sort({ totalXP: -1 })
-      .limit(100)
-      .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty joinedDate")
-      .lean();
+        const ranked = users.map((u, i) => ({
+          rank:          i + 1,
+          username:      u.username || "anonymous",
+          displayName:   u.displayName || "Anonymous",
+          totalXP:       u.totalXP || 0,
+          level:         Math.floor((u.totalXP || 0) / 100) + 1,
+          solvedCount:   u.solvedSlugs?.length ?? 0,
+          currentStreak: u.currentStreak || 0,
+          easy:          u.solvedDifficulty?.easy   || 0,
+          medium:        u.solvedDifficulty?.medium || 0,
+          hard:          u.solvedDifficulty?.hard   || 0,
+        }));
 
-    const ranked = users.map((u, i) => ({
-      rank:          i + 1,
-      username:      u.username || "anonymous",
-      displayName:   u.displayName || "Anonymous",
-      totalXP:       u.totalXP || 0,
-      level:         Math.floor((u.totalXP || 0) / 100) + 1,
-      solvedCount:   u.solvedSlugs?.length ?? 0,
-      currentStreak: u.currentStreak || 0,
-      easy:          u.solvedDifficulty?.easy   || 0,
-      medium:        u.solvedDifficulty?.medium || 0,
-      hard:          u.solvedDifficulty?.hard   || 0,
-    }));
-
-    const result = { domain, users: ranked, total: ranked.length };
-    collegeCache[domain] = result;
-    collegeCacheAt       = now;
+        return { domain, users: ranked, total: ranked.length };
+      }
+    );
 
     return res.json(result);
 
   } catch (err) {
-    console.error("[Leaderboard] college error:", err.message);
+    req.log.error({ err }, "[Leaderboard] college endpoint failed");
     return res.status(500).json({ error: "Failed to load college leaderboard." });
   }
 });
@@ -137,8 +133,16 @@ router.get("/domains", async (req, res) => {
 
     return res.json({ domains });
   } catch (err) {
+    req.log.error({ err }, "[Leaderboard] domains endpoint failed");
     return res.status(500).json({ error: "Failed to load domains." });
   }
 });
+
+// Exported so progressController can invalidate both leaderboard caches
+// after a write that changes a user's totalXP/solvedSlugs.
+export async function invalidateLeaderboardCaches() {
+  await invalidateCachePrefix(GLOBAL_CACHE_KEY);
+  await invalidateCachePrefix(COLLEGE_CACHE_PREFIX);
+}
 
 export default router;

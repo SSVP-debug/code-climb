@@ -11,7 +11,7 @@ if (process.env.SENTRY_DSN) {
     tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   });
 } else {
-  console.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
+  logger.warn("[Sentry] SENTRY_DSN not set — error monitoring disabled.");
 }
 
 import helmet from "helmet";
@@ -20,6 +20,8 @@ import express from "express";
 import cors from "cors";
 
 import connectDB from "./config/db.js";
+import { validateJudge0Config } from "./config/judge0.js";
+import { logger, httpLogger } from "./config/logger.js";
 import userRoutes from "./routes/users.js";
 import progressRoutes from "./routes/progress.js";
 import submissionRoutes from "./routes/submissions.js";
@@ -75,6 +77,7 @@ app.use(cors({
 );
 
 
+app.use(httpLogger);
 
 app.use(express.json({ limit: "1mb" }));
 
@@ -128,7 +131,7 @@ app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert",         requireAuth, apiLimiter, certificationRoutes);
 app.use("/api/contests",     requireAuth, apiLimiter, contestRoutes);
 app.use("/api/profile",      requireAuth, apiLimiter, profileSignRoutes);
-
+app.use("/api/health", healthRoutes);
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });
@@ -142,7 +145,7 @@ if (process.env.SENTRY_DSN) {
 
 // ─── Global error handler ───────────────────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error("[Server Error]", err.message);
+  (req.log || logger).error({ err }, "[Server Error] Unhandled error in request handler");
 
   // Don't expose internal error details to clients
   res.status(err.status || 500).json({
@@ -155,15 +158,17 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 async function start() {
+  // Judge0 config check — logs only, never blocks or crashes startup.
+  validateJudge0Config();
+
   // Try MongoDB but never crash if it fails.
   // Compiler, judge, and all Firestore routes work without it.
   try {
     await connectDB();
   } catch (error) {
-    console.warn(
-      "[MongoDB] Connection failed — server starting without it.",
-      "\n         Reason:", error.message,
-      "\n         Compiler and judge routes are unaffected."
+    logger.warn(
+      { err: error },
+      "[MongoDB] Connection failed — server starting without it. Compiler and judge routes are unaffected."
     );
   }
 

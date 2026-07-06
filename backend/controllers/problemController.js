@@ -1,42 +1,34 @@
 import Problem from "../models/Problem.js";
+import { getOrSetCache, invalidateCache } from "../utils/cache.js";
 
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const PROBLEMS_CACHE_KEY = "problems:all";
+const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes — unchanged from the original TTL
 
-let problemsCache = null;
-let cacheExpiresAt = 0;
-
-export function invalidateProblemsCache() {
-  problemsCache = null;
-  cacheExpiresAt = 0;
+/**
+ * Call this after any problem create/update/delete (e.g. admin routes,
+ * seed scripts) so the next GET /api/problems reflects the change instead
+ * of waiting out the TTL.
+ */
+export async function invalidateProblemsCache() {
+  await invalidateCache(PROBLEMS_CACHE_KEY);
 }
 
 export const getProblems = async (req, res) => {
   try {
-    const now = Date.now();
+    const { value: problems, cacheStatus } = await getOrSetCache(
+      PROBLEMS_CACHE_KEY,
+      CACHE_TTL_SECONDS,
+      async () =>
+        Problem.find({})
+          .select("-hiddentestcases")
+          .sort({ id: 1 })
+          .lean()
+    );
 
-    if (problemsCache && now < cacheExpiresAt) {
-      res.set("X-Cache", "HIT");
-      return res.json(problemsCache);
-    }
-
-    const problems = await Problem.find({})
-      .select("-hiddentestcases")
-      .sort({ id: 1 })
-      .lean();
-
-    problemsCache = problems;
-    cacheExpiresAt = now + CACHE_TTL_MS;
-
-    res.set("X-Cache", "MISS");
-
+    res.set("X-Cache", cacheStatus);
     return res.json(problems);
   } catch (error) {
-    console.error("[Problems]", error);
-
-    if (problemsCache) {
-      res.set("X-Cache", "STALE");
-      return res.json(problemsCache);
-    }
+    req.log.error({ err: error }, "[Problems] getProblems failed");
 
     return res.status(500).json({
       message: "Failed to fetch problems",
@@ -81,10 +73,7 @@ export const getProblemBySlug = async (req, res) => {
           : null,
     });
   } catch (error) {
-    console.error(
-      "[Problems] getProblemBySlug:",
-      error
-    );
+    req.log.error({ err: error }, "[Problems] getProblemBySlug failed");
 
     return res.status(500).json({
       message: "Failed to fetch problem",

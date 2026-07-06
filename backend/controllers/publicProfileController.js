@@ -1,61 +1,105 @@
 import User from "../models/User.js";
 import Submission from "../models/Submission.js";
+import { getOrSetCache, invalidateCache } from "../utils/cache.js";
+
+// Shorter TTL than problems/leaderboard (2 min vs 5 min) — this endpoint is
+// what recruiters and "share my profile" links hit, and a user who just
+// solved a problem reasonably expects their public profile to catch up
+// fairly quickly, not sit stale for 5 minutes.
+const CACHE_TTL_SECONDS = 2 * 60;
+
+function profileCacheKey(username) {
+  return `profile:${username.toLowerCase()}`;
+}
+
+/** Called from progressController after a save that changes totalXP/solvedSlugs. */
+export async function invalidateProfileCache(username) {
+  if (!username) return;
+  await invalidateCache(profileCacheKey(username));
+}
 
 export async function getPublicProfile(req, res) {
   try {
     const { username } = req.params;
 
-    const user = await User.findOne({
-      username: username.toLowerCase(),
-    }).lean();
+    const { value: profile, cacheStatus } = await getOrSetCache(
+      profileCacheKey(username),
+      CACHE_TTL_SECONDS,
+      async () => fetchProfile(username)
+    );
 
-    if (!user) {
+    if (profile === null) {
       return res.status(404).json({ error: "Profile not found" });
     }
-
-    if (!user.isProfilePublic) {
+    if (profile.private) {
       return res.status(403).json({ error: "This profile is private" });
     }
 
-    const level = Math.floor((user.totalXP || 0) / 100) + 1;
+    res.set("X-Cache", cacheStatus);
+    return res.json(profile.data);
 
-    // ── Language breakdown — from accepted submissions ─────────────────────
-    // Count accepted submissions per language.
-    // This is what recruiters actually want to see — not just "50 problems solved"
-    // but "50 problems solved: 30 Python, 15 Java, 5 C++"
-    const acceptedSubmissions = await Submission
-      .find({
-        userId: user._id,
-        status: "Accepted 🎉",
-      })
-      .select("language problemSlug")
-      .lean();
+  } catch (err) {
+    req.log.error({ err }, "[PublicProfile] getPublicProfile failed");
+    return res.status(500).json({ error: "Failed to load profile" });
+  }
+}
 
-    // Count per language
-    const languageCounts = {};
-    // Unique accepted slugs per language (one problem may be solved in multiple languages)
-    const solvedPerLanguage = {};
-    for (const sub of acceptedSubmissions) {
-      languageCounts[sub.language] = (languageCounts[sub.language] || 0) + 1;
-      if (!solvedPerLanguage[sub.language]) solvedPerLanguage[sub.language] = new Set();
-      solvedPerLanguage[sub.language].add(sub.problemSlug);
-    }
+/**
+ * Does the actual DB work. Returns a wrapper object rather than throwing
+ * for "not found" / "private" cases, because those are legitimate,
+ * cacheable outcomes (no point re-querying Mongo every request for a
+ * profile that's set to private) — only real errors should reject and
+ * fall through to the getOrSetCache error path.
+ */
+async function fetchProfile(username) {
+  const user = await User.findOne({
+    username: username.toLowerCase(),
+  }).lean();
 
-    const languageBreakdown = Object.entries(solvedPerLanguage)
-      .map(([lang, slugSet]) => ({ language: lang, solved: slugSet.size }))
-      .sort((a, b) => b.solved - a.solved);
+  if (!user) return null;
+  if (!user.isProfilePublic) return { private: true, data: null };
 
-    // ── Recent activity (last 5 solves for profile feed) ──────────────────
-    const recentSolves = (user.recentActivity || [])
-      .slice(0, 5)
-      .map((a) => ({
-        slug: a.slug,
-        title: a.title,
-        difficulty: a.difficulty,
-        time: a.time,
-      }));
+  const level = Math.floor((user.totalXP || 0) / 100) + 1;
 
-    return res.json({
+  // ── Language breakdown — from accepted submissions ─────────────────────
+  // Count accepted submissions per language.
+  // This is what recruiters actually want to see — not just "50 problems solved"
+  // but "50 problems solved: 30 Python, 15 Java, 5 C++"
+  const acceptedSubmissions = await Submission
+    .find({
+      userId: user._id,
+      status: "Accepted 🎉",
+    })
+    .select("language problemSlug")
+    .lean();
+
+  // Count per language
+  const languageCounts = {};
+  // Unique accepted slugs per language (one problem may be solved in multiple languages)
+  const solvedPerLanguage = {};
+  for (const sub of acceptedSubmissions) {
+    languageCounts[sub.language] = (languageCounts[sub.language] || 0) + 1;
+    if (!solvedPerLanguage[sub.language]) solvedPerLanguage[sub.language] = new Set();
+    solvedPerLanguage[sub.language].add(sub.problemSlug);
+  }
+
+  const languageBreakdown = Object.entries(solvedPerLanguage)
+    .map(([lang, slugSet]) => ({ language: lang, solved: slugSet.size }))
+    .sort((a, b) => b.solved - a.solved);
+
+  // ── Recent activity (last 5 solves for profile feed) ──────────────────
+  const recentSolves = (user.recentActivity || [])
+    .slice(0, 5)
+    .map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      difficulty: a.difficulty,
+      time: a.time,
+    }));
+
+  return {
+    private: false,
+    data: {
       username:        user.username,
       displayName:     user.displayName,
       joinedDate:      user.joinedDate,
@@ -72,10 +116,6 @@ export async function getPublicProfile(req, res) {
       languageBreakdown,
       recentSolves,
       totalSubmissions: acceptedSubmissions.length,
-    });
-
-  } catch (err) {
-    console.error("[PublicProfile]", err.message);
-    return res.status(500).json({ error: "Failed to load profile" });
-  }
+    },
+  };
 }
