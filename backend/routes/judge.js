@@ -78,7 +78,6 @@ const runSchema = z.object({
 router.post("/run", validateBody(runSchema), async (req, res) => {
   const { code, language, functionName, testcases } = req.body;
   const languageId = languageIdMap[language];
-  const isDev = process.env.NODE_ENV !== "production";
   const results = [];
 
   for (const [index, testcase] of testcases.entries()) {
@@ -120,9 +119,10 @@ router.post("/run", validateBody(runSchema), async (req, res) => {
     const passed = outputsMatch(expected, actual);
     const hasError = !!result.stderr;
 
-    if (isDev) {
-      console.log(`[Run] tc${index + 1} expected="${expected}" actual="${actual}" passed=${passed}`);
-    }
+    req.log.debug(
+      { testcaseIndex: index + 1, expected, actual, passed },
+      "[Run] Testcase result"
+    );
 
     results.push({
       index,
@@ -166,7 +166,6 @@ const languageIdMap = {
 
 router.post("/submit", validateBody(submitSchema), async (req, res) => {
   const { problemSlug, code, language, functionName, visibletestcases } = req.body;
-  const isDev = process.env.NODE_ENV !== "production";
 
   // ── Load hidden testcases ──────────────────────────────────────────────
   const hidden = hiddenTestcases[problemSlug];
@@ -183,18 +182,22 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
 
   // ── CRITICAL GUARD: empty testcases → would silently return Accepted ──
   if (alltestcases.length === 0) {
-    console.error(`[Judge] No testcases found for "${problemSlug}"`);
+    req.log.error({ problemSlug }, "[Judge] No testcases found — CRITICAL: would silently return Accepted without this guard");
     return res.status(500).json({
       error: `Judge has no testcases to run for "${problemSlug}".`,
     });
   }
 
-  if (isDev) {
-    console.log(
-      `[Judge] "${problemSlug}" — ${visibletestcases.length} visible + ` +
-      `${hidden.length} hidden = ${alltestcases.length} total | lang=${language}`
-    );
-  }
+  req.log.debug(
+    {
+      problemSlug,
+      language,
+      visibleCount: visibletestcases.length,
+      hiddenCount: hidden.length,
+      totalCount: alltestcases.length,
+    },
+    "[Judge] Submission received"
+  );
 
   const startTime = Date.now();
   let passedCount = 0;
@@ -216,9 +219,9 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
           functionName,
         });
       } catch (callErr) {
-        console.error(
-          `[Judge] callJudge0 threw on testcase ${index}:`,
-          callErr
+        req.log.error(
+          { err: callErr, problemSlug, testcaseIndex: index },
+          "[Judge] callJudge0 threw"
         );
         return res.json({
           status: "Judge Error",
@@ -264,15 +267,20 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
 
       const matched = outputsMatch(expected, actual);
 
-      if (isDev) {
-        console.log(
-          `[Judge] Testcase ${index + 1}/${alltestcases.length} ` +
-          `(${isVisible ? "visible" : "hidden"}) | ` +
-          `expected="${expected}" actual="${actual}" match=${matched}`
-        );
-      }
+      req.log.debug(
+        {
+          problemSlug,
+          testcaseIndex: index + 1,
+          totalCount: alltestcases.length,
+          visibility: isVisible ? "visible" : "hidden",
+          expected,
+          actual,
+          matched,
+        },
+        "[Judge] Testcase result"
+      );
 
-      if (!matched(expected, actual)) {
+      if (!matched) {
         return res.json({
           status: "Wrong Answer",
           passed: passedCount,
@@ -292,9 +300,10 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       else hiddenPassed++;
     }
 
-    if (isDev) {
-      console.log(`[Judge] "${problemSlug}" → Accepted (${passedCount}/${alltestcases.length})`);
-    }
+    req.log.info(
+      { problemSlug, judge0Status: "Accepted", passedCount, totalCount: alltestcases.length },
+      "[Judge] Submission accepted"
+    );
 
     return res.json({
       status: "Accepted",
@@ -306,7 +315,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Judge] Unhandled error:", err);
+    req.log.error({ err, problemSlug }, "[Judge] Unhandled error during grading");
     return res.json({
       status: "Judge Error",
       passed: passedCount,

@@ -19,7 +19,7 @@ export async function getInsights(req, res) {
       .limit(50)
       .lean();
   } catch (err) {
-    console.warn("[insights] Submission fetch failed:", err.message);
+    req.log.warn({ err }, "[insights] Submission fetch failed — continuing with empty submission history");
     // Continue with empty array — Claude can still give profile-based advice
   }
 
@@ -113,7 +113,7 @@ Respond ONLY with valid JSON. No markdown, no preamble.`;
 
     if (!response.ok) {
       const errBody = await response.text();
-      console.error("[insights] Anthropic API error:", response.status, errBody);
+      req.log.error({ httpStatus: response.status, body: errBody }, "[insights] Anthropic API error");
       return res.status(502).json({
         error: "AI service temporarily unavailable. Try again in a moment.",
       });
@@ -121,7 +121,7 @@ Respond ONLY with valid JSON. No markdown, no preamble.`;
 
     claudeResponse = await response.json();
   } catch (err) {
-    console.error("[insights] Fetch to Anthropic failed:", err.message);
+    req.log.error({ err }, "[insights] Fetch to Anthropic failed");
     return res.status(502).json({
       error: "Could not reach AI service. Check your connection and try again.",
     });
@@ -136,7 +136,7 @@ Respond ONLY with valid JSON. No markdown, no preamble.`;
     const clean = rawText.replace(/```json|```/g, "").trim();
     parsed = JSON.parse(clean);
   } catch {
-    console.error("[insights] JSON parse failed. Raw:", rawText);
+    req.log.error({ rawText }, "[insights] JSON parse failed on Claude response");
     return res.status(502).json({
       error: "Received an unexpected response from the AI. Try again.",
     });

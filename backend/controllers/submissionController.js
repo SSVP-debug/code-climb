@@ -36,7 +36,7 @@ export async function createSubmission(req, res) {
 
     return res.status(201).json(toClientSubmission(submission));
   } catch (err) {
-    console.error("[Submissions] createSubmission error:", err.message);
+    req.log.error({ err }, "[Submissions] createSubmission failed");
     return res.status(500).json({ error: "Failed to save submission. Try again." });
   }
 }
@@ -59,7 +59,7 @@ export async function listSubmissions(req, res) {
 
     return res.json(submissions.map(toClientSubmission));
   } catch (err) {
-    console.error("[Submissions] listSubmissions error:", err.message);
+    req.log.error({ err }, "[Submissions] listSubmissions failed");
     return res.status(500).json({ error: "Failed to fetch submissions. Try again." });
   }
 }

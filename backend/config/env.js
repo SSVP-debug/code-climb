@@ -11,11 +11,18 @@ const envPath = path.resolve(__dirname, "../.env");
 const result = dotenv.config({ path: envPath });
 
 if (result.error) {
+  // Deliberately console.warn, not the pino logger: config/logger.js reads
+  // process.env.LOG_LEVEL / NODE_ENV, both of which this dotenv.config()
+  // call is responsible for populating in local dev. Importing the logger
+  // here would risk it initializing before env vars are loaded, depending
+  // on import order elsewhere — console.warn has no such dependency, and
+  // this is a one-line startup notice, not something that needs to be
+  // structured/aggregated like request logs.
   console.warn(
     `[env] Could not load ${envPath}:`,
     result.error.message
   );
-} 
+}
 
 export function getMongoUri() {
   const uri = process.env.MONGODB_URI?.trim();

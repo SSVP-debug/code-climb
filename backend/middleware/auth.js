@@ -1,4 +1,5 @@
 import { getFirebaseAdmin } from "../config/firebaseAdmin.js";
+import { logger } from "../config/logger.js";
 import User from "../models/User.js";
 
 export async function requireAuth(req, res, next) {
@@ -40,10 +41,7 @@ export async function requireAuth(req, res, next) {
 
       req.userDoc = userDoc;
     } catch (mongoError) {
-      console.warn(
-        "[Auth] Mongo unavailable, continuing with Firebase auth only:",
-        mongoError.message
-      );
+      req.log.warn({ err: mongoError }, "[Auth] Mongo unavailable, continuing with Firebase auth only");
 
       req.userDoc = null;
     }
@@ -51,7 +49,7 @@ export async function requireAuth(req, res, next) {
     return next();
 
   } catch (error) {
-    console.error("[Auth] FULL ERROR:", error);
+    (req.log || logger).error({ err: error }, "[Auth] Token verification failed");
 
     return res.status(401).json({
       error: "Unauthorized",

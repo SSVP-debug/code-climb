@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { getMongoUri, maskMongoUri } from "./env.js";
+import { logger } from "./logger.js";
 
 export default async function connectDB() {
   const uri = getMongoUri();
@@ -13,14 +14,14 @@ export default async function connectDB() {
 
     
   } catch (error) {
-    console.error("[MongoDB] Connection failed:");
-    console.error(`  Message: ${error.message}`);
+    const hint = uri.startsWith("mongodb://127.0.0.1")
+      ? "No local MongoDB detected. Use MongoDB Atlas and set MONGODB_URI in backend/.env to your Atlas connection string (one line)."
+      : undefined;
 
-    if (uri.startsWith("mongodb://127.0.0.1")) {
-      console.error(
-        "  Hint: No local MongoDB detected. Use MongoDB Atlas and set MONGODB_URI in backend/.env to your Atlas connection string (one line)."
-      );
-    }
+    logger.error(
+      { err: error, hint },
+      "[MongoDB] Connection failed"
+    );
 
     throw error;
   }

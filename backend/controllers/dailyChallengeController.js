@@ -43,10 +43,7 @@ export async function completeDailyChallenge(
       alreadyCompleted: false,
     });
   } catch (err) {
-    console.error(
-      "[Daily Challenge] Failed:",
-      err
-    );
+    req.log.error({ err }, "[Daily Challenge] completeDailyChallenge failed");
 
     res.status(500).json({
       error: "Failed to save daily challenge",

@@ -110,10 +110,7 @@ async function validateSlugs(req, res, next) {
     next();
   } catch (err) {
     // If DB check fails, don't block the save — log and continue
-    console.error(
-      "[Progress] Slug validation DB error:",
-      err
-    );
+    req.log.error({ err }, "[Progress] Slug validation DB error — continuing without blocking save");
     next();
   }
 }

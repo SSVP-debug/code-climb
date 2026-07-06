@@ -131,7 +131,7 @@ app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert",         requireAuth, apiLimiter, certificationRoutes);
 app.use("/api/contests",     requireAuth, apiLimiter, contestRoutes);
 app.use("/api/profile",      requireAuth, apiLimiter, profileSignRoutes);
-app.use("/api/health", healthRoutes);
+
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
 });

@@ -3,6 +3,7 @@ import { logger } from "../config/logger.js";
 import {
   enqueueExecution,
 } from "../services/executionQueue.js";
+import { EXECUTION_LIMITS } from "../config/executionLimits.js";
 
 const JUDGE0_LANGUAGE_NAMES = {
   54: "C++",
@@ -17,15 +18,6 @@ const LANGUAGE_STRINGS = {
   62: "java",
   54: "cpp",
 };
-
-let judge0Failures = 0;
-let circuitOpenedAt = 0;
-let judge0RequestCount = 0;
-let judge0SuccessCount = 0;
-let judge0FailureCount = 0;
-
-const FAILURE_THRESHOLD = 5;
-const CIRCUIT_TIMEOUT_MS = 60_000;
 
 // ── Shared Judge0 fetch ───────────────────────────────────────────────────────
 // Internal utility — not exported as a route handler.
@@ -51,15 +43,8 @@ function b64Decode(str) {
 
 async function fetchJudge0(sourceCode, languageId, stdin = "") {
   return enqueueExecution(async () => {
-    if (isCircuitOpen()) {
-      throw new Error(
-        "Code execution service is temporarily unavailable. Please try again in a minute."
-      );
-    }
     // Build the URL from the env var (or default), then force base64_encoded=true.
     // This means the fix works even if JUDGE0_API_URL in Railway is missing the param.
-    const startedAt = Date.now();
-    judge0RequestCount++;
     const rawUrl =
       process.env.JUDGE0_API_URL ||
       "https://ce.judge0.com/submissions?wait=true";
@@ -76,7 +61,6 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
       source_code: b64Encode(sourceCode),
       language_id: languageId,
       stdin: b64Encode(stdin),
-
       cpu_time_limit:
         EXECUTION_LIMITS.cpuTimeLimit,
 
@@ -106,25 +90,9 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
-        const headers = {
-          "Content-Type": "application/json",
-        };
-
-        if (process.env.JUDGE0_RAPIDAPI_KEY) {
-          headers["X-RapidAPI-Key"] =
-            process.env.JUDGE0_RAPIDAPI_KEY;
-          headers["X-RapidAPI-Host"] =
-            "judge0-ce.p.rapidapi.com";
-        }
-
-        if (process.env.JUDGE0_API_KEY) {
-          headers["Authorization"] =
-            process.env.JUDGE0_API_KEY;
-        }
-
         const response = await fetch(judge0Url, {
           method: "POST",
-          headers,
+          headers: { "Content-Type": "application/json" },
           body: requestBody,
           signal: AbortSignal.timeout(20000),
         });
@@ -142,54 +110,12 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
             await sleep(BASE_DELAY_MS * attempt);
             continue;
           }
-          judge0Failures++;
-
-          judge0FailureCount++;
-
-          logger.error(
-            {
-              durationMs: Date.now() - startedAt,
-              httpStatus: response.status,
-              totalRequests: judge0RequestCount,
-              successes: judge0SuccessCount,
-              failures: judge0FailureCount,
-            },
-            "[Judge0] HTTP failure"
-          );
-
-          if (
-            judge0Failures === FAILURE_THRESHOLD
-          ) {
-            circuitOpenedAt = Date.now();
-
-            logger.error(
-              {
-                failures: judge0Failures,
-              },
-              "[Judge0] Circuit opened"
-            );
-          }
 
           logger.error({ httpStatus: response.status, raw }, "[Judge0] Error response (final attempt, not retrying)");
           throw new Error(`Judge0 returned HTTP ${response.status}: ${raw}`);
         }
 
         const data = await response.json();
-        judge0Failures = 0;
-        circuitOpenedAt = 0;
-
-        judge0SuccessCount++;
-
-        logger.info(
-          {
-            durationMs: Date.now() - startedAt,
-            status: data.status?.description,
-            totalRequests: judge0RequestCount,
-            successes: judge0SuccessCount,
-            failures: judge0FailureCount,
-          },
-          "[Judge0] Request succeeded"
-        );
 
         // Decode the base64-encoded output fields back to plain strings.
         return {
@@ -219,34 +145,6 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
           continue;
         }
 
-        judge0Failures++;
-
-        judge0FailureCount++;
-
-        logger.error(
-          {
-            durationMs: Date.now() - startedAt,
-            totalRequests: judge0RequestCount,
-            successes: judge0SuccessCount,
-            failures: judge0FailureCount,
-            err,
-          },
-          "[Judge0] Request failed"
-        );
-
-        if (
-          judge0Failures === FAILURE_THRESHOLD
-        ) {
-          circuitOpenedAt = Date.now();
-
-          logger.error(
-            {
-              failures: judge0Failures,
-            },
-            "[Judge0] Circuit opened"
-          );
-        }
-
         throw err;
       }
     }
@@ -257,22 +155,6 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isCircuitOpen() {
-  if (judge0Failures < FAILURE_THRESHOLD) {
-    return false;
-  }
-
-  const elapsed = Date.now() - circuitOpenedAt;
-
-  if (elapsed >= CIRCUIT_TIMEOUT_MS) {
-    judge0Failures = 0;
-    circuitOpenedAt = 0;
-    return false;
-  }
-
-  return true;
 }
 
 // ── callJudge0 ────────────────────────────────────────────────────────────────

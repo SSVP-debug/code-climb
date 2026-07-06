@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import {
-  runCode,
-  submitSolution,
-} from "../controllers/compilerController.js";
+import { runCode } from "../controllers/compilerController.js";
+import { compilerRateLimiter } from "../middleware/compilerRateLimiter.js";
 
 
 const router = Router();
@@ -61,10 +59,5 @@ router.post(
   runCode
 );
 
-router.post(
-  "/submit",
-  compilerRateLimiter,
-  submitSolution
-);
 
 export default router;
