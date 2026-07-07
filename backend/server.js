@@ -18,7 +18,7 @@ import helmet from "helmet";
 import judgeRoutes from "./routes/judge.js";
 import express from "express";
 import cors from "cors";
-
+import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import { validateJudge0Config } from "./config/judge0.js";
 import { logger, httpLogger } from "./config/logger.js";
@@ -59,6 +59,9 @@ import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
 import billingRoutes from "./routes/billing.js";
 import interviewRoutes from "./routes/interview.js";
 
+if (process.env.NODE_ENV !== "production") {
+  mongoose.set("strict", "throw");
+}
 const app = express();
 app.set("trust proxy", 1);
 

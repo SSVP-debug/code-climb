@@ -117,6 +117,21 @@ const problemSchema = new mongoose.Schema(
       default: [],
     },
 
+    editorial: {
+      content: {
+        type: String,
+        default: "",
+      },
+      author: {
+        type: String,
+        default: "Code Club",
+      },
+      updatedAt: {
+        type: Date,
+        default: null,
+      },
+    },
+
     // Slugs of thematically related problems on the platform
     relatedProblems: {
       type: [String],

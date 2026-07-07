@@ -40,37 +40,39 @@ export const getProblemBySlug = async (req, res) => {
   try {
     const slug = req.params.slug;
 
-    const problems = await Problem.find({})
-      .select("slug")
-      .sort({ id: 1 })
-      .lean();
-
-    const index = problems.findIndex(
-      (p) => p.slug === slug
-    );
-
-    if (index === -1) {
-      return res.status(404).json({
-        message: "Problem not found",
-      });
-    }
-
     const problem = await Problem.findOne({
       slug,
     })
       .select("-hiddentestcases")
       .lean();
 
+    if (!problem) {
+      return res.status(404).json({
+        message: "Problem not found",
+      });
+    }
+
+    const [prevProblem, nextProblem] =
+      await Promise.all([
+        Problem.findOne({
+          id: { $lt: problem.id },
+        })
+          .select("slug")
+          .sort({ id: -1 })
+          .lean(),
+
+        Problem.findOne({
+          id: { $gt: problem.id },
+        })
+          .select("slug")
+          .sort({ id: 1 })
+          .lean(),
+      ]);
+
     return res.json({
       problem,
-      prevSlug:
-        index > 0
-          ? problems[index - 1].slug
-          : null,
-      nextSlug:
-        index < problems.length - 1
-          ? problems[index + 1].slug
-          : null,
+      prevSlug: prevProblem?.slug ?? null,
+      nextSlug: nextProblem?.slug ?? null,
     });
   } catch (error) {
     req.log.error({ err: error }, "[Problems] getProblemBySlug failed");
