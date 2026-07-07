@@ -1,6 +1,6 @@
 const STATUS_MAP = {
   // ── Judge verdicts ────────────────────────────────────────────────────
-  "Accepted 🎉": {
+  "Accepted": {
     label: "Accepted",
     icon: "✓",
     color: "text-green-400",
@@ -9,7 +9,7 @@ const STATUS_MAP = {
     dot: "bg-green-400",
     kind: "accepted",
   },
-  "Wrong Answer ❌": {
+  "Wrong Answer": {
     label: "Wrong Answer",
     icon: "✗",
     color: "text-red-400",
@@ -18,7 +18,7 @@ const STATUS_MAP = {
     dot: "bg-red-400",
     kind: "wrong",
   },
-  "Compilation Error ❌": {
+  "Compilation Error": {
     label: "Compilation Error",
     icon: "⚠",
     color: "text-yellow-400",
@@ -27,7 +27,7 @@ const STATUS_MAP = {
     dot: "bg-yellow-400",
     kind: "compile",
   },
-  "Runtime Error ❌": {
+  "Runtime Error": {
     label: "Runtime Error",
     icon: "⚠",
     color: "text-orange-400",
@@ -36,7 +36,7 @@ const STATUS_MAP = {
     dot: "bg-orange-400",
     kind: "runtime",
   },
-  "Judge Error ❌": {
+  "Judge Error": {
     label: "Judge Error",
     icon: "⚙",
     color: "text-zinc-400",
@@ -45,7 +45,7 @@ const STATUS_MAP = {
     dot: "bg-zinc-400",
     kind: "infra",
   },
-  "Time Limit Exceeded ❌": {
+  "Time Limit Exceeded": {
     label: "Time Limit Exceeded",
     icon: "⏱",
     color: "text-orange-400",
@@ -54,7 +54,7 @@ const STATUS_MAP = {
     dot: "bg-orange-400",
     kind: "tle",
   },
-  "Memory Limit Exceeded ❌": {
+  "Memory Limit Exceeded": {
     label: "Memory Limit Exceeded",
     icon: "📦",
     color: "text-orange-400",
@@ -74,7 +74,7 @@ const STATUS_MAP = {
     dot: "bg-blue-400",
     kind: "success",
   },
-  "Execution Failed ❌": {
+  "Execution Failed": {
     label: "Execution Failed",
     icon: "✗",
     color: "text-red-400",
@@ -83,7 +83,7 @@ const STATUS_MAP = {
     dot: "bg-red-400",
     kind: "error",
   },
-  "Runner Unavailable ❌": {
+  "Runner Unavailable": {
     label: "Runner Unavailable",
     icon: "⚙",
     color: "text-zinc-400",
@@ -92,7 +92,7 @@ const STATUS_MAP = {
     dot: "bg-zinc-400",
     kind: "infra",
   },
-  "Submission Error ❌": {
+  "Submission Error": {
     label: "Submission Error",
     icon: "✗",
     color: "text-red-400",
@@ -131,7 +131,7 @@ export function getStatusMeta(status) {
  * Used to gate confetti / markProblemSolved calls.
  */
 export function isAccepted(status) {
-  return status === "Accepted 🎉";
+  return status === "Accepted";
 }
 
 /**

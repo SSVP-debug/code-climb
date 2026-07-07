@@ -32,7 +32,7 @@ export const judgeSubmission = async ({
 
     // Return a Judge-shaped error so ProblemDetailsPage doesn't crash
     return {
-      status: "Judge Error ❌",
+      status: "Judge Error",
       error: error.message,
       passed: 0,
       total: 0,
