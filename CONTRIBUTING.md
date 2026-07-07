@@ -5,7 +5,8 @@
 - Node.js 20+
 - A MongoDB Atlas account (free tier is fine)
 - A Firebase project (for Auth)
-- A Judge0 API endpoint (public `ce.judge0.com` for dev)
+- A Judge0 API endpoint (public `ce.judge0.com` for dev — see `docs/judge0-setup.md` for production options)
+- Optional, for the full feature set: Redis (Railway add-on or Upstash), an Anthropic API key (AI hints/insights/interview mode), Razorpay keys (billing — feature-flagged off by default), a Sentry DSN (error monitoring). All four degrade gracefully and log a clear warning if left unset — none are required to run the app locally.
 
 ---
 
@@ -108,12 +109,17 @@ test(scope): short description
 
 ## Architecture Notes
 
-- **Frontend:** React 19 + Vite + TailwindCSS 4
-- **Backend:** Node.js + Express (ES modules) on Railway
+- **Frontend:** React 19 + Vite + TailwindCSS 4, installable as a PWA
+- **Backend:** Node.js + Express 5 (ES modules) on Railway
 - **Auth:** Firebase Auth (frontend) + Firebase Admin SDK (backend token verification)
-- **Database:** MongoDB Atlas via Mongoose
-- **Judge:** Judge0 (self-hosted or `ce.judge0.com` for dev)
-- **AI Coaching:** Anthropic Claude API via `insightsController.js`
+- **Database:** MongoDB Atlas via Mongoose — the sole datastore (fully migrated off Firestore)
+- **Judge:** Judge0 (self-hosted Docker or RapidAPI — see `docs/judge0-setup.md`)
+- **Caching:** Redis (`ioredis`) with automatic in-memory fallback if `REDIS_URL` is unset
+- **Logging:** Pino, structured JSON via `httpLogger` middleware
+- **AI Coaching:** Anthropic Claude API — hints (`insightsController.js`, `hintsController`), dashboard insights, and interview mode
+- **Feature flags:** `MONETIZATION_ENABLED` and `B2B_ENABLED` in `backend/config/featureFlags.js` gate billing and TPO features respectively — both default to `false`
+
+For the full system diagram, every API route, and the MongoDB schema, see `docs/architecture.md`, `docs/api-contracts.md`, and `docs/database-schema.md`.
 
 XP is **always computed server-side** from `solvedSlugs × difficulty weights`.  
 Never send `totalXP` from the client — the backend will ignore it.

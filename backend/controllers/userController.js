@@ -11,6 +11,7 @@ export async function getMe(req, res) {
     leetcodeUsername: req.userDoc.leetcodeUsername || "",
     leetcodeStats: req.userDoc.leetcodeStats || null,
     joinedDate: req.userDoc.joinedDate,
+    emailPreferences: req.userDoc.emailPreferences || { weeklyReview: true },
   });
 }
 
@@ -19,6 +20,7 @@ export async function updateMe(req, res) {
     leetcodeUsername,
     displayName,
     username,
+    emailPreferences,
   } = req.body;
 
   if (leetcodeUsername !== undefined) {
@@ -70,6 +72,13 @@ export async function updateMe(req, res) {
   }
   
 
+  if (emailPreferences !== undefined && typeof emailPreferences.weeklyReview === "boolean") {
+    req.userDoc.emailPreferences = {
+      ...(req.userDoc.emailPreferences || {}),
+      weeklyReview: emailPreferences.weeklyReview,
+    };
+  }
+
   await req.userDoc.save();
 
   res.json({
@@ -84,5 +93,6 @@ export async function updateMe(req, res) {
     leetcodeUsername: req.userDoc.leetcodeUsername || "",
     leetcodeStats: req.userDoc.leetcodeStats || null,
     joinedDate: req.userDoc.joinedDate,
+    emailPreferences: req.userDoc.emailPreferences || { weeklyReview: true },
   });
 }

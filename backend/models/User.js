@@ -158,6 +158,12 @@ const userSchema = new mongoose.Schema(
     referredBy:         { type: String, default: null },
     referralRewardDays: { type: Number, default: 0 },
 
+    // ── Weekly AI review email (commit 097) ──────────────────────────────
+    emailPreferences: {
+      weeklyReview: { type: Boolean, default: true }, // opt-out, not opt-in
+    },
+    lastWeeklyReviewSentAt: { type: Date, default: null },
+
     dailyChallengeHistory: {
       type: [
         {

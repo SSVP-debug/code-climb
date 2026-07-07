@@ -51,6 +51,12 @@ import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
 import hintsRoutes from "./routes/hints.js";
 import notesRoutes from "./routes/notes.js";
 import profilePdfRoutes from "./routes/profilePdf.js";
+// ── Phase 8 / Batch E fix: these three were fully built but never mounted,
+// so /tpo, /billing, and /interview all 404'd for every real request from
+// TpoSignupPage, TpoDashboardPage, PricingPage, and InterviewModePage. ─────
+import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
+import billingRoutes from "./routes/billing.js";
+import interviewRoutes from "./routes/interview.js";
 
 const app = express();
 app.set("trust proxy", 1);
@@ -137,6 +143,21 @@ app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert",         requireAuth, apiLimiter, certificationRoutes);
 app.use("/api/contests",     requireAuth, apiLimiter, contestRoutes);
 app.use("/api/profile",      requireAuth, apiLimiter, profileSignRoutes);
+
+// ── Phase 8 / Batch E fix: mount previously-orphaned route modules ──────────
+// B2B (TPO) dashboard — gated internally by B2B_ENABLED, same as before.
+app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
+app.use("/api/assignments/student", requireAuth, apiLimiter, studentAssignmentsRouter);
+// Billing (Razorpay) — gated internally by MONETIZATION_ENABLED. NOTE: /plans
+// (meant public) and /webhook (meant no-auth, raw-body signature check) both
+// sit behind requireAuth here, which only matches how the app is used today
+// (PricingPage only calls the authed /subscription, /create-order, /verify
+// routes). Splitting the webhook out with express.raw() ahead of the global
+// express.json() middleware is a real prerequisite before Razorpay webhooks
+// go live — tracked in docs/phase8-progress.md, not done in this pass.
+app.use("/api/billing", requireAuth, apiLimiter, billingRoutes);
+// Interview Mode — premium AI feature, shares the AI rate limiter with hints/insights.
+app.use("/api/interview", requireAuth, aiLimiter, interviewRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
