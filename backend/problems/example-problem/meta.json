@@ -1,0 +1,13 @@
+{
+  "id": 9999,
+  "slug": "example-problem",
+  "title": "Example Problem",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "example",
+  "sourceType": "core",
+  "functionName": "solve",
+  "estimatedTime": "10 min",
+  "companies": [],
+  "relatedProblems": []
+}
