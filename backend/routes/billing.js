@@ -210,52 +210,6 @@ router.post("/cancel", async (req, res) => {
   }
 });
 
-// ── POST /api/billing/webhook (Razorpay → server, no user auth) ────────────
-// Mounted with express.raw() body parser in server.js (signature needs raw body).
-router.post("/webhook", async (req, res) => {
-  if (!MONETIZATION_ENABLED) return res.status(200).json({ received: true, enabled: false });
-
-  try {
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
-    if (!webhookSecret) {
-      console.warn("[Billing] Webhook received but RAZORPAY_WEBHOOK_SECRET not set — ignoring.");
-      return res.status(200).json({ received: true });
-    }
-
-    const signature = req.headers["x-razorpay-signature"];
-    const expected = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(req.body) // raw body buffer
-      .digest("hex");
-
-    if (signature !== expected) {
-      console.warn("[Billing] Webhook signature mismatch — possible spoof attempt.");
-      return res.status(400).json({ error: "Invalid signature." });
-    }
-
-    const event = JSON.parse(req.body.toString());
-    console.log("[Billing] Webhook event:", event.event);
-
-    // Handle subscription lifecycle events (charged, cancelled, etc.)
-    // Extend this switch as you wire up recurring subscriptions.
-    switch (event.event) {
-      case "subscription.charged":
-        // Renewal succeeded — extend expiresAt
-        break;
-      case "subscription.cancelled":
-        // Mark cancelled in DB
-        break;
-      default:
-        break;
-    }
-
-    return res.status(200).json({ received: true });
-  } catch (err) {
-    console.error("[Billing] webhook error:", err.message);
-    return res.status(500).json({ error: "Webhook processing failed." });
-  }
-});
-
 // ── Helper, exported for use in premium gate middleware ─────────────────────
 export function isUserPremium(userDoc) {
   if (!MONETIZATION_ENABLED) return true; // everyone is "premium" while monetization is off

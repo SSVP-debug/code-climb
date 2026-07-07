@@ -28,6 +28,7 @@ import submissionRoutes from "./routes/submissions.js";
 import compilerRoutes from "./routes/compiler.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import publicProfileRoutes from "./routes/publicProfile.js";
+import billingWebhookRoutes from "./routes/billingWebhook.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
@@ -85,12 +86,15 @@ app.use(cors({
 })
 );
 
-// in server.js, BEFORE the global express.json() line, or as a separate mount:
-app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
-app.use("/api/billing", requireAuth, apiLimiter, billingRoutes);
-
 
 app.use(httpLogger);
+app.use(
+  "/api/billing/webhook",
+  express.raw({
+    type: "application/json",
+  }),
+  billingWebhookRoutes
+);
 
 app.use(express.json({ limit: "1mb" }));
 
