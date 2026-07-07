@@ -85,6 +85,10 @@ app.use(cors({
 })
 );
 
+// in server.js, BEFORE the global express.json() line, or as a separate mount:
+app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
+app.use("/api/billing", requireAuth, apiLimiter, billingRoutes);
+
 
 app.use(httpLogger);
 
@@ -138,11 +142,11 @@ app.use(
 // ─── 404 handler ────────────────────────────────────────────────────────────
 logger.info(`[Server] 404 handler initialized`);
 // ── Phase 7 mounts ───────────────────────────────────────────────────────────
-app.use("/api/recruiter",    requireAuth, apiLimiter, recruiterRoutes);
+app.use("/api/recruiter", requireAuth, apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
-app.use("/api/cert",         requireAuth, apiLimiter, certificationRoutes);
-app.use("/api/contests",     requireAuth, apiLimiter, contestRoutes);
-app.use("/api/profile",      requireAuth, apiLimiter, profileSignRoutes);
+app.use("/api/cert", requireAuth, apiLimiter, certificationRoutes);
+app.use("/api/contests", requireAuth, apiLimiter, contestRoutes);
+app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 
 // ── Phase 8 / Batch E fix: mount previously-orphaned route modules ──────────
 // B2B (TPO) dashboard — gated internally by B2B_ENABLED, same as before.

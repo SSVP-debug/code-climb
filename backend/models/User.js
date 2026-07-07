@@ -42,12 +42,12 @@ const userSchema = new mongoose.Schema(
     // this exists purely as recruiter-facing supplementary proof of work
     // on the public profile.
     leetcodeStats: {
-      easySolved:    { type: Number, default: 0, min: 0 },
-      mediumSolved:  { type: Number, default: 0, min: 0 },
-      hardSolved:    { type: Number, default: 0, min: 0 },
-      totalSolved:   { type: Number, default: 0, min: 0 },
-      source:        { type: String, enum: ["manual", "api"], default: "manual" },
-      lastSyncedAt:  { type: Date, default: null },
+      easySolved: { type: Number, default: 0, min: 0 },
+      mediumSolved: { type: Number, default: 0, min: 0 },
+      hardSolved: { type: Number, default: 0, min: 0 },
+      totalSolved: { type: Number, default: 0, min: 0 },
+      source: { type: String, enum: ["manual", "api"], default: "manual" },
+      lastSyncedAt: { type: Date, default: null },
     },
 
 
@@ -115,7 +115,15 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
-    // ── Role system (Phase 7) ─────────────────────────────────────────────
+    subscription: {
+      plan: { type: String, default: "free" },
+      status: { type: String, enum: ["none", "active", "cancelled", "expired"], default: "none" },
+      startedAt: { type: Date, default: null },
+      expiresAt: { type: Date, default: null },
+      cancelledAt: { type: Date, default: null },
+    },
+
+    // ── Role system ─────────────────────────────────────────────
     role: {
       type: String,
       enum: ["student", "recruiter", "tpo", "admin"],
@@ -125,37 +133,37 @@ const userSchema = new mongoose.Schema(
 
     // ── Recruiter-specific fields ─────────────────────────────────────────
     recruiterProfile: {
-      companyName:  { type: String, default: null },
-      designation:  { type: String, default: null },
-      companyDomain:{ type: String, default: null }, // e.g. "google.com"
-      verified:     { type: Boolean, default: false },
-      verifiedAt:   { type: Date,    default: null },
+      companyName: { type: String, default: null },
+      designation: { type: String, default: null },
+      companyDomain: { type: String, default: null }, // e.g. "google.com"
+      verified: { type: Boolean, default: false },
+      verifiedAt: { type: Date, default: null },
     },
 
     // ── TPO-specific fields ───────────────────────────────────────────────
     collegeDomain: { type: String, default: null },
-    collegeName:   { type: String, default: null },
+    collegeName: { type: String, default: null },
 
     // ── Profile verification hash (commit 085) ────────────────────────────
     // HMAC-SHA256 of (userId + solvedCount + timestamp) — proves data wasn't
     // tampered. Recruiters can verify at /verify/:username.
     profileSignature: {
-      hash:        { type: String, default: null },
-      signedAt:    { type: Date,   default: null },
+      hash: { type: String, default: null },
+      signedAt: { type: Date, default: null },
       solvedCount: { type: Number, default: 0 },
     },
 
     // ── Certifications earned (commit 087) ───────────────────────────────
     certificates: [{
-      trackId:    { type: String },   // e.g. "arrays", "dynamic-programming"
-      trackName:  { type: String },
-      issuedAt:   { type: Date },
+      trackId: { type: String },   // e.g. "arrays", "dynamic-programming"
+      trackName: { type: String },
+      issuedAt: { type: Date },
       verifyCode: { type: String },   // short unique code for QR verification
     }],
 
     // ── Referrals (Phase 6 — add here if missing) ────────────────────────
-    referralCode:       { type: String, default: null, unique: true, sparse: true },
-    referredBy:         { type: String, default: null },
+    referralCode: { type: String, default: null, unique: true, sparse: true },
+    referredBy: { type: String, default: null },
     referralRewardDays: { type: Number, default: 0 },
 
     // ── Weekly AI review email (commit 097) ──────────────────────────────
