@@ -20,7 +20,7 @@ describe("judgeSubmission", () => {
 
   it("returns Accepted response from API", async () => {
     apiFetch.mockResolvedValue({
-      status: "Accepted 🎉",
+      status: "Accepted",
       passed: 4,
       total: 4,
     });
@@ -31,14 +31,14 @@ describe("judgeSubmission", () => {
       language: "python",
     });
 
-    expect(res.status).toBe("Accepted 🎉");
+    expect(res.status).toBe("Accepted");
     expect(res.passed).toBe(4);
     expect(apiFetch).toHaveBeenCalled();
   });
 
   it("returns Wrong Answer response from API", async () => {
     apiFetch.mockResolvedValue({
-      status: "Wrong Answer ❌",
+      status: "Wrong Answer",
       passed: 0,
       total: 4,
     });
@@ -49,13 +49,13 @@ describe("judgeSubmission", () => {
       language: "python",
     });
 
-    expect(res.status).toBe("Wrong Answer ❌");
+    expect(res.status).toBe("Wrong Answer");
     expect(res.passed).toBe(0);
   });
 
   it("returns Compilation Error response from API", async () => {
     apiFetch.mockResolvedValue({
-      status: "Compilation Error ❌",
+      status: "Compilation Error",
     });
 
     const res = await judgeSubmission({
@@ -64,12 +64,12 @@ describe("judgeSubmission", () => {
       language: "python",
     });
 
-    expect(res.status).toBe("Compilation Error ❌");
+    expect(res.status).toBe("Compilation Error");
   });
 
   it("returns Runtime Error response from API", async () => {
     apiFetch.mockResolvedValue({
-      status: "Runtime Error ❌",
+      status: "Runtime Error",
     });
 
     const res = await judgeSubmission({
@@ -78,7 +78,7 @@ describe("judgeSubmission", () => {
       language: "python",
     });
 
-    expect(res.status).toBe("Runtime Error ❌");
+    expect(res.status).toBe("Runtime Error");
   });
 
   it("returns Judge Error when API throws", async () => {
@@ -92,7 +92,7 @@ describe("judgeSubmission", () => {
       language: "python",
     });
 
-    expect(res.status).toBe("Judge Error ❌");
+    expect(res.status).toBe("Judge Error");
     expect(res.error).toBe("Network error");
     expect(res.passed).toBe(0);
   });
