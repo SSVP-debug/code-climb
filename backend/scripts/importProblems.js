@@ -11,16 +11,31 @@ const PROBLEMS_DIR = path.join(
 );
 const DRY_RUN =
     process.argv.includes("--dry-run");
+const targetProblem =
+    process.argv.slice(2).find(
+        (arg) => arg !== "--dry-run"
+    );
+let importedCount = 0;
 async function main() {
     await connectDB();
     const folders = await fs.readdir(
         PROBLEMS_DIR
     );
 
-    const problemFolders =
+    let problemFolders =
         folders.filter(
             (f) => f !== ".gitkeep"
         );
+
+    if (targetProblem) {
+        problemFolders =
+            problemFolders.filter(
+                (f) =>
+                    f === targetProblem
+            );
+    }
+    console.log({ targetProblem });
+    console.log({ problemFolders });
 
     for (const folder of problemFolders) {
         const folderPath = path.join(
@@ -144,6 +159,8 @@ async function main() {
             console.log(
                 `[DRY RUN] ${problemDoc.slug}`
             );
+
+            importedCount++;
         } else {
             await Problem.findOneAndUpdate(
                 { slug: problemDoc.slug },
@@ -156,7 +173,18 @@ async function main() {
             console.log(
                 `✓ Imported ${problemDoc.slug}`
             );
+
+            importedCount++;
         }
+    }
+    if (DRY_RUN) {
+        console.log(
+            `\nValidated ${importedCount} problem(s).`
+        );
+    } else {
+        console.log(
+            `\nImported ${importedCount} problem(s).`
+        );
     }
 }
 main().catch(console.error);
