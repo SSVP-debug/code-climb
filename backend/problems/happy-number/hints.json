@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the cycle detection Floyd approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Happy Number in O(n log n) or better? Consider how cycle detection Floyd helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses cycle detection Floyd. Work through small examples to see the pattern."
+  }
+]

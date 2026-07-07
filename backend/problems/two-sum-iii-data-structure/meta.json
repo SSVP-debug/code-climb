@@ -1,0 +1,12 @@
+{
+  "id": 191,
+  "slug": "two-sum-iii-data-structure",
+  "title": "Two Sum III — Data Structure Design",
+  "difficulty": "Easy",
+  "topic": "Hash Maps",
+  "pattern": "frequency map",
+  "functionName": "TwoSum",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

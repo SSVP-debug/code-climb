@@ -1,0 +1,12 @@
+{
+  "id": 226,
+  "slug": "online-stock-span",
+  "title": "Online Stock Span",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "monotonic stack span count",
+  "functionName": "StockSpanner",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

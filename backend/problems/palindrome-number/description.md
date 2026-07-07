@@ -1,0 +1,1 @@
+Given an integer x, return true if x is a palindrome (reads the same forward and backward). Negative numbers are not palindromes. Solve without converting to a string.

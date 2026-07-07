@@ -1,0 +1,41 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "egg",
+        "t": "add"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "foo",
+        "t": "bar"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": "paper",
+        "t": "title"
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "badc",
+        "t": "baba"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": "ab",
+        "t": "aa"
+      },
+      "expectedOutput": false
+    }
+  ]
+}

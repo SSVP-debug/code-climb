@@ -1,0 +1,1 @@
+You travel on some days in a year [1, 365]. Train tickets cost costs[0] for 1 day, costs[1] for 7 days, costs[2] for 30 days. Return the minimum cost to travel every day in the given days array.

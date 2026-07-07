@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "(()"
+      },
+      "expectedOutput": 2
+    },
+    {
+      "input": {
+        "s": ")()())"
+      },
+      "expectedOutput": 4
+    },
+    {
+      "input": {
+        "s": ""
+      },
+      "expectedOutput": 0
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "()()"
+      },
+      "expectedOutput": 4
+    },
+    {
+      "input": {
+        "s": "((("
+      },
+      "expectedOutput": 0
+    }
+  ]
+}

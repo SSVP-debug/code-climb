@@ -1,0 +1,13 @@
+{
+  "id": 189,
+  "slug": "find-k-closest-elements",
+  "title": "Find K Closest Elements",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on left bound",
+  "sourceType": "core",
+  "functionName": "findClosestElements",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

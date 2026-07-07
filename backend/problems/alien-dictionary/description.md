@@ -1,0 +1,1 @@
+You are given a sorted list of words from an alien language. Derive the order of characters in the alien alphabet. Return a string of unique characters in the correct order. If invalid, return ''. If multiple orders possible, return any.

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the prefix sum hash map approach for hash maps problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Subarray Sum Equals K in O(n log n) or better? Consider how prefix sum hash map helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses prefix sum hash map. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "The diameter through a node is leftHeight + rightHeight. But the longest path might not pass through the root."
+  },
+  {
+    "level": 2,
+    "text": "DFS returning height: at each node, update a global max with left_height + right_height."
+  },
+  {
+    "level": 3,
+    "text": "The helper function returns height (not diameter) so the parent can compute its own candidate diameter."
+  }
+]

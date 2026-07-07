@@ -1,0 +1,13 @@
+{
+  "id": 83,
+  "slug": "k-closest-points-to-origin",
+  "title": "K Closest Points to Origin",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "max-heap of size k",
+  "sourceType": "core",
+  "functionName": "kClosest",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

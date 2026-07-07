@@ -1,0 +1,13 @@
+{
+  "id": 146,
+  "slug": "count-primes",
+  "title": "Count Primes",
+  "difficulty": "Medium",
+  "topic": "Math",
+  "pattern": "Sieve of Eratosthenes",
+  "sourceType": "core",
+  "functionName": "countPrimes",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

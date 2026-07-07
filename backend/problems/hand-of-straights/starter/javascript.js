@@ -1,0 +1,3 @@
+function isNStraightHand(hand, groupSize) {
+
+}

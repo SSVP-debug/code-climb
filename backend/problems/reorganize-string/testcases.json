@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "aab"
+      },
+      "expectedOutput": "aba"
+    },
+    {
+      "input": {
+        "s": "aaab"
+      },
+      "expectedOutput": ""
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "expectedOutput": "a"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "vvvlo"
+      },
+      "expectedOutput": "vlvov"
+    },
+    {
+      "input": {
+        "s": "aabc"
+      },
+      "expectedOutput": "abac"
+    }
+  ]
+}

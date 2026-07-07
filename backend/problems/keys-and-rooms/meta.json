@@ -1,0 +1,13 @@
+{
+  "id": 178,
+  "slug": "keys-and-rooms",
+  "title": "Keys and Rooms",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "DFS reachability",
+  "sourceType": "core",
+  "functionName": "canVisitAllRooms",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

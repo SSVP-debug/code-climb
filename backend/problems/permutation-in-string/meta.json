@@ -1,0 +1,13 @@
+{
+  "id": 103,
+  "slug": "permutation-in-string",
+  "title": "Permutation in String",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "fixed window character count",
+  "sourceType": "core",
+  "functionName": "checkInclusion",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

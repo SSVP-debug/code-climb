@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Two strings are anagrams if they have the same characters with the same frequencies."
+  },
+  {
+    "level": 2,
+    "text": "Sorting both and comparing is simple but O(n log n). Can you do O(n)?"
+  },
+  {
+    "level": 3,
+    "text": "A frequency map (or 26-slot array for lowercase letters) lets you compare in O(n) time and O(1) space."
+  }
+]

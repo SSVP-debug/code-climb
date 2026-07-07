@@ -1,0 +1,1 @@
+Design a TwoSum class that supports add(number) and find(value). find(value) returns true if there exist any two numbers whose sum equals value.

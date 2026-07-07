@@ -1,0 +1,1 @@
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time. Implement MinStack with push(val), pop(), top(), and getMin() — all in O(1).

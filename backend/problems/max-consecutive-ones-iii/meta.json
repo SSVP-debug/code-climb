@@ -1,0 +1,12 @@
+{
+  "id": 209,
+  "slug": "max-consecutive-ones-iii",
+  "title": "Fruit Into Baskets",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "variable window at most K distinct",
+  "functionName": "totalFruit",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

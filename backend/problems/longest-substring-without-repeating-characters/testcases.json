@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "abcabcbb"
+      },
+      "expectedOutput": 3
+    },
+    {
+      "input": {
+        "s": "bbbbb"
+      },
+      "expectedOutput": 1
+    },
+    {
+      "input": {
+        "s": "pwwkew"
+      },
+      "expectedOutput": 3
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": ""
+      },
+      "expectedOutput": 0
+    },
+    {
+      "input": {
+        "s": "dvdf"
+      },
+      "expectedOutput": 3
+    }
+  ]
+}

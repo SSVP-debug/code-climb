@@ -1,0 +1,13 @@
+{
+  "id": 243,
+  "slug": "alien-dictionary",
+  "title": "Alien Dictionary",
+  "difficulty": "Hard",
+  "topic": "Graphs",
+  "pattern": "topological sort on characters",
+  "sourceType": "core",
+  "functionName": "alienOrder",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

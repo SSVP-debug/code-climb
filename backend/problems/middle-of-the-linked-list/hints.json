@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Count the length then walk to n/2. That's two passes — can you do it in one?"
+  },
+  {
+    "level": 2,
+    "text": "Two pointers moving at different speeds will naturally separate at the midpoint."
+  },
+  {
+    "level": 3,
+    "text": "Fast moves 2 steps, slow moves 1. When fast reaches the end, slow is at the middle."
+  }
+]

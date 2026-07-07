@@ -1,0 +1,12 @@
+{
+  "id": 131,
+  "slug": "minimum-meeting-rooms",
+  "title": "Minimum Number of Meeting Rooms",
+  "difficulty": "Medium",
+  "topic": "Intervals",
+  "pattern": "min heap sweep",
+  "functionName": "minMeetingRooms",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

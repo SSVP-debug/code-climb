@@ -1,0 +1,21 @@
+{
+  "id": 34,
+  "slug": "minimum-size-subarray-sum",
+  "title": "Minimum Size Subarray Sum",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "sliding window",
+  "sourceType": "core",
+  "functionName": "minSubArrayLen",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "longest-substring-without-repeating-characters",
+    "maximum-average-subarray",
+    "maximum-subarray"
+  ]
+}

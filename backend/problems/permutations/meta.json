@@ -1,0 +1,13 @@
+{
+  "id": 91,
+  "slug": "permutations",
+  "title": "Permutations",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "swap-based backtracking",
+  "sourceType": "core",
+  "functionName": "permute",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

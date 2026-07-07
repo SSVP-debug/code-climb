@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the circular DP two passes approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve House Robber II in O(n log n) or better? Consider how circular DP two passes helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses circular DP two passes. Work through small examples to see the pattern."
+  }
+]

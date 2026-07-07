@@ -1,0 +1,13 @@
+{
+  "id": 142,
+  "slug": "palindrome-number",
+  "title": "Palindrome Number",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "digit reversal",
+  "sourceType": "core",
+  "functionName": "isPalindrome",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

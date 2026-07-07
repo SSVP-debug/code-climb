@@ -1,0 +1,13 @@
+{
+  "id": 124,
+  "slug": "basic-calculator-ii",
+  "title": "Basic Calculator II",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "operator precedence stack",
+  "sourceType": "core",
+  "functionName": "calculate",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

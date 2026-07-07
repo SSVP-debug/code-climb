@@ -1,0 +1,13 @@
+{
+  "id": 94,
+  "slug": "word-search",
+  "title": "Word Search",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS grid with visited",
+  "sourceType": "core",
+  "functionName": "exist",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

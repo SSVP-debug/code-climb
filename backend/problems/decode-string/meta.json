@@ -1,0 +1,12 @@
+{
+  "id": 225,
+  "slug": "decode-string",
+  "title": "Decode String",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "stack string expansion",
+  "functionName": "decodeString",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

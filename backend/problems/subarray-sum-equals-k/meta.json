@@ -1,0 +1,13 @@
+{
+  "id": 105,
+  "slug": "subarray-sum-equals-k",
+  "title": "Subarray Sum Equals K",
+  "difficulty": "Medium",
+  "topic": "Hash Maps",
+  "pattern": "prefix sum hash map",
+  "sourceType": "core",
+  "functionName": "subarraySum",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

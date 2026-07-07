@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "A hash map of counts is a straightforward O(n) solution."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve it in O(1) space? The majority element appears more than n/2 times — that's a strong constraint."
+  },
+  {
+    "level": 3,
+    "text": "Boyer-Moore Voting: maintain a candidate and a counter. Matching element increments; different element decrements. When counter hits zero, switch candidates."
+  }
+]

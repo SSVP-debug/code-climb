@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "()"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "()[]{}"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "(]"
+      },
+      "expectedOutput": false
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "([)]"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": "{[]}"
+      },
+      "expectedOutput": true
+    }
+  ]
+}

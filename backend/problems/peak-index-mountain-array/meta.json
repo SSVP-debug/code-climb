@@ -1,0 +1,12 @@
+{
+  "id": 187,
+  "slug": "peak-index-mountain-array",
+  "title": "Peak Index in a Mountain Array",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on slope",
+  "functionName": "peakIndexInMountainArray",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

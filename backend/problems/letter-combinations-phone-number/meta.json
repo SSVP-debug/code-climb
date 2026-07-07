@@ -1,0 +1,12 @@
+{
+  "id": 184,
+  "slug": "letter-combinations-phone-number",
+  "title": "Letter Combinations of a Phone Number",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS digit mapping",
+  "functionName": "letterCombinations",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

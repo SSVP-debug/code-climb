@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the chaining / open addressing approach for design problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Design HashMap in O(n log n) or better? Consider how chaining / open addressing helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses chaining / open addressing. Work through small examples to see the pattern."
+  }
+]

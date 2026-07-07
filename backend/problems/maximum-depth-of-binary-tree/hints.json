@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "The depth of a tree is 1 + the maximum depth of its two subtrees."
+  },
+  {
+    "level": 2,
+    "text": "That definition is naturally recursive. Base case: a null node has depth 0."
+  },
+  {
+    "level": 3,
+    "text": "BFS (level-order) also works and avoids recursion: depth equals the number of levels traversed."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the stack index tracking approach for stacks problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Longest Valid Parentheses in O(n log n) or better? Consider how stack index tracking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses stack index tracking. Work through small examples to see the pattern."
+  }
+]

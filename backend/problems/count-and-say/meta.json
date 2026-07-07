@@ -1,0 +1,13 @@
+{
+  "id": 58,
+  "slug": "count-and-say",
+  "title": "Count and Say",
+  "difficulty": "Medium",
+  "topic": "Strings",
+  "pattern": "simulation",
+  "sourceType": "core",
+  "functionName": "countAndSay",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+Implement a last-in-first-out (LIFO) stack using only two queues. Implement push, pop, top, and empty operations. pop and top must be O(1) amortized or O(n) worst case — use only standard queue operations.

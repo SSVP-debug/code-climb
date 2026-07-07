@@ -1,0 +1,13 @@
+{
+  "id": 197,
+  "slug": "ugly-number-ii",
+  "title": "Ugly Number II",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "min heap or DP three pointers",
+  "sourceType": "core",
+  "functionName": "nthUglyNumber",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,13 @@
+{
+  "id": 147,
+  "slug": "sqrt-x",
+  "title": "Sqrt(x)",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "binary search",
+  "sourceType": "core",
+  "functionName": "mySqrt",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+Given a binary tree as a level-order array, invert the tree (mirror it left-to-right) and return the level-order array of the inverted tree. Recursively swap left and right children at every node.

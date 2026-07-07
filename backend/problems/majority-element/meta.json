@@ -1,0 +1,22 @@
+{
+  "id": 15,
+  "slug": "majority-element",
+  "title": "Majority Element",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "boyer-moore voting",
+  "sourceType": "core",
+  "functionName": "majorityElement",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Apple",
+    "Yahoo",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "single-number",
+    "contains-duplicate",
+    "maximum-subarray"
+  ]
+}

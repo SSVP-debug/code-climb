@@ -1,0 +1,1 @@
+You have an n x n grid with -1 (thorn), 0 (empty), 1 (cherry). Walk from (0,0) to (n-1,n-1) picking cherries, then return via the same rules. Cherries can only be picked once. Return maximum cherries collected.

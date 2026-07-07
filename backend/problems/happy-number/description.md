@@ -1,0 +1,1 @@
+A happy number is defined by repeatedly replacing the number with the sum of the squares of its digits until it equals 1 (happy) or loops endlessly. Return true if n is a happy number.

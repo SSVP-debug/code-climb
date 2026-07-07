@@ -1,0 +1,1 @@
+Design a time-based key-value data structure that stores multiple values for the same key at different timestamps. Implement TimeMap with: set(key, value, timestamp) and get(key, timestamp) which returns the value with the largest timestamp <= given timestamp, or "" if none.

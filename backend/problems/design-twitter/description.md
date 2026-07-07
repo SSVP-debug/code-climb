@@ -1,0 +1,1 @@
+Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).

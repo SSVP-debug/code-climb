@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the index marking approach for arrays problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find All Duplicates in an Array in O(n log n) or better? Consider how index marking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses index marking. Work through small examples to see the pattern."
+  }
+]

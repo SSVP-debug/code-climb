@@ -1,0 +1,13 @@
+{
+  "id": 64,
+  "slug": "intersection-of-two-linked-lists",
+  "title": "Intersection of Two Linked Lists",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "two pointers length equalization",
+  "sourceType": "core",
+  "functionName": "getIntersectionNode",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

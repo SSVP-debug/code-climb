@@ -1,0 +1,13 @@
+{
+  "id": 195,
+  "slug": "4sum-ii",
+  "title": "4Sum II",
+  "difficulty": "Medium",
+  "topic": "Hash Maps",
+  "pattern": "two-sum complement counting",
+  "sourceType": "core",
+  "functionName": "fourSumCount",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

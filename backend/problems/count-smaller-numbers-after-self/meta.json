@@ -1,0 +1,12 @@
+{
+  "id": 190,
+  "slug": "count-smaller-numbers-after-self",
+  "title": "Count of Smaller Numbers After Self",
+  "difficulty": "Hard",
+  "topic": "Binary Search",
+  "pattern": "BIT / merge sort",
+  "functionName": "countSmaller",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

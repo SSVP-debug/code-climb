@@ -1,0 +1,1 @@
+Given an input string s and a pattern p, implement regular expression matching with '.' (matches any character) and '*' (matches zero or more of the preceding element). The matching should cover the entire string.

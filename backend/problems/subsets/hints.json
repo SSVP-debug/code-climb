@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "There are 2^n subsets — each element is either included or excluded."
+  },
+  {
+    "level": 2,
+    "text": "Backtracking: at each index branch — include this element or skip it — and recurse."
+  },
+  {
+    "level": 3,
+    "text": "Iterative approach: start with [[]]. For each element, create a new subset from every existing one that includes it."
+  }
+]

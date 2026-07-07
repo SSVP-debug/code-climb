@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the column + diagonal tracking approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve N-Queens in O(n log n) or better? Consider how column + diagonal tracking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses column + diagonal tracking. Work through small examples to see the pattern."
+  }
+]

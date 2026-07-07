@@ -1,0 +1,12 @@
+{
+  "id": 164,
+  "slug": "swim-in-water-bfs",
+  "title": "Redundant Connection",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "union find cycle detection",
+  "functionName": "findRedundantConnection",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

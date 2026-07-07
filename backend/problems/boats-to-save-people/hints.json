@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the two pointer greedy approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Boats to Save People in O(n log n) or better? Consider how two pointer greedy helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses two pointer greedy. Work through small examples to see the pattern."
+  }
+]

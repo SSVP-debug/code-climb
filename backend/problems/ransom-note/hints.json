@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the frequency count approach for hash maps problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Ransom Note in O(n log n) or better? Consider how frequency count helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses frequency count. Work through small examples to see the pattern."
+  }
+]

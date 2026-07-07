@@ -1,0 +1,21 @@
+{
+  "id": 24,
+  "slug": "middle-of-the-linked-list",
+  "title": "Middle of the Linked List",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "fast / slow pointer",
+  "sourceType": "core",
+  "functionName": "middleNode",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "reverse-linked-list",
+    "remove-nth-node-from-end",
+    "merge-two-sorted-lists"
+  ]
+}

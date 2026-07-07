@@ -1,0 +1,12 @@
+{
+  "id": 214,
+  "slug": "cherry-pickup",
+  "title": "Cherry Pickup",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "3D DP two robots",
+  "functionName": "cherryPickup",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

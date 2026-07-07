@@ -1,0 +1,21 @@
+{
+  "id": 27,
+  "slug": "invert-binary-tree",
+  "title": "Invert Binary Tree",
+  "difficulty": "Easy",
+  "topic": "Trees",
+  "pattern": "dfs",
+  "sourceType": "core",
+  "functionName": "invertTree",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Apple"
+  ],
+  "relatedProblems": [
+    "maximum-depth-of-binary-tree",
+    "same-tree",
+    "diameter-of-binary-tree"
+  ]
+}

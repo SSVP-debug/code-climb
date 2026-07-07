@@ -1,0 +1,13 @@
+{
+  "id": 250,
+  "slug": "3sum-closest",
+  "title": "3Sum Closest",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "sort + two pointer closest",
+  "sourceType": "core",
+  "functionName": "threeSumClosest",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

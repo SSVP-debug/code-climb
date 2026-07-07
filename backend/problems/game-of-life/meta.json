@@ -1,0 +1,13 @@
+{
+  "id": 140,
+  "slug": "game-of-life",
+  "title": "Game of Life",
+  "difficulty": "Medium",
+  "topic": "Matrix",
+  "pattern": "in-place state encoding",
+  "sourceType": "core",
+  "functionName": "gameOfLife",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

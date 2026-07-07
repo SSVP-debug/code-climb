@@ -1,0 +1,21 @@
+{
+  "id": 31,
+  "slug": "two-sum-ii-sorted",
+  "title": "Two Sum II — Input Array Is Sorted",
+  "difficulty": "Easy",
+  "topic": "Two Pointers",
+  "pattern": "two pointers",
+  "sourceType": "variant",
+  "functionName": "twoSumSorted",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "two-sum",
+    "three-sum",
+    "container-with-most-water"
+  ]
+}

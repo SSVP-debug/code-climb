@@ -1,0 +1,13 @@
+{
+  "id": 144,
+  "slug": "power-of-two",
+  "title": "Power of Two",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "bit manipulation",
+  "sourceType": "core",
+  "functionName": "isPowerOfTwo",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

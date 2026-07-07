@@ -1,0 +1,13 @@
+{
+  "id": 56,
+  "slug": "longest-palindromic-substring",
+  "title": "Longest Palindromic Substring",
+  "difficulty": "Medium",
+  "topic": "Strings",
+  "pattern": "expand around center",
+  "sourceType": "core",
+  "functionName": "longestPalindrome",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

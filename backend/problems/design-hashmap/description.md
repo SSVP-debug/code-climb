@@ -1,0 +1,1 @@
+Design a HashMap without using any built-in hash table libraries. Implement put(key, value), get(key) (returns -1 if not found), and remove(key).

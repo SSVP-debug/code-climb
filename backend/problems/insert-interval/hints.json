@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the linear scan merge approach for intervals problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Insert Interval in O(n log n) or better? Consider how linear scan merge helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses linear scan merge. Work through small examples to see the pattern."
+  }
+]

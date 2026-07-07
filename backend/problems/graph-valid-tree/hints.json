@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the union find / BFS cycle detection approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Graph Valid Tree in O(n log n) or better? Consider how union find / BFS cycle detection helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses union find / BFS cycle detection. Work through small examples to see the pattern."
+  }
+]

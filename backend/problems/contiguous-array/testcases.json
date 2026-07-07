@@ -1,0 +1,60 @@
+{
+  "visible": [
+    {
+      "input": {
+        "nums": [
+          0,
+          1
+        ]
+      },
+      "expectedOutput": 2
+    },
+    {
+      "input": {
+        "nums": [
+          0,
+          1,
+          0
+        ]
+      },
+      "expectedOutput": 2
+    },
+    {
+      "input": {
+        "nums": [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "expectedOutput": 6
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "nums": [
+          0,
+          0
+        ]
+      },
+      "expectedOutput": 0
+    },
+    {
+      "input": {
+        "nums": [
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "expectedOutput": 4
+    }
+  ]
+}

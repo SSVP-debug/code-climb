@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sort by end + greedy overlap approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Minimum Number of Arrows to Burst Balloons in O(n log n) or better? Consider how sort by end + greedy overlap helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sort by end + greedy overlap. Work through small examples to see the pattern."
+  }
+]

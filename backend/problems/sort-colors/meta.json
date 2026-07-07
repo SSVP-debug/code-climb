@@ -1,0 +1,13 @@
+{
+  "id": 54,
+  "slug": "sort-colors",
+  "title": "Sort Colors",
+  "difficulty": "Medium",
+  "topic": "Arrays",
+  "pattern": "dutch national flag",
+  "sourceType": "core",
+  "functionName": "sortColors",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

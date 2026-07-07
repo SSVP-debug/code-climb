@@ -1,0 +1,1 @@
+Given the root of a binary tree, return the maximum width of the tree. The width of one level is the length from the leftmost to the rightmost non-null node including null nodes between them.

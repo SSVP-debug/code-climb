@@ -1,0 +1,1 @@
+Given a directed acyclic graph (DAG) of n nodes, find all possible paths from node 0 to node n-1 and return them in any order. The graph is given as adjacency list graph[i] = list of nodes i can go to.

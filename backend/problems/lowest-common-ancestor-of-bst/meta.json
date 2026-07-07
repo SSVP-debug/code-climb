@@ -1,0 +1,13 @@
+{
+  "id": 67,
+  "slug": "lowest-common-ancestor-of-bst",
+  "title": "Lowest Common Ancestor of BST",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "BST property traversal",
+  "sourceType": "core",
+  "functionName": "lowestCommonAncestor",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

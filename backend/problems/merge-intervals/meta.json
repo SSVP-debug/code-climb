@@ -1,0 +1,13 @@
+{
+  "id": 109,
+  "slug": "merge-intervals",
+  "title": "Merge Intervals",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "sort + merge",
+  "sourceType": "core",
+  "functionName": "merge",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

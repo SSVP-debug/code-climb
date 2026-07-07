@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Sorting works in O(n log n) and gives you any kth element trivially."
+  },
+  {
+    "level": 2,
+    "text": "A min-heap of size k maintains the k largest elements seen so far. Its root is the kth largest."
+  },
+  {
+    "level": 3,
+    "text": "For each element: push it onto the heap. If the heap exceeds size k, pop the minimum. The root is the answer after iterating."
+  }
+]

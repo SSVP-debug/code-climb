@@ -1,0 +1,13 @@
+{
+  "id": 246,
+  "slug": "swim-in-rising-water",
+  "title": "Swim in Rising Water",
+  "difficulty": "Hard",
+  "topic": "Graphs",
+  "pattern": "Dijkstra minimax path",
+  "sourceType": "core",
+  "functionName": "swimInWater",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

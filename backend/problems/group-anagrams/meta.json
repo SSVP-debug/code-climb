@@ -1,0 +1,13 @@
+{
+  "id": 21,
+  "slug": "group-anagrams",
+  "title": "Group Anagrams",
+  "difficulty": "Medium",
+  "topic": "Hash Maps",
+  "pattern": "sorted key grouping",
+  "sourceType": "core",
+  "functionName": "groupAnagrams",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

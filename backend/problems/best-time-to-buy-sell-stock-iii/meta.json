@@ -1,0 +1,13 @@
+{
+  "id": 233,
+  "slug": "best-time-to-buy-sell-stock-iii",
+  "title": "Best Time to Buy and Sell Stock III",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "state machine DP",
+  "sourceType": "core",
+  "functionName": "maxProfit",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

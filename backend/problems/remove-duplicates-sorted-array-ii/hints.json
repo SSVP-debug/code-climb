@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the slow-fast pointer approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Remove Duplicates from Sorted Array II in O(n log n) or better? Consider how slow-fast pointer helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses slow-fast pointer. Work through small examples to see the pattern."
+  }
+]

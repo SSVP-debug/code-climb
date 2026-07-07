@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS with reuse approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Combination Sum in O(n log n) or better? Consider how DFS with reuse helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS with reuse. Work through small examples to see the pattern."
+  }
+]

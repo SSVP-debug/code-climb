@@ -1,0 +1,1 @@
+Given a non-empty array of integers where every element appears twice except for one, find that single one. You must use O(n) time and O(1) space. Hint: XOR of a number with itself is 0.

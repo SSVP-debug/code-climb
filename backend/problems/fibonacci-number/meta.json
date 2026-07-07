@@ -1,0 +1,20 @@
+{
+  "id": 8,
+  "slug": "fibonacci-number",
+  "title": "Fibonacci Number",
+  "difficulty": "Easy",
+  "topic": "Dynamic Programming",
+  "pattern": "1d dp / memoization",
+  "sourceType": "core",
+  "functionName": "fib",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Apple",
+    "Google"
+  ],
+  "relatedProblems": [
+    "climbing-stairs",
+    "house-robber"
+  ]
+}

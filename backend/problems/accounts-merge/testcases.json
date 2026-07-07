@@ -1,0 +1,84 @@
+{
+  "visible": [
+    {
+      "input": {
+        "accounts": [
+          [
+            "John",
+            "johnsmith@mail.com",
+            "john_newyork@mail.com"
+          ],
+          [
+            "John",
+            "johnsmith@mail.com",
+            "john00@mail.com"
+          ],
+          [
+            "Mary",
+            "mary@mail.com"
+          ],
+          [
+            "John",
+            "johnnybravo@mail.com"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        [
+          "John",
+          "john00@mail.com",
+          "john_newyork@mail.com",
+          "johnsmith@mail.com"
+        ],
+        [
+          "Mary",
+          "mary@mail.com"
+        ],
+        [
+          "John",
+          "johnnybravo@mail.com"
+        ]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "accounts": [
+          [
+            "Gabe",
+            "Gabe0@m.co",
+            "Gabe3@m.co",
+            "Gabe1@m.co"
+          ],
+          [
+            "Kevin",
+            "Kevin3@m.co",
+            "Kevin5@m.co"
+          ],
+          [
+            "Ethan",
+            "Ethan5@m.co"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        [
+          "Gabe",
+          "Gabe0@m.co",
+          "Gabe1@m.co",
+          "Gabe3@m.co"
+        ],
+        [
+          "Kevin",
+          "Kevin3@m.co",
+          "Kevin5@m.co"
+        ],
+        [
+          "Ethan",
+          "Ethan5@m.co"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+The count-and-say sequence is: 1, 11, 21, 1211, 111221, ... Each term describes the previous term by counting runs of digits. Given n, return the nth term of the count-and-say sequence.

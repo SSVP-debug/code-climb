@@ -1,0 +1,1 @@
+Given the head of a singly linked list, return true if it is a palindrome, false otherwise. Solve in O(n) time and O(1) space.

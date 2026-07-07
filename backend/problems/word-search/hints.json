@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS grid with visited approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Word Search in O(n log n) or better? Consider how DFS grid with visited helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS grid with visited. Work through small examples to see the pattern."
+  }
+]

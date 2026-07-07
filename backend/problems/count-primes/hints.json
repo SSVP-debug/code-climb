@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the Sieve of Eratosthenes approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Count Primes in O(n log n) or better? Consider how Sieve of Eratosthenes helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses Sieve of Eratosthenes. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Filter out non-alphanumeric characters and lowercase everything first."
+  },
+  {
+    "level": 2,
+    "text": "Then check if the cleaned string equals its reverse."
+  },
+  {
+    "level": 3,
+    "text": "Or use two pointers from each end, skipping invalid characters in-place to avoid allocating a cleaned copy."
+  }
+]

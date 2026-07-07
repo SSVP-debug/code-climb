@@ -1,0 +1,1 @@
+The Fibonacci sequence: F(0) = 0, F(1) = 1, F(n) = F(n-1) + F(n-2). Given n, calculate F(n). Try both recursive and iterative approaches.

@@ -1,0 +1,3 @@
+function canConstruct(ransomNote, magazine) {
+
+}

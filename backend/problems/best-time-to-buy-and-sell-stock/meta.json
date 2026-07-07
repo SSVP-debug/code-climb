@@ -1,0 +1,23 @@
+{
+  "id": 3,
+  "slug": "best-time-to-buy-and-sell-stock",
+  "title": "Best Time to Buy and Sell Stock",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "sliding window / greedy",
+  "sourceType": "core",
+  "functionName": "maxProfit",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Goldman Sachs",
+    "Bloomberg",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "maximum-subarray",
+    "maximum-average-subarray",
+    "move-zeroes"
+  ]
+}

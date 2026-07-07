@@ -1,0 +1,22 @@
+{
+  "id": 39,
+  "slug": "search-in-rotated-sorted-array",
+  "title": "Search in Rotated Sorted Array",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search",
+  "sourceType": "core",
+  "functionName": "searchRotated",
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "Facebook",
+    "Google",
+    "Uber"
+  ],
+  "relatedProblems": [
+    "binary-search",
+    "find-minimum-in-rotated-sorted-array"
+  ]
+}

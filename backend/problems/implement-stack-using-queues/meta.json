@@ -1,0 +1,13 @@
+{
+  "id": 154,
+  "slug": "implement-stack-using-queues",
+  "title": "Implement Stack using Queues",
+  "difficulty": "Easy",
+  "topic": "Design",
+  "pattern": "queue rotation trick",
+  "sourceType": "core",
+  "functionName": "MyStack",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

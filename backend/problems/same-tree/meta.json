@@ -1,0 +1,20 @@
+{
+  "id": 30,
+  "slug": "same-tree",
+  "title": "Same Tree",
+  "difficulty": "Easy",
+  "topic": "Trees",
+  "pattern": "dfs",
+  "sourceType": "variant",
+  "functionName": "isSameTree",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "invert-binary-tree",
+    "maximum-depth-of-binary-tree",
+    "validate-binary-search-tree"
+  ]
+}

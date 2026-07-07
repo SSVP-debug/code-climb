@@ -1,0 +1,13 @@
+{
+  "id": 17,
+  "slug": "trapping-rain-water",
+  "title": "Trapping Rain Water",
+  "difficulty": "Hard",
+  "topic": "Two Pointers",
+  "pattern": "two pointer max left right",
+  "sourceType": "core",
+  "functionName": "trap",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

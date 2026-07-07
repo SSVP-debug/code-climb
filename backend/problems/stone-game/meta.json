@@ -1,0 +1,12 @@
+{
+  "id": 215,
+  "slug": "stone-game",
+  "title": "Stone Game",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "game theory DP",
+  "functionName": "stoneGame",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the trie insert/search/prefix approach for trie problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Implement Trie (Prefix Tree) in O(n log n) or better? Consider how trie insert/search/prefix helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses trie insert/search/prefix. Work through small examples to see the pattern."
+  }
+]

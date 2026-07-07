@@ -1,0 +1,1 @@
+Given two strings s and t, determine if they are isomorphic. Two strings are isomorphic if characters in s can be replaced to get t, preserving order. No two characters may map to the same character, but a character may map to itself.

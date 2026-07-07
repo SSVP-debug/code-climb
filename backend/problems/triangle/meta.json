@@ -1,0 +1,13 @@
+{
+  "id": 174,
+  "slug": "triangle",
+  "title": "Triangle",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "bottom-up DP",
+  "sourceType": "core",
+  "functionName": "minimumTotal",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

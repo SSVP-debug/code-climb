@@ -1,0 +1,12 @@
+{
+  "id": 166,
+  "slug": "minimum-genetic-mutation",
+  "title": "Cheapest Flights Within K Stops",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "Bellman-Ford / BFS DP",
+  "functionName": "findCheapestPrice",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

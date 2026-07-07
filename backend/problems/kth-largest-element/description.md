@@ -1,0 +1,1 @@
+Given an integer array nums and an integer k, return the kth largest element. Maintain a min-heap of size k — for each element, push it in, and if the heap exceeds k, pop the smallest. The heap top is the answer.

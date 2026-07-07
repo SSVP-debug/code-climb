@@ -1,0 +1,1 @@
+Given a string s, rearrange the characters of s so that no two adjacent characters are the same. Return any such rearrangement, or an empty string if not possible.

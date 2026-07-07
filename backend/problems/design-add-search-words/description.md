@@ -1,0 +1,1 @@
+Implement WordDictionary with: addWord(word) and search(word) where word may contain '.' which matches any letter. Return true if the word matches any previously added word.

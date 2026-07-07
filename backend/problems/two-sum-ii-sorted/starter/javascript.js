@@ -1,0 +1,3 @@
+function twoSumSorted(numbers, target) {
+
+}

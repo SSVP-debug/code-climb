@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sorted frequency map approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Hand of Straights in O(n log n) or better? Consider how sorted frequency map helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sorted frequency map. Work through small examples to see the pattern."
+  }
+]

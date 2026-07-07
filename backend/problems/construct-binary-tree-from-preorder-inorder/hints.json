@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the divide and conquer recursion approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Construct Binary Tree from Preorder and Inorder Traversal in O(n log n) or better? Consider how divide and conquer recursion helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses divide and conquer recursion. Work through small examples to see the pattern."
+  }
+]

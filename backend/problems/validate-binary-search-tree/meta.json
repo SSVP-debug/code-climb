@@ -1,0 +1,22 @@
+{
+  "id": 29,
+  "slug": "validate-binary-search-tree",
+  "title": "Validate Binary Search Tree",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "dfs with bounds",
+  "sourceType": "core",
+  "functionName": "isValidBST",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "Facebook",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "diameter-of-binary-tree",
+    "same-tree",
+    "maximum-depth-of-binary-tree"
+  ]
+}

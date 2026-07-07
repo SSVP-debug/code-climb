@@ -1,0 +1,13 @@
+{
+  "id": 202,
+  "slug": "implement-trie-prefix-tree",
+  "title": "Implement Trie (Prefix Tree)",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "children array node",
+  "sourceType": "core",
+  "functionName": "Trie",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

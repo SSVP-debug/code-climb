@@ -1,0 +1,12 @@
+{
+  "id": 242,
+  "slug": "subarray-product-less-than-k",
+  "title": "Minimum Size Subarray Sum",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "variable window shrink",
+  "functionName": "minSubArrayLen",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

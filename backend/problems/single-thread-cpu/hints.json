@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the event simulation with min heap approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Single Thread CPU in O(n log n) or better? Consider how event simulation with min heap helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses event simulation with min heap. Work through small examples to see the pattern."
+  }
+]

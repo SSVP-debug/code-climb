@@ -1,0 +1,13 @@
+{
+  "id": 77,
+  "slug": "longest-increasing-subsequence",
+  "title": "Longest Increasing Subsequence",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "patience sorting / binary search DP",
+  "sourceType": "core",
+  "functionName": "lengthOfLIS",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

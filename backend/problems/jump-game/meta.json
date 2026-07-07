@@ -1,0 +1,13 @@
+{
+  "id": 106,
+  "slug": "jump-game",
+  "title": "Jump Game",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "max reach greedy",
+  "sourceType": "core",
+  "functionName": "canJump",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": 4,
+  "slug": "valid-parentheses",
+  "title": "Valid Parentheses",
+  "difficulty": "Easy",
+  "topic": "Stacks",
+  "pattern": "stack matching",
+  "sourceType": "core",
+  "functionName": "isValid",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Facebook",
+    "Microsoft",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "min-stack",
+    "daily-temperatures"
+  ]
+}

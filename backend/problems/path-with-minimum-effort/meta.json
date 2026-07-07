@@ -1,0 +1,12 @@
+{
+  "id": 161,
+  "slug": "path-with-minimum-effort",
+  "title": "Path With Minimum Effort",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "union find",
+  "functionName": "minimumEffortPath",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the BST property traversal approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Lowest Common Ancestor of BST in O(n log n) or better? Consider how BST property traversal helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses BST property traversal. Work through small examples to see the pattern."
+  }
+]

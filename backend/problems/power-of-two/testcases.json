@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "n": 1
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "n": 16
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "n": 3
+      },
+      "expectedOutput": false
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "n": 0
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "n": -16
+      },
+      "expectedOutput": false
+    }
+  ]
+}

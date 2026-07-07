@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the two stacks lazy transfer approach for stacks problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Implement Queue using Stacks in O(n log n) or better? Consider how two stacks lazy transfer helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses two stacks lazy transfer. Work through small examples to see the pattern."
+  }
+]

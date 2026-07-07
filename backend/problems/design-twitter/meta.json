@@ -1,0 +1,12 @@
+{
+  "id": 157,
+  "slug": "design-twitter",
+  "title": "Design Twitter",
+  "difficulty": "Medium",
+  "topic": "Design",
+  "pattern": "heap + timestamp",
+  "functionName": "Twitter",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

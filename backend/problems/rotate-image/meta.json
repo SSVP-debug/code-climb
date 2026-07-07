@@ -1,0 +1,13 @@
+{
+  "id": 138,
+  "slug": "rotate-image",
+  "title": "Rotate Image",
+  "difficulty": "Medium",
+  "topic": "Matrix",
+  "pattern": "transpose + reverse",
+  "sourceType": "core",
+  "functionName": "rotate",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

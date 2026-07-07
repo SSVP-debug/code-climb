@@ -1,0 +1,12 @@
+{
+  "id": 219,
+  "slug": "largest-number",
+  "title": "Largest Number",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "custom comparator sort",
+  "functionName": "largestNumber",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

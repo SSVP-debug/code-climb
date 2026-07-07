@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the unbounded knapsack BFS/DP approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Coin Change in O(n log n) or better? Consider how unbounded knapsack BFS/DP helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses unbounded knapsack BFS/DP. Work through small examples to see the pattern."
+  }
+]

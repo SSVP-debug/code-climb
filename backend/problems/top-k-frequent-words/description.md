@@ -1,0 +1,1 @@
+Given an array of strings words and an integer k, return the k most frequent strings. Return the answer sorted by frequency (highest first). For ties, sort lexicographically.

@@ -1,0 +1,13 @@
+{
+  "id": 240,
+  "slug": "minimum-arrows-burst-balloons",
+  "title": "Minimum Number of Arrows to Burst Balloons",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "sort by end + greedy overlap",
+  "sourceType": "core",
+  "functionName": "findMinArrowShots",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

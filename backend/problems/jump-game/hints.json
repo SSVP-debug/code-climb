@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the max reach greedy approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Jump Game in O(n log n) or better? Consider how max reach greedy helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses max reach greedy. Work through small examples to see the pattern."
+  }
+]

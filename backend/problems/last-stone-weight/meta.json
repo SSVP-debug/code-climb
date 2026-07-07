@@ -1,0 +1,19 @@
+{
+  "id": 41,
+  "slug": "last-stone-weight",
+  "title": "Last Stone Weight",
+  "difficulty": "Easy",
+  "topic": "Heap",
+  "pattern": "max-heap",
+  "sourceType": "variant",
+  "functionName": "lastStoneWeight",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Google"
+  ],
+  "relatedProblems": [
+    "kth-largest-element",
+    "minimum-size-subarray-sum"
+  ]
+}

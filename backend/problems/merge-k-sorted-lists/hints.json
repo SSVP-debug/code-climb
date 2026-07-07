@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the min heap merge approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Merge K Sorted Lists in O(n log n) or better? Consider how min heap merge helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses min heap merge. Work through small examples to see the pattern."
+  }
+]

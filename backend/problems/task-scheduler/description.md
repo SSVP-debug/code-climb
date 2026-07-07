@@ -1,0 +1,1 @@
+Given a list of CPU tasks (A-Z) and an integer n (cooldown between same tasks), return the minimum number of intervals (including idles) needed to complete all tasks.

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the expand around center approach for strings problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Longest Palindromic Substring in O(n log n) or better? Consider how expand around center helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses expand around center. Work through small examples to see the pattern."
+  }
+]

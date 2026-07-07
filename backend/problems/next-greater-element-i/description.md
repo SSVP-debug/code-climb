@@ -1,0 +1,1 @@
+The next greater element of some element x in an array is the first greater element to the right. Given two arrays nums1 and nums2 (nums1 is a subset of nums2), return an array of the next greater element for each element in nums1. Return -1 if no greater element exists.

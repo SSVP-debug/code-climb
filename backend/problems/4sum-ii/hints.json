@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the two-sum complement counting approach for hash maps problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve 4Sum II in O(n log n) or better? Consider how two-sum complement counting helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses two-sum complement counting. Work through small examples to see the pattern."
+  }
+]

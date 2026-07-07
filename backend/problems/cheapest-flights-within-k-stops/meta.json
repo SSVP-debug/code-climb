@@ -1,0 +1,13 @@
+{
+  "id": 127,
+  "slug": "cheapest-flights-within-k-stops",
+  "title": "Cheapest Flights Within K Stops",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "Bellman-Ford / BFS with limit",
+  "sourceType": "core",
+  "functionName": "findCheapestPrice",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

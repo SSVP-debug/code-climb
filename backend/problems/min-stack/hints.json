@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "A regular stack gives O(1) push/pop. The challenge is getMin in O(1)."
+  },
+  {
+    "level": 2,
+    "text": "When you push a value, also record what the minimum was at that moment."
+  },
+  {
+    "level": 3,
+    "text": "Use a second 'min stack' that mirrors the main stack. Pop both together — each level remembers its own minimum."
+  }
+]

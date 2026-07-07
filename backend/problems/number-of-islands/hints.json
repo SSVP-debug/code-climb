@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Each island is a connected group of '1' cells. You need to count separate groups."
+  },
+  {
+    "level": 2,
+    "text": "DFS/BFS from any unvisited '1': mark all connected land as visited. Each DFS = one island."
+  },
+  {
+    "level": 3,
+    "text": "Mark visited cells as '0' in-place to avoid an extra visited array."
+  }
+]

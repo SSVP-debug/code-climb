@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the fixed window frequency map approach for sliding window problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find All Anagrams in a String in O(n log n) or better? Consider how fixed window frequency map helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses fixed window frequency map. Work through small examples to see the pattern."
+  }
+]

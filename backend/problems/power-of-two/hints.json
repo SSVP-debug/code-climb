@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the bit manipulation approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Power of Two in O(n log n) or better? Consider how bit manipulation helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses bit manipulation. Work through small examples to see the pattern."
+  }
+]

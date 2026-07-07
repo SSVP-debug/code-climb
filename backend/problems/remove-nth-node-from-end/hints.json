@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Find the length, then walk to (length − n). That's two passes — can you do it in one?"
+  },
+  {
+    "level": 2,
+    "text": "If fast is n steps ahead of slow, when fast reaches the end, slow is just before the target node."
+  },
+  {
+    "level": 3,
+    "text": "Start fast n+1 steps ahead (using a dummy head). When fast hits null, slow.next is the node to remove."
+  }
+]

@@ -1,0 +1,1 @@
+Given a string s consisting of '(', ')' and lowercase English letters, remove the minimum number of parentheses to make the resulting string valid. Return any valid result.

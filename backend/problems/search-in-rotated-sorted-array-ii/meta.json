@@ -1,0 +1,13 @@
+{
+  "id": 188,
+  "slug": "search-in-rotated-sorted-array-ii",
+  "title": "Search in Rotated Sorted Array II",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search with duplicates",
+  "sourceType": "core",
+  "functionName": "search",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

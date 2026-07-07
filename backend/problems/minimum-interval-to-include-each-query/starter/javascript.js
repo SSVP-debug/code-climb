@@ -1,0 +1,3 @@
+function minInterval(intervals, queries) {
+
+}

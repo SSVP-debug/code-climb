@@ -1,0 +1,13 @@
+{
+  "id": 59,
+  "slug": "minimum-window-substring",
+  "title": "Minimum Window Substring",
+  "difficulty": "Hard",
+  "topic": "Sliding Window",
+  "pattern": "sliding window with frequency map",
+  "sourceType": "core",
+  "functionName": "minWindow",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+You are given an m×n grid rooms initialized with -1 (wall), 0 (gate), or INF (empty room, value 2^31-1). Fill each empty room with the distance to its nearest gate. If impossible, leave as INF.

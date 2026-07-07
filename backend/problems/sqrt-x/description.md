@@ -1,0 +1,1 @@
+Given a non-negative integer x, return the square root of x rounded down to the nearest integer. Do not use any built-in exponent function or operator.

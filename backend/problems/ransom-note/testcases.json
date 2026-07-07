@@ -1,0 +1,34 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ransomNote": "a",
+        "magazine": "b"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "ransomNote": "aa",
+        "magazine": "ab"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "ransomNote": "aa",
+        "magazine": "aab"
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ransomNote": "fihjjjjei",
+        "magazine": "hjibagacbhadfaefdjaeaebgi"
+      },
+      "expectedOutput": true
+    }
+  ]
+}

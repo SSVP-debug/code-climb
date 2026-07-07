@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "hello"
+      },
+      "expectedOutput": "olleh"
+    },
+    {
+      "input": {
+        "s": "Hannah"
+      },
+      "expectedOutput": "hannaH"
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "expectedOutput": "a"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "abcde"
+      },
+      "expectedOutput": "edcba"
+    },
+    {
+      "input": {
+        "s": "racecar"
+      },
+      "expectedOutput": "racecar"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 2D DP grid approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Unique Paths in O(n log n) or better? Consider how 2D DP grid helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 2D DP grid. Work through small examples to see the pattern."
+  }
+]

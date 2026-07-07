@@ -1,0 +1,1 @@
+You are a robber planning to rob houses along a street. Adjacent houses have connected alarms. Given an integer array nums representing money in each house, return the maximum amount you can rob without alerting police.

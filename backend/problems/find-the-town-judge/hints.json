@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the in-degree / out-degree approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find the Town Judge in O(n log n) or better? Consider how in-degree / out-degree helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses in-degree / out-degree. Work through small examples to see the pattern."
+  }
+]

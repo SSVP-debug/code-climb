@@ -1,0 +1,82 @@
+{
+  "visible": [
+    {
+      "input": {
+        "adjList": [
+          [
+            2,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "expectedOutput": [
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          3
+        ]
+      ]
+    },
+    {
+      "input": {
+        "adjList": [
+          []
+        ]
+      },
+      "expectedOutput": [
+        []
+      ]
+    },
+    {
+      "input": {
+        "adjList": []
+      },
+      "expectedOutput": []
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "adjList": [
+          [
+            2
+          ],
+          [
+            1
+          ]
+        ]
+      },
+      "expectedOutput": [
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ]
+    }
+  ]
+}

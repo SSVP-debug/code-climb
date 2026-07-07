@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the trie prefix replacement approach for trie problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Replace Words in O(n log n) or better? Consider how trie prefix replacement helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses trie prefix replacement. Work through small examples to see the pattern."
+  }
+]

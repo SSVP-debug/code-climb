@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the BFS queue approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Binary Tree Level Order Traversal in O(n log n) or better? Consider how BFS queue helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses BFS queue. Work through small examples to see the pattern."
+  }
+]

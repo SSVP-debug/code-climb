@@ -1,0 +1,13 @@
+{
+  "id": 175,
+  "slug": "perfect-squares",
+  "title": "Perfect Squares",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "BFS / DP with squares",
+  "sourceType": "core",
+  "functionName": "numSquares",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

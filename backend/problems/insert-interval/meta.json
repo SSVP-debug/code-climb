@@ -1,0 +1,13 @@
+{
+  "id": 132,
+  "slug": "insert-interval",
+  "title": "Insert Interval",
+  "difficulty": "Medium",
+  "topic": "Intervals",
+  "pattern": "linear scan merge",
+  "sourceType": "core",
+  "functionName": "insert",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

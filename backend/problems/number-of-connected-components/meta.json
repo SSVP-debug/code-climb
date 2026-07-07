@@ -1,0 +1,13 @@
+{
+  "id": 129,
+  "slug": "number-of-connected-components",
+  "title": "Number of Connected Components in Undirected Graph",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "Union-Find / DFS",
+  "sourceType": "core",
+  "functionName": "countComponents",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

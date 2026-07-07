@@ -1,0 +1,13 @@
+{
+  "id": 92,
+  "slug": "sudoku-solver",
+  "title": "Sudoku Solver",
+  "difficulty": "Hard",
+  "topic": "Backtracking",
+  "pattern": "constraint backtracking",
+  "sourceType": "core",
+  "functionName": "solveSudoku",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

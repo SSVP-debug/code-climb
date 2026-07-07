@@ -1,0 +1,13 @@
+{
+  "id": 99,
+  "slug": "maximum-xor-of-two-numbers",
+  "title": "Maximum XOR of Two Numbers in an Array",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "bit trie",
+  "sourceType": "core",
+  "functionName": "findMaximumXOR",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

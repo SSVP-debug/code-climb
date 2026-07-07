@@ -1,0 +1,12 @@
+{
+  "id": 218,
+  "slug": "bitwise-and-numbers-range",
+  "title": "Bitwise AND of Numbers Range",
+  "difficulty": "Medium",
+  "topic": "Bit Manipulation",
+  "pattern": "common prefix bit shift",
+  "functionName": "rangeBitwiseAnd",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,12 @@
+{
+  "id": 172,
+  "slug": "interleaving-string",
+  "title": "Interleaving String",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP interleave check",
+  "functionName": "isInterleave",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

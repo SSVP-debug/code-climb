@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search on rotated array approach for binary search problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find Minimum in Rotated Sorted Array in O(n log n) or better? Consider how binary search on rotated array helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search on rotated array. Work through small examples to see the pattern."
+  }
+]

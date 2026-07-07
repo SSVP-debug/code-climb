@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "The window size is fixed at k — this is simpler than a variable-size window."
+  },
+  {
+    "level": 2,
+    "text": "Compute the sum of the first k elements. Then slide right: add the incoming element, subtract the outgoing one."
+  },
+  {
+    "level": 3,
+    "text": "Track the maximum sum seen across all windows; divide by k at the end to get the average."
+  }
+]

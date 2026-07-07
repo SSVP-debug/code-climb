@@ -1,0 +1,22 @@
+{
+  "id": 10,
+  "slug": "valid-anagram",
+  "title": "Valid Anagram",
+  "difficulty": "Easy",
+  "topic": "Hash Maps",
+  "pattern": "frequency count",
+  "sourceType": "core",
+  "functionName": "isAnagram",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Google",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "group-anagrams",
+    "longest-consecutive-sequence",
+    "contains-duplicate"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": 116,
+  "slug": "maximum-product-subarray",
+  "title": "Maximum Product Subarray",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "track min and max simultaneously",
+  "sourceType": "core",
+  "functionName": "maxProduct",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

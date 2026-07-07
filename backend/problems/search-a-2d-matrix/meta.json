@@ -1,0 +1,13 @@
+{
+  "id": 86,
+  "slug": "search-a-2d-matrix",
+  "title": "Search a 2D Matrix",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on flattened matrix",
+  "sourceType": "core",
+  "functionName": "searchMatrix",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

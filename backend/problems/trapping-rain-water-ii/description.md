@@ -1,0 +1,1 @@
+Given an m x n matrix of non-negative integers representing heights, compute how much water it can trap after raining (3D version).

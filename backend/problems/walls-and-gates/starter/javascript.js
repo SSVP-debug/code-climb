@@ -1,0 +1,3 @@
+function wallsAndGates(rooms) {
+
+}

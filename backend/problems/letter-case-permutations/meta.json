@@ -1,0 +1,19 @@
+{
+  "id": 44,
+  "slug": "letter-case-permutations",
+  "title": "Letter Case Permutations",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "backtracking",
+  "sourceType": "original",
+  "functionName": "letterCasePermutation",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Facebook",
+    "Amazon"
+  ],
+  "relatedProblems": [
+    "subsets",
+    "combination-sum"
+  ]
+}

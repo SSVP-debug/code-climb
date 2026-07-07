@@ -1,0 +1,12 @@
+{
+  "id": 241,
+  "slug": "squares-of-sorted-array",
+  "title": "Squares of a Sorted Array",
+  "difficulty": "Easy",
+  "topic": "Two Pointers",
+  "pattern": "two pointer merge from ends",
+  "functionName": "sortedSquares",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

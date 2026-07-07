@@ -1,0 +1,21 @@
+{
+  "id": 35,
+  "slug": "maximum-average-subarray",
+  "title": "Maximum Average Subarray",
+  "difficulty": "Easy",
+  "topic": "Sliding Window",
+  "pattern": "fixed-size sliding window",
+  "sourceType": "variant",
+  "functionName": "findMaxAverage",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "minimum-size-subarray-sum",
+    "maximum-subarray",
+    "best-time-to-buy-and-sell-stock"
+  ]
+}

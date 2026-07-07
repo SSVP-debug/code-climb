@@ -1,0 +1,12 @@
+{
+  "id": 193,
+  "slug": "longest-substring-two-distinct",
+  "title": "Longest Substring with At Most Two Distinct Characters",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "variable window frequency map",
+  "functionName": "lengthOfLongestSubstringTwoDistinct",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

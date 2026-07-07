@@ -1,0 +1,1 @@
+Koko can eat k bananas per hour. Given piles of bananas and h hours, find the minimum eating speed k such that she finishes all piles within h hours. Each hour she picks one pile and eats up to k bananas from it.

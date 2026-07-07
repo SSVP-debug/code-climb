@@ -1,0 +1,12 @@
+{
+  "id": 133,
+  "slug": "interval-list-intersections",
+  "title": "Interval List Intersections",
+  "difficulty": "Medium",
+  "topic": "Intervals",
+  "pattern": "two pointer merge",
+  "functionName": "intervalIntersection",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

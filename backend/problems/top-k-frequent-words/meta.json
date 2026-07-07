@@ -1,0 +1,12 @@
+{
+  "id": 192,
+  "slug": "top-k-frequent-words",
+  "title": "Top K Frequent Words",
+  "difficulty": "Medium",
+  "topic": "Hash Maps",
+  "pattern": "frequency map + heap",
+  "functionName": "topKFrequent",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

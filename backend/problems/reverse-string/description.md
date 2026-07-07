@@ -1,0 +1,1 @@
+Given a string s, reverse it and return the reversed string. Do it with O(1) extra memory — use two pointers, one from each end, and swap until they meet.

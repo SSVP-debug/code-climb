@@ -1,0 +1,1 @@
+You are a product manager with n versions. isBadVersion(version) returns whether a version is bad. All versions after the first bad one are also bad. Find the first bad version using minimum API calls.

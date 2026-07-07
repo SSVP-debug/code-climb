@@ -1,0 +1,54 @@
+{
+  "visible": [
+    {
+      "input": {
+        "strs": [
+          "flower",
+          "flow",
+          "flight"
+        ]
+      },
+      "expectedOutput": "fl"
+    },
+    {
+      "input": {
+        "strs": [
+          "dog",
+          "racecar",
+          "car"
+        ]
+      },
+      "expectedOutput": ""
+    },
+    {
+      "input": {
+        "strs": [
+          "interview",
+          "inter",
+          "interest"
+        ]
+      },
+      "expectedOutput": "inter"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "strs": [
+          "a"
+        ]
+      },
+      "expectedOutput": "a"
+    },
+    {
+      "input": {
+        "strs": [
+          "abc",
+          "abc",
+          "abc"
+        ]
+      },
+      "expectedOutput": "abc"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": 179,
+  "slug": "find-the-town-judge",
+  "title": "Find the Town Judge",
+  "difficulty": "Easy",
+  "topic": "Graphs",
+  "pattern": "in-degree / out-degree",
+  "sourceType": "core",
+  "functionName": "findJudge",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

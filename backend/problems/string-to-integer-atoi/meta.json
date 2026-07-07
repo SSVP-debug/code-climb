@@ -1,0 +1,13 @@
+{
+  "id": 57,
+  "slug": "string-to-integer-atoi",
+  "title": "String to Integer (atoi)",
+  "difficulty": "Medium",
+  "topic": "Strings",
+  "pattern": "string parsing",
+  "sourceType": "core",
+  "functionName": "myAtoi",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

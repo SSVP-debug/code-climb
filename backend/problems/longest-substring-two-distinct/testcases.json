@@ -1,0 +1,30 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "eceba"
+      },
+      "expectedOutput": 3
+    },
+    {
+      "input": {
+        "s": "ccaabbb"
+      },
+      "expectedOutput": 5
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "a"
+      },
+      "expectedOutput": 1
+    },
+    {
+      "input": {
+        "s": "abcabcabc"
+      },
+      "expectedOutput": 2
+    }
+  ]
+}

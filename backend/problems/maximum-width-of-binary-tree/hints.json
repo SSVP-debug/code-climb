@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the BFS with index tracking approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Maximum Width of Binary Tree in O(n log n) or better? Consider how BFS with index tracking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses BFS with index tracking. Work through small examples to see the pattern."
+  }
+]

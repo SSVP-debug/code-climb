@@ -1,0 +1,13 @@
+{
+  "id": 113,
+  "slug": "missing-number",
+  "title": "Missing Number",
+  "difficulty": "Easy",
+  "topic": "Bit Manipulation",
+  "pattern": "XOR or Gauss sum",
+  "sourceType": "core",
+  "functionName": "missingNumber",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,13 @@
+{
+  "id": 163,
+  "slug": "longest-valid-parentheses",
+  "title": "Longest Valid Parentheses",
+  "difficulty": "Hard",
+  "topic": "Stacks",
+  "pattern": "stack index tracking",
+  "sourceType": "core",
+  "functionName": "longestValidParentheses",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

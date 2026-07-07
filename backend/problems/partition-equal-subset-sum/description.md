@@ -1,0 +1,1 @@
+Given an integer array nums, return true if you can partition it into two subsets such that the sum of elements in both subsets is equal.

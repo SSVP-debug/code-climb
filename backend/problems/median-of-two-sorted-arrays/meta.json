@@ -1,0 +1,13 @@
+{
+  "id": 89,
+  "slug": "median-of-two-sorted-arrays",
+  "title": "Median of Two Sorted Arrays",
+  "difficulty": "Hard",
+  "topic": "Binary Search",
+  "pattern": "binary search on partition",
+  "sourceType": "core",
+  "functionName": "findMedianSortedArrays",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

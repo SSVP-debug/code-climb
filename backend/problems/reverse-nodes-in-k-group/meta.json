@@ -1,0 +1,13 @@
+{
+  "id": 162,
+  "slug": "reverse-nodes-in-k-group",
+  "title": "Reverse Nodes in k-Group",
+  "difficulty": "Hard",
+  "topic": "Linked List",
+  "pattern": "iterative group reversal",
+  "sourceType": "core",
+  "functionName": "reverseKGroup",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

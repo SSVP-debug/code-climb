@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the doubly linked list + hashmap approach for linked list problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve LRU Cache in O(n log n) or better? Consider how doubly linked list + hashmap helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses doubly linked list + hashmap. Work through small examples to see the pattern."
+  }
+]

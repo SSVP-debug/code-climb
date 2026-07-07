@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the string parsing approach for strings problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve String to Integer (atoi) in O(n log n) or better? Consider how string parsing helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses string parsing. Work through small examples to see the pattern."
+  }
+]

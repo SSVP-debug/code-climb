@@ -1,0 +1,13 @@
+{
+  "id": 51,
+  "slug": "product-of-array-except-self",
+  "title": "Product of Array Except Self",
+  "difficulty": "Medium",
+  "topic": "Arrays",
+  "pattern": "prefix product",
+  "sourceType": "core",
+  "functionName": "productExceptSelf",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

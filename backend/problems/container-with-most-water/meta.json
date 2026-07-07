@@ -1,0 +1,13 @@
+{
+  "id": 11,
+  "slug": "container-with-most-water",
+  "title": "Container With Most Water",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "shrink from both ends",
+  "sourceType": "core",
+  "functionName": "maxArea",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

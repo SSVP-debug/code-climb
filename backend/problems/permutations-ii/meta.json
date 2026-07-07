@@ -1,0 +1,12 @@
+{
+  "id": 185,
+  "slug": "permutations-ii",
+  "title": "Permutations II",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS with used array + dedup",
+  "functionName": "permuteUnique",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

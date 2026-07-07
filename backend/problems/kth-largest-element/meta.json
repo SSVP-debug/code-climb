@@ -1,0 +1,21 @@
+{
+  "id": 40,
+  "slug": "kth-largest-element",
+  "title": "Kth Largest Element in Array",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "min-heap of size k",
+  "sourceType": "core",
+  "functionName": "findKthLargest",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Google",
+    "LinkedIn"
+  ],
+  "relatedProblems": [
+    "last-stone-weight",
+    "binary-search"
+  ]
+}

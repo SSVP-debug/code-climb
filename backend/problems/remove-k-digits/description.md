@@ -1,0 +1,1 @@
+Given a string num representing a non-negative integer and an integer k, remove k digits from the number so that the new number is the smallest possible. Return the result as a string. Remove leading zeros.

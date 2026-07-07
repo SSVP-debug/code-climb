@@ -1,0 +1,13 @@
+{
+  "id": 97,
+  "slug": "word-search-ii",
+  "title": "Word Search II",
+  "difficulty": "Hard",
+  "topic": "Trie",
+  "pattern": "trie + DFS grid",
+  "sourceType": "core",
+  "functionName": "findWords",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

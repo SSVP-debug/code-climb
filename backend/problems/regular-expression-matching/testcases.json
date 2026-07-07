@@ -1,0 +1,41 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "aa",
+        "p": "a"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": "aa",
+        "p": "a*"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "ab",
+        "p": ".*"
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "aab",
+        "p": "c*a*b"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "mississippi",
+        "p": "mis*is*p*."
+      },
+      "expectedOutput": false
+    }
+  ]
+}

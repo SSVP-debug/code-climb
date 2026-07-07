@@ -1,0 +1,13 @@
+{
+  "id": 52,
+  "slug": "find-all-duplicates-in-array",
+  "title": "Find All Duplicates in an Array",
+  "difficulty": "Medium",
+  "topic": "Arrays",
+  "pattern": "index marking",
+  "sourceType": "core",
+  "functionName": "findDuplicates",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

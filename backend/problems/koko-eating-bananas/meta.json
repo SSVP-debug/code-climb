@@ -1,0 +1,13 @@
+{
+  "id": 87,
+  "slug": "koko-eating-bananas",
+  "title": "Koko Eating Bananas",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on answer",
+  "sourceType": "core",
+  "functionName": "minEatingSpeed",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

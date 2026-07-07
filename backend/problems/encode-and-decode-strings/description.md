@@ -1,0 +1,1 @@
+Design an algorithm to encode a list of strings to a single string, and decode that single string back to the original list. Implement encode(strs) and decode(s). The encoded string should be transferable through HTTP and decodable back to the original list.

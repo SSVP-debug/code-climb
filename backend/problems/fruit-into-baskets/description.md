@@ -1,0 +1,1 @@
+You have two baskets, each holding one type of fruit. Given an integer array fruits where fruits[i] is the type of fruit on tree i, return the maximum number of fruits you can pick starting from any tree, picking only 2 types.

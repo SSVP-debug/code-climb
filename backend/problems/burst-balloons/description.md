@@ -1,0 +1,1 @@
+You have n balloons, indexed 0 to n-1. Each balloon is painted with a number nums[i]. Burst a balloon to earn nums[i-1] * nums[i] * nums[i+1] coins. After bursting, adjacent balloons become neighbors. Return the maximum coins you can collect by bursting all balloons.

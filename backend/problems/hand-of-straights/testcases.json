@@ -1,0 +1,72 @@
+{
+  "visible": [
+    {
+      "input": {
+        "hand": [
+          1,
+          2,
+          3,
+          6,
+          2,
+          3,
+          4,
+          7,
+          8
+        ],
+        "groupSize": 3
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "hand": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "groupSize": 4
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "hand": [
+          1,
+          1,
+          2,
+          2,
+          3,
+          3
+        ],
+        "groupSize": 3
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "hand": [
+          8,
+          10,
+          12
+        ],
+        "groupSize": 3
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "hand": [
+          1,
+          2,
+          3
+        ],
+        "groupSize": 1
+      },
+      "expectedOutput": true
+    }
+  ]
+}

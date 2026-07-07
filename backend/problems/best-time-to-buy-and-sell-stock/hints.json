@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "You want to maximize profit = sell_price − buy_price, where the buy day comes first."
+  },
+  {
+    "level": 2,
+    "text": "One pass: track the minimum price seen so far and compute profit at each step."
+  },
+  {
+    "level": 3,
+    "text": "At each index ask: 'If I sell today, what's my profit given the cheapest day before this one?'"
+  }
+]

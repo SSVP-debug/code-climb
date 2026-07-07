@@ -1,0 +1,1 @@
+Given two strings s and t, return the number of distinct subsequences of s which equals t.

@@ -1,0 +1,21 @@
+{
+  "id": 28,
+  "slug": "diameter-of-binary-tree",
+  "title": "Diameter of Binary Tree",
+  "difficulty": "Easy",
+  "topic": "Trees",
+  "pattern": "dfs",
+  "sourceType": "core",
+  "functionName": "diameterOfBinaryTree",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Facebook",
+    "Amazon",
+    "Google"
+  ],
+  "relatedProblems": [
+    "maximum-depth-of-binary-tree",
+    "invert-binary-tree",
+    "validate-binary-search-tree"
+  ]
+}

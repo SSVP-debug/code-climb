@@ -1,0 +1,30 @@
+{
+  "visible": [
+    {
+      "input": {
+        "n": 43261596
+      },
+      "expectedOutput": 964176192
+    },
+    {
+      "input": {
+        "n": 4294967293
+      },
+      "expectedOutput": 3221225471
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "n": 0
+      },
+      "expectedOutput": 0
+    },
+    {
+      "input": {
+        "n": 1
+      },
+      "expectedOutput": 2147483648
+    }
+  ]
+}

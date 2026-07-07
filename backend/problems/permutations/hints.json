@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the swap-based backtracking approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Permutations in O(n log n) or better? Consider how swap-based backtracking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses swap-based backtracking. Work through small examples to see the pattern."
+  }
+]

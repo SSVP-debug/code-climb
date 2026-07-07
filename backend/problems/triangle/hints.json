@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the bottom-up DP approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Triangle in O(n log n) or better? Consider how bottom-up DP helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses bottom-up DP. Work through small examples to see the pattern."
+  }
+]

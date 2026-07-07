@@ -1,0 +1,3 @@
+function replaceWords(dictionary, sentence) {
+
+}

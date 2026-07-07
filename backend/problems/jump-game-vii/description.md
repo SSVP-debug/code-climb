@@ -1,0 +1,1 @@
+Given a string s of 0s and 1s, you start at index 0. You can jump from index i to i+j where minJump <= j <= maxJump, only if s[i+j] == '0'. Return true if you can reach index s.length-1. s[0] == '0' and s[s.length-1] == '0'.

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the slow and fast pointers approach for linked list problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Linked List Cycle in O(n log n) or better? Consider how slow and fast pointers helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses slow and fast pointers. Work through small examples to see the pattern."
+  }
+]

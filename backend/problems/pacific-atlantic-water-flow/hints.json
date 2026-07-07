@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the multi-source BFS approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Pacific Atlantic Water Flow in O(n log n) or better? Consider how multi-source BFS helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses multi-source BFS. Work through small examples to see the pattern."
+  }
+]

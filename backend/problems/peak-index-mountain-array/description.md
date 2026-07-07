@@ -1,0 +1,1 @@
+An array arr is a mountain if arr[0] < arr[1] < ... < arr[i] > arr[i+1] > ... > arr[n-1]. Return the index i where arr[i] is the peak. Solve in O(log n).

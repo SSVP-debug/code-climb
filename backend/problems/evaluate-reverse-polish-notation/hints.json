@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the operand stack evaluation approach for stacks problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Evaluate Reverse Polish Notation in O(n log n) or better? Consider how operand stack evaluation helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses operand stack evaluation. Work through small examples to see the pattern."
+  }
+]

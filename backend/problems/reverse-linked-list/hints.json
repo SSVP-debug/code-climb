@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Draw a three-node list and think about which pointer changes are needed at each step."
+  },
+  {
+    "level": 2,
+    "text": "You must save the next node before you overwrite the current node's next pointer."
+  },
+  {
+    "level": 3,
+    "text": "Three pointers: prev (null), curr (head), next. At each step: save next, set curr.next = prev, advance prev and curr."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the topological sort on characters approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Alien Dictionary in O(n log n) or better? Consider how topological sort on characters helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses topological sort on characters. Work through small examples to see the pattern."
+  }
+]

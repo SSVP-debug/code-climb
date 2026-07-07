@@ -1,0 +1,1 @@
+You are given a 2D integer array intervals where intervals[i] = [li, ri] and a 1D integer array queries. For each query qi, find the size (ri - li + 1) of the smallest interval [li, ri] such that li <= qi <= ri. Return -1 if no such interval exists.

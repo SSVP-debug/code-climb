@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "The array is already sorted. How does that property help narrow your search?"
+  },
+  {
+    "level": 2,
+    "text": "Two pointers at opposite ends: sum too large → move right pointer left; too small → move left pointer right."
+  },
+  {
+    "level": 3,
+    "text": "Because exactly one solution is guaranteed, the pointers will always converge on it without extra checks."
+  }
+]

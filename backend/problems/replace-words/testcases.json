@@ -1,0 +1,38 @@
+{
+  "visible": [
+    {
+      "input": {
+        "dictionary": [
+          "cat",
+          "bat",
+          "rat"
+        ],
+        "sentence": "the cattle was rattled by the battery"
+      },
+      "expectedOutput": "the cat was rat by the bat"
+    },
+    {
+      "input": {
+        "dictionary": [
+          "a",
+          "b",
+          "c"
+        ],
+        "sentence": "aadsfasf absbs bbab cadsfafs"
+      },
+      "expectedOutput": "a a b c"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "dictionary": [
+          "e",
+          "b"
+        ],
+        "sentence": "eae ea ebee"
+      },
+      "expectedOutput": "e e e"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+A path's effort is the maximum absolute difference in heights between two consecutive cells. Return the minimum effort to travel from top-left to bottom-right of a rows x columns matrix heights.

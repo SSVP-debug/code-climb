@@ -1,0 +1,3 @@
+function findJudge(n, trust) {
+
+}

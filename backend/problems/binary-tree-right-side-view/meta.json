@@ -1,0 +1,13 @@
+{
+  "id": 70,
+  "slug": "binary-tree-right-side-view",
+  "title": "Binary Tree Right Side View",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "BFS level order rightmost",
+  "sourceType": "core",
+  "functionName": "rightSideView",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

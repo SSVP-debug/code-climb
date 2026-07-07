@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the length-prefix encoding approach for strings problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Encode and Decode Strings in O(n log n) or better? Consider how length-prefix encoding helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses length-prefix encoding. Work through small examples to see the pattern."
+  }
+]

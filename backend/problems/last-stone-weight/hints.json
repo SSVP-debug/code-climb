@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "At each step you need the two heaviest stones. A max-heap gives you the largest in O(log n)."
+  },
+  {
+    "level": 2,
+    "text": "Most languages only provide min-heaps. Simulate a max-heap by negating all values."
+  },
+  {
+    "level": 3,
+    "text": "Repeat: pop two largest, if unequal push back the difference, until one or zero stones remain."
+  }
+]

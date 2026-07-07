@@ -1,0 +1,1 @@
+You have n nodes (labeled 1 to n) and times[i] = [ui, vi, wi] is the travel time from node u to v with weight w. Given k as the starting node, return the time it takes for all nodes to receive the signal, or -1 if impossible.

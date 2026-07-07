@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the transpose + reverse approach for matrix problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Rotate Image in O(n log n) or better? Consider how transpose + reverse helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses transpose + reverse. Work through small examples to see the pattern."
+  }
+]

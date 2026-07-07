@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the layer-by-layer simulation approach for matrix problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Spiral Matrix in O(n log n) or better? Consider how layer-by-layer simulation helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses layer-by-layer simulation. Work through small examples to see the pattern."
+  }
+]

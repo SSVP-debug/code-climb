@@ -1,0 +1,12 @@
+{
+  "id": 201,
+  "slug": "palindromic-substrings",
+  "title": "Palindromic Substrings",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "expand around center",
+  "functionName": "countSubstrings",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

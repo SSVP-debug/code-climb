@@ -1,0 +1,13 @@
+{
+  "id": 159,
+  "slug": "maximum-frequency-stack",
+  "title": "Maximum Frequency Stack",
+  "difficulty": "Hard",
+  "topic": "Design",
+  "pattern": "frequency groups stack",
+  "sourceType": "core",
+  "functionName": "FreqStack",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

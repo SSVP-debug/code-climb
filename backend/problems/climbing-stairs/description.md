@@ -1,0 +1,1 @@
+You are climbing a staircase that takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you reach the top?

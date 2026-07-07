@@ -1,0 +1,13 @@
+{
+  "id": 66,
+  "slug": "binary-tree-level-order-traversal",
+  "title": "Binary Tree Level Order Traversal",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "BFS queue",
+  "sourceType": "core",
+  "functionName": "levelOrder",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

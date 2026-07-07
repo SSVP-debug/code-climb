@@ -1,0 +1,13 @@
+{
+  "id": 104,
+  "slug": "fruit-into-baskets",
+  "title": "Fruit Into Baskets",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "at most k distinct elements window",
+  "sourceType": "core",
+  "functionName": "totalFruit",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

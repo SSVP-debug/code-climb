@@ -1,0 +1,13 @@
+{
+  "id": 102,
+  "slug": "longest-repeating-character-replacement",
+  "title": "Longest Repeating Character Replacement",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "max freq window expansion",
+  "sourceType": "core",
+  "functionName": "characterReplacement",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

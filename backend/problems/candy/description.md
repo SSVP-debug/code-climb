@@ -1,0 +1,1 @@
+There are n children standing in a line. Each child is assigned a rating value. Give each child at least 1 candy. Children with a higher rating than their adjacent neighbor get more candy. Return the minimum number of candies you must give.

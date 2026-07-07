@@ -1,0 +1,13 @@
+{
+  "id": 204,
+  "slug": "longest-word-in-dictionary",
+  "title": "Longest Word in Dictionary",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "trie BFS/DFS level traversal",
+  "sourceType": "core",
+  "functionName": "longestWord",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

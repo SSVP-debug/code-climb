@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sort + two pointer closest approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve 3Sum Closest in O(n log n) or better? Consider how sort + two pointer closest helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sort + two pointer closest. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the digit extraction approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Reverse Integer in O(n log n) or better? Consider how digit extraction helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses digit extraction. Work through small examples to see the pattern."
+  }
+]

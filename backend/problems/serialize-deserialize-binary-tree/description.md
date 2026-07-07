@@ -1,0 +1,1 @@
+Design an algorithm to serialize and deserialize a binary tree. Serialization converts a tree to a string; deserialization reconstructs it. There is no restriction on your serialization/deserialization format.

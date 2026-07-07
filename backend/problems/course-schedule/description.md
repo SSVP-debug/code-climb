@@ -1,0 +1,1 @@
+There are numCourses courses (0 to numCourses-1). Given prerequisites[i] = [ai, bi] meaning you must take bi before ai, return true if you can finish all courses (i.e., no cycle exists).

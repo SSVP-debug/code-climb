@@ -1,0 +1,1 @@
+Given an integer array nums sorted in ascending order (with possible duplicates) and rotated at some pivot, and an integer target, return true if target is in nums. O(log n) is desired but may not be achievable with duplicates.

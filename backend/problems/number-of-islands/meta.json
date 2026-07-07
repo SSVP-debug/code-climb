@@ -1,0 +1,22 @@
+{
+  "id": 46,
+  "slug": "number-of-islands",
+  "title": "Number of Islands",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "dfs / bfs on grid",
+  "sourceType": "core",
+  "functionName": "numIslands",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Facebook",
+    "Bloomberg",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "flood-fill",
+    "maximum-depth-of-binary-tree"
+  ]
+}

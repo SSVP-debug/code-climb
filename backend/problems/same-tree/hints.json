@@ -1,0 +1,10 @@
+[
+  {
+    "level": 1,
+    "text": "Two trees are the same if their root values match and both subtrees are the same."
+  },
+  {
+    "level": 2,
+    "text": "Recursive base cases: both null → true; one null → false; values differ → false."
+  }
+]

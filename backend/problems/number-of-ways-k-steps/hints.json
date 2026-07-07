@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 1D DP offset array approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Number of Ways to Reach a Position After Exactly k Steps in O(n log n) or better? Consider how 1D DP offset array helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 1D DP offset array. Work through small examples to see the pattern."
+  }
+]

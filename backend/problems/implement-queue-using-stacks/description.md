@@ -1,0 +1,1 @@
+Implement a first-in-first-out queue using only two stacks. Implement MyQueue with push(x), pop(), peek(), and empty(). Use only standard stack operations (push to top, peek/pop from top, size, is empty).

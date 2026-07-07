@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search with duplicates approach for binary search problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Search in Rotated Sorted Array II in O(n log n) or better? Consider how binary search with duplicates helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search with duplicates. Work through small examples to see the pattern."
+  }
+]

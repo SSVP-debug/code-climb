@@ -1,0 +1,1 @@
+Given an integer array nums, find a contiguous subarray that has the largest product and return the product.

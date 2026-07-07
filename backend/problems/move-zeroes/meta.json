@@ -1,0 +1,21 @@
+{
+  "id": 32,
+  "slug": "move-zeroes",
+  "title": "Move Zeroes",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "two pointers",
+  "sourceType": "core",
+  "functionName": "moveZeroes",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Facebook",
+    "Bloomberg",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "contains-duplicate",
+    "two-sum-ii-sorted",
+    "reverse-string"
+  ]
+}

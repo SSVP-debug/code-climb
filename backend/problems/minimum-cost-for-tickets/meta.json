@@ -1,0 +1,12 @@
+{
+  "id": 228,
+  "slug": "minimum-cost-for-tickets",
+  "title": "Minimum Cost For Tickets",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "1D DP travel days",
+  "functionName": "mincostTickets",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

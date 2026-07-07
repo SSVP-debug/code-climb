@@ -1,0 +1,13 @@
+{
+  "id": 115,
+  "slug": "sum-of-two-integers",
+  "title": "Sum of Two Integers",
+  "difficulty": "Medium",
+  "topic": "Bit Manipulation",
+  "pattern": "XOR and carry bit",
+  "sourceType": "core",
+  "functionName": "getSum",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

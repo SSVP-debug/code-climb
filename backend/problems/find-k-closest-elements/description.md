@@ -1,0 +1,1 @@
+Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should be sorted in ascending order. If two integers are equally close to x, the smaller one is preferred.

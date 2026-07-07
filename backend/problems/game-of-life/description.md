@@ -1,0 +1,1 @@
+Given an m×n board of cells (1=live, 0=dead), apply Conway's Game of Life rules simultaneously to all cells and return the next state. Do it in-place.

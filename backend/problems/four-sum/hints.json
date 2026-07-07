@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sort + two nested loops + two pointers approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve 4Sum in O(n log n) or better? Consider how sort + two nested loops + two pointers helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sort + two nested loops + two pointers. Work through small examples to see the pattern."
+  }
+]

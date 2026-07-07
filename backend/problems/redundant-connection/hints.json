@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the Union-Find cycle detection approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Redundant Connection in O(n log n) or better? Consider how Union-Find cycle detection helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses Union-Find cycle detection. Work through small examples to see the pattern."
+  }
+]

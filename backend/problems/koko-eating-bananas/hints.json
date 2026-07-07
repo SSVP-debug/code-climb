@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search on answer approach for binary search problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Koko Eating Bananas in O(n log n) or better? Consider how binary search on answer helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search on answer. Work through small examples to see the pattern."
+  }
+]

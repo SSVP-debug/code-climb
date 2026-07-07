@@ -1,0 +1,13 @@
+{
+  "id": 73,
+  "slug": "pacific-atlantic-water-flow",
+  "title": "Pacific Atlantic Water Flow",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "multi-source BFS",
+  "sourceType": "core",
+  "functionName": "pacificAtlantic",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

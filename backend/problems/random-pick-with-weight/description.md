@@ -1,0 +1,1 @@
+Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.

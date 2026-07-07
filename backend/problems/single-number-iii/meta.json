@@ -1,0 +1,12 @@
+{
+  "id": 216,
+  "slug": "single-number-iii",
+  "title": "Single Number III",
+  "difficulty": "Medium",
+  "topic": "Bit Manipulation",
+  "pattern": "XOR split on differing bit",
+  "functionName": "singleNumber",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

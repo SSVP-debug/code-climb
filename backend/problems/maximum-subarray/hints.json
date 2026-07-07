@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the Kadane's algorithm approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Maximum Subarray in O(n log n) or better? Consider how Kadane's algorithm helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses Kadane's algorithm. Work through small examples to see the pattern."
+  }
+]

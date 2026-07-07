@@ -1,0 +1,13 @@
+{
+  "id": 12,
+  "slug": "house-robber",
+  "title": "House Robber",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "1D DP no adjacency",
+  "sourceType": "core",
+  "functionName": "rob",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

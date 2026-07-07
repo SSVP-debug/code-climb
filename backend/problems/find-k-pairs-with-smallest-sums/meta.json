@@ -1,0 +1,13 @@
+{
+  "id": 196,
+  "slug": "find-k-pairs-with-smallest-sums",
+  "title": "Find K Pairs with Smallest Sums",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "min heap with index pairs",
+  "sourceType": "core",
+  "functionName": "kSmallestPairs",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

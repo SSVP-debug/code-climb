@@ -1,0 +1,72 @@
+{
+  "visible": [
+    {
+      "input": {
+        "strs": [
+          "lint",
+          "code",
+          "love",
+          "you"
+        ]
+      },
+      "expectedOutput": [
+        "lint",
+        "code",
+        "love",
+        "you"
+      ]
+    },
+    {
+      "input": {
+        "strs": [
+          "we",
+          "say",
+          ":",
+          "yes"
+        ]
+      },
+      "expectedOutput": [
+        "we",
+        "say",
+        ":",
+        "yes"
+      ]
+    },
+    {
+      "input": {
+        "strs": [
+          ""
+        ]
+      },
+      "expectedOutput": [
+        ""
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "strs": [
+          "hello",
+          "world"
+        ]
+      },
+      "expectedOutput": [
+        "hello",
+        "world"
+      ]
+    },
+    {
+      "input": {
+        "strs": [
+          "#",
+          "##"
+        ]
+      },
+      "expectedOutput": [
+        "#",
+        "##"
+      ]
+    }
+  ]
+}

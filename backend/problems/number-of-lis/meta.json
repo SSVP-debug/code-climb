@@ -1,0 +1,12 @@
+{
+  "id": 249,
+  "slug": "number-of-lis",
+  "title": "Number of Longest Increasing Subsequence",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "DP length + count arrays",
+  "functionName": "findNumberOfLIS",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

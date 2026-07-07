@@ -1,0 +1,20 @@
+{
+  "id": 45,
+  "slug": "flood-fill",
+  "title": "Flood Fill",
+  "difficulty": "Easy",
+  "topic": "Graphs",
+  "pattern": "dfs on grid",
+  "sourceType": "core",
+  "functionName": "floodFill",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Google"
+  ],
+  "relatedProblems": [
+    "number-of-islands",
+    "maximum-depth-of-binary-tree"
+  ]
+}

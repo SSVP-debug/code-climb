@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 0/1 knapsack approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Partition Equal Subset Sum in O(n log n) or better? Consider how 0/1 knapsack helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 0/1 knapsack. Work through small examples to see the pattern."
+  }
+]

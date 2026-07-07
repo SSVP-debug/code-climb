@@ -1,0 +1,13 @@
+{
+  "id": 121,
+  "slug": "largest-rectangle-in-histogram",
+  "title": "Largest Rectangle in Histogram",
+  "difficulty": "Hard",
+  "topic": "Stacks",
+  "pattern": "monotonic stack left-right boundaries",
+  "sourceType": "core",
+  "functionName": "largestRectangleArea",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

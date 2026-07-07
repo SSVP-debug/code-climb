@@ -1,0 +1,13 @@
+{
+  "id": 182,
+  "slug": "combination-sum-ii",
+  "title": "Combination Sum II",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS with deduplication",
+  "sourceType": "core",
+  "functionName": "combinationSum2",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

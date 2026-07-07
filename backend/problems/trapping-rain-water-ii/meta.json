@@ -1,0 +1,12 @@
+{
+  "id": 223,
+  "slug": "trapping-rain-water-ii",
+  "title": "Trapping Rain Water II",
+  "difficulty": "Hard",
+  "topic": "Heap",
+  "pattern": "min heap BFS from border",
+  "functionName": "trapRainWater",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,13 @@
+{
+  "id": 155,
+  "slug": "design-hashmap",
+  "title": "Design HashMap",
+  "difficulty": "Easy",
+  "topic": "Design",
+  "pattern": "chaining / open addressing",
+  "sourceType": "core",
+  "functionName": "MyHashMap",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

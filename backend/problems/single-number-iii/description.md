@@ -1,0 +1,1 @@
+Given an integer array nums in which exactly two elements appear only once and all others appear exactly twice, return the two elements that appear only once. You must use O(1) extra space.

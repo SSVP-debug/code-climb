@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the ring buffer approach for design problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Design Circular Queue in O(n log n) or better? Consider how ring buffer helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses ring buffer. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,1 @@
+You are given an array of non-overlapping intervals sorted in ascending order by start time. Insert a new interval (merge if necessary) and return the result.

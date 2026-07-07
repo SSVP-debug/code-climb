@@ -1,0 +1,13 @@
+{
+  "id": 156,
+  "slug": "design-circular-queue",
+  "title": "Design Circular Queue",
+  "difficulty": "Medium",
+  "topic": "Design",
+  "pattern": "ring buffer",
+  "sourceType": "core",
+  "functionName": "MyCircularQueue",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

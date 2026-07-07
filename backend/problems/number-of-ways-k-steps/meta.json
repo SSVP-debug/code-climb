@@ -1,0 +1,13 @@
+{
+  "id": 170,
+  "slug": "number-of-ways-k-steps",
+  "title": "Number of Ways to Reach a Position After Exactly k Steps",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "1D DP offset array",
+  "sourceType": "core",
+  "functionName": "numberOfWays",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

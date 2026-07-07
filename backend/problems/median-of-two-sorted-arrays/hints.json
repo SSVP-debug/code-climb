@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search on partition approach for binary search problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Median of Two Sorted Arrays in O(n log n) or better? Consider how binary search on partition helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search on partition. Work through small examples to see the pattern."
+  }
+]

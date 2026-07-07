@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the dutch national flag approach for arrays problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Sort Colors in O(n log n) or better? Consider how dutch national flag helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses dutch national flag. Work through small examples to see the pattern."
+  }
+]

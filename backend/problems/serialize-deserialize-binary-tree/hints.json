@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the BFS serialization approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Serialize and Deserialize Binary Tree in O(n log n) or better? Consider how BFS serialization helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses BFS serialization. Work through small examples to see the pattern."
+  }
+]

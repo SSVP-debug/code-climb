@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 2D DP min of neighbors approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Maximal Square in O(n log n) or better? Consider how 2D DP min of neighbors helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 2D DP min of neighbors. Work through small examples to see the pattern."
+  }
+]

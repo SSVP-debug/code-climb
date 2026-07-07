@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Sqrt(x) in O(n log n) or better? Consider how binary search helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search. Work through small examples to see the pattern."
+  }
+]

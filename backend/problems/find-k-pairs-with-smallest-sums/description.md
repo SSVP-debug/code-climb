@@ -1,0 +1,1 @@
+Given two sorted integer arrays nums1 and nums2 in non-decreasing order and an integer k, return the k pairs (u, v) with the smallest sums (one element from each array). Return results in any order.

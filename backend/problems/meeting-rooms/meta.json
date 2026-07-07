@@ -1,0 +1,13 @@
+{
+  "id": 134,
+  "slug": "meeting-rooms",
+  "title": "Meeting Rooms",
+  "difficulty": "Easy",
+  "topic": "Intervals",
+  "pattern": "sort and check overlap",
+  "sourceType": "core",
+  "functionName": "canAttendMeetings",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

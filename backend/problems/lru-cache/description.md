@@ -1,0 +1,1 @@
+Design a data structure that follows the Least Recently Used (LRU) cache constraints. Implement LRUCache with capacity, get(key), and put(key, value). get returns -1 if key not found. put inserts or updates, evicting the LRU key if at capacity. Both ops must run in O(1).

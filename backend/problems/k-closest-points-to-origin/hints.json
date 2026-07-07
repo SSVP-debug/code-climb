@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the max-heap of size k approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve K Closest Points to Origin in O(n log n) or better? Consider how max-heap of size k helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses max-heap of size k. Work through small examples to see the pattern."
+  }
+]

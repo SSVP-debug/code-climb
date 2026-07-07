@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS backtracking on DAG approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve All Paths From Source to Target in O(n log n) or better? Consider how DFS backtracking on DAG helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS backtracking on DAG. Work through small examples to see the pattern."
+  }
+]

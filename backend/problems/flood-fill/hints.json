@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "From the source pixel, spread to all 4-directionally connected pixels that share the original color."
+  },
+  {
+    "level": 2,
+    "text": "DFS or BFS both work. Mark pixels as visited as you go to avoid revisiting."
+  },
+  {
+    "level": 3,
+    "text": "Edge case: if the source pixel already has the new color, return the image immediately to avoid infinite loops."
+  }
+]

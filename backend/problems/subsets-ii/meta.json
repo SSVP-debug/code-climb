@@ -1,0 +1,12 @@
+{
+  "id": 181,
+  "slug": "subsets-ii",
+  "title": "Subsets II",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS with dedup sort",
+  "functionName": "subsetsWithDup",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

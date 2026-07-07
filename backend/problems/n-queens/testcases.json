@@ -1,0 +1,47 @@
+{
+  "visible": [
+    {
+      "input": {
+        "n": 4
+      },
+      "expectedOutput": [
+        [
+          ".Q..",
+          "...Q",
+          "Q...",
+          "..Q."
+        ],
+        [
+          "..Q.",
+          "Q...",
+          "...Q",
+          ".Q.."
+        ]
+      ]
+    },
+    {
+      "input": {
+        "n": 1
+      },
+      "expectedOutput": [
+        [
+          "Q"
+        ]
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "n": 2
+      },
+      "expectedOutput": []
+    },
+    {
+      "input": {
+        "n": 3
+      },
+      "expectedOutput": []
+    }
+  ]
+}

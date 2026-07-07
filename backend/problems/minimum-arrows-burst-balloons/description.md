@@ -1,0 +1,1 @@
+Balloons are represented as intervals [xstart, xend]. An arrow shot at x bursts all balloons where xstart <= x <= xend. Return the minimum number of arrows needed to burst all balloons.

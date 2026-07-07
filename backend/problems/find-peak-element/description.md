@@ -1,0 +1,1 @@
+A peak element is an element strictly greater than its neighbors. Given an array, find a peak element and return its index. You may assume nums[-1] = nums[n] = -∞. You must run in O(log n) time.

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS with open/close counters approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Generate Parentheses in O(n log n) or better? Consider how DFS with open/close counters helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS with open/close counters. Work through small examples to see the pattern."
+  }
+]

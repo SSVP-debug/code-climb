@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Naive recursion recomputes the same subproblems exponentially. Can you cache results?"
+  },
+  {
+    "level": 2,
+    "text": "Memoization (top-down) or tabulation (bottom-up) both reduce it to O(n)."
+  },
+  {
+    "level": 3,
+    "text": "You only ever need the previous two values, so the space can be reduced to O(1)."
+  }
+]

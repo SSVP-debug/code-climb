@@ -1,0 +1,1 @@
+In a town of n people, the town judge trusts nobody but is trusted by everyone else. Given trust[i] = [ai, bi] meaning ai trusts bi, return the label of the town judge if they exist, or -1 otherwise.

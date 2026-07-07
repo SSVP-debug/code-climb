@@ -1,0 +1,13 @@
+{
+  "id": 230,
+  "slug": "remove-k-digits",
+  "title": "Remove K Digits",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "monotonic stack digit removal",
+  "sourceType": "core",
+  "functionName": "removeKdigits",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

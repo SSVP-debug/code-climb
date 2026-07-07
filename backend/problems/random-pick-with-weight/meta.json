@@ -1,0 +1,12 @@
+{
+  "id": 158,
+  "slug": "random-pick-with-weight",
+  "title": "Random Pick with Weight",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "prefix sum + binary search",
+  "functionName": "Solution",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

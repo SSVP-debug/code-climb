@@ -1,0 +1,1 @@
+There are n rooms. Room 0 is unlocked. Each room i has a list of keys to other rooms. Return true if you can visit every room starting from room 0.

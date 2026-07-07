@@ -1,0 +1,13 @@
+{
+  "id": 81,
+  "slug": "top-k-frequent-elements",
+  "title": "Top K Frequent Elements",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "bucket sort / heap",
+  "sourceType": "core",
+  "functionName": "topKFrequent",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

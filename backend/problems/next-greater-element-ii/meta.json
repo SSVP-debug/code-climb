@@ -1,0 +1,12 @@
+{
+  "id": 222,
+  "slug": "next-greater-element-ii",
+  "title": "Next Greater Element II",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "circular monotonic stack",
+  "functionName": "nextGreaterElements",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

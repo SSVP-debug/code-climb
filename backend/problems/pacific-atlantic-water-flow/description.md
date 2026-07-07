@@ -1,0 +1,1 @@
+Given an m×n matrix of non-negative integers representing heights, water can flow to adjacent cells (4 directions) with equal or lower height. Find all cells from which water can flow to both the Pacific ocean (top/left border) and Atlantic ocean (bottom/right border).

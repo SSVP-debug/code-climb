@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the last occurrence greedy approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Partition Labels in O(n log n) or better? Consider how last occurrence greedy helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses last occurrence greedy. Work through small examples to see the pattern."
+  }
+]

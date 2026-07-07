@@ -1,0 +1,13 @@
+{
+  "id": 235,
+  "slug": "candy",
+  "title": "Candy",
+  "difficulty": "Hard",
+  "topic": "Greedy",
+  "pattern": "two-pass greedy",
+  "sourceType": "core",
+  "functionName": "candy",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

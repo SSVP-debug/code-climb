@@ -1,0 +1,13 @@
+{
+  "id": 152,
+  "slug": "remove-duplicates-sorted-array-ii",
+  "title": "Remove Duplicates from Sorted Array II",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "slow-fast pointer",
+  "sourceType": "core",
+  "functionName": "removeDuplicates",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

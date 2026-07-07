@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Sorting puts duplicates adjacent — that's one valid approach."
+  },
+  {
+    "level": 2,
+    "text": "Can you detect a duplicate in a single pass without sorting?"
+  },
+  {
+    "level": 3,
+    "text": "A hash set only stores unique values. Inserting a duplicate tells you the answer immediately."
+  }
+]

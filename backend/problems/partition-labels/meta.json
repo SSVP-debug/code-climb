@@ -1,0 +1,13 @@
+{
+  "id": 236,
+  "slug": "partition-labels",
+  "title": "Partition Labels",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "last occurrence greedy",
+  "sourceType": "core",
+  "functionName": "partitionLabels",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

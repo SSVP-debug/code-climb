@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the min heap or DP three pointers approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Ugly Number II in O(n log n) or better? Consider how min heap or DP three pointers helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses min heap or DP three pointers. Work through small examples to see the pattern."
+  }
+]

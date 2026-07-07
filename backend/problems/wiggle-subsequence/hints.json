@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sign change greedy approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Wiggle Subsequence in O(n log n) or better? Consider how sign change greedy helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sign change greedy. Work through small examples to see the pattern."
+  }
+]

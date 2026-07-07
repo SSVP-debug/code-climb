@@ -1,0 +1,13 @@
+{
+  "id": 229,
+  "slug": "asteroid-collision",
+  "title": "Asteroid Collision",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "collision simulation stack",
+  "sourceType": "core",
+  "functionName": "asteroidCollision",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

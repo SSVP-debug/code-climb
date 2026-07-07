@@ -1,0 +1,13 @@
+{
+  "id": 206,
+  "slug": "isomorphic-strings",
+  "title": "Isomorphic Strings",
+  "difficulty": "Easy",
+  "topic": "Hash Maps",
+  "pattern": "bidirectional character map",
+  "sourceType": "core",
+  "functionName": "isIsomorphic",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

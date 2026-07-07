@@ -1,0 +1,13 @@
+{
+  "id": 148,
+  "slug": "roman-to-integer",
+  "title": "Roman to Integer",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "symbol table lookup",
+  "sourceType": "core",
+  "functionName": "romanToInt",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

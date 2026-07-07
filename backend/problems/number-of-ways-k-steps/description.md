@@ -1,0 +1,1 @@
+You are on an infinite number line at position startPos. You must perform exactly k steps — each step moves you one position left or right. Return the number of ways to reach endPos after exactly k steps modulo 10^9+7.

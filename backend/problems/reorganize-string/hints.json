@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the max heap greedy approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Reorganize String in O(n log n) or better? Consider how max heap greedy helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses max heap greedy. Work through small examples to see the pattern."
+  }
+]

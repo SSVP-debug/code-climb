@@ -1,0 +1,21 @@
+{
+  "id": 48,
+  "slug": "is-palindrome",
+  "title": "Is Palindrome",
+  "difficulty": "Easy",
+  "topic": "Strings",
+  "pattern": "two pointers",
+  "sourceType": "original",
+  "functionName": "isPalindrome",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Facebook",
+    "Microsoft",
+    "Amazon"
+  ],
+  "relatedProblems": [
+    "reverse-string",
+    "longest-common-prefix",
+    "valid-anagram"
+  ]
+}

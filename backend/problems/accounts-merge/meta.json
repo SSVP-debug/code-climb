@@ -1,0 +1,13 @@
+{
+  "id": 177,
+  "slug": "accounts-merge",
+  "title": "Accounts Merge",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "union find on emails",
+  "sourceType": "core",
+  "functionName": "accountsMerge",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

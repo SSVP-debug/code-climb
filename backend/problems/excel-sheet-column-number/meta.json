@@ -1,0 +1,13 @@
+{
+  "id": 145,
+  "slug": "excel-sheet-column-number",
+  "title": "Excel Sheet Column Number",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "base-26 conversion",
+  "sourceType": "core",
+  "functionName": "titleToNumber",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

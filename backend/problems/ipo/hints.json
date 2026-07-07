@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the greedy with two heaps approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve IPO in O(n log n) or better? Consider how greedy with two heaps helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses greedy with two heaps. Work through small examples to see the pattern."
+  }
+]

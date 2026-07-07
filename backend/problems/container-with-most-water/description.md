@@ -1,0 +1,1 @@
+Given an integer array height of length n, find two lines that together with the x-axis form a container holding the most water. Return the maximum water volume. The two-pointer approach gives O(n) time.

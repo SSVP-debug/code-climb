@@ -1,0 +1,21 @@
+{
+  "id": 16,
+  "slug": "longest-common-prefix",
+  "title": "Longest Common Prefix",
+  "difficulty": "Easy",
+  "topic": "Strings",
+  "pattern": "vertical scanning",
+  "sourceType": "core",
+  "functionName": "longestCommonPrefix",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "valid-anagram",
+    "reverse-string",
+    "is-palindrome"
+  ]
+}

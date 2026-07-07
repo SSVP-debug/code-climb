@@ -1,0 +1,1 @@
+An image is a 2D grid of integers flattened to a 1D array with numCols columns. Given a starting pixel (sr, sc) and a new color, flood fill the image — replace the starting pixel and all connected same-color pixels with the new color. Connectivity is 4-directional.

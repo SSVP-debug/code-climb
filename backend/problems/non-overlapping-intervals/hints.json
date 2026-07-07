@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the greedy interval scheduling approach for intervals problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Non-overlapping Intervals in O(n log n) or better? Consider how greedy interval scheduling helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses greedy interval scheduling. Work through small examples to see the pattern."
+  }
+]

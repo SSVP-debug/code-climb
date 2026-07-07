@@ -1,0 +1,1 @@
+Given an integer array nums where nums[i] is your maximum jump length at position i, return true if you can reach the last index starting from index 0.

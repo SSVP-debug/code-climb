@@ -1,0 +1,1 @@
+A sorted array of unique integers was rotated between 1 and n times. Given the rotated array nums, return the minimum element. Your solution must run in O(log n) time.

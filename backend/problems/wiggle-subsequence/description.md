@@ -1,0 +1,1 @@
+A wiggle sequence is one where the differences between successive numbers strictly alternate between positive and negative. Given an integer array nums, return the length of the longest wiggle subsequence.

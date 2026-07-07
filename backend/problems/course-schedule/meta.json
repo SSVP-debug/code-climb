@@ -1,0 +1,13 @@
+{
+  "id": 72,
+  "slug": "course-schedule",
+  "title": "Course Schedule",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "topological sort / cycle detection",
+  "sourceType": "core",
+  "functionName": "canFinish",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

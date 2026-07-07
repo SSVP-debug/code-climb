@@ -1,0 +1,13 @@
+{
+  "id": 43,
+  "slug": "combination-sum",
+  "title": "Combination Sum",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS with reuse",
+  "sourceType": "core",
+  "functionName": "combinationSum",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

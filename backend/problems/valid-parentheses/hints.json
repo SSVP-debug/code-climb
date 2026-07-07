@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "A closing bracket must match the most recently opened one — that's exactly what a stack tracks."
+  },
+  {
+    "level": 2,
+    "text": "Push every opening bracket. On a closing bracket, check if the top of the stack is its matching opener."
+  },
+  {
+    "level": 3,
+    "text": "At the end, the stack must be empty for the string to be valid."
+  }
+]

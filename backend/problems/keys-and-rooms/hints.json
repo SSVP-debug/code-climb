@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS reachability approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Keys and Rooms in O(n log n) or better? Consider how DFS reachability helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS reachability. Work through small examples to see the pattern."
+  }
+]

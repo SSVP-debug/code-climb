@@ -1,0 +1,13 @@
+{
+  "id": 20,
+  "slug": "jump-game-ii",
+  "title": "Jump Game II",
+  "difficulty": "Hard",
+  "topic": "Greedy",
+  "pattern": "level-based greedy BFS",
+  "sourceType": "core",
+  "functionName": "jump",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

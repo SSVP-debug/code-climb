@@ -1,0 +1,1 @@
+Given an integer array nums, return an integer array counts where counts[i] is the number of elements to the right of nums[i] that are smaller than nums[i].

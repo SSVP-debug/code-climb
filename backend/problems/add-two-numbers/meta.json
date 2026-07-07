@@ -1,0 +1,13 @@
+{
+  "id": 149,
+  "slug": "add-two-numbers",
+  "title": "Add Two Numbers",
+  "difficulty": "Medium",
+  "topic": "Linked List",
+  "pattern": "carry propagation",
+  "sourceType": "core",
+  "functionName": "addTwoNumbers",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

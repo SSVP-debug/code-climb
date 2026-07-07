@@ -1,0 +1,1 @@
+Given an encoded string, return its decoded string. The encoding rule is k[encoded_string], where the encoded_string is repeated exactly k times. You may assume k is always positive. Input is always valid.

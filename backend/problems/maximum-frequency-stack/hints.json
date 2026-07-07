@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the frequency groups stack approach for design problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Maximum Frequency Stack in O(n log n) or better? Consider how frequency groups stack helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses frequency groups stack. Work through small examples to see the pattern."
+  }
+]

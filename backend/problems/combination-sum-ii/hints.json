@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS with deduplication approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Combination Sum II in O(n log n) or better? Consider how DFS with deduplication helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS with deduplication. Work through small examples to see the pattern."
+  }
+]

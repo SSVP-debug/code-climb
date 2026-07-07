@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the fixed window character count approach for sliding window problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Permutation in String in O(n log n) or better? Consider how fixed window character count helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses fixed window character count. Work through small examples to see the pattern."
+  }
+]

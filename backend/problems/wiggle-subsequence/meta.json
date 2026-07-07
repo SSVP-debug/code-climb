@@ -1,0 +1,13 @@
+{
+  "id": 239,
+  "slug": "wiggle-subsequence",
+  "title": "Wiggle Subsequence",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "sign change greedy",
+  "sourceType": "core",
+  "functionName": "wiggleMaxLength",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

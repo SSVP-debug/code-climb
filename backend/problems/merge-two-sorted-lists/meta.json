@@ -1,0 +1,22 @@
+{
+  "id": 23,
+  "slug": "merge-two-sorted-lists",
+  "title": "Merge Two Sorted Lists",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "two pointers",
+  "sourceType": "core",
+  "functionName": "mergeTwoLists",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "reverse-linked-list",
+    "middle-of-the-linked-list",
+    "remove-nth-node-from-end"
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "You need the shortest contiguous subarray with sum ≥ target."
+  },
+  {
+    "level": 2,
+    "text": "Expand by advancing the right pointer. Once the sum qualifies, try shrinking from the left."
+  },
+  {
+    "level": 3,
+    "text": "Each time the constraint is satisfied, record the window length. Keep shrinking left while it still holds."
+  }
+]

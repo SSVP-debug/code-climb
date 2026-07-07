@@ -1,0 +1,13 @@
+{
+  "id": 37,
+  "slug": "daily-temperatures",
+  "title": "Daily Temperatures",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "monotonic decreasing stack",
+  "sourceType": "core",
+  "functionName": "dailyTemperatures",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+Given a dictionary of roots and a sentence, replace all successor words with the root that appears in the dictionary. If a word has multiple roots, replace it with the shortest root.

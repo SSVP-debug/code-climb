@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the level-based greedy BFS approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Jump Game II in O(n log n) or better? Consider how level-based greedy BFS helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses level-based greedy BFS. Work through small examples to see the pattern."
+  }
+]

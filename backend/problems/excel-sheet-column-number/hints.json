@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the base-26 conversion approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Excel Sheet Column Number in O(n log n) or better? Consider how base-26 conversion helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses base-26 conversion. Work through small examples to see the pattern."
+  }
+]

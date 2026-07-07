@@ -1,0 +1,13 @@
+{
+  "id": 200,
+  "slug": "reorganize-string",
+  "title": "Reorganize String",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "max heap greedy",
+  "sourceType": "core",
+  "functionName": "reorganizeString",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,13 @@
+{
+  "id": 63,
+  "slug": "lru-cache",
+  "title": "LRU Cache",
+  "difficulty": "Medium",
+  "topic": "Linked List",
+  "pattern": "doubly linked list + hashmap",
+  "sourceType": "core",
+  "functionName": "LRUCache",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

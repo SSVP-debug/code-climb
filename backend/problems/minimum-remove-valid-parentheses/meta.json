@@ -1,0 +1,12 @@
+{
+  "id": 232,
+  "slug": "minimum-remove-valid-parentheses",
+  "title": "Minimum Remove to Make Valid Parentheses",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "stack index tracking removal",
+  "functionName": "minRemoveToMakeValid",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+Given n non-negative integers representing an elevation map where each bar has width 1, compute how much water it can trap after raining. Classic two-pointer or stack problem.

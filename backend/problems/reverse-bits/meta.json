@@ -1,0 +1,13 @@
+{
+  "id": 112,
+  "slug": "reverse-bits",
+  "title": "Reverse Bits",
+  "difficulty": "Easy",
+  "topic": "Bit Manipulation",
+  "pattern": "bit extraction and placement",
+  "sourceType": "core",
+  "functionName": "reverseBits",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

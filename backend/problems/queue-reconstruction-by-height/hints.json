@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sort + insert by k approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Queue Reconstruction by Height in O(n log n) or better? Consider how sort + insert by k helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sort + insert by k. Work through small examples to see the pattern."
+  }
+]

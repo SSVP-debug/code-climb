@@ -1,0 +1,41 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "anagram",
+        "t": "nagaram"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "rat",
+        "t": "car"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": "ab",
+        "t": "a"
+      },
+      "expectedOutput": false
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "listen",
+        "t": "silent"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "hello",
+        "t": "world"
+      },
+      "expectedOutput": false
+    }
+  ]
+}

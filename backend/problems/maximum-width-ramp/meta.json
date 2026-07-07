@@ -1,0 +1,12 @@
+{
+  "id": 205,
+  "slug": "maximum-width-ramp",
+  "title": "Maximum Width Ramp",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "monotonic stack two pass",
+  "functionName": "maxWidthRamp",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

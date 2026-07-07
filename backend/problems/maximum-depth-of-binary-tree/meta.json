@@ -1,0 +1,22 @@
+{
+  "id": 26,
+  "slug": "maximum-depth-of-binary-tree",
+  "title": "Maximum Depth of Binary Tree",
+  "difficulty": "Easy",
+  "topic": "Trees",
+  "pattern": "dfs",
+  "sourceType": "core",
+  "functionName": "maxDepth",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "LinkedIn",
+    "Apple",
+    "Google"
+  ],
+  "relatedProblems": [
+    "invert-binary-tree",
+    "diameter-of-binary-tree",
+    "same-tree"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": 101,
+  "slug": "four-sum",
+  "title": "4Sum",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "sort + two nested loops + two pointers",
+  "sourceType": "core",
+  "functionName": "fourSum",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

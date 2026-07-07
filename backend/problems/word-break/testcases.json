@@ -1,0 +1,59 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "leetcode",
+        "wordDict": [
+          "leet",
+          "code"
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "applepenapple",
+        "wordDict": [
+          "apple",
+          "pen"
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "catsandog",
+        "wordDict": [
+          "cats",
+          "dog",
+          "sand",
+          "and",
+          "cat"
+        ]
+      },
+      "expectedOutput": false
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "ab",
+        "wordDict": [
+          "a",
+          "b"
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "aaaaaaa",
+        "wordDict": [
+          "aaaa",
+          "aaa"
+        ]
+      },
+      "expectedOutput": true
+    }
+  ]
+}

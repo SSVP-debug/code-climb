@@ -1,0 +1,64 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ops": [
+          "push",
+          "push",
+          "peek",
+          "pop",
+          "empty"
+        ],
+        "vals": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "expectedOutput": [
+        1,
+        1,
+        false
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ops": [
+          "push",
+          "push",
+          "pop",
+          "push",
+          "pop",
+          "pop"
+        ],
+        "vals": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            3
+          ],
+          [],
+          []
+        ]
+      },
+      "expectedOutput": [
+        1,
+        2,
+        3
+      ]
+    }
+  ]
+}

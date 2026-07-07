@@ -1,0 +1,13 @@
+{
+  "id": 173,
+  "slug": "min-cost-climbing-stairs",
+  "title": "Min Cost Climbing Stairs",
+  "difficulty": "Easy",
+  "topic": "Dynamic Programming",
+  "pattern": "1D DP",
+  "sourceType": "core",
+  "functionName": "minCostClimbingStairs",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

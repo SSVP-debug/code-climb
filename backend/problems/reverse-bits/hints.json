@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the bit extraction and placement approach for bit manipulation problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Reverse Bits in O(n log n) or better? Consider how bit extraction and placement helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses bit extraction and placement. Work through small examples to see the pattern."
+  }
+]

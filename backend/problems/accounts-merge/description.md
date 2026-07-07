@@ -1,0 +1,1 @@
+Given a list of accounts where each account has a name and emails, merge accounts that share at least one email. Return merged accounts with name and sorted emails.

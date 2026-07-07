@@ -1,0 +1,1 @@
+Implement the BSTIterator class that represents an iterator over the in-order traversal of a BST. next() returns the next smallest number. hasNext() returns whether the next element exists. Both operations must be O(h) average where h is the height.

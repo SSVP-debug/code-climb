@@ -1,0 +1,12 @@
+{
+  "id": 217,
+  "slug": "total-hamming-distance",
+  "title": "Total Hamming Distance",
+  "difficulty": "Medium",
+  "topic": "Bit Manipulation",
+  "pattern": "count set bits per position",
+  "functionName": "totalHammingDistance",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

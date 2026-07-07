@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the simulation approach for strings problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Count and Say in O(n log n) or better? Consider how simulation helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses simulation. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "At each character: digits have one choice, letters have two (uppercase or lowercase)."
+  },
+  {
+    "level": 2,
+    "text": "Backtracking: build the result character by character, branching at each letter."
+  },
+  {
+    "level": 3,
+    "text": "Iterative: for each existing string in your results, when you reach a letter, add both-case variants."
+  }
+]

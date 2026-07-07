@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "A hash map of counts is straightforward. Can you do it with O(1) space?"
+  },
+  {
+    "level": 2,
+    "text": "XOR properties: a ^ a = 0, and a ^ 0 = a. Order doesn't matter."
+  },
+  {
+    "level": 3,
+    "text": "XOR all numbers together. Every pair cancels to 0 and only the single number survives."
+  }
+]

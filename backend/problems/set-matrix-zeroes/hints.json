@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the in-place marker approach for matrix problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Set Matrix Zeroes in O(n log n) or better? Consider how in-place marker helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses in-place marker. Work through small examples to see the pattern."
+  }
+]

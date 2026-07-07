@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "3[a]2[bc]"
+      },
+      "expectedOutput": "aaabcbc"
+    },
+    {
+      "input": {
+        "s": "3[a2[c]]"
+      },
+      "expectedOutput": "accaccacc"
+    },
+    {
+      "input": {
+        "s": "2[abc]3[cd]ef"
+      },
+      "expectedOutput": "abcabccdcdcdef"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "100[leetcode]"
+      },
+      "expectedOutput": "leetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcodeleetcode"
+    },
+    {
+      "input": {
+        "s": "1[a]"
+      },
+      "expectedOutput": "a"
+    }
+  ]
+}

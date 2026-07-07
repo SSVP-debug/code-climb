@@ -1,0 +1,13 @@
+{
+  "id": 207,
+  "slug": "ransom-note",
+  "title": "Ransom Note",
+  "difficulty": "Easy",
+  "topic": "Hash Maps",
+  "pattern": "frequency count",
+  "sourceType": "core",
+  "functionName": "canConstruct",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

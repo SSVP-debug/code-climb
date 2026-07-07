@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the interval DP approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Burst Balloons in O(n log n) or better? Consider how interval DP helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses interval DP. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "id": 168,
+  "slug": "path-sum-ii",
+  "title": "Path Sum II",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "DFS backtracking",
+  "sourceType": "core",
+  "functionName": "pathSum",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

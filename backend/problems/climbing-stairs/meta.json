@@ -1,0 +1,22 @@
+{
+  "id": 6,
+  "slug": "climbing-stairs",
+  "title": "Climbing Stairs",
+  "difficulty": "Easy",
+  "topic": "Dynamic Programming",
+  "pattern": "1d dp / fibonacci",
+  "sourceType": "core",
+  "functionName": "climbStairs",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Apple",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "fibonacci-number",
+    "house-robber",
+    "coin-change"
+  ]
+}

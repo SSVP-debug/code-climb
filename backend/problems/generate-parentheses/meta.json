@@ -1,0 +1,13 @@
+{
+  "id": 93,
+  "slug": "generate-parentheses",
+  "title": "Generate Parentheses",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "DFS with open/close counters",
+  "sourceType": "core",
+  "functionName": "generateParenthesis",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the trie BFS/DFS level traversal approach for trie problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Longest Word in Dictionary in O(n log n) or better? Consider how trie BFS/DFS level traversal helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses trie BFS/DFS level traversal. Work through small examples to see the pattern."
+  }
+]

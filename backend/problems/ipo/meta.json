@@ -1,0 +1,13 @@
+{
+  "id": 198,
+  "slug": "ipo",
+  "title": "IPO",
+  "difficulty": "Hard",
+  "topic": "Heap",
+  "pattern": "greedy with two heaps",
+  "sourceType": "core",
+  "functionName": "findMaximizedCapital",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

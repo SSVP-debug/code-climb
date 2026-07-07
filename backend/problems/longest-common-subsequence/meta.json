@@ -1,0 +1,13 @@
+{
+  "id": 117,
+  "slug": "longest-common-subsequence",
+  "title": "Longest Common Subsequence",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP string",
+  "sourceType": "core",
+  "functionName": "longestCommonSubsequence",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

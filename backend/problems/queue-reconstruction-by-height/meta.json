@@ -1,0 +1,13 @@
+{
+  "id": 238,
+  "slug": "queue-reconstruction-by-height",
+  "title": "Queue Reconstruction by Height",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "sort + insert by k",
+  "sourceType": "core",
+  "functionName": "reconstructQueue",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

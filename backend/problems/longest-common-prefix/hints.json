@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Start with the first string as your candidate prefix."
+  },
+  {
+    "level": 2,
+    "text": "For each subsequent string, shorten the prefix until that string starts with it."
+  },
+  {
+    "level": 3,
+    "text": "If the prefix ever becomes empty, return \"\". No further shortening is possible."
+  }
+]

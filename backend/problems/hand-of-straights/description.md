@@ -1,0 +1,1 @@
+Given an array of integers hand and groupSize, return true if you can rearrange the cards into groups of groupSize consecutive cards.

@@ -1,0 +1,18 @@
+[
+  {
+    "level": 1,
+    "text": "A brute-force nested loop works in O(n²). Can you do better?"
+  },
+  {
+    "level": 2,
+    "text": "For each number, you need target − num. How can you check that in O(1)?"
+  },
+  {
+    "level": 3,
+    "text": "A hash map lets you look up any complement in O(1) as you iterate."
+  },
+  {
+    "level": 4,
+    "text": "One pass: for each num check if (target − num) is already in the map, then store num → index."
+  }
+]

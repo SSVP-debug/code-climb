@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the reverse trick approach for arrays problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Rotate Array in O(n log n) or better? Consider how reverse trick helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses reverse trick. Work through small examples to see the pattern."
+  }
+]

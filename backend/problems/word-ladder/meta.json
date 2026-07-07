@@ -1,0 +1,13 @@
+{
+  "id": 75,
+  "slug": "word-ladder",
+  "title": "Word Ladder",
+  "difficulty": "Hard",
+  "topic": "Graphs",
+  "pattern": "BFS shortest path",
+  "sourceType": "core",
+  "functionName": "ladderLength",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

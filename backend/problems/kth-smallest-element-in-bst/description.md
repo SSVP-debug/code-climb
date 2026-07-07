@@ -1,0 +1,1 @@
+Given the root of a binary search tree and an integer k, return the kth smallest value (1-indexed) among all values in the tree.

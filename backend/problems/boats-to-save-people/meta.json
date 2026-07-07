@@ -1,0 +1,13 @@
+{
+  "id": 237,
+  "slug": "boats-to-save-people",
+  "title": "Boats to Save People",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "two pointer greedy",
+  "sourceType": "core",
+  "functionName": "numRescueBoats",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

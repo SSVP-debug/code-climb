@@ -1,0 +1,13 @@
+{
+  "id": 231,
+  "slug": "wildcard-matching",
+  "title": "Wildcard Matching",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP string matching",
+  "sourceType": "core",
+  "functionName": "isMatch",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

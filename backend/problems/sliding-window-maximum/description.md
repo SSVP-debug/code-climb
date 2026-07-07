@@ -1,0 +1,1 @@
+Given an integer array nums and an integer k, return an array of the maximum value in each sliding window of size k as it moves from left to right.

@@ -1,0 +1,1 @@
+Write a program to solve a Sudoku puzzle by filling the empty cells ('.'). A valid Sudoku must satisfy: each row, column, and 3x3 box contains the digits 1-9 without repetition.

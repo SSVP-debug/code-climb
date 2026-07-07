@@ -1,0 +1,13 @@
+{
+  "id": 49,
+  "slug": "longest-consecutive-sequence",
+  "title": "Longest Consecutive Sequence",
+  "difficulty": "Medium",
+  "topic": "Hashing",
+  "pattern": "hash set streak counting",
+  "sourceType": "core",
+  "functionName": "longestConsecutive",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+You are given an array people where people[i] is the weight of the ith person and an infinite number of boats where each boat can carry at most limit weight (at most 2 people per boat). Return the minimum number of boats needed.

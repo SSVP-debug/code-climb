@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the Floyd cycle detection approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find the Duplicate Number in O(n log n) or better? Consider how Floyd cycle detection helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses Floyd cycle detection. Work through small examples to see the pattern."
+  }
+]

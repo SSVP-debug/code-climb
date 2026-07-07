@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the running sum reset approach for greedy problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Gas Station in O(n log n) or better? Consider how running sum reset helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses running sum reset. Work through small examples to see the pattern."
+  }
+]

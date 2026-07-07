@@ -1,0 +1,1 @@
+You are given an array prices where prices[i] is the price of a stock on day i. Maximize your profit by choosing a single day to buy and a different future day to sell. Return the maximum profit, or 0 if no profit is possible.

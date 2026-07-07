@@ -1,0 +1,1 @@
+In a grid: 0=empty, 1=fresh orange, 2=rotten orange. Every minute, rotten oranges make adjacent (4-dir) fresh oranges rotten. Return the minimum time until no fresh oranges remain, or -1 if impossible.

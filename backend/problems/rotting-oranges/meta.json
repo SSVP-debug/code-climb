@@ -1,0 +1,13 @@
+{
+  "id": 74,
+  "slug": "rotting-oranges",
+  "title": "Rotting Oranges",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "multi-source BFS",
+  "sourceType": "core",
+  "functionName": "orangesRotting",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

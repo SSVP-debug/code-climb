@@ -1,0 +1,13 @@
+{
+  "id": 82,
+  "slug": "find-median-from-data-stream",
+  "title": "Find Median from Data Stream",
+  "difficulty": "Hard",
+  "topic": "Heap",
+  "pattern": "two heaps",
+  "sourceType": "core",
+  "functionName": "MedianFinder",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

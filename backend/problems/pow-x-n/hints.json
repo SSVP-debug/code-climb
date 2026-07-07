@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the fast exponentiation approach for math problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Pow(x, n) in O(n log n) or better? Consider how fast exponentiation helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses fast exponentiation. Work through small examples to see the pattern."
+  }
+]

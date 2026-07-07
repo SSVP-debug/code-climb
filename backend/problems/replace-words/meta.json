@@ -1,0 +1,13 @@
+{
+  "id": 100,
+  "slug": "replace-words",
+  "title": "Replace Words",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "trie prefix replacement",
+  "sourceType": "core",
+  "functionName": "replaceWords",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

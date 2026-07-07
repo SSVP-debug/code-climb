@@ -1,0 +1,13 @@
+{
+  "id": 208,
+  "slug": "find-all-anagrams-in-string",
+  "title": "Find All Anagrams in a String",
+  "difficulty": "Medium",
+  "topic": "Sliding Window",
+  "pattern": "fixed window frequency map",
+  "sourceType": "core",
+  "functionName": "findAnagrams",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

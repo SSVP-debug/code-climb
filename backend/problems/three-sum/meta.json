@@ -1,0 +1,23 @@
+{
+  "id": 33,
+  "slug": "three-sum",
+  "title": "3Sum",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "sort + two pointers",
+  "sourceType": "core",
+  "functionName": "threeSum",
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Google",
+    "Microsoft",
+    "Apple"
+  ],
+  "relatedProblems": [
+    "two-sum",
+    "two-sum-ii-sorted",
+    "container-with-most-water"
+  ]
+}

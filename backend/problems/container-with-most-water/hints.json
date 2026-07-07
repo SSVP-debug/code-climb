@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the shrink from both ends approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Container With Most Water in O(n log n) or better? Consider how shrink from both ends helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses shrink from both ends. Work through small examples to see the pattern."
+  }
+]

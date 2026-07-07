@@ -1,0 +1,1 @@
+Houses are arranged in a circle. You can't rob adjacent houses. Given nums representing the amount of money at each house, return the maximum you can rob without alerting police.

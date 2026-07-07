@@ -1,0 +1,13 @@
+{
+  "id": 110,
+  "slug": "non-overlapping-intervals",
+  "title": "Non-overlapping Intervals",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "greedy interval scheduling",
+  "sourceType": "core",
+  "functionName": "eraseOverlapIntervals",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

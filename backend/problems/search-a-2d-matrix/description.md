@@ -1,0 +1,1 @@
+Given an m x n matrix where each row is sorted left to right and the first integer of each row is greater than the last of the previous row, return true if target exists in the matrix.

@@ -1,0 +1,42 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "babad"
+      },
+      "expectedOutput": "bab"
+    },
+    {
+      "input": {
+        "s": "cbbd"
+      },
+      "expectedOutput": "bb"
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "expectedOutput": "a"
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "ac"
+      },
+      "expectedOutput": "a"
+    },
+    {
+      "input": {
+        "s": "racecar"
+      },
+      "expectedOutput": "racecar"
+    },
+    {
+      "input": {
+        "s": "aacabdkacaa"
+      },
+      "expectedOutput": "aca"
+    }
+  ]
+}

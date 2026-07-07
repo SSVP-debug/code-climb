@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "You could find the pivot first, then binary search the appropriate half. That's two binary searches."
+  },
+  {
+    "level": 2,
+    "text": "One binary search works: at any mid, determine which side is fully sorted."
+  },
+  {
+    "level": 3,
+    "text": "If the target falls within the sorted side, search there. Otherwise search the unsorted side. Decide this by comparing target to the endpoints of each half."
+  }
+]

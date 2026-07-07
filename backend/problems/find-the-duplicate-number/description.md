@@ -1,0 +1,1 @@
+Given an array nums containing n+1 integers where each integer is in [1, n], prove that at least one duplicate must exist. Find and return the duplicate without modifying the array and using only O(1) extra space.

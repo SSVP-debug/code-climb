@@ -1,0 +1,13 @@
+{
+  "id": 176,
+  "slug": "graph-valid-tree",
+  "title": "Graph Valid Tree",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "union find / BFS cycle detection",
+  "sourceType": "core",
+  "functionName": "validTree",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

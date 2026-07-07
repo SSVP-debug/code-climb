@@ -1,0 +1,3 @@
+function countPairs(nums, target) {
+
+}

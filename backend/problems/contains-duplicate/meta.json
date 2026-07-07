@@ -1,0 +1,22 @@
+{
+  "id": 2,
+  "slug": "contains-duplicate",
+  "title": "Contains Duplicate",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "hash set",
+  "sourceType": "core",
+  "functionName": "containsDuplicate",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Apple",
+    "Google",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "single-number",
+    "valid-anagram",
+    "longest-consecutive-sequence"
+  ]
+}

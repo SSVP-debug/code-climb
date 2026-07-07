@@ -1,0 +1,13 @@
+{
+  "id": 85,
+  "slug": "merge-k-sorted-lists",
+  "title": "Merge K Sorted Lists",
+  "difficulty": "Hard",
+  "topic": "Heap",
+  "pattern": "min heap merge",
+  "sourceType": "core",
+  "functionName": "mergeKLists",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

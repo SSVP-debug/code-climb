@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sorted key grouping approach for hash maps problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Group Anagrams in O(n log n) or better? Consider how sorted key grouping helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sorted key grouping. Work through small examples to see the pattern."
+  }
+]

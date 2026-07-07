@@ -1,0 +1,20 @@
+{
+  "id": 50,
+  "slug": "two-sum-count-pairs",
+  "title": "Two Sum — Count Pairs",
+  "difficulty": "Easy",
+  "topic": "Hashing",
+  "pattern": "hash map complement",
+  "sourceType": "original",
+  "functionName": "countPairs",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon"
+  ],
+  "relatedProblems": [
+    "two-sum",
+    "two-sum-ii-sorted",
+    "three-sum"
+  ]
+}

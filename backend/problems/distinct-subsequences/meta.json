@@ -1,0 +1,12 @@
+{
+  "id": 171,
+  "slug": "distinct-subsequences",
+  "title": "Distinct Subsequences",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP subsequence count",
+  "functionName": "numDistinct",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

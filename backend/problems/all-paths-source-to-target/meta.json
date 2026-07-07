@@ -1,0 +1,13 @@
+{
+  "id": 180,
+  "slug": "all-paths-source-to-target",
+  "title": "All Paths From Source to Target",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "DFS backtracking on DAG",
+  "sourceType": "core",
+  "functionName": "allPathsSourceTarget",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

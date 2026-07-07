@@ -1,0 +1,12 @@
+{
+  "id": 139,
+  "slug": "binary-search-tree-iterator",
+  "title": "Binary Search Tree Iterator",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "controlled inorder traversal",
+  "functionName": "BSTIterator",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

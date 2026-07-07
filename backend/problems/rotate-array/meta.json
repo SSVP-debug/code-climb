@@ -1,0 +1,13 @@
+{
+  "id": 53,
+  "slug": "rotate-array",
+  "title": "Rotate Array",
+  "difficulty": "Medium",
+  "topic": "Arrays",
+  "pattern": "reverse trick",
+  "sourceType": "core",
+  "functionName": "rotate",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

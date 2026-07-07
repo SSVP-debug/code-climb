@@ -1,0 +1,13 @@
+{
+  "id": 120,
+  "slug": "regular-expression-matching",
+  "title": "Regular Expression Matching",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP regex",
+  "sourceType": "core",
+  "functionName": "isMatch",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Unlike classic Two Sum, you need to count all valid pairs, not just find the first one."
+  },
+  {
+    "level": 2,
+    "text": "Keep a running map of how many times you've seen each number so far."
+  },
+  {
+    "level": 3,
+    "text": "For each num, the complement is target − num. The count of new pairs equals map[complement]. Update the map after counting."
+  }
+]

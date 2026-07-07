@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the topological sort / cycle detection approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Course Schedule in O(n log n) or better? Consider how topological sort / cycle detection helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses topological sort / cycle detection. Work through small examples to see the pattern."
+  }
+]

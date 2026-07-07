@@ -1,0 +1,55 @@
+{
+  "visible": [
+    {
+      "input": {
+        "words": [
+          "wrt",
+          "wrf",
+          "er",
+          "ett",
+          "rftt"
+        ]
+      },
+      "expectedOutput": "wertf"
+    },
+    {
+      "input": {
+        "words": [
+          "z",
+          "x"
+        ]
+      },
+      "expectedOutput": "zx"
+    },
+    {
+      "input": {
+        "words": [
+          "z",
+          "x",
+          "z"
+        ]
+      },
+      "expectedOutput": ""
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "words": [
+          "z",
+          "z"
+        ]
+      },
+      "expectedOutput": "z"
+    },
+    {
+      "input": {
+        "words": [
+          "ab",
+          "adc"
+        ]
+      },
+      "expectedOutput": "abdc"
+    }
+  ]
+}

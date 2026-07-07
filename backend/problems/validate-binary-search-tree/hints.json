@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Checking left < root < right locally is not enough — the entire left subtree must be less than root."
+  },
+  {
+    "level": 2,
+    "text": "Pass valid min/max bounds down the recursion. A node must satisfy min < node.val < max."
+  },
+  {
+    "level": 3,
+    "text": "When going left, the new max is the current node's value. When going right, the new min is the current node's value."
+  }
+]

@@ -1,0 +1,1 @@
+Implement MedianFinder that supports: addNum(int num) — adds an integer, and findMedian() — returns the median of current elements. If even count, median = average of two middles.

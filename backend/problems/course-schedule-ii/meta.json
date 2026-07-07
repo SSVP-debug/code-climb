@@ -1,0 +1,12 @@
+{
+  "id": 210,
+  "slug": "course-schedule-ii",
+  "title": "Course Schedule II",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "topological sort DFS/BFS",
+  "functionName": "findOrder",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

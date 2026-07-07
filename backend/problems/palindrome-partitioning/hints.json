@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DFS + palindrome check approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Palindrome Partitioning in O(n log n) or better? Consider how DFS + palindrome check helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DFS + palindrome check. Work through small examples to see the pattern."
+  }
+]

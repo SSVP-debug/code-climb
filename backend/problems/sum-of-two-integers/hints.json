@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the XOR and carry bit approach for bit manipulation problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Sum of Two Integers in O(n log n) or better? Consider how XOR and carry bit helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses XOR and carry bit. Work through small examples to see the pattern."
+  }
+]

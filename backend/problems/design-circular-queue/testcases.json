@@ -1,0 +1,79 @@
+{
+  "visible": [
+    {
+      "input": {
+        "k": 3,
+        "ops": [
+          "enQueue",
+          "enQueue",
+          "enQueue",
+          "enQueue",
+          "Rear",
+          "isFull",
+          "deQueue",
+          "enQueue",
+          "Rear"
+        ],
+        "vals": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [],
+          [],
+          [],
+          [
+            4
+          ],
+          []
+        ]
+      },
+      "expectedOutput": [
+        true,
+        true,
+        true,
+        false,
+        3,
+        true,
+        true,
+        true,
+        4
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "k": 1,
+        "ops": [
+          "enQueue",
+          "isFull",
+          "deQueue",
+          "isEmpty"
+        ],
+        "vals": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "expectedOutput": [
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ]
+}

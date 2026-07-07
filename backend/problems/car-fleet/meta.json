@@ -1,0 +1,13 @@
+{
+  "id": 122,
+  "slug": "car-fleet",
+  "title": "Car Fleet",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "monotonic stack on time-to-target",
+  "sourceType": "core",
+  "functionName": "carFleet",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Linear scan is O(n). The array is sorted — you can eliminate half the search space each step."
+  },
+  {
+    "level": 2,
+    "text": "Check the midpoint. Is the target in the left half or the right half?"
+  },
+  {
+    "level": 3,
+    "text": "Carefully define your loop invariant: lo <= hi or lo < hi, and decide whether mid goes left or right on each branch."
+  }
+]

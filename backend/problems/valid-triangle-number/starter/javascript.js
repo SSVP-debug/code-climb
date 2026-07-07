@@ -1,0 +1,3 @@
+function triangleNumber(nums) {
+
+}

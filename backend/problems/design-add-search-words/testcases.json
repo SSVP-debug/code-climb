@@ -1,0 +1,72 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ops": [
+          "addWord",
+          "addWord",
+          "addWord",
+          "search",
+          "search",
+          "search",
+          "search"
+        ],
+        "vals": [
+          [
+            "bad"
+          ],
+          [
+            "dad"
+          ],
+          [
+            "mad"
+          ],
+          [
+            "pad"
+          ],
+          [
+            "bad"
+          ],
+          [
+            ".ad"
+          ],
+          [
+            "b.."
+          ]
+        ]
+      },
+      "expectedOutput": [
+        false,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ops": [
+          "addWord",
+          "search",
+          "search"
+        ],
+        "vals": [
+          [
+            "a"
+          ],
+          [
+            "a"
+          ],
+          [
+            "."
+          ]
+        ]
+      },
+      "expectedOutput": [
+        true,
+        true
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the inorder traversal approach for trees problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Kth Smallest Element in BST in O(n log n) or better? Consider how inorder traversal helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses inorder traversal. Work through small examples to see the pattern."
+  }
+]

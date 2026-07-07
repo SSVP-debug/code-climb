@@ -1,0 +1,13 @@
+{
+  "id": 80,
+  "slug": "burst-balloons",
+  "title": "Burst Balloons",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "interval DP",
+  "sourceType": "core",
+  "functionName": "maxCoins",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

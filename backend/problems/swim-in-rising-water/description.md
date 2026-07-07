@@ -1,0 +1,1 @@
+You are given an n×n integer matrix grid where grid[i][j] represents the elevation at that point. Rain falls; at time t, you can swim to adjacent cells where elevation <= t. Return the minimum time until you can reach grid[n-1][n-1] from grid[0][0].

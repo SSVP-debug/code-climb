@@ -1,0 +1,13 @@
+{
+  "id": 143,
+  "slug": "happy-number",
+  "title": "Happy Number",
+  "difficulty": "Easy",
+  "topic": "Math",
+  "pattern": "cycle detection Floyd",
+  "sourceType": "core",
+  "functionName": "isHappy",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

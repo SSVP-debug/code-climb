@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the track min and max simultaneously approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Maximum Product Subarray in O(n log n) or better? Consider how track min and max simultaneously helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses track min and max simultaneously. Work through small examples to see the pattern."
+  }
+]

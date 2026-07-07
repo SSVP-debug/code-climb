@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Swap the children of the root, then recursively invert each subtree."
+  },
+  {
+    "level": 2,
+    "text": "DFS (pre-order or post-order) both work. So does BFS."
+  },
+  {
+    "level": 3,
+    "text": "Base case: null node — return null immediately."
+  }
+]

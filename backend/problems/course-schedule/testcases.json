@@ -1,0 +1,77 @@
+{
+  "visible": [
+    {
+      "input": {
+        "numCourses": 2,
+        "prerequisites": [
+          [
+            1,
+            0
+          ]
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "numCourses": 2,
+        "prerequisites": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "numCourses": 1,
+        "prerequisites": []
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "numCourses": 3,
+        "prerequisites": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "numCourses": 3,
+        "prerequisites": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "expectedOutput": false
+    }
+  ]
+}

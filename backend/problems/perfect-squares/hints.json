@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the BFS / DP with squares approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Perfect Squares in O(n log n) or better? Consider how BFS / DP with squares helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses BFS / DP with squares. Work through small examples to see the pattern."
+  }
+]

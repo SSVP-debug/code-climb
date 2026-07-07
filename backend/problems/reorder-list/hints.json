@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the slow-fast + reverse + merge approach for linked list problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Reorder List in O(n log n) or better? Consider how slow-fast + reverse + merge helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses slow-fast + reverse + merge. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,1 @@
+Given an integer array nums of length n where all integers are in the range [1, n] and each integer appears once or twice, return an array of all integers that appear twice. You must solve this in O(n) time and use only O(1) extra space.

@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "columnTitle": "A"
+      },
+      "expectedOutput": 1
+    },
+    {
+      "input": {
+        "columnTitle": "AB"
+      },
+      "expectedOutput": 28
+    },
+    {
+      "input": {
+        "columnTitle": "ZY"
+      },
+      "expectedOutput": 701
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "columnTitle": "Z"
+      },
+      "expectedOutput": 26
+    },
+    {
+      "input": {
+        "columnTitle": "AA"
+      },
+      "expectedOutput": 27
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Given two strings text1 and text2, return the length of their longest common subsequence. A subsequence is a sequence derived from the string by deleting some (or no) characters without changing the order.

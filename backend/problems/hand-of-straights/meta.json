@@ -1,0 +1,13 @@
+{
+  "id": 108,
+  "slug": "hand-of-straights",
+  "title": "Hand of Straights",
+  "difficulty": "Medium",
+  "topic": "Greedy",
+  "pattern": "sorted frequency map",
+  "sourceType": "core",
+  "functionName": "isNStraightHand",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

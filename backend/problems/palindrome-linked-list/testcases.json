@@ -1,0 +1,56 @@
+{
+  "visible": [
+    {
+      "input": {
+        "head": [
+          1,
+          2,
+          2,
+          1
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "head": [
+          1,
+          2
+        ]
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "head": [
+          1
+        ]
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "head": [
+          1,
+          2,
+          3,
+          2,
+          1
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "head": [
+          1,
+          0,
+          0
+        ]
+      },
+      "expectedOutput": false
+    }
+  ]
+}

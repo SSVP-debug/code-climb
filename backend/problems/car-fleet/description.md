@@ -1,0 +1,1 @@
+n cars go to the same destination at target miles. position[i] and speed[i] are given. A car that catches a faster car becomes a fleet. Return the number of car fleets that will arrive at the destination.

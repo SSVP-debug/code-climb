@@ -1,0 +1,13 @@
+{
+  "id": 13,
+  "slug": "coin-change",
+  "title": "Coin Change",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "unbounded knapsack BFS/DP",
+  "sourceType": "core",
+  "functionName": "coinChange",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

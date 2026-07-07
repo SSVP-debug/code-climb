@@ -1,0 +1,1 @@
+Design an algorithm to collect stock prices and return the span of the stock's price for the current day. The span is the maximum number of consecutive days (starting from today and going backward) for which the stock price was <= today's price.

@@ -1,0 +1,13 @@
+{
+  "id": 118,
+  "slug": "palindrome-partitioning",
+  "title": "Palindrome Partitioning",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "DFS + palindrome check",
+  "sourceType": "core",
+  "functionName": "partition",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

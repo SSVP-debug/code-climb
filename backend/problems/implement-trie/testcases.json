@@ -1,0 +1,68 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ops": [
+          "insert",
+          "search",
+          "search",
+          "startsWith",
+          "insert",
+          "search"
+        ],
+        "vals": [
+          [
+            "apple"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "app"
+          ],
+          [
+            "app"
+          ],
+          [
+            "app"
+          ],
+          [
+            "app"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        true,
+        false,
+        true,
+        true
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ops": [
+          "insert",
+          "search",
+          "startsWith"
+        ],
+        "vals": [
+          [
+            "hello"
+          ],
+          [
+            "hello"
+          ],
+          [
+            "hel"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        true,
+        true
+      ]
+    }
+  ]
+}

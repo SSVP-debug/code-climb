@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the trie with wildcard DFS approach for trie problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Add and Search Word - Data structure design in O(n log n) or better? Consider how trie with wildcard DFS helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses trie with wildcard DFS. Work through small examples to see the pattern."
+  }
+]

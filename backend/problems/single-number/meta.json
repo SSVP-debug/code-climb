@@ -1,0 +1,21 @@
+{
+  "id": 7,
+  "slug": "single-number",
+  "title": "Single Number",
+  "difficulty": "Easy",
+  "topic": "Bit Manipulation",
+  "pattern": "xor",
+  "sourceType": "core",
+  "functionName": "singleNumber",
+  "estimatedTime": "5–10 min",
+  "companies": [
+    "Amazon",
+    "Apple",
+    "Google",
+    "Facebook"
+  ],
+  "relatedProblems": [
+    "contains-duplicate",
+    "majority-element"
+  ]
+}

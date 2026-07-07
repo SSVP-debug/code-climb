@@ -1,0 +1,13 @@
+{
+  "id": 126,
+  "slug": "network-delay-time",
+  "title": "Network Delay Time",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "Dijkstra shortest path",
+  "sourceType": "core",
+  "functionName": "networkDelayTime",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

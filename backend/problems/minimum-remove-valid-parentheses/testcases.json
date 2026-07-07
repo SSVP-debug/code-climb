@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "lee(t(c)o)de)"
+      },
+      "expectedOutput": "lee(t(c)o)de"
+    },
+    {
+      "input": {
+        "s": "a)b(c)d"
+      },
+      "expectedOutput": "ab(c)d"
+    },
+    {
+      "input": {
+        "s": "))(("
+      },
+      "expectedOutput": ""
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "(a(b(c)d)"
+      },
+      "expectedOutput": "a(b(c)d)"
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "expectedOutput": "a"
+    }
+  ]
+}

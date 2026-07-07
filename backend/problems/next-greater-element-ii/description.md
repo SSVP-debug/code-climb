@@ -1,0 +1,1 @@
+Given a circular integer array nums, return the next greater number for every element. The next greater number of a number x is the first greater number to its traversal order next in the circular array.

@@ -1,0 +1,1 @@
+Evaluate an expression in Reverse Polish Notation. Valid operators are +, -, *, /. Each operand may be an integer or another expression. Division truncates toward zero.

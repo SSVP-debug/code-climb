@@ -1,0 +1,1 @@
+Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer. The algorithm: ignore leading whitespace, check sign, read digits until non-digit, clamp to [-2^31, 2^31-1].

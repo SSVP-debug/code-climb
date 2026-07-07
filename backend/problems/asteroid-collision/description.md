@@ -1,0 +1,1 @@
+We have an array of asteroids. Positive integers move right, negative move left. When two asteroids meet, the smaller one explodes. Equal ones both explode. Return the state after all collisions. Left-moving and right-moving asteroids in opposite directions collide.

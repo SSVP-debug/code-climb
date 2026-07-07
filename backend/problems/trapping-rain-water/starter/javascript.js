@@ -1,0 +1,3 @@
+function trap(height) {
+
+}

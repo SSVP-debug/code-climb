@@ -1,0 +1,1 @@
+You are at index 0 of an integer array nums. nums[i] is the maximum forward jump length from index i. Return the minimum number of jumps to reach the last index. A greedy BFS approach gives O(n) time.

@@ -1,0 +1,13 @@
+{
+  "id": 224,
+  "slug": "maximal-rectangle",
+  "title": "Maximal Rectangle",
+  "difficulty": "Hard",
+  "topic": "Stacks",
+  "pattern": "histogram stack per row",
+  "sourceType": "core",
+  "functionName": "maximalRectangle",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

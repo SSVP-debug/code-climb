@@ -1,0 +1,12 @@
+{
+  "id": 212,
+  "slug": "minimum-path-sum",
+  "title": "Minimum Path Sum",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP grid",
+  "functionName": "minPathSum",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

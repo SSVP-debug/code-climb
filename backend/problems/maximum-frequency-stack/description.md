@@ -1,0 +1,1 @@
+Design a stack-like data structure to push integers and pop the most frequently occurring element. FreqStack: push(val) pushes val onto the stack. pop() removes and returns the most frequent element. If tie, return the most recently pushed element.

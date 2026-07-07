@@ -1,0 +1,1 @@
+A knight must rescue the princess at dungeon[m-1][n-1], starting at dungeon[0][0]. Each room has a value (positive=health gain, negative=health loss). Knight dies if health <= 0 at any point. Return minimum initial health needed.

@@ -1,0 +1,23 @@
+{
+  "id": 22,
+  "slug": "reverse-linked-list",
+  "title": "Reverse Linked List",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "iteration / recursion",
+  "sourceType": "core",
+  "functionName": "reverseList",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "Apple",
+    "Facebook",
+    "Adobe"
+  ],
+  "relatedProblems": [
+    "merge-two-sorted-lists",
+    "middle-of-the-linked-list",
+    "remove-nth-node-from-end"
+  ]
+}

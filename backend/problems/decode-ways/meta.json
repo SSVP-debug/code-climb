@@ -1,0 +1,13 @@
+{
+  "id": 19,
+  "slug": "decode-ways",
+  "title": "Decode Ways",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "1D DP digit parsing",
+  "sourceType": "core",
+  "functionName": "numDecodings",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

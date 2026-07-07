@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the queue rotation trick approach for design problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Implement Stack using Queues in O(n log n) or better? Consider how queue rotation trick helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses queue rotation trick. Work through small examples to see the pattern."
+  }
+]

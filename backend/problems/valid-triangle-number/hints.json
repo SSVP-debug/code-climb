@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the sort + two pointer approach for two pointers problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Valid Triangle Number in O(n log n) or better? Consider how sort + two pointer helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses sort + two pointer. Work through small examples to see the pattern."
+  }
+]

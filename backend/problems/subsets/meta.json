@@ -1,0 +1,21 @@
+{
+  "id": 42,
+  "slug": "subsets",
+  "title": "Subsets",
+  "difficulty": "Medium",
+  "topic": "Backtracking",
+  "pattern": "backtracking",
+  "sourceType": "core",
+  "functionName": "subsets",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Facebook",
+    "Google",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "combination-sum",
+    "letter-case-permutations"
+  ]
+}

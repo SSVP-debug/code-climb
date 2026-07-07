@@ -1,0 +1,1 @@
+Given a string s and integer k, you can replace at most k characters. Return the length of the longest substring with repeating characters you can achieve.

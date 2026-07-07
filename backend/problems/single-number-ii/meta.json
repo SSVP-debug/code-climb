@@ -1,0 +1,13 @@
+{
+  "id": 220,
+  "slug": "single-number-ii",
+  "title": "Single Number II",
+  "difficulty": "Medium",
+  "topic": "Bit Manipulation",
+  "pattern": "count bits mod 3",
+  "sourceType": "core",
+  "functionName": "singleNumber",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the bucket sort / heap approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Top K Frequent Elements in O(n log n) or better? Consider how bucket sort / heap helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses bucket sort / heap. Work through small examples to see the pattern."
+  }
+]

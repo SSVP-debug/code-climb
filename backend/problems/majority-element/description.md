@@ -1,0 +1,1 @@
+Given an array nums of size n, return the majority element — the element that appears more than n/2 times. The majority element always exists. Try solving it in O(n) time and O(1) space using Boyer-Moore Voting Algorithm.

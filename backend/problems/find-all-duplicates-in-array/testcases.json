@@ -1,0 +1,69 @@
+{
+  "visible": [
+    {
+      "input": {
+        "nums": [
+          4,
+          3,
+          2,
+          7,
+          8,
+          2,
+          3,
+          1
+        ]
+      },
+      "expectedOutput": [
+        2,
+        3
+      ]
+    },
+    {
+      "input": {
+        "nums": [
+          1,
+          1,
+          2
+        ]
+      },
+      "expectedOutput": [
+        1
+      ]
+    },
+    {
+      "input": {
+        "nums": [
+          1
+        ]
+      },
+      "expectedOutput": []
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "nums": [
+          2,
+          2,
+          3,
+          3
+        ]
+      },
+      "expectedOutput": [
+        2,
+        3
+      ]
+    },
+    {
+      "input": {
+        "nums": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "expectedOutput": []
+    }
+  ]
+}

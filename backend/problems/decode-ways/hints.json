@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 1D DP digit parsing approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Decode Ways in O(n log n) or better? Consider how 1D DP digit parsing helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 1D DP digit parsing. Work through small examples to see the pattern."
+  }
+]

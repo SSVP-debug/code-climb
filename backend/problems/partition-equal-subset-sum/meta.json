@@ -1,0 +1,13 @@
+{
+  "id": 79,
+  "slug": "partition-equal-subset-sum",
+  "title": "Partition Equal Subset Sum",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "0/1 knapsack",
+  "sourceType": "core",
+  "functionName": "canPartition",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

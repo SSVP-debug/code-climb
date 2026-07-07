@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the two pointers length equalization approach for linked list problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Intersection of Two Linked Lists in O(n log n) or better? Consider how two pointers length equalization helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses two pointers length equalization. Work through small examples to see the pattern."
+  }
+]

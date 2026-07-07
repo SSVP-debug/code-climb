@@ -1,0 +1,22 @@
+{
+  "id": 36,
+  "slug": "min-stack",
+  "title": "Min Stack",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "auxiliary stack",
+  "sourceType": "core",
+  "functionName": "minStack",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Apple",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "valid-parentheses",
+    "daily-temperatures",
+    "kth-largest-element"
+  ]
+}

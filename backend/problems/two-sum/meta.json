@@ -1,0 +1,23 @@
+{
+  "id": 1,
+  "slug": "two-sum",
+  "title": "Two Sum",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "hash map complement",
+  "sourceType": "core",
+  "functionName": "twoSum",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Facebook",
+    "Apple",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "two-sum-ii-sorted",
+    "two-sum-count-pairs",
+    "three-sum"
+  ]
+}

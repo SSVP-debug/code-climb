@@ -1,0 +1,1 @@
+You have w initial capital and can complete at most k projects. Each project i has profit[i] and requires capital[i] to start. After completing a project, its profit adds to your capital. Return maximized capital after completing at most k projects.

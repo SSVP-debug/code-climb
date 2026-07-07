@@ -1,0 +1,13 @@
+{
+  "id": 169,
+  "slug": "maximum-width-of-binary-tree",
+  "title": "Maximum Width of Binary Tree",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "BFS with index tracking",
+  "sourceType": "core",
+  "functionName": "widthOfBinaryTree",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

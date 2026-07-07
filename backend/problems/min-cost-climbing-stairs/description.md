@@ -1,0 +1,1 @@
+You are given an integer array cost where cost[i] is the cost of the ith step on a staircase. Once you pay the cost, you can climb one or two steps. You can start from step 0 or step 1. Return the minimum cost to reach the top.

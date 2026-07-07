@@ -1,0 +1,12 @@
+{
+  "id": 213,
+  "slug": "dungeon-game",
+  "title": "Dungeon Game",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP reverse",
+  "functionName": "calculateMinimumHP",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

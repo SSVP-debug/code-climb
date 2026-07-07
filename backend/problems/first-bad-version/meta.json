@@ -1,0 +1,12 @@
+{
+  "id": 186,
+  "slug": "first-bad-version",
+  "title": "First Bad Version",
+  "difficulty": "Easy",
+  "topic": "Binary Search",
+  "pattern": "leftmost binary search",
+  "functionName": "firstBadVersion",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

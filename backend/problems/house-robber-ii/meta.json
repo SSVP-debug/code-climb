@@ -1,0 +1,13 @@
+{
+  "id": 119,
+  "slug": "house-robber-ii",
+  "title": "House Robber II",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "circular DP two passes",
+  "sourceType": "core",
+  "functionName": "rob",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

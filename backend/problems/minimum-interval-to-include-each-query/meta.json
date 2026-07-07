@@ -1,0 +1,13 @@
+{
+  "id": 248,
+  "slug": "minimum-interval-to-include-each-query",
+  "title": "Minimum Interval to Include Each Query",
+  "difficulty": "Hard",
+  "topic": "Heap",
+  "pattern": "offline queries + sorted sweep + min heap",
+  "sourceType": "core",
+  "functionName": "minInterval",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

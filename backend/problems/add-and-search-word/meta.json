@@ -1,0 +1,13 @@
+{
+  "id": 203,
+  "slug": "add-and-search-word",
+  "title": "Add and Search Word - Data structure design",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "trie with wildcard DFS",
+  "sourceType": "core",
+  "functionName": "WordDictionary",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

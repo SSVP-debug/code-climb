@@ -1,0 +1,13 @@
+{
+  "id": 95,
+  "slug": "n-queens",
+  "title": "N-Queens",
+  "difficulty": "Hard",
+  "topic": "Backtracking",
+  "pattern": "column + diagonal tracking",
+  "sourceType": "core",
+  "functionName": "solveNQueens",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

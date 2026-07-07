@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the at most k distinct elements window approach for sliding window problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Fruit Into Baskets in O(n log n) or better? Consider how at most k distinct elements window helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses at most k distinct elements window. Work through small examples to see the pattern."
+  }
+]

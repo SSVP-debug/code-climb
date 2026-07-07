@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "III"
+      },
+      "expectedOutput": 3
+    },
+    {
+      "input": {
+        "s": "LVIII"
+      },
+      "expectedOutput": 58
+    },
+    {
+      "input": {
+        "s": "MCMXCIV"
+      },
+      "expectedOutput": 1994
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "IV"
+      },
+      "expectedOutput": 4
+    },
+    {
+      "input": {
+        "s": "IX"
+      },
+      "expectedOutput": 9
+    }
+  ]
+}

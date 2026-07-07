@@ -1,0 +1,13 @@
+{
+  "id": 111,
+  "slug": "counting-bits",
+  "title": "Counting Bits",
+  "difficulty": "Easy",
+  "topic": "Bit Manipulation",
+  "pattern": "DP with bit shift",
+  "sourceType": "core",
+  "functionName": "countBits",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

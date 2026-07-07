@@ -1,0 +1,13 @@
+{
+  "id": 160,
+  "slug": "sliding-window-maximum",
+  "title": "Sliding Window Maximum",
+  "difficulty": "Hard",
+  "topic": "Sliding Window",
+  "pattern": "monotonic deque",
+  "sourceType": "core",
+  "functionName": "maxSlidingWindow",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

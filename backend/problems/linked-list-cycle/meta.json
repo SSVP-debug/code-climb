@@ -1,0 +1,13 @@
+{
+  "id": 61,
+  "slug": "linked-list-cycle",
+  "title": "Linked List Cycle",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "slow and fast pointers",
+  "sourceType": "core",
+  "functionName": "hasCycle",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

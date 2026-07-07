@@ -1,0 +1,13 @@
+{
+  "id": 76,
+  "slug": "unique-paths",
+  "title": "Unique Paths",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP grid",
+  "sourceType": "core",
+  "functionName": "uniquePaths",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

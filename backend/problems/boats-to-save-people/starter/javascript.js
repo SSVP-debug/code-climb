@@ -1,0 +1,3 @@
+function numRescueBoats(people, limit) {
+
+}

@@ -1,0 +1,13 @@
+{
+  "id": 78,
+  "slug": "edit-distance",
+  "title": "Edit Distance",
+  "difficulty": "Hard",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP string",
+  "sourceType": "core",
+  "functionName": "minDistance",
+  "estimatedTime": "35–60 min",
+  "companies": [],
+  "relatedProblems": []
+}

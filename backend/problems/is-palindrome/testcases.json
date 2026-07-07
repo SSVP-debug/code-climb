@@ -1,0 +1,36 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s": "A man, a plan, a canal: Panama"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "race a car"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s": " "
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s": "Was it a car or a cat I saw?"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s": "hello"
+      },
+      "expectedOutput": false
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Write a function that takes the binary representation of a positive integer and returns the number of set bits (also known as the Hamming weight).

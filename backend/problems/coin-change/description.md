@@ -1,0 +1,1 @@
+You are given coins of different denominations and a total amount. Return the fewest coins needed to make the amount. If it cannot be made, return -1. You have an infinite number of each coin denomination.

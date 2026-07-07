@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the min heap with index pairs approach for heap problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find K Pairs with Smallest Sums in O(n log n) or better? Consider how min heap with index pairs helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses min heap with index pairs. Work through small examples to see the pattern."
+  }
+]

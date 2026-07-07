@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search on left bound approach for binary search problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Find K Closest Elements in O(n log n) or better? Consider how binary search on left bound helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search on left bound. Work through small examples to see the pattern."
+  }
+]

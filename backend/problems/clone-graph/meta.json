@@ -1,0 +1,13 @@
+{
+  "id": 71,
+  "slug": "clone-graph",
+  "title": "Clone Graph",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "BFS/DFS with hash map",
+  "sourceType": "core",
+  "functionName": "cloneGraph",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

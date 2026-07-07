@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Two-pass: collect all non-zeroes, write them back, then fill the rest with zeros."
+  },
+  {
+    "level": 2,
+    "text": "Can you do it in one pass in-place?"
+  },
+  {
+    "level": 3,
+    "text": "Write pointer: advance it only when you place a non-zero. Everything to its right stays zero."
+  }
+]

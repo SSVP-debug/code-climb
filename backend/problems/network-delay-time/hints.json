@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the Dijkstra shortest path approach for graphs problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Network Delay Time in O(n log n) or better? Consider how Dijkstra shortest path helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses Dijkstra shortest path. Work through small examples to see the pattern."
+  }
+]

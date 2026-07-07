@@ -1,0 +1,41 @@
+{
+  "visible": [
+    {
+      "input": {
+        "s1": "ab",
+        "s2": "eidbaooo"
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "s1": "ab",
+        "s2": "eidboaoo"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s1": "adc",
+        "s2": "dcda"
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "s1": "hello",
+        "s2": "ooolleoooleh"
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "s1": "a",
+        "s2": "ab"
+      },
+      "expectedOutput": true
+    }
+  ]
+}

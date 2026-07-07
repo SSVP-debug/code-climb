@@ -1,0 +1,12 @@
+{
+  "id": 211,
+  "slug": "longest-turbulent-subarray",
+  "title": "Longest Turbulent Subarray",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "state DP alternating",
+  "functionName": "maxTurbulenceSize",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

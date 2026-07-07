@@ -1,0 +1,13 @@
+{
+  "id": 114,
+  "slug": "number-of-1-bits",
+  "title": "Number of 1 Bits",
+  "difficulty": "Easy",
+  "topic": "Bit Manipulation",
+  "pattern": "n & (n-1) trick",
+  "sourceType": "core",
+  "functionName": "hammingWeight",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

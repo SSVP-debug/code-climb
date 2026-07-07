@@ -1,0 +1,1 @@
+Given a string s and a dictionary wordDict, return true if s can be segmented into space-separated dictionary words. The same word may be reused multiple times.

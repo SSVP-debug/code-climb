@@ -1,0 +1,22 @@
+{
+  "id": 38,
+  "slug": "binary-search",
+  "title": "Binary Search",
+  "difficulty": "Easy",
+  "topic": "Binary Search",
+  "pattern": "binary search",
+  "sourceType": "core",
+  "functionName": "search",
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Microsoft",
+    "Apple"
+  ],
+  "relatedProblems": [
+    "find-minimum-in-rotated-sorted-array",
+    "search-in-rotated-sorted-array",
+    "kth-largest-element"
+  ]
+}

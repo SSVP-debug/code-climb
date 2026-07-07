@@ -1,0 +1,13 @@
+{
+  "id": 137,
+  "slug": "spiral-matrix",
+  "title": "Spiral Matrix",
+  "difficulty": "Medium",
+  "topic": "Matrix",
+  "pattern": "layer-by-layer simulation",
+  "sourceType": "core",
+  "functionName": "spiralOrder",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,86 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ops": [
+          "add",
+          "add",
+          "add",
+          "find",
+          "find"
+        ],
+        "vals": [
+          [
+            1
+          ],
+          [
+            3
+          ],
+          [
+            5
+          ],
+          [
+            4
+          ],
+          [
+            7
+          ]
+        ]
+      },
+      "expectedOutput": [
+        null,
+        null,
+        null,
+        true,
+        false
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ops": [
+          "add",
+          "find"
+        ],
+        "vals": [
+          [
+            0
+          ],
+          [
+            0
+          ]
+        ]
+      },
+      "expectedOutput": [
+        null,
+        false
+      ]
+    },
+    {
+      "input": {
+        "ops": [
+          "add",
+          "add",
+          "find"
+        ],
+        "vals": [
+          [
+            3
+          ],
+          [
+            3
+          ],
+          [
+            6
+          ]
+        ]
+      },
+      "expectedOutput": [
+        null,
+        null,
+        true
+      ]
+    }
+  ]
+}

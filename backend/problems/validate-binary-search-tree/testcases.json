@@ -1,0 +1,66 @@
+{
+  "visible": [
+    {
+      "input": {
+        "root": [
+          2,
+          1,
+          3
+        ]
+      },
+      "expectedOutput": true
+    },
+    {
+      "input": {
+        "root": [
+          5,
+          1,
+          4,
+          -1,
+          -1,
+          3,
+          6
+        ]
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "root": [
+          1
+        ]
+      },
+      "expectedOutput": true
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "root": [
+          5,
+          4,
+          6,
+          -1,
+          -1,
+          3,
+          7
+        ]
+      },
+      "expectedOutput": false
+    },
+    {
+      "input": {
+        "root": [
+          10,
+          5,
+          15,
+          -1,
+          -1,
+          12,
+          20
+        ]
+      },
+      "expectedOutput": true
+    }
+  ]
+}

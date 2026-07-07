@@ -1,0 +1,13 @@
+{
+  "id": 5,
+  "slug": "maximum-subarray",
+  "title": "Maximum Subarray",
+  "difficulty": "Easy",
+  "topic": "Arrays",
+  "pattern": "Kadane's algorithm",
+  "sourceType": "core",
+  "functionName": "maxSubArray",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

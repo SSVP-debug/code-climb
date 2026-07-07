@@ -1,0 +1,13 @@
+{
+  "id": 234,
+  "slug": "maximal-square",
+  "title": "Maximal Square",
+  "difficulty": "Medium",
+  "topic": "Dynamic Programming",
+  "pattern": "2D DP min of neighbors",
+  "sourceType": "core",
+  "functionName": "maximalSquare",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

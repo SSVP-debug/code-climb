@@ -1,0 +1,1 @@
+Alice and Bob play a game with piles of stones. Each turn, a player takes the entire leftmost or rightmost pile. Scores accumulate. Alice always goes first. Both play optimally. Return true if Alice wins (her score > Bob's score). Alice always wins — but prove it with DP.

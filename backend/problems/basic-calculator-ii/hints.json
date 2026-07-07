@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the operator precedence stack approach for stacks problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Basic Calculator II in O(n log n) or better? Consider how operator precedence stack helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses operator precedence stack. Work through small examples to see the pattern."
+  }
+]

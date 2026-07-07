@@ -1,0 +1,13 @@
+{
+  "id": 125,
+  "slug": "implement-queue-using-stacks",
+  "title": "Implement Queue using Stacks",
+  "difficulty": "Easy",
+  "topic": "Stacks",
+  "pattern": "two stacks lazy transfer",
+  "sourceType": "core",
+  "functionName": "MyQueue",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

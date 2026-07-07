@@ -1,0 +1,41 @@
+{
+  "visible": [
+    {
+      "input": {
+        "text1": "abcde",
+        "text2": "ace"
+      },
+      "expectedOutput": 3
+    },
+    {
+      "input": {
+        "text1": "abc",
+        "text2": "abc"
+      },
+      "expectedOutput": 3
+    },
+    {
+      "input": {
+        "text1": "abc",
+        "text2": "def"
+      },
+      "expectedOutput": 0
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "text1": "bl",
+        "text2": "yby"
+      },
+      "expectedOutput": 1
+    },
+    {
+      "input": {
+        "text1": "bsbininm",
+        "text2": "jmjkbkjkv"
+      },
+      "expectedOutput": 2
+    }
+  ]
+}

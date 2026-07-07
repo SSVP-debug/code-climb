@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the binary search on timestamps approach for design problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Time Based Key-Value Store in O(n log n) or better? Consider how binary search on timestamps helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses binary search on timestamps. Work through small examples to see the pattern."
+  }
+]

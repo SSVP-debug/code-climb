@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "How many ways are there to reach step n? Think about which step you arrived from."
+  },
+  {
+    "level": 2,
+    "text": "You can only come from step n−1 or step n−2, so ways(n) = ways(n−1) + ways(n−2)."
+  },
+  {
+    "level": 3,
+    "text": "This is Fibonacci. You only need the last two values at any time — O(1) space."
+  }
+]

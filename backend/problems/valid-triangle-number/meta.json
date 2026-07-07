@@ -1,0 +1,13 @@
+{
+  "id": 153,
+  "slug": "valid-triangle-number",
+  "title": "Valid Triangle Number",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "sort + two pointer",
+  "sourceType": "core",
+  "functionName": "triangleNumber",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

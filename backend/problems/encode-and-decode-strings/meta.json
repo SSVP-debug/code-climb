@@ -1,0 +1,13 @@
+{
+  "id": 60,
+  "slug": "encode-and-decode-strings",
+  "title": "Encode and Decode Strings",
+  "difficulty": "Medium",
+  "topic": "Strings",
+  "pattern": "length-prefix encoding",
+  "sourceType": "core",
+  "functionName": "encode",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

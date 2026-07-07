@@ -1,0 +1,13 @@
+{
+  "id": 65,
+  "slug": "palindrome-linked-list",
+  "title": "Palindrome Linked List",
+  "difficulty": "Easy",
+  "topic": "Linked List",
+  "pattern": "slow-fast + reverse second half",
+  "sourceType": "core",
+  "functionName": "isPalindrome",
+  "estimatedTime": "10–20 min",
+  "companies": [],
+  "relatedProblems": []
+}

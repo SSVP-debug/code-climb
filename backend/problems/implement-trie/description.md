@@ -1,0 +1,1 @@
+Implement the Trie class with: insert(word), search(word) returning true if word is in the trie, and startsWith(prefix) returning true if any word starts with prefix.

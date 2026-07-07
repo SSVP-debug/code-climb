@@ -1,0 +1,13 @@
+{
+  "id": 88,
+  "slug": "time-based-key-value-store",
+  "title": "Time Based Key-Value Store",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on timestamps",
+  "sourceType": "core",
+  "functionName": "TimeMap",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

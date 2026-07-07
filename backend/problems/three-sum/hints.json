@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Brute force tries all triples — O(n³). Fix one element and the problem reduces to Two Sum."
+  },
+  {
+    "level": 2,
+    "text": "Sort first. For each index i, run the sorted two-sum approach on the subarray to the right."
+  },
+  {
+    "level": 3,
+    "text": "Skip duplicate values of i, and skip duplicates at the left/right pointers after each match to avoid duplicate triplets."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the constraint backtracking approach for backtracking problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Sudoku Solver in O(n log n) or better? Consider how constraint backtracking helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses constraint backtracking. Work through small examples to see the pattern."
+  }
+]

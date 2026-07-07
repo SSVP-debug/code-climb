@@ -1,0 +1,1 @@
+Design your implementation of a circular queue with a fixed capacity k. Implement enQueue, deQueue, Front, Rear, isEmpty, and isFull operations.

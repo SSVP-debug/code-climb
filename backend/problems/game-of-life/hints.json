@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the in-place state encoding approach for matrix problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Game of Life in O(n log n) or better? Consider how in-place state encoding helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses in-place state encoding. Work through small examples to see the pattern."
+  }
+]

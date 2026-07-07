@@ -1,0 +1,1 @@
+You are given an array people where people[i] = [hi, ki] means person i has height hi and exactly ki people in front who have height >= hi. Reconstruct and return the queue. Answer is guaranteed to exist.

@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the max freq window expansion approach for sliding window problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Longest Repeating Character Replacement in O(n log n) or better? Consider how max freq window expansion helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses max freq window expansion. Work through small examples to see the pattern."
+  }
+]

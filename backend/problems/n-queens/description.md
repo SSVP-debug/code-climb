@@ -1,0 +1,1 @@
+Place n queens on an n×n chessboard such that no two queens attack each other. Return all distinct solutions. Each solution contains a distinct board configuration where 'Q' indicates a queen and '.' indicates empty.

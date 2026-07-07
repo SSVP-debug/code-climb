@@ -1,0 +1,12 @@
+{
+  "id": 244,
+  "slug": "jump-game-vii",
+  "title": "Jump Game VII",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "BFS with sliding window",
+  "functionName": "canReach",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

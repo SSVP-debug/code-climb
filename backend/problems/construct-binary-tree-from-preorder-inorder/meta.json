@@ -1,0 +1,13 @@
+{
+  "id": 68,
+  "slug": "construct-binary-tree-from-preorder-inorder",
+  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+  "difficulty": "Medium",
+  "topic": "Trees",
+  "pattern": "divide and conquer recursion",
+  "sourceType": "core",
+  "functionName": "buildTree",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,13 @@
+{
+  "id": 84,
+  "slug": "task-scheduler",
+  "title": "Task Scheduler",
+  "difficulty": "Medium",
+  "topic": "Heap",
+  "pattern": "frequency + cooldown math",
+  "sourceType": "core",
+  "functionName": "leastInterval",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

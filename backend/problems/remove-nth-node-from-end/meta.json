@@ -1,0 +1,22 @@
+{
+  "id": 25,
+  "slug": "remove-nth-node-from-end",
+  "title": "Remove Nth Node From End",
+  "difficulty": "Medium",
+  "topic": "Linked List",
+  "pattern": "fast / slow pointer",
+  "sourceType": "core",
+  "functionName": "removeNthFromEnd",
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "Apple",
+    "Google"
+  ],
+  "relatedProblems": [
+    "middle-of-the-linked-list",
+    "reverse-linked-list",
+    "merge-two-sorted-lists"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": 221,
+  "slug": "next-greater-element-i",
+  "title": "Next Greater Element I",
+  "difficulty": "Easy",
+  "topic": "Stacks",
+  "pattern": "monotonic stack with hash map",
+  "functionName": "nextGreaterElement",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": []
+}

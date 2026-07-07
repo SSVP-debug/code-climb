@@ -1,0 +1,13 @@
+{
+  "id": 90,
+  "slug": "find-peak-element",
+  "title": "Find Peak Element",
+  "difficulty": "Medium",
+  "topic": "Binary Search",
+  "pattern": "binary search on peak condition",
+  "sourceType": "core",
+  "functionName": "findPeakElement",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

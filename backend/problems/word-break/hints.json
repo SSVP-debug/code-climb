@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the DP with word set approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve Word Break in O(n log n) or better? Consider how DP with word set helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses DP with word set. Work through small examples to see the pattern."
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "id": 130,
+  "slug": "redundant-connection",
+  "title": "Redundant Connection",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "Union-Find cycle detection",
+  "sourceType": "core",
+  "functionName": "findRedundantConnection",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

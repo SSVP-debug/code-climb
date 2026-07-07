@@ -1,0 +1,1 @@
+A message can be encoded: "A"→"1", "B"→"2", ..., "Z"→"26". Given a string s of digits, return the number of ways to decode it. Note that "06" is invalid.

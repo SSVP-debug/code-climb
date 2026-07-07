@@ -1,0 +1,1 @@
+Given a graph that started as a tree (n nodes, n-1 edges) with one additional edge added, find and return the edge that can be removed so the result is a tree. If multiple answers, return the last one in the input.

@@ -1,0 +1,1 @@
+Given the root of a binary tree and an integer targetSum, return all root-to-leaf paths where the sum of node values equals targetSum. Each path should be returned as a list of node values.

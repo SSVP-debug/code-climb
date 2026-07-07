@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about the 1D DP no adjacency approach for dynamic programming problems."
+  },
+  {
+    "level": 2,
+    "text": "Can you solve House Robber in O(n log n) or better? Consider how 1D DP no adjacency helps."
+  },
+  {
+    "level": 3,
+    "text": "The optimal solution uses 1D DP no adjacency. Work through small examples to see the pattern."
+  }
+]

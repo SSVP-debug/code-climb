@@ -1,0 +1,14 @@
+[
+  {
+    "level": 1,
+    "text": "Think about how you'd merge two sorted arrays — same concept, different structure."
+  },
+  {
+    "level": 2,
+    "text": "A dummy head node simplifies edge cases — you always have a node to attach the next result to."
+  },
+  {
+    "level": 3,
+    "text": "Compare the two current heads, attach the smaller, advance that list's pointer. Attach any remaining nodes at the end."
+  }
+]

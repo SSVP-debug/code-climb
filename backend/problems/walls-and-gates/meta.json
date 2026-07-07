@@ -1,0 +1,13 @@
+{
+  "id": 245,
+  "slug": "walls-and-gates",
+  "title": "Walls and Gates",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "multi-source BFS",
+  "sourceType": "core",
+  "functionName": "wallsAndGates",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

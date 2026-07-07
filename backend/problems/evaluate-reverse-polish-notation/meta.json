@@ -1,0 +1,13 @@
+{
+  "id": 123,
+  "slug": "evaluate-reverse-polish-notation",
+  "title": "Evaluate Reverse Polish Notation",
+  "difficulty": "Medium",
+  "topic": "Stacks",
+  "pattern": "operand stack evaluation",
+  "sourceType": "core",
+  "functionName": "evalRPN",
+  "estimatedTime": "20–35 min",
+  "companies": [],
+  "relatedProblems": []
+}

@@ -1,0 +1,1 @@
+Given an array of strings words, return the longest word in words that can be built one character at a time by other words in words. If there is more than one answer, return the lexicographically smallest one.
