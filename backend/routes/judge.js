@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { validateBody } from "./compiler.js";
 import { callJudge0 } from "../controllers/compilerController.js";
-import hiddenTestcases from "../data/hiddenTestcases.js";
+import Problem from "../models/Problem.js";
 
 const router = Router();
 
@@ -168,12 +168,21 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
   const { problemSlug, code, language, functionName, visibletestcases } = req.body;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
-  const hidden = hiddenTestcases[problemSlug];
+  const problem = await Problem.findOne({
+    slug: problemSlug,
+  });
 
-  if (!hidden || hidden.length === 0) {
+  if (!problem) {
     return res.status(404).json({
-      error: `No hidden testcases configured for problem: "${problemSlug}". ` +
-        `Add it to backend/data/hiddentestcases.js`,
+      error: `Problem "${problemSlug}" not found.`,
+    });
+  }
+
+  const hidden = problem.hiddentestcases ?? [];
+
+  if (hidden.length === 0) {
+    return res.status(404).json({
+      error: `No hidden testcases configured for "${problemSlug}".`,
     });
   }
 
