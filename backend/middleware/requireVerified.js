@@ -20,7 +20,9 @@ export function requireVerified(req, res, next) {
 
     // Future-proof for TPO verification.
     if (role === "tpo") {
-        return next();
+        if (req.userDoc?.tpoProfile?.verified) {
+            return next();
+        }
 
         return res.status(403).json({
             error: "Your TPO account is pending verification.",

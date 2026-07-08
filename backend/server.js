@@ -58,6 +58,7 @@ import profilePdfRoutes from "./routes/profilePdf.js";
 import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
 import billingRoutes from "./routes/billing.js";
 import interviewRoutes from "./routes/interview.js";
+import adminRoutes from "./routes/admin.js";
 
 if (process.env.NODE_ENV !== "production") {
   mongoose.set("strict", "throw");
@@ -157,6 +158,7 @@ app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 // ── Phase 8 / Batch E fix: mount previously-orphaned route modules ──────────
 // B2B (TPO) dashboard — gated internally by B2B_ENABLED, same as before.
 app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/assignments/student", requireAuth, apiLimiter, studentAssignmentsRouter);
 // Billing (Razorpay) — gated internally by MONETIZATION_ENABLED. NOTE: /plans
 // (meant public) and /webhook (meant no-auth, raw-body signature check) both
