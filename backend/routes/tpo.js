@@ -54,6 +54,7 @@ router.post("/register", async (req, res) => {
     }
 
     // Prevent multiple claims for the same institution
+    // Prevent multiple claims for the same institution
     const existingCollege = await College.findOne({ domain });
 
     if (existingCollege) {
@@ -63,16 +64,26 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Create a pending college registration request
+    // Create pending college request
     await College.create({
       domain,
       name: collegeName,
       adminUserId: req.userDoc._id,
     });
 
+    // Mark user as pending TPO
+    req.userDoc.role = "tpo";
+    req.userDoc.tpoProfile = {
+      verificationStatus: "pending",
+      verified: false,
+      requestedAt: new Date(),
+    };
+
+    await req.userDoc.save();
+
     return res.status(201).json({
       success: true,
-      status: "pending",
+      role: "tpo",
       message:
         "Your college registration request has been submitted for verification.",
     });
@@ -89,8 +100,8 @@ router.get("/me", requireRole("tpo", "admin"), async (req, res) => {
 
 
   return res.json({
-    collegeName: req.userDoc.collegeName,
-    collegeDomain: req.userDoc.collegeDomain,
+    collegeName: req.userDoc.tpoProfile?.collegeName,
+    collegeDomain: req.userDoc.tpoProfile?.collegeDomain,
     email: req.userDoc.email,
   });
 });
@@ -102,7 +113,7 @@ router.get("/students", requireRole("tpo", "admin"), async (req, res) => {
   try {
 
 
-    const domain = req.userDoc.collegeDomain;
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
 
     const students = await User.find({
@@ -124,7 +135,12 @@ router.get("/students", requireRole("tpo", "admin"), async (req, res) => {
       joinedDate: s.joinedDate,
     }));
 
-    return res.json({ college: req.userDoc.collegeName, domain, students: formatted, total: formatted.length });
+    return res.json({
+      college: req.userDoc.tpoProfile?.collegeName,
+      domain,
+      students: formatted,
+      total: formatted.length,
+    });
 
   } catch (err) {
     console.error("[TPO] students error:", err.message);
@@ -141,7 +157,7 @@ router.get("/dashboard", requireRole("tpo", "admin"), async (req, res) => {
   try {
 
 
-    const domain = req.userDoc.collegeDomain;
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set." });
 
     const students = await User.find({
@@ -155,7 +171,7 @@ router.get("/dashboard", requireRole("tpo", "admin"), async (req, res) => {
 
     if (totalStudents === 0) {
       return res.json({
-        college: req.userDoc.collegeName,
+        college: req.userDoc.tpoProfile?.collegeName,
         domain,
         totalStudents: 0,
         message: "No students from your college have joined Code Club yet.",
@@ -233,7 +249,7 @@ router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
 
     const assignment = await Assignment.create({
       tpoId: req.userDoc._id,
-      collegeDomain: req.userDoc.collegeDomain,
+      collegeDomain: req.userDoc.tpoProfile?.collegeDomain,
       title,
       problemSlugs,
       dueDate: new Date(dueDate),
@@ -254,7 +270,9 @@ router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   try {
 
 
-    const assignments = await Assignment.find({ collegeDomain: req.userDoc.collegeDomain })
+    const assignments = await Assignment.find({
+      collegeDomain: req.userDoc.tpoProfile?.collegeDomain,
+    })
       .sort({ dueDate: -1 })
       .lean();
 
@@ -343,7 +361,7 @@ router.get("/report/pdf", requireRole("tpo", "admin"), async (req, res) => {
   try {
 
 
-    const domain = req.userDoc.collegeDomain;
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
     const students = await User.find({
       email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
       role: "student",
@@ -359,7 +377,7 @@ router.get("/report/pdf", requireRole("tpo", "admin"), async (req, res) => {
 
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${(req.userDoc.collegeName || "college").replace(/[^a-z0-9]/gi, "_")}_codeclub_report.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${(req.userDoc.tpoProfile?.collegeName || "college").replace(/[^a-z0-9]/gi, "_")}_codeclub_report.pdf"`);
     doc.pipe(res);
 
     // Header
@@ -369,7 +387,7 @@ router.get("/report/pdf", requireRole("tpo", "admin"), async (req, res) => {
     doc.fontSize(10).fillColor("#71717a")
       .text(new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }), doc.page.width - 200, 52, { align: "right", width: 150 });
 
-    doc.fontSize(18).fillColor("#000").font("Helvetica-Bold").text(req.userDoc.collegeName || "College", 50, 110);
+    doc.fontSize(18).fillColor("#000").font("Helvetica-Bold").text(req.userDoc.tpoProfile?.collegeName || "College", 50, 110);
     doc.fontSize(10).fillColor("#71717a").font("Helvetica").text(domain, 50, 134);
 
     // Summary stats

@@ -151,9 +151,14 @@ const userSchema = new mongoose.Schema(
       verifiedAt: { type: Date, default: null },
     },
 
-    // ── TPO-specific fields ───────────────────────────────────────────────
-    collegeDomain: { type: String, default: null },
-    collegeName: { type: String, default: null },
+    // ── TPO-specific fields ─────────────────────────────────────────
+    tpoProfile: {
+      collegeDomain: { type: String, default: null },
+      collegeName: { type: String, default: null },
+      verified: { type: Boolean, default: false },
+      requestedAt: { type: Date, default: null },
+      verifiedAt: { type: Date, default: null },
+    },
 
     // ── Profile verification hash (commit 085) ────────────────────────────
     // HMAC-SHA256 of (userId + solvedCount + timestamp) — proves data wasn't
