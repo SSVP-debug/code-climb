@@ -14,8 +14,10 @@ import { B2B_ENABLED } from "../config/featureFlags.js";
 import Assignment from "../models/Assignment.js";
 import { createRequire } from "module";
 import { requireRole } from "../middleware/roleGuard.js";
+import College from "../models/College.js";
 
 const require = createRequire(import.meta.url);
+
 
 const router = Router();
 
@@ -51,16 +53,28 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    req.userDoc.role = "tpo";
-    req.userDoc.collegeDomain = domain;
-    req.userDoc.collegeName = collegeName;
-    await req.userDoc.save();
+    // Prevent multiple claims for the same institution
+    const existingCollege = await College.findOne({ domain });
 
-    return res.json({
+    if (existingCollege) {
+      return res.status(409).json({
+        error: "This college is already registered.",
+        status: existingCollege.verified ? "verified" : "pending",
+      });
+    }
+
+    // Create a pending college registration request
+    await College.create({
+      domain,
+      name: collegeName,
+      adminUserId: req.userDoc._id,
+    });
+
+    return res.status(201).json({
       success: true,
-      role: "tpo",
-      collegeDomain: domain,
-      collegeName,
+      status: "pending",
+      message:
+        "Your college registration request has been submitted for verification.",
     });
   } catch (err) {
     console.error("[TPO] register error:", err.message);
@@ -72,7 +86,7 @@ router.post("/register", async (req, res) => {
 router.get("/me", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
-  
+
 
   return res.json({
     collegeName: req.userDoc.collegeName,
@@ -86,7 +100,7 @@ router.get("/students", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    
+
 
     const domain = req.userDoc.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
@@ -125,7 +139,7 @@ router.get("/dashboard", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    
+
 
     const domain = req.userDoc.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set." });
@@ -209,7 +223,7 @@ router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    
+
 
     const { title, problemSlugs, dueDate } = req.body;
 
@@ -238,7 +252,7 @@ router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    
+
 
     const assignments = await Assignment.find({ collegeDomain: req.userDoc.collegeDomain })
       .sort({ dueDate: -1 })
@@ -327,7 +341,7 @@ router.get("/report/pdf", requireRole("tpo", "admin"), async (req, res) => {
   }
 
   try {
-    
+
 
     const domain = req.userDoc.collegeDomain;
     const students = await User.find({
