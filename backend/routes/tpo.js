@@ -13,6 +13,7 @@ import User from "../models/User.js";
 import { B2B_ENABLED } from "../config/featureFlags.js";
 import Assignment from "../models/Assignment.js";
 import { createRequire } from "module";
+import { requireRole } from "../middleware/roleGuard.js";
 
 const require = createRequire(import.meta.url);
 
@@ -68,49 +69,45 @@ router.post("/register", async (req, res) => {
 });
 
 // ── GET /api/tpo/me ──────────────────────────────────────────────────────────
-router.get("/me", async (req, res) => {
+router.get("/me", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
-  if (req.userDoc?.role !== "tpo") {
-    return res.status(403).json({ error: "Not a TPO account." });
-  }
+  
 
   return res.json({
-    collegeName:   req.userDoc.collegeName,
+    collegeName: req.userDoc.collegeName,
     collegeDomain: req.userDoc.collegeDomain,
-    email:         req.userDoc.email,
+    email: req.userDoc.email,
   });
 });
 
 // ── GET /api/tpo/students ───────────────────────────────────────────────────
-router.get("/students", async (req, res) => {
+router.get("/students", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    if (req.userDoc?.role !== "tpo") {
-      return res.status(403).json({ error: "Not a TPO account." });
-    }
+    
 
     const domain = req.userDoc.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
 
     const students = await User.find({
       email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-      role:  "student",
+      role: "student",
     })
       .select("displayName email totalXP solvedSlugs currentStreak solvedDifficulty topicStats joinedDate")
       .lean();
 
     const formatted = students.map(s => ({
-      name:          s.displayName,
-      email:         s.email,
-      totalXP:       s.totalXP || 0,
-      solvedCount:   s.solvedSlugs?.length ?? 0,
+      name: s.displayName,
+      email: s.email,
+      totalXP: s.totalXP || 0,
+      solvedCount: s.solvedSlugs?.length ?? 0,
       currentStreak: s.currentStreak || 0,
-      easy:          s.solvedDifficulty?.easy   || 0,
-      medium:        s.solvedDifficulty?.medium || 0,
-      hard:          s.solvedDifficulty?.hard   || 0,
-      joinedDate:    s.joinedDate,
+      easy: s.solvedDifficulty?.easy || 0,
+      medium: s.solvedDifficulty?.medium || 0,
+      hard: s.solvedDifficulty?.hard || 0,
+      joinedDate: s.joinedDate,
     }));
 
     return res.json({ college: req.userDoc.collegeName, domain, students: formatted, total: formatted.length });
@@ -124,20 +121,18 @@ router.get("/students", async (req, res) => {
 
 // ── GET /api/tpo/dashboard ──────────────────────────────────────────────────
 // Returns aggregated class-wide stats for the TPO dashboard view.
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    if (req.userDoc?.role !== "tpo") {
-      return res.status(403).json({ error: "Not a TPO account." });
-    }
+    
 
     const domain = req.userDoc.collegeDomain;
     if (!domain) return res.status(400).json({ error: "No college domain set." });
 
     const students = await User.find({
       email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-      role:  "student",
+      role: "student",
     })
       .select("solvedSlugs solvedDifficulty topicStats currentStreak totalXP")
       .lean();
@@ -161,9 +156,9 @@ router.get("/dashboard", async (req, res) => {
     students.forEach(s => {
       const solved = s.solvedSlugs?.length ?? 0;
       totalSolved += solved;
-      totalEasy   += s.solvedDifficulty?.easy   ?? 0;
+      totalEasy += s.solvedDifficulty?.easy ?? 0;
       totalMedium += s.solvedDifficulty?.medium ?? 0;
-      totalHard   += s.solvedDifficulty?.hard   ?? 0;
+      totalHard += s.solvedDifficulty?.hard ?? 0;
       if ((s.currentStreak ?? 0) > 0) activeThisWeek++;
 
       const topics = s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {});
@@ -177,8 +172,8 @@ router.get("/dashboard", async (req, res) => {
     // ── Placement Readiness Score (0-100) ──────────────────────────────────
     // Heuristic: weighted combination of average solves, hard-problem coverage,
     // and active engagement. This is the #1 number a TPO will look at.
-    const solveScore    = Math.min(40, (avgSolved / 100) * 40);           // up to 40 pts for solving 100+ avg
-    const hardScore      = Math.min(30, ((totalHard / totalStudents) / 20) * 30); // up to 30 pts for 20+ hard avg
+    const solveScore = Math.min(40, (avgSolved / 100) * 40);           // up to 40 pts for solving 100+ avg
+    const hardScore = Math.min(30, ((totalHard / totalStudents) / 20) * 30); // up to 30 pts for 20+ hard avg
     const engagementScore = Math.min(30, (activeThisWeek / totalStudents) * 30);  // up to 30 pts for active streaks
     const readinessScore = Math.round(solveScore + hardScore + engagementScore);
 
@@ -189,14 +184,14 @@ router.get("/dashboard", async (req, res) => {
       .map(([topic, count]) => ({ topic, totalSolves: count }));
 
     return res.json({
-      college:        req.userDoc.collegeName,
+      college: req.userDoc.collegeName,
       domain,
       totalStudents,
       avgSolved,
       totalSolved,
       difficultyBreakdown: { easy: totalEasy, medium: totalMedium, hard: totalHard },
       activeThisWeek,
-      activePercent:  Math.round((activeThisWeek / totalStudents) * 100),
+      activePercent: Math.round((activeThisWeek / totalStudents) * 100),
       readinessScore,
       topicCoverage,
     });
@@ -210,13 +205,11 @@ router.get("/dashboard", async (req, res) => {
 
 // ── POST /api/tpo/assignments ───────────────────────────────────────────────
 // TPO creates a new problem assignment for their college.
-router.post("/assignments", async (req, res) => {
+router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    if (req.userDoc?.role !== "tpo") {
-      return res.status(403).json({ error: "Not a TPO account." });
-    }
+    
 
     const { title, problemSlugs, dueDate } = req.body;
 
@@ -241,13 +234,11 @@ router.post("/assignments", async (req, res) => {
 
 // ── GET /api/tpo/assignments ────────────────────────────────────────────────
 // TPO view: all assignments they've created, with per-student completion %.
-router.get("/assignments", async (req, res) => {
+router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   try {
-    if (req.userDoc?.role !== "tpo") {
-      return res.status(403).json({ error: "Not a TPO account." });
-    }
+    
 
     const assignments = await Assignment.find({ collegeDomain: req.userDoc.collegeDomain })
       .sort({ dueDate: -1 })
@@ -325,7 +316,7 @@ studentAssignmentsRouter.get("/", async (req, res) => {
 // ── GET /api/tpo/report/pdf ─────────────────────────────────────────────────
 // Generates a class performance PDF — the document a TPO shows their
 // placement director to justify the Code Club subscription.
-router.get("/report/pdf", async (req, res) => {
+router.get("/report/pdf", requireRole("tpo", "admin"), async (req, res) => {
   if (b2bGate(req, res)) return;
 
   let PDFDocument;
@@ -336,14 +327,12 @@ router.get("/report/pdf", async (req, res) => {
   }
 
   try {
-    if (req.userDoc?.role !== "tpo") {
-      return res.status(403).json({ error: "Not a TPO account." });
-    }
+    
 
     const domain = req.userDoc.collegeDomain;
     const students = await User.find({
       email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-      role:  "student",
+      role: "student",
     })
       .select("displayName totalXP solvedSlugs solvedDifficulty currentStreak topicStats")
       .sort({ totalXP: -1 })
@@ -356,7 +345,7 @@ router.get("/report/pdf", async (req, res) => {
 
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${(req.userDoc.collegeName||"college").replace(/[^a-z0-9]/gi,"_")}_codeclub_report.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${(req.userDoc.collegeName || "college").replace(/[^a-z0-9]/gi, "_")}_codeclub_report.pdf"`);
     doc.pipe(res);
 
     // Header
@@ -364,7 +353,7 @@ router.get("/report/pdf", async (req, res) => {
     doc.fontSize(22).fillColor("#22c55e").font("Helvetica-Bold").text("Code Club", 50, 24);
     doc.fontSize(11).fillColor("#a1a1aa").font("Helvetica").text("Class Performance Report", 50, 52);
     doc.fontSize(10).fillColor("#71717a")
-       .text(new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" }), doc.page.width-200, 52, { align:"right", width:150 });
+      .text(new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }), doc.page.width - 200, 52, { align: "right", width: 150 });
 
     doc.fontSize(18).fillColor("#000").font("Helvetica-Bold").text(req.userDoc.collegeName || "College", 50, 110);
     doc.fontSize(10).fillColor("#71717a").font("Helvetica").text(domain, 50, 134);
@@ -374,14 +363,14 @@ router.get("/report/pdf", async (req, res) => {
     const summary = [
       { label: "Total Students", value: totalStudents },
       { label: "Avg Problems Solved", value: avgSolved },
-      { label: "Active This Week", value: `${activeCount} (${totalStudents ? Math.round(activeCount/totalStudents*100) : 0}%)` },
+      { label: "Active This Week", value: `${activeCount} (${totalStudents ? Math.round(activeCount / totalStudents * 100) : 0}%)` },
       { label: "Total Problems Solved", value: totalSolved },
     ];
     let sx = 50;
     summary.forEach(s => {
       doc.rect(sx, sy, 120, 50).fill("#f4f4f5");
-      doc.fontSize(18).fillColor("#16a34a").font("Helvetica-Bold").text(String(s.value), sx+10, sy+8);
-      doc.fontSize(8).fillColor("#71717a").font("Helvetica").text(s.label, sx+10, sy+30, { width: 100 });
+      doc.fontSize(18).fillColor("#16a34a").font("Helvetica-Bold").text(String(s.value), sx + 10, sy + 8);
+      doc.fontSize(8).fillColor("#71717a").font("Helvetica").text(s.label, sx + 10, sy + 30, { width: 100 });
       sx += 130;
     });
 
@@ -394,13 +383,13 @@ router.get("/report/pdf", async (req, res) => {
     doc.text("Rank", 50, ty); doc.text("Name", 90, ty); doc.text("Solved", 320, ty);
     doc.text("Streak", 380, ty); doc.text("XP", 450, ty);
     ty += 14;
-    doc.moveTo(50, ty).lineTo(doc.page.width-50, ty).strokeColor("#e4e4e7").stroke();
+    doc.moveTo(50, ty).lineTo(doc.page.width - 50, ty).strokeColor("#e4e4e7").stroke();
     ty += 8;
 
     students.slice(0, 40).forEach((s, i) => {
       if (ty > doc.page.height - 60) { doc.addPage(); ty = 50; }
       doc.fontSize(8).fillColor("#3f3f46").font("Helvetica");
-      doc.text(String(i+1), 50, ty);
+      doc.text(String(i + 1), 50, ty);
       doc.text(s.displayName || "—", 90, ty, { width: 220 });
       doc.text(String(s.solvedSlugs?.length ?? 0), 320, ty);
       doc.text(String(s.currentStreak ?? 0), 380, ty);
