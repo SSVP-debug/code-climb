@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RoleRoute from "./components/auth/RoleRoute";
 import ThemeGate from "./routes/ThemeGate";
 
 // ── Eagerly loaded ─────────────────────────────────────────────────────────
@@ -18,23 +19,23 @@ import NotFoundPage from "./pages/NotFoundPage";
 // Monaco Editor lives inside ProblemDetailsPage — the single biggest win here.
 // Before: Monaco downloaded on app init for every user (including those who never open a problem).
 // After:  Monaco only downloads when a user opens a problem page.
-const Dashboard            = lazy(() => import("./pages/Dashboard"));
-const Analytics            = lazy(() => import("./pages/Analytics"));
-const Profile              = lazy(() => import("./pages/Profile"));
-const ProblemsPage         = lazy(() => import("./pages/ProblemsPage"));
-const ProblemDetailsPage   = lazy(() => import("./pages/ProblemDetailsPage"));
-const PublicProfile        = lazy(() => import("./pages/PublicProfile"));
-const ThemeSelectionPage   = lazy(() => import("./pages/ThemeSelectionPage"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ProblemsPage = lazy(() => import("./pages/ProblemsPage"));
+const ProblemDetailsPage = lazy(() => import("./pages/ProblemDetailsPage"));
+const PublicProfile = lazy(() => import("./pages/PublicProfile"));
+const ThemeSelectionPage = lazy(() => import("./pages/ThemeSelectionPage"));
 const ThemeConfirmationPage = lazy(() => import("./pages/ThemeConfirmationPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
-const RecruiterSignupPage  = lazy(() => import("./pages/RecruiterSignupPage"));
+const RecruiterSignupPage = lazy(() => import("./pages/RecruiterSignupPage"));
 const RecruiterDashboardPage = lazy(() => import("./pages/RecruiterDashboardPage"));
-const CandidateTestsPage   = lazy(() => import("./pages/CandidateTestsPage"));
-const CertificationsPage   = lazy(() => import("./pages/CertificationsPage"));
-const CertVerifyPage       = lazy(() => import("./pages/CertVerifyPage"));
-const ContestsPage         = lazy(() => import("./pages/ContestsPage"));
-const ContestDetailPage    = lazy(() => import("./pages/ContestDetailPage"));
-const AmbassadorPage       = lazy(() => import("./pages/AmbassadorPage"));
+const CandidateTestsPage = lazy(() => import("./pages/CandidateTestsPage"));
+const CertificationsPage = lazy(() => import("./pages/CertificationsPage"));
+const CertVerifyPage = lazy(() => import("./pages/CertVerifyPage"));
+const ContestsPage = lazy(() => import("./pages/ContestsPage"));
+const ContestDetailPage = lazy(() => import("./pages/ContestDetailPage"));
+const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
 
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
@@ -56,12 +57,12 @@ function App() {
       <Routes>
 
         {/* ── Public routes ──────────────────────────────────────────────── */}
-        <Route path="/"        element={<LandingPage />} />
-        <Route path="/login"   element={<LoginPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/u/:username" element={<PublicProfile />} />
 
         {/* ── Theme setup (semi-public — no ThemeGate wrapping needed) ───── */}
-        <Route path="/theme-selection"   element={<ThemeSelectionPage />} />
+        <Route path="/theme-selection" element={<ThemeSelectionPage />} />
         <Route path="/theme-confirmation" element={<ThemeConfirmationPage />} />
 
         {/* ── Protected routes ───────────────────────────────────────────── */}
@@ -123,22 +124,24 @@ function App() {
 
 
         {/* ── Phase 7: Recruiter ──────────────────────────────────────── */}
-        <Route path="/recruiter/signup"    element={<ProtectedRoute><RecruiterSignupPage /></ProtectedRoute>} />
-        <Route path="/recruiter/dashboard" element={<ProtectedRoute><RecruiterDashboardPage /></ProtectedRoute>} />
+        <Route path="/recruiter/signup" element={<ProtectedRoute><RecruiterSignupPage /></ProtectedRoute>} />
+        <Route path="/recruiter/dashboard" element={<ProtectedRoute>
+          <TpoDashboardPage />
+        </ProtectedRoute>} />
 
         {/* ── Phase 7: Candidate tests ────────────────────────────────── */}
-        <Route path="/candidate/tests"     element={<ProtectedRoute><CandidateTestsPage /></ProtectedRoute>} />
+        <Route path="/candidate/tests" element={<ProtectedRoute><CandidateTestsPage /></ProtectedRoute>} />
 
         {/* ── Phase 7: Certifications ─────────────────────────────────── */}
-        <Route path="/certifications"      element={<ProtectedRoute><ThemeGate><CertificationsPage /></ThemeGate></ProtectedRoute>} />
-        <Route path="/verify/:code"        element={<CertVerifyPage />} />
+        <Route path="/certifications" element={<ProtectedRoute><ThemeGate><CertificationsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/verify/:code" element={<CertVerifyPage />} />
 
         {/* ── Phase 7: Contests ───────────────────────────────────────── */}
-        <Route path="/contests"            element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
-        <Route path="/contests/:id"        element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/contests" element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/contests/:id" element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
 
         {/* ── Phase 8: Campus Ambassador Portal ──────────────────────── */}
-        <Route path="/ambassador"          element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/ambassador" element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />
 
         <Route path="*" element={<NotFoundPage />} />
 
