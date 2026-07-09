@@ -379,14 +379,10 @@ function AppContextProvider({ children }) {
     // The guard above (solvedProblems.includes(slug)) already ensures this only
     // fires once per unique problem, so no double-counting.
     setWeeklySolved((prev) => prev + 1);
+    // Optimistic UI update.
+    // Server remains the source of truth for XP.
+    const earnedXP = getEarnedXP(difficulty);
 
-    // XP is now computed server-side. We compute a local optimistic update
-    // for immediate UI feedback only — the server response will correct it.
-    // Streak multiplier: 2x XP if streak >= 3 consecutive days
-    // This rewards consistency and makes the streak counter feel meaningful.
-    const baseXP = getEarnedXP(difficulty);
-    const streakMultiplier = currentStreak >= 3 ? 2 : 1;
-    const earnedXP = baseXP * streakMultiplier;
     const nextTotalXP =
       totalXP + earnedXP;
 
