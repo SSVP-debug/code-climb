@@ -138,10 +138,13 @@ function AppContextProvider({ children }) {
           submissions: mongoSubmissions,
           _dbDown,
         } = await apiFetch("/api/init");
+        console.log("Boot user:", bootUser);
 
         if (_dbDown) {
           console.warn("[AppContext] Database unavailable on boot — using empty defaults.");
         }
+        console.log("Setting role:", bootUser?.role);
+
         setRole(bootUser?.role || "student");
 
         setSolvedProblems(

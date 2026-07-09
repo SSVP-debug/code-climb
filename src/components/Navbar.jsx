@@ -62,6 +62,8 @@ function Navbar() {
   };
 
   const nav = navigation[role] ?? navigation.student;
+  console.log("Role:", role);
+  console.log(nav);
   return (
     <nav className="bg-zinc-900 text-white border-b border-zinc-800 relative z-50">
       <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
