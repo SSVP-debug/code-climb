@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
+import AvatarDropdown from "./AvatarDropdown";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -114,30 +115,10 @@ function Navbar() {
             </div>
           )}
 
-          <div className="flex items-center gap-3">
-            {user?.photoURL ? (
-              <img
-                src={user.photoURL}
-                alt={user.displayName ?? "User"}
-                className="w-9 h-9 rounded-full border border-zinc-700"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-zinc-700 flex items-center justify-center font-bold text-sm">
-                {user?.displayName?.charAt(0)}
-              </div>
-            )}
-            <div className="hidden md:block">
-              <p className="font-semibold text-sm">{user?.displayName}</p>
-              <p className="text-zinc-400 text-xs">{user?.email}</p>
-            </div>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
-          >
-            Logout
-          </button>
+          <AvatarDropdown
+            user={user}
+            onLogout={handleLogout}
+          />
         </div>
 
         {/* Mobile: streak + avatar + hamburger */}
@@ -149,17 +130,11 @@ function Navbar() {
             </span>
           )}
 
-          {user?.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={user.displayName ?? "User"}
-              className="w-8 h-8 rounded-full border border-zinc-700"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center font-bold text-sm">
-              {user?.displayName?.charAt(0)}
-            </div>
-          )}
+          <AvatarDropdown
+            user={user}
+            onLogout={handleLogout}
+            mobile
+          />
           <button
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
