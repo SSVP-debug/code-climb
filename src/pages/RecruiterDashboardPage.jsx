@@ -68,28 +68,69 @@ function SendTestModal({ candidate, onClose, onSent }) {
 
 export default function RecruiterDashboardPage() {
   const [candidates, setCandidates] = useState([]);
-  const [total, setTotal]           = useState(0);
-  const [page, setPage]             = useState(1);
-  const [loading, setLoading]       = useState(false);
-  const [filters, setFilters]       = useState({ college: "", topic: "", minSolved: "" });
-  const [selected, setSelected]     = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "" });
+  const [selected, setSelected] = useState(null);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   async function fetchCandidates(p = 1) {
-    setLoading(true);
-    const params = new URLSearchParams({ page: p, limit: 20 });
-    if (filters.college)   params.set("college", filters.college);
-    if (filters.topic)     params.set("topic", filters.topic);
-    if (filters.minSolved) params.set("minSolved", filters.minSolved);
-    const data = await apiFetch(`/api/recruiter/candidates?${params}`);
-    setCandidates(data.candidates || []);
-    setTotal(data.total || 0);
-    setPage(p);
-    setLoading(false);
+    try {
+      setLoading(true);
+
+      const params = new URLSearchParams({
+        page: p,
+        limit: 20,
+      });
+
+      if (filters.college) params.set("college", filters.college);
+      if (filters.topic) params.set("topic", filters.topic);
+      if (filters.minSolved) params.set("minSolved", filters.minSolved);
+
+      const data = await apiFetch(`/api/recruiter/candidates?${params}`);
+
+      setCandidates(data.candidates || []);
+      setTotal(data.total || 0);
+      setPage(p);
+    } catch (err) {
+      if (
+        err.message ===
+        "Your recruiter account is pending verification."
+      ) {
+        setPendingVerification(true);
+        return;
+      }
+
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { fetchCandidates(1); }, []);
 
   function updateFilter(k, v) { setFilters(f => ({ ...f, [k]: v })); }
+
+  if (pendingVerification) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-6">
+        <div className="max-w-lg text-center">
+          <h1 className="text-3xl font-black text-white">
+            Recruiter Verification Pending
+          </h1>
+
+          <p className="mt-4 text-zinc-400">
+            Your recruiter account has been created successfully.
+          </p>
+
+          <p className="text-zinc-500">
+            Access will be enabled after an administrator verifies your account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black px-4 py-8">
@@ -159,7 +200,7 @@ export default function RecruiterDashboardPage() {
           </div>
         )}
       </div>
-      {selected && <SendTestModal candidate={selected} onClose={() => setSelected(null)} onSent={() => {}} />}
+      {selected && <SendTestModal candidate={selected} onClose={() => setSelected(null)} onSent={() => { }} />}
     </div>
   );
 }
