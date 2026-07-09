@@ -55,7 +55,12 @@ router.get("/", async (req, res) => {
     ]);
 
     return res.json({
+      user: {
+        role: req.userDoc.role,
+      },
+
       progress: progressToClient(req.userDoc),
+
       submissions: submissions.map((doc) => ({
         id: doc._id.toString(),
         problemSlug: doc.problemSlug,

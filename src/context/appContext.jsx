@@ -118,6 +118,7 @@ function AppContextProvider({ children }) {
   // the component. Value is server-authoritative: set on hydrate from API
   // response. Optimistic update in markProblemSolved is corrected by server.
   const [totalXP, setTotalXP] = useState(0);
+  const [role, setRole] = useState("student");
 
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
@@ -131,11 +132,17 @@ function AppContextProvider({ children }) {
         // Single boot call — replaces 3 sequential API calls:
         // initProgress() + getProgress() + getSubmissions()
         // One token refresh, one HTTP round-trip, parallel MongoDB queries.
-        const { progress, submissions: mongoSubmissions, _dbDown } = await apiFetch("/api/init");
+        const {
+          user: bootUser,
+          progress,
+          submissions: mongoSubmissions,
+          _dbDown,
+        } = await apiFetch("/api/init");
 
         if (_dbDown) {
           console.warn("[AppContext] Database unavailable on boot — using empty defaults.");
         }
+        setRole(bootUser?.role || "student");
 
         setSolvedProblems(
           progress.solvedSlugs || []
@@ -474,6 +481,7 @@ function AppContextProvider({ children }) {
     weeklySolved,
     weeklyGoal: 10,
     submissions,
+    role,
     totalXP,
     addSubmission,
     markProblemSolved,
