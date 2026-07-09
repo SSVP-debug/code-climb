@@ -24,7 +24,7 @@ function ReadinessGauge({ score }) {
           <circle cx="50" cy="50" r="42" fill="none" stroke="#27272a" strokeWidth="10" />
           <circle
             cx="50" cy="50" r="42" fill="none" stroke={color} strokeWidth="10"
-            strokeDasharray={`${(score/100) * 264} 264`}
+            strokeDasharray={`${(score / 100) * 264} 264`}
             strokeLinecap="round"
           />
         </svg>
@@ -110,13 +110,14 @@ function CreateAssignmentModal({ onClose, onCreated }) {
 }
 
 export default function TpoDashboardPage() {
-  const [enabled, setEnabled]       = useState(null);
-  const [dashboard, setDashboard]   = useState(null);
-  const [students, setStudents]     = useState([]);
+  const [enabled, setEnabled] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
+  const [students, setStudents] = useState([]);
   const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [tab, setTab]               = useState("overview");
-  const [showModal, setShowModal]   = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState("overview");
+  const [showModal, setShowModal] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -136,7 +137,15 @@ export default function TpoDashboardPage() {
       setDashboard(dash);
       setStudents(stu.students || []);
       setAssignments(asn.assignments || []);
-    } catch {
+    } catch (err) {
+      if (
+        err.message ===
+        "Your TPO account is pending verification."
+      ) {
+        setPendingVerification(true);
+        return;
+      }
+
       setEnabled(false);
     }
     setLoading(false);
@@ -157,6 +166,26 @@ export default function TpoDashboardPage() {
           });
       });
     });
+  }
+
+  if (pendingVerification) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-6">
+        <div className="max-w-lg text-center">
+          <h1 className="text-3xl font-black text-white">
+            College Verification Pending
+          </h1>
+
+          <p className="mt-4 text-zinc-400">
+            Your college registration request has been submitted successfully.
+          </p>
+
+          <p className="text-zinc-500">
+            Access will be enabled after an administrator verifies your institution.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
@@ -221,9 +250,8 @@ export default function TpoDashboardPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${
-                tab === t ? "bg-green-600 text-white" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
-              }`}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${tab === t ? "bg-green-600 text-white" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+                }`}
             >
               {t}
             </button>
@@ -298,9 +326,8 @@ export default function TpoDashboardPage() {
                   <div key={a._id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold text-white">{a.title}</h4>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-zinc-800 text-zinc-400"
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded-full ${a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-zinc-800 text-zinc-400"
+                        }`}>
                         Due {new Date(a.dueDate).toLocaleDateString()}
                       </span>
                     </div>
