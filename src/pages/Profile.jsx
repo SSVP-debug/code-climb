@@ -4,9 +4,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
-import { PROGRESS_KEYS } from "../constants/progressKeys";
 import { useTheme } from "../context/ThemeContext";
-import { canChangeTheme, getThemeUnlockProgress } from "../utils/themeRules";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
@@ -148,7 +146,7 @@ function Profile() {
     loadProfileInfo();
   }, []);
 
-  const { theme, themeInfo } = useTheme();
+  const { theme } = useTheme();
   const {
     solvedProblems,
     recentActivity,
@@ -156,17 +154,8 @@ function Profile() {
     currentStreak,
   } = useAppContext();
 
-  const canSwitchUniverse = canChangeTheme({
-    solvedCount: solvedProblems.length,
-    selectedAt: themeInfo?.lastChangedAt,
-  });
 
-  const unlockProgress = getThemeUnlockProgress({
-    solvedCount: solvedProblems.length,
-    selectedAt: themeInfo?.lastChangedAt,
-  });
-
-  const joinedDate = localStorage.getItem(PROGRESS_KEYS.joinedDate) || "Recently";
+  const joinedDate = user?.createdAt || "Recently";
   const recentSubmissions = submissions.slice(0, 5);
   const level = solvedProblems.length;
 
@@ -277,49 +266,7 @@ function Profile() {
           </SectionCard>
         </ContentSlot>
 
-        {/* ── 3. Current Universe ───────────────────────────────────────── */}
-        <ContentSlot id="profile-universe">
-          <SectionCard
-            title="Current Universe"
-            action={
-              <button
-                disabled={!canSwitchUniverse}
-                onClick={() => navigate("/theme-selection")}
-                className={`px-4 py-2 rounded-xl font-medium transition ${canSwitchUniverse
-                  ? "bg-green-500 text-black hover:bg-green-600"
-                  : "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                  }`}
-              >
-                {canSwitchUniverse ? "Change Universe" : "Locked"}
-              </button>
-            }
-          >
-            <div>
-              <p className="text-2xl font-bold">{theme.name}</p>
-              <p className="text-zinc-400 mt-2">{theme.description}</p>
-              <p className="text-zinc-400 mt-1">
-                Your Code Club experience is currently running in this universe.
-              </p>
-
-              <div className="text-zinc-500 text-sm mt-4">
-                <div>
-                  Selected:{" "}
-                  {themeInfo?.lastChangedAt
-                    ? new Date(themeInfo.lastChangedAt).toLocaleDateString()
-                    : "Unknown"}
-                </div>
-                {!canSwitchUniverse && (
-                  <div className="mt-2">
-                    Universe change available in:
-                    <br />{unlockProgress.problemsRemaining} more solved problems
-                    <br />OR
-                    <br />{unlockProgress.daysRemaining} more days
-                  </div>
-                )}
-              </div>
-            </div>
-          </SectionCard>
-        </ContentSlot>
+        
 
         {/* ── 4. Stats row ──────────────────────────────────────────────── */}
         {/*
