@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../../hooks/useAppContext";
 import { useTheme } from "../../context/ThemeContext";
 import confetti from "canvas-confetti";
+import { share } from "../../utils/share";
 
 function xpToLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
 
@@ -20,7 +21,7 @@ export default function LevelUpModal() {
       setNewLevel(current);
       setVisible(true);
       prevLevelRef.current = current;
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 }, colors: ["#22c55e","#facc15","#f97316","#a855f7"] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 }, colors: ["#22c55e", "#facc15", "#f97316", "#a855f7"] });
       clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => setVisible(false), 4000);
     } else {
@@ -59,7 +60,36 @@ export default function LevelUpModal() {
           {theme.words?.level ?? "Level"} {newLevel}
         </h2>
         <p className="text-zinc-400 text-sm">{messages[theme.id] ?? "Keep solving. The next level awaits."}</p>
-        <p className="text-[10px] text-zinc-600 mt-4">Click to dismiss</p>
+        <div className="mt-4 space-y-3">
+          <button
+            onClick={() =>
+              share({
+                title: "Level Up!",
+                text: `I just reached Level ${newLevel} on Code Club!`,
+                url: `${window.location.origin}/u/me`,
+              })
+            }
+            className="w-full bg-green-500 hover:bg-green-400 transition rounded-xl py-2 font-semibold text-black"
+          >
+            Share
+          </button>
+
+          <p className="text-[10px] text-zinc-600">
+            Click outside or press the card to dismiss
+          </p>
+        </div>
+        <button
+          onClick={() =>
+            share({
+              title: "Level Up!",
+              text: `I just reached Level ${newLevel} on Code Club!`,
+              url: `${window.location.origin}/u/me`,
+            })
+          }
+          className="mt-4 w-full bg-green-500 text-black rounded-xl py-2 font-semibold hover:bg-green-400 transition"
+        >
+          Share
+        </button>
       </div>
       <style>{`@keyframes levelUpPop { from{opacity:0;transform:scale(0.6) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }`}</style>
     </div>
