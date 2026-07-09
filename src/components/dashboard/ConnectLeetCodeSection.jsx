@@ -1,26 +1,25 @@
 import { useState } from "react";
 import { fetchLeetCodeStats, saveLeetCodeStats } from "../../services/leetcode";
 
+const DIFFICULTY_KEYS = ["easySolved", "mediumSolved", "hardSolved"];
+
 /**
- * Self-contained — was previously a prop-driven component with no internal
- * state or API calls (isConnected/username/etc. all came from a parent
- * that never actually existed; this component wasn't rendered anywhere).
- * Rewritten to manage its own state and talk to the real backend
- * (backend/routes/leetcode.js) directly.
- *
- * `initial` (optional) lets the parent pass down already-known values —
- * e.g. Profile.jsx can pass the user's existing leetcodeUsername/stats so
- * this doesn't need a separate fetch on mount.
+ * Connects a user's LeetCode account.
+ * Supports API sync and manual self-reported stats.
  */
 function ConnectLeetCodeSection({ initial }) {
   const [username, setUsername] = useState(initial?.username || "");
   const [stats, setStats] = useState(
+    // Keyed off username, not totalSolved — a freshly-connected user with
+    // 0 problems solved still has a real `stats` object (all zeros), not
+    // null. Falling back to totalSolved-truthiness here previously meant
+    // a connected user with 0 solves would render as "not connected."
     initial?.totalSolved
       ? {
-          easySolved: initial.easySolved || 0,
-          mediumSolved: initial.mediumSolved || 0,
-          hardSolved: initial.hardSolved || 0,
-        }
+        easySolved: initial.easySolved || 0,
+        mediumSolved: initial.mediumSolved || 0,
+        hardSolved: initial.hardSolved || 0,
+      }
       : null
   );
   const [isConnected, setIsConnected] = useState(Boolean(initial?.username));
@@ -76,7 +75,7 @@ function ConnectLeetCodeSection({ initial }) {
     }
   }
 
-  function handleDisconnect() {
+  function handleEdit() {
     setUsername("");
     setStats(null);
     setIsConnected(false);
@@ -104,7 +103,7 @@ function ConnectLeetCodeSection({ initial }) {
             </p>
           </div>
           <button
-            onClick={handleDisconnect}
+            onClick={handleEdit}
             className="flex-shrink-0 bg-zinc-700 hover:bg-zinc-600 transition px-4 py-2 rounded-lg text-sm"
           >
             Edit
@@ -117,7 +116,7 @@ function ConnectLeetCodeSection({ initial }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-zinc-400">
-        Show recruiters your LeetCode solve history alongside Code Club — sync automatically or enter your numbers.
+        Show recruiters your LeetCode solve history alongside Code Club sync automatically or enter your numbers.
       </p>
 
       <div className="flex flex-wrap gap-3">
@@ -146,10 +145,17 @@ function ConnectLeetCodeSection({ initial }) {
       {(manualMode || stats) && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
           <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
-            {manualMode ? "Enter your solved counts" : "Confirm before saving"}
+            {manualMode
+              ? "Self-reported counts"
+              : "Synced from LeetCode"}
           </p>
+          {!manualMode && (
+            <p className="text-sm text-zinc-400">
+              These values were fetched from LeetCode and cannot be edited.
+            </p>
+          )}
           <div className="grid grid-cols-3 gap-3">
-            {["easySolved", "mediumSolved", "hardSolved"].map((key) => (
+            {DIFFICULTY_KEYS.map((key) => (
               <div key={key}>
                 <label className="block text-xs text-zinc-500 mb-1 capitalize">
                   {key.replace("Solved", "")}
@@ -158,10 +164,19 @@ function ConnectLeetCodeSection({ initial }) {
                   type="number"
                   min="0"
                   value={stats?.[key] ?? 0}
-                  onChange={(e) =>
-                    setStats((s) => ({ ...(s || {}), [key]: Math.max(0, parseInt(e.target.value) || 0) }))
-                  }
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500/50"
+                  readOnly={!manualMode}
+                  onChange={(e) => {
+                    if (!manualMode) return;
+
+                    setStats((s) => ({
+                      ...(s || {}),
+                      [key]: Math.max(0, parseInt(e.target.value) || 0),
+                    }));
+                  }}
+                  className={`w-full rounded-lg px-3 py-2 text-sm outline-none ${manualMode
+                    ? "bg-zinc-800 border border-zinc-700 focus:border-green-500/50"
+                    : "bg-zinc-950 border border-zinc-800 text-zinc-400 cursor-not-allowed"
+                    }`}
                 />
               </div>
             ))}
