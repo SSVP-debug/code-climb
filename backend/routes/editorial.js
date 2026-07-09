@@ -11,6 +11,7 @@
 import { Router } from "express";
 import Problem from "../models/Problem.js";
 import { isUserPremium } from "./billing.js";
+import { requireRole } from "../middleware/roleGuard.js";
 
 const router = Router({ mergeParams: true });
 
@@ -23,7 +24,7 @@ router.get("/", async (req, res) => {
 
     // Check if user has solved this problem (userDoc populated by requireAuth)
     const solved   = req.userDoc?.solvedSlugs?.includes(slug) ?? false;
-    const isAdmin  = req.auth?.email?.endsWith("@codeclub.admin") ?? false;
+    const isAdmin = req.userDoc?.role === "admin";
     // Premium users can read any editorial without solving first — see PREMIUM_FEATURES.EDITORIAL_ACCESS
     const premium  = isUserPremium(req.userDoc);
 
@@ -52,10 +53,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireRole("admin"), async (req, res) => {
   try {
     const isAdmin = req.auth?.email?.endsWith("@codeclub.admin") ?? false;
-    if (!isAdmin) return res.status(403).json({ error: "Admin only." });
 
     const { slug }    = req.params;
     const { content } = req.body;
