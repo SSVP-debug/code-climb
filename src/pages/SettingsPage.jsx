@@ -45,11 +45,15 @@ function SettingsPage() {
                     </h2>
 
                     <button
-                        disabled
-                        className="px-4 py-2 rounded-xl bg-red-600/40 cursor-not-allowed"
+                        className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition"
+                        onClick={() => alert("Progress reset will be implemented in a future update.")}
                     >
-                        Reset Progress (Coming Soon)
+                        Reset Progress
                     </button>
+
+                    <p className="mt-3 text-sm text-zinc-500">
+                        This action will permanently delete your progress, streaks, XP, and submissions.
+                    </p>
                 </section>
 
             </div>
