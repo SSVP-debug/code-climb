@@ -17,13 +17,18 @@ function Navbar() {
     navigate("/login");
   };
 
-  const navLinks = [
+  const primaryLinks = [
     { to: "/dashboard", label: theme.words.dashboard },
-    { to: "/problems",  label: theme.words.problems },
-    { to: "/analytics", label: theme.words.analytics },
+    { to: "/problems", label: theme.words.problems },
     { to: "/leaderboard", label: "Leaderboard" },
+  ];
+
+  const secondaryLinks = [
+    { to: "/analytics", label: theme.words.analytics },
+    { to: "/contests", label: "Contests" },
+    { to: "/certifications", label: "Certifications" },
     { to: "/ambassador", label: "Ambassador" },
-    { to: "/profile",   label: theme.words.profile },
+    { to: "/recruiter/signup", label: "Recruiters" },
   ];
 
   return (
@@ -40,7 +45,7 @@ function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-6">
-          {navLinks.map((link) => (
+          {primaryLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -49,6 +54,17 @@ function Navbar() {
               {link.label}
             </Link>
           ))}
+          <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
+            {secondaryLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-sm text-zinc-400 hover:text-white transition"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
 
           {/* ── Streak pill — always visible on desktop ─────────────────── */}
           {/* Duolingo's insight: streak visibility drives daily return.     */}
@@ -118,11 +134,11 @@ function Navbar() {
           >
             {menuOpen ? (
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M4 4L16 16M16 4L4 16" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M4 4L16 16M16 4L4 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             ) : (
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 5h14M3 10h14M3 15h14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             )}
           </button>
@@ -132,7 +148,7 @@ function Navbar() {
       {/* Mobile dropdown */}
       {menuOpen && (
         <div className="lg:hidden border-t border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col gap-1">
-          {navLinks.map((link) => (
+          {[...primaryLinks, ...secondaryLinks].map((link) => (
             <Link
               key={link.to}
               to={link.to}
