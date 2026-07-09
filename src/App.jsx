@@ -36,7 +36,10 @@ const CertVerifyPage = lazy(() => import("./pages/CertVerifyPage"));
 const ContestsPage = lazy(() => import("./pages/ContestsPage"));
 const ContestDetailPage = lazy(() => import("./pages/ContestDetailPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
-
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
+const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
+const TpoDashboardPage = lazy(() => import("./pages/TpoDashboardPage"));
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
 // so there's no white flash during navigation.
@@ -122,12 +125,39 @@ function App() {
           }
         />
 
+        <Route
+          path="/tpo/signup"
+          element={
+            <ProtectedRoute>
+              <TpoSignupPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tpo/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["tpo", "admin"]}>
+                <TpoDashboardPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* ── Phase 7: Recruiter ──────────────────────────────────────── */}
         <Route path="/recruiter/signup" element={<ProtectedRoute><RecruiterSignupPage /></ProtectedRoute>} />
-        <Route path="/recruiter/dashboard" element={<ProtectedRoute>
-          <TpoDashboardPage />
-        </ProtectedRoute>} />
+        <Route
+          path="/recruiter/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["recruiter", "admin"]}>
+                <RecruiterDashboardPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
 
         {/* ── Phase 7: Candidate tests ────────────────────────────────── */}
         <Route path="/candidate/tests" element={<ProtectedRoute><CandidateTestsPage /></ProtectedRoute>} />
@@ -142,6 +172,29 @@ function App() {
 
         {/* ── Phase 8: Campus Ambassador Portal ──────────────────────── */}
         <Route path="/ambassador" element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />
+
+        {/* ── Phase 9: Pricing Page ───────────────────────────────────── */}
+        <Route
+          path="/pricing"
+          element={
+            <ProtectedRoute>
+              <ThemeGate>
+                <PricingPage />
+              </ThemeGate>
+            </ProtectedRoute>
+          }
+        />
+        {/* ── Phase 10: Interview Mode ────────────────────────────────── */}
+        <Route
+          path="/interview-mode"
+          element={
+            <ProtectedRoute>
+              <ThemeGate>
+                <InterviewModePage />
+              </ThemeGate>
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<NotFoundPage />} />
 
