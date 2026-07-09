@@ -200,6 +200,12 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
+    problemNotes: {
+      type: Map,
+      of: String,
+      default: () => new Map(),
+    },
+
 
   },
   { timestamps: true }
