@@ -12,6 +12,7 @@ import ThemeGate from "./routes/ThemeGate";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import SettingsPage from "./pages/SettingsPage";
 
 // ── Lazily loaded ──────────────────────────────────────────────────────────
 // Each lazy() call creates a separate JS chunk.
@@ -95,6 +96,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/settings" element={<SettingsPage />} />
 
         <Route
           path="/leaderboard"
