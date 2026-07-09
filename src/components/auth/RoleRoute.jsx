@@ -1,18 +1,19 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useAppContext } from "../../context/AppContext";
+import { useContext } from "react";
+import { AuthContext } from "../../context/authContext";
+import { useAppContext } from "../../hooks/useAppContext";
 
 export default function RoleRoute({ allowedRoles, children }) {
-  const { user, loading } = useAuth();
-  const { user: appUser, loading: appLoading } = useAppContext();
+  const { user, loading } = useContext(AuthContext);
+  const { role } = useAppContext();
 
-  if (loading || appLoading) return null;
+  if (loading) return null;
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!allowedRoles.includes(appUser?.role)) {
+  if (!allowedRoles.includes(role)) {
     return <Navigate to="/dashboard" replace />;
   }
 

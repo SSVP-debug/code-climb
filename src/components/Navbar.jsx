@@ -9,7 +9,7 @@ function Navbar() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
-  const { currentStreak } = useAppContext();
+  const { currentStreak, role } = useAppContext();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -17,20 +17,51 @@ function Navbar() {
     navigate("/login");
   };
 
-  const primaryLinks = [
-    { to: "/dashboard", label: theme.words.dashboard },
-    { to: "/problems", label: theme.words.problems },
-    { to: "/leaderboard", label: "Leaderboard" },
-  ];
+  const navigation = {
+    student: {
+      primary: [
+        { to: "/dashboard", label: theme.words.dashboard },
+        { to: "/problems", label: theme.words.problems },
+        { to: "/leaderboard", label: "Leaderboard" },
+      ],
+      secondary: [
+        { to: "/analytics", label: theme.words.analytics },
+        { to: "/contests", label: "Contests" },
+        { to: "/certifications", label: "Certifications" },
+        { to: "/ambassador", label: "Ambassador" },
+        { to: "/recruiter/signup", label: "Recruiters" },
+        { to: "/pricing", label: "Pricing" },
+      ],
+    },
 
-  const secondaryLinks = [
-    { to: "/analytics", label: theme.words.analytics },
-    { to: "/contests", label: "Contests" },
-    { to: "/certifications", label: "Certifications" },
-    { to: "/ambassador", label: "Ambassador" },
-    { to: "/recruiter/signup", label: "Recruiters" },
-  ];
+    recruiter: {
+      primary: [
+        { to: "/recruiter/dashboard", label: "Candidates" },
+        { to: "/candidate/tests", label: "Tests" },
+      ],
+      secondary: [
+        { to: "/profile", label: theme.words.profile },
+      ],
+    },
 
+    tpo: {
+      primary: [
+        { to: "/tpo/dashboard", label: "Dashboard" },
+      ],
+      secondary: [
+        { to: "/profile", label: theme.words.profile },
+      ],
+    },
+
+    admin: {
+      primary: [
+        { to: "/dashboard", label: "Admin" },
+      ],
+      secondary: [],
+    },
+  };
+
+  const nav = navigation[role] ?? navigation.student;
   return (
     <nav className="bg-zinc-900 text-white border-b border-zinc-800 relative z-50">
       <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
@@ -45,7 +76,7 @@ function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-6">
-          {primaryLinks.map((link) => (
+          {nav.primary.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -55,7 +86,7 @@ function Navbar() {
             </Link>
           ))}
           <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
-            {secondaryLinks.map((link) => (
+            {nav.secondary.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -148,7 +179,7 @@ function Navbar() {
       {/* Mobile dropdown */}
       {menuOpen && (
         <div className="lg:hidden border-t border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col gap-1">
-          {[...primaryLinks, ...secondaryLinks].map((link) => (
+          {[...nav.primary, ...nav.secondary].map((link) => (
             <Link
               key={link.to}
               to={link.to}

@@ -132,7 +132,6 @@ function ProblemDetailsPage() {
     if (hintLoading) return;
     setHintLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const { getIdToken } = await import("../services/auth");
       const token = await getIdToken();
       const r = await fetch(`${API_URL}/api/hints/${slug}`, {
@@ -356,8 +355,6 @@ function ProblemSolver({
   };
 
   const hasResults = !!(runResults || submitInfo);
-
-  console.log(problem);
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
