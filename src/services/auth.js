@@ -10,6 +10,15 @@ import app from "../firebase/firebase";
 const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
+export const getIdToken = async () => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  return user.getIdToken();
+};
 
 export const signInWithGoogle = async () => {
   try {
