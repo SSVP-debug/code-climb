@@ -6,43 +6,31 @@ import { requireRole } from "../middleware/roleGuard.js";
 const router = Router();
 
 router.post(
-  "/colleges/:id/approve",
+  "/recruiters/:id/approve",
   requireRole("admin"),
   async (req, res) => {
     try {
-      const college = await College.findById(req.params.id);
+      const user = await User.findById(req.params.id);
 
-      if (!college) {
-        return res.status(404).json({ error: "College not found." });
-      }
-
-      if (college.verified) {
-        return res.status(400).json({
-          error: "College already verified.",
+      if (!user || user.role !== "recruiter") {
+        return res.status(404).json({
+          error: "Recruiter not found.",
         });
       }
 
-      college.verified = true;
-      college.verifiedAt = new Date();
-      await college.save();
+      user.recruiterProfile.verified = true;
+      user.recruiterProfile.verifiedAt = new Date();
 
-      const user = await User.findById(college.adminUserId);
-
-      if (user) {
-        user.tpoProfile.verified = true;
-        user.tpoProfile.verifiedAt = new Date();
-        await user.save();
-      }
+      await user.save();
 
       return res.json({
         success: true,
       });
-    } catch (err) {
+    } catch {
       return res.status(500).json({
-        error: "Failed to approve college.",
+        error: "Failed to approve recruiter.",
       });
     }
   }
 );
-
 export default router;
