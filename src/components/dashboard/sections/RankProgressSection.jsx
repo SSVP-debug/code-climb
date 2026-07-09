@@ -6,6 +6,7 @@ import {
   getLevelProgress,
   getXPForNextLevel,
 } from "../../../utils/levelUtils";
+import StreakBadge from "../../common/StreakBadge";
 function RankProgressSection() {
   const { theme } = useTheme();
 
@@ -99,9 +100,10 @@ function RankProgressSection() {
           {xpRemaining} XP to Level {level + 1}
         </p>
 
-        <p className="text-orange-400">
-          🔥 {currentStreak} Day Streak
-        </p>
+        <StreakBadge
+          streak={currentStreak}
+          size="sm"
+        />
 
       </div>
 

@@ -5,6 +5,7 @@ import { AuthContext } from "../context/authContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
 import AvatarDropdown from "./AvatarDropdown";
+import StreakBadge from "./common/StreakBadge";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -100,20 +101,10 @@ function Navbar() {
             ))}
           </div>
 
-          {/* ── Streak pill — always visible on desktop ─────────────────── */}
-          {/* Duolingo's insight: streak visibility drives daily return.     */}
-          {currentStreak > 0 && (
-            <div
-              className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-xs font-bold"
-              title={`${currentStreak}-day streak! Keep it going.`}
-            >
-              <span className="text-sm">🔥</span>
-              <span>{currentStreak}</span>
-              <span className="text-orange-500/60 font-normal">
-                {currentStreak === 1 ? "day" : "days"}
-              </span>
-            </div>
-          )}
+          <StreakBadge
+            streak={currentStreak}
+            size="sm"
+          />
 
           <AvatarDropdown
             user={user}
@@ -123,12 +114,11 @@ function Navbar() {
 
         {/* Mobile: streak + avatar + hamburger */}
         <div className="flex lg:hidden items-center gap-3">
-          {/* Streak on mobile — compact */}
-          {currentStreak > 0 && (
-            <span className="flex items-center gap-1 text-orange-400 text-sm font-bold">
-              🔥 {currentStreak}
-            </span>
-          )}
+          <StreakBadge
+            streak={currentStreak}
+            size="sm"
+          />
+          
 
           <AvatarDropdown
             user={user}
