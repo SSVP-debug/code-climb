@@ -56,6 +56,7 @@ export const THEME_WORD_KEYS = [
     "strongestTopic",
     "weakestTopic",
     "recommendation",
+    "coachNote",
 
     "achievements",
     "noAchievements",

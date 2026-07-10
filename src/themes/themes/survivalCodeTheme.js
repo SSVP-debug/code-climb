@@ -47,6 +47,7 @@ export const survivalCodeTheme = createTheme({
     strongestTopic:       "Strongest Game",
     weakestTopic:         "Deadliest Game",
     recommendation:       "Next Game",
+    coachNote:            "Survivor's Note",
     achievements:         "Survival Records",
     noAchievements:       "No games survived yet. Step in.",
     achievementIcon:      "🦑",

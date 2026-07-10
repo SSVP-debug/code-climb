@@ -46,6 +46,7 @@ export const breakingBugTheme = createTheme({
         strongestTopic: "Strongest Formula",
         weakestTopic: "Unstable Formula",
         recommendation: "Lab Recommendation",
+        coachNote: "Notes from the Lab",
         achievements: "Research Milestones",
         noAchievements: "No research milestones unlocked yet.",
         achievementIcon: "🧪",

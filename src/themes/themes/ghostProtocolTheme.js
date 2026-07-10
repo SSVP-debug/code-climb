@@ -47,6 +47,7 @@ export const ghostProtocolTheme = createTheme({
     strongestTopic:       "Best Attack Vector",
     weakestTopic:         "Exploitable Gap",
     recommendation:       "Mission Brief",
+    coachNote:            "Handler's Note",
     achievements:         "Breach Records",
     noAchievements:       "No breaches logged yet.",
     achievementIcon:      "🔓",

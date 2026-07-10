@@ -111,7 +111,9 @@ function AIInsightsSection() {
       {/* Empty state — not enough data yet */}
       {status === "empty" && (
         <EmptyState
-          message="Solve a few problems first — your personalised insights will appear here."
+          icon="🧠"
+          title="Not enough data yet"
+          description="Solve a few problems first — your personalised insights will appear here."
           compact
         />
       )}

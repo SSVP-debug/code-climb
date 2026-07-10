@@ -12,6 +12,7 @@ import SectionCard from "../components/ui/layout/SectionCard";
 import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
 import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
+import AchievementGallery from "../components/dashboard/sections/AchievementGallery";
 
 
 // ── Integrations data ──────────────────────────────────────────────────────────
@@ -292,6 +293,15 @@ function Profile() {
               <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
             </SectionCard>
           </div>
+        </ContentSlot>
+
+        {/* ── 4b. Achievements ──────────────────────────────────────────── */}
+        {/* Fixes the Dashboard's "View All →" link (RecentAchievementCard),
+            which has always pointed here — this gallery didn't exist on this
+            page until now. Component was fully built but never imported
+            anywhere (see phase-audit findings). */}
+        <ContentSlot id="profile-achievements">
+          <AchievementGallery />
         </ContentSlot>
 
         {/* ── 5. Integrations ───────────────────────────────────────────── */}

@@ -47,6 +47,7 @@ export const codeHeistTheme = createTheme({
         strongestTopic: "Best Heist Skill",
         weakestTopic: "Security Weak Spot",
         recommendation: "Mission Brief",
+        coachNote: "Handler's Note",
         achievements: "Heist Records",
         noAchievements: "No heist records unlocked yet.",
         achievementIcon: "💰",

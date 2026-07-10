@@ -47,6 +47,7 @@ export const debugDynastyTheme = createTheme({
     strongestTopic:       "Core Competency",
     weakestTopic:         "Technical Debt",
     recommendation:       "Sprint Backlog",
+    coachNote:            "Manager's Note",
     achievements:         "Engineering Milestones",
     noAchievements:       "No milestones shipped yet. Start sprinting.",
     achievementIcon:      "🚀",

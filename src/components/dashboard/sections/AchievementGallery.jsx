@@ -22,7 +22,9 @@ function AchievementGallery() {
 
       {achievements.length === 0 ? (
         <EmptyState
-          message={theme.words.noAchievements}
+          icon={theme.words.achievementIcon}
+          title={theme.words.noAchievements}
+          description="Keep solving to unlock your first badge."
           compact
         />
       ) : (

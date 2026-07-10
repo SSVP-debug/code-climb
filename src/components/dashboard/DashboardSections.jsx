@@ -10,6 +10,12 @@ import WeeklyGoalSection from "./sections/WeeklyGoalSection";
 
 import RecentAchievementCard from "./sections/RecentAchievementCard";
 
+import AdvancedStatsSection from "./sections/AdvancedStatsSection";
+
+import AIInsightsSection from "./sections/AIInsightsSection";
+
+import PublicProfileCard from "./sections/PublicProfileCard";
+
 function DashboardSections() {
 
   return (
@@ -26,13 +32,13 @@ function DashboardSections() {
 
       <ContinueLearningSection />
 
-     {/* <AdvancedStatsSection /> */}
+      <AdvancedStatsSection />
 
-      {/*<AIInsightsSection />*/}
+      <AIInsightsSection />
 
       <RecentAchievementCard />
 
-      {/*<PublicProfileCard />*/}
+      <PublicProfileCard />
 
     </div>
 

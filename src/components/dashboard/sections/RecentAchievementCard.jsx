@@ -16,7 +16,9 @@ function RecentAchievementCard() {
         subtitle="Keep solving to unlock badges."
       >
         <EmptyState
-          message={theme.words.noAchievements}
+          icon={theme.words.achievementIcon}
+          title={theme.words.noAchievements}
+          description="Keep solving to unlock your first badge."
           compact
         />
       </SectionCard>
