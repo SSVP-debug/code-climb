@@ -20,7 +20,7 @@ import { createRequire } from "module";
 import { MONETIZATION_ENABLED, PRICING } from "../config/featureFlags.js";
 
 const require = createRequire(import.meta.url);
-const router  = Router();
+const router = Router();
 
 function getRazorpayClient() {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -29,7 +29,7 @@ function getRazorpayClient() {
   try {
     const Razorpay = require("razorpay");
     return new Razorpay({
-      key_id:     process.env.RAZORPAY_KEY_ID,
+      key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
   } catch {
@@ -53,10 +53,10 @@ router.get("/plans", (req, res) => {
   if (monetizationGate(req, res)) return;
 
   const plans = Object.entries(PRICING).map(([key, p]) => ({
-    id:           key,
-    label:        p.label,
+    id: key,
+    label: p.label,
     amountRupees: p.amountPaise / 100,
-    interval:     p.interval,
+    interval: p.interval,
   }));
 
   return res.json({ enabled: true, plans });
@@ -70,8 +70,8 @@ router.get("/subscription", async (req, res) => {
 
   return res.json({
     enabled: MONETIZATION_ENABLED,
-    plan:    sub.plan,
-    status:  sub.status,
+    plan: sub.plan,
+    status: sub.status,
     expiresAt: sub.expiresAt,
     isPremium: isUserPremium(req.userDoc),
   });
@@ -106,17 +106,17 @@ router.post("/create-order", async (req, res) => {
     }
 
     const order = await razorpay.orders.create({
-      amount:   plan.amountPaise,
+      amount: plan.amountPaise,
       currency: "INR",
-      receipt:  `cc_${req.userDoc._id}_${Date.now()}`,
-      notes:    { userId: req.userDoc._id.toString(), planId },
+      receipt: `cc_${req.userDoc._id}_${Date.now()}`,
+      notes: { userId: req.userDoc._id.toString(), planId },
     });
 
     return res.json({
-      orderId:  order.id,
-      amount:   order.amount,
+      orderId: order.id,
+      amount: order.amount,
       currency: order.currency,
-      keyId:    process.env.RAZORPAY_KEY_ID,
+      keyId: process.env.RAZORPAY_KEY_ID,
       planId,
     });
 
@@ -160,18 +160,31 @@ router.post("/verify", async (req, res) => {
 
     // ── Activate plan on user ───────────────────────────────────────────────
     const now = new Date();
-    const expiresAt = plan.durationDays
+    let expiresAt = plan.durationDays
       ? new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000)
-      : null; // lifetime plans never expire
+      : null;
+
+    const rewardDays = req.userDoc.referralRewardDays || 0;
+
+    if (expiresAt && rewardDays > 0) {
+      expiresAt = new Date(
+        expiresAt.getTime() + rewardDays * 24 * 60 * 60 * 1000
+      );
+    }
 
     req.userDoc.subscription = {
       ...req.userDoc.subscription,
-      plan:      planId,
-      status:    "active",
+      plan: planId,
+      status: "active",
       startedAt: now,
       expiresAt,
     };
     await req.userDoc.save();
+
+    if (rewardDays > 0) {
+      req.userDoc.referralRewardDays = 0;
+      await req.userDoc.save();
+    }
 
     // ── Referral reward: if this user was referred, grant referrer bonus ────
     if (req.userDoc.referredBy) {
