@@ -126,6 +126,17 @@ const userSchema = new mongoose.Schema(
       },
     },
 
+    pdfDownloadLog: {
+      month: {
+        type: String,
+        default: null,
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+    },
+
     subscription: {
       plan: { type: String, default: "free" },
       status: { type: String, enum: ["none", "active", "cancelled", "expired"], default: "none" },
