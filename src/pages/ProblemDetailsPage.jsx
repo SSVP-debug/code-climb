@@ -123,27 +123,6 @@ function ProblemDetailsPage() {
   }, [slug]);
 
 
-  // ── AI Hints ───────────────────────────────────────────────────────────────
-  const [hintLevel, setHintLevel] = useState(0);       // 0=hidden, 1/2/3=shown
-  const [hintText, setHintText] = useState("");
-  const [hintLoading, setHintLoading] = useState(false);
-
-  async function requestHint(level) {
-    if (hintLoading) return;
-    setHintLoading(true);
-    try {
-      const { getIdToken } = await import("../services/auth");
-      const token = await getIdToken();
-      const r = await fetch(`${API_URL}/api/hints/${slug}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ level }),
-      });
-      const d = await r.json();
-      if (d.hint) { setHintText(d.hint); setHintLevel(level); }
-    } catch { setHintText("Could not load hint. Try again."); }
-    setHintLoading(false);
-  }
   const prevSlug = adjacentSlugs.prev;
   const nextSlug = adjacentSlugs.next;
 
