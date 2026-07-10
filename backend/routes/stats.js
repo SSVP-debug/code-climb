@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
       submissions: submissionCount,
       // Derived — shown on landing page
       languages: 4,
-      themes: 2,
+      themes: 5,
     };
 
     cacheExpiresAt = now + CACHE_TTL_MS;
@@ -49,10 +49,10 @@ router.get("/", async (req, res) => {
     // Fallback to hardcoded minimums rather than a 500
     return res.json({
       users: 0,
-      problems: 50,
+      problems: 0,
       submissions: 0,
-      languages: 4,
-      themes: 2,
+      languages: 0,
+      themes: 0,
     });
   }
 });

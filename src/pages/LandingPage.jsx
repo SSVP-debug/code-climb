@@ -3,12 +3,11 @@ import PageMeta from "../components/seo/PageMeta";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 
-// ── Stats (fetched live from /api/stats, fallback to static) ─────────────────
 const STATIC_STATS = [
-  { key: "problems", value: "50+",   label: "DSA Problems" },
-  { key: "languages",value: "4",     label: "Languages" },
-  { key: "themes",   value: "2",     label: "Themed Universes" },
-  { key: "ai",       value: "AI",    label: "Coaching Built In" },
+  { key: "problems", value: "Growing", label: "Problem Library" },
+  { key: "languages", value: "Multiple", label: "Languages" },
+  { key: "themes", value: "Themed", label: "Universes" },
+  { key: "ai", value: "AI", label: "Coaching Built In" },
 ];
 
 function useLiveStats() {
@@ -21,13 +20,24 @@ function useLiveStats() {
       .then((data) => {
         if (!data) return;
         setStats([
-          { key: "problems",  value: data.problems > 0 ? `${data.problems}+` : "50+", label: "DSA Problems" },
-          { key: "languages", value: "4",  label: "Languages" },
-          { key: "themes",    value: "2",  label: "Themed Universes" },
-          { key: "ai",        value: "AI", label: "Coaching Built In" },
+          {
+            key: "problems",
+            value: data.problems > 0 ? `${data.problems}+` : "—",
+            label: "DSA Problems",
+          },
+          {
+            key: "languages",
+            value: data.languages > 0 ? String(data.languages) : "—",
+            label: "Languages",
+          },
+          {
+            key: "themes",
+            value: data.themes > 0 ? String(data.themes) : "—",
+            label: "Themed Universes",
+          },
         ]);
       })
-      .catch(() => {}); // fail silently — static fallback stays
+      .catch(() => { }); // fail silently — static fallback stays
   }, []);
 
   return stats;
@@ -262,7 +272,7 @@ export default function LandingPage() {
             Pick your universe. Own your grind.
           </h2>
           <p className="text-zinc-400 max-w-xl mx-auto">
-            Note just problems. Code Club has <em>worlds</em>. Same DSA 
+            Note just problems. Code Club has <em>worlds</em>. Same DSA
             completely different experience.
           </p>
         </div>
