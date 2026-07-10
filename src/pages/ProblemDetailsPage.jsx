@@ -409,6 +409,7 @@ function ProblemSolver({
                   }
                 >
                   <ProblemEditor
+                    slug={slug}
                     language={language}
                     setLanguage={handleLanguageChange}
                     code={code}
@@ -515,6 +516,7 @@ gap-3
                   }
                 >
                   <ProblemEditor
+                    slug={slug}
                     language={language}
                     setLanguage={handleLanguageChange}
                     code={code}

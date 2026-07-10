@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 
@@ -50,9 +51,12 @@ function WeeklyGoalSection() {
                 } remaining`}
           </p>
 
-          <button className="text-sm text-green-400 hover:text-green-300 transition-colors">
+          <Link
+            to="/problems"
+            className="text-sm text-green-400 hover:text-green-300 transition-colors"
+          >
             Continue →
-          </button>
+          </Link>
         </div>
       </div>
     </SectionCard>

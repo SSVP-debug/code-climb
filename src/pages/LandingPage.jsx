@@ -350,44 +350,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Competitor callout ────────────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 md:p-10">
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">LeetCode Premium</p>
-              <ul className="space-y-2 text-zinc-400">
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> ₹8,500 / year</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> Cold, corporate UI</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No India-specific features</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No gamification</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No AI coaching</li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">GeeksForGeeks</p>
-              <ul className="space-y-2 text-zinc-400">
-                <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> Free but ad-heavy</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> Cluttered, slow UI</li>
-                <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> India-focused content</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No consistency tracking</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No AI coaching</li>
-              </ul>
-            </div>
-            <div className="border border-green-500/30 bg-green-500/5 rounded-xl p-5">
-              <p className="text-xs text-green-400 uppercase tracking-widest mb-3 font-semibold">Code Club</p>
-              <ul className="space-y-2 text-zinc-300">
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Free to start</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Beautiful themed UI</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Built for Indian placements</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Streaks, XP, achievements</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> AI coaching (Claude)</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      
       {/* ── CTA ──────────────────────────────────────────────────────────── */}
       <section className="border-t border-zinc-900 bg-zinc-950/50">
         <div className="max-w-2xl mx-auto px-6 py-20 text-center">

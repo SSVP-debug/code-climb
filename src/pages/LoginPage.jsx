@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { signInWithGoogle } from "../services/auth";
+import { apiFetch } from "../services/api";
 
 function LoginPage() {
   const navigate = useNavigate();

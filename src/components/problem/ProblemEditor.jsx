@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "../../context/ThemeContext";
+import { saveCode } from "../../utils/editorStorage";
 
 function ProblemEditor({
+  slug,
   language,
   setLanguage,
   code,
@@ -41,7 +43,10 @@ function ProblemEditor({
       monaco.KeyMod.CtrlCmd |
       monaco.KeyCode.KeyS,
       () => {
-        saveCode(slug, language, code);
+        // Use editor.getValue() rather than the `code` prop — this callback
+        // is registered once on mount, so `code` would otherwise be a stale
+        // closure over whatever it was when Monaco first mounted.
+        saveCode(slug, language, editor.getValue());
       }
     );
     editor.addCommand(

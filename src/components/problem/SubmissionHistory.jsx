@@ -1,5 +1,5 @@
 import React from "react";
-import { formatRuntime } from "../../utils/formatters";
+import { formatRuntime, formatDate } from "../../utils/formatters";
 import { getStatusColor } from "../../utils/statusStyles";
 
 function SubmissionHistory({ submissions, onSelectSubmission }) {
@@ -45,15 +45,16 @@ function SubmissionHistory({ submissions, onSelectSubmission }) {
                   <span className="text-zinc-600">Passed:</span>
                   <span className="text-zinc-200">{submission.passed}/{submission.total}</span>
                 </div>
-                {formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))) && (
+                {submission.executionTime != null && (
                   <div className="flex items-center gap-1.5">
                     <span className="text-zinc-600">Time:</span>
-                    <span className="text-zinc-200">{formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime))))))}ms</span>
+                    {/* formatRuntime already appends its own unit (ms/s) — call once, no trailing suffix */}
+                    <span className="text-zinc-200">{formatRuntime(submission.executionTime)}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
                   <span className="text-zinc-600">Date:</span>
-                  <span className="text-zinc-500">{submission.date || (submission.createdAt ? new Date(submission.createdAt).formatDate() : 'N/A')}</span>
+                  <span className="text-zinc-500">{submission.date || (submission.createdAt ? formatDate(submission.createdAt) : 'N/A')}</span>
                 </div>
               </div>
             </div>
