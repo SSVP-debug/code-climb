@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export async function share({ title, text, url }) {
   if (navigator.share) {
     try {
@@ -10,5 +12,5 @@ export async function share({ title, text, url }) {
 
   await navigator.clipboard.writeText(url);
 
-  alert("Link copied to clipboard.");
+  toast.success("Link copied to clipboard.");
 }

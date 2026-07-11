@@ -6,6 +6,8 @@ import ActivityHeatmap
 import {
     ACHIEVEMENT_METADATA,
 } from "../config/achievementMetadata";
+import { SITE_URL } from "../config/site.js";
+import LinkedInShareButton from "../components/common/LinkedInShareButton";
 
 function PublicProfile() {
     const { username } = useParams();
@@ -64,19 +66,32 @@ function PublicProfile() {
 
     return (
         <div className="min-h-screen bg-black text-white">
+        <PageMeta
+            title={`${profile.displayName || profile.username} · Code Club Profile`}
+            description={`Level ${profile.level} · ${profile.solvedCount} problems solved · ${profile.currentStreak} day streak on Code Club.`}
+            path={`/u/${profile.username}`}
+        />
         <div className="max-w-4xl mx-auto p-8">
 
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
 
                 {/* Header */}
 
-                <h1 className="text-4xl font-bold">
-                    {profile.displayName}
-                </h1>
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                        <h1 className="text-4xl font-bold">
+                            {profile.displayName}
+                        </h1>
 
-                <p className="text-zinc-400 mt-2">
-                    @{profile.username}
-                </p>
+                        <p className="text-zinc-400 mt-2">
+                            @{profile.username}
+                        </p>
+                    </div>
+
+                    <LinkedInShareButton
+                        url={`${SITE_URL}/u/${profile.username}`}
+                    />
+                </div>
 
                 {/* Stats */}
 

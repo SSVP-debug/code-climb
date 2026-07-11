@@ -1,5 +1,6 @@
 import React from "react";
 import HintSystem from "./HintSystem.jsx";
+import EditorialPanel from "./EditorialPanel.jsx";
 import RelatedProblems from "./RelatedProblems.jsx";
 
 function ProblemInfo({ problem }) {
@@ -80,6 +81,9 @@ function ProblemInfo({ problem }) {
 
       {/* Progressive hints */}
       <HintSystem hints={problem.hints} />
+
+      {/* Editorial — full write-up, gated behind solve-to-unlock/premium */}
+      <EditorialPanel slug={problem.slug} />
 
       {/* Related problems */}
       <RelatedProblems

@@ -20,7 +20,12 @@ export const getProblems = async (req, res) => {
       CACHE_TTL_SECONDS,
       async () =>
         Problem.find({})
-          .select("-hiddentestcases")
+          // editorial.content is gated (solve-to-unlock / premium — see
+          // backend/routes/editorial.js) and must only ever be served through
+          // that dedicated, gated endpoint. Excluding it here too, not just
+          // hiddentestcases — otherwise every user gets the full editorial
+          // for free on every problem-list load, bypassing the gate entirely.
+          .select("-hiddentestcases -editorial.content")
           .sort({ id: 1 })
           .lean()
     );
@@ -43,7 +48,9 @@ export const getProblemBySlug = async (req, res) => {
     const problem = await Problem.findOne({
       slug,
     })
-      .select("-hiddentestcases")
+      // Same reasoning as getProblems above — editorial.content must only
+      // come from the gated GET /api/problems/:slug/editorial endpoint.
+      .select("-hiddentestcases -editorial.content")
       .lean();
 
     if (!problem) {
