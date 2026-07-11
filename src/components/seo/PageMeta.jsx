@@ -19,9 +19,9 @@
  */
 
 import { Helmet } from "react-helmet-async";
+import { SITE_URL } from "../../config/site.js";
 
-const BASE_URL = "https://code-club-one.vercel.app"; // update when custom domain set
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-default.png`; // add this asset later
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`; // add this asset later
 
 export default function PageMeta({
   title = "Code Club — DSA Practice for Placement Season",
@@ -30,7 +30,7 @@ export default function PageMeta({
   image = DEFAULT_OG_IMAGE,
   type = "website",
 }) {
-  const url = `${BASE_URL}${path}`;
+  const url = `${SITE_URL}${path}`;
 
   return (
     <Helmet>

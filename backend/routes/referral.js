@@ -1,20 +1,8 @@
-/**
- * Referral system — give 7 days premium, get 7 days premium.
- *
- * GET  /api/referral/my-code      — get (or generate) the user's referral code
- * POST /api/referral/apply        — apply a referral code (during signup/onboarding)
- * GET  /api/referral/stats        — see how many people you've referred + days earned
- *
- * Reward logic: when a referred user makes their FIRST purchase (any plan),
- * the referrer gets +7 days added to subscription.expiresAt (handled in
- * billing.js /verify route already — see referredBy logic there).
- *
- * This route handles code generation + application only.
- */
 import { Router } from "express";
 import crypto from "crypto";
 import User from "../models/User.js";
 import { REFERRAL_REWARD_DAYS } from "../config/featureFlags.js";
+import { SITE_URL } from "../config/site.js";
 
 const router = Router();
 
@@ -50,7 +38,7 @@ router.get("/my-code", async (req, res) => {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
     const code = await getOrCreateReferralCode(req.userDoc);
-    const shareUrl = `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/login?ref=${code}`;
+    const shareUrl = `${SITE_URL}/login?ref=${code}`;
 
     return res.json({
       code,

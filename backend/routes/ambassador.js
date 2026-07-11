@@ -23,6 +23,7 @@ import User from "../models/User.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { getOrCreateReferralCode } from "./referral.js";
 import { AMBASSADOR_MILESTONES } from "../config/ambassadorMilestones.js";
+import { SITE_URL } from "../config/site.js";
 
 const router = Router();
 
@@ -117,7 +118,7 @@ router.get("/dashboard", async (req, res) => {
     return res.json({
       collegeName: application.collegeName,
       referralCode: code,
-      shareUrl: `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/login?ref=${code}`,
+      shareUrl: `${SITE_URL}/login?ref=${code}`,
       referredCount,
       rewardDaysEarned: req.userDoc.referralRewardDays || 0,
       milestones,

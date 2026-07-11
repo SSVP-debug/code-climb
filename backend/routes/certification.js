@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { createRequire } from "module";
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
+import { SITE_URL } from "../config/site.js";
 
 const router  = Router();
 const require = createRequire(import.meta.url);
@@ -136,7 +137,7 @@ router.get("/:code/pdf", async (req, res) => {
     if (!user) return res.status(404).json({ error: "Certificate not found." });
     const cert = user.certificates.find(c => c.verifyCode === req.params.code);
 
-    const verifyUrl = `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/verify/${cert.verifyCode}`;
+    const verifyUrl = `${SITE_URL}/verify/${cert.verifyCode}`;
     const qrBuffer = await QRCode.toBuffer(verifyUrl, { width: 120, margin: 1 });
 
     const doc = new PDFDocument({ size: "A4", margin: 60 });

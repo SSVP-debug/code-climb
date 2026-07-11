@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
+import { SUPPORT_EMAIL } from "../config/site.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -204,7 +205,7 @@ export default function TpoDashboardPage() {
           <h1 className="text-2xl font-bold text-white mb-3">College Dashboard Coming Soon</h1>
           <p className="text-zinc-400 text-sm">
             We're rolling out the College Admin dashboard gradually. Reach out to
-            hello@codeclub.in to get early access for your institution.
+            {" "}{SUPPORT_EMAIL} to get early access for your institution.
           </p>
         </div>
       </div>

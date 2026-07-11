@@ -48,21 +48,22 @@ function PublicProfile() {
 
     if (loading) {
         return (
-            <div className="p-10">
-                Loading profile...
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-10 text-red-500">
-                {error}
+            <div className="min-h-screen bg-black flex items-center justify-center p-10">
+                <p className="text-red-500">{error}</p>
             </div>
         );
     }
 
     return (
+        <div className="min-h-screen bg-black text-white">
         <div className="max-w-4xl mx-auto p-8">
 
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
@@ -410,6 +411,7 @@ function PublicProfile() {
 
             </div>
 
+        </div>
         </div>
     );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { SITE_DOMAIN } from "../config/site.js";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -40,7 +41,7 @@ export default function CertVerifyPage() {
           <p className="text-zinc-500 text-sm mt-2">{result?.error || "This certificate could not be verified."}</p>
         )}
         <a href="/" className="inline-block mt-6 text-xs text-zinc-600 hover:text-zinc-400 transition">
-          codeclub.in
+          {SITE_DOMAIN}
         </a>
       </div>
     </div>

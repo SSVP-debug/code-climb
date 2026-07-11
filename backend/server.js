@@ -59,6 +59,7 @@ import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
 import billingRoutes from "./routes/billing.js";
 import interviewRoutes from "./routes/interview.js";
 import adminRoutes from "./routes/admin.js";
+import { SITE_URL } from "./config/site.js";
 
 if (process.env.NODE_ENV !== "production") {
   mongoose.set("strict", "throw");
@@ -69,9 +70,13 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://code-club-one.vercel.app",
-  process.env.FRONTEND_URL,
-].filter(Boolean); // removes undefined if FRONTEND_URL is not set
+  "https://code-club-one.vercel.app", // kept explicitly — Vercel's own domain
+  // stays live alongside a custom domain, so don't drop it once FRONTEND_URL
+  // points elsewhere.
+  SITE_URL,
+].filter(
+  (origin, index, all) => Boolean(origin) && all.indexOf(origin) === index
+); // de-dupes in case SITE_URL resolves to the same vercel URL above
 
 app.use(
   helmet()

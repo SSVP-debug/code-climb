@@ -45,10 +45,11 @@ import { logger } from "../config/logger.js";
 import { getResendClient, getFromAddress } from "../config/resend.js";
 import { callClaudeJSON } from "../utils/anthropicClient.js";
 import { buildWeeklyReviewEmail } from "../utils/weeklyReviewEmailTemplate.js";
+import { SITE_URL } from "../config/site.js";
 
 const DRY_RUN = process.argv.includes("--dry-run");
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-const DASHBOARD_URL = `${process.env.FRONTEND_URL || "https://code-club-one.vercel.app"}/dashboard`;
+const DASHBOARD_URL = `${SITE_URL}/dashboard`;
 
 const slugToTopic = new Map(problems.map((p) => [p.slug, p.topic]));
 
