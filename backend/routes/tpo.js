@@ -17,11 +17,31 @@ import { requireRole } from "../middleware/roleGuard.js";
 import College from "../models/College.js";
 import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
+import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
 
 const require = createRequire(import.meta.url);
 
 
 const router = Router();
+
+// Full-college scans (/students, /dashboard) are the most expensive queries
+// in this file — every request re-reads every student row for the domain.
+// Cached per-domain via the shared Redis-backed helper so multiple Railway
+// instances agree, same pattern as leaderboard.js.
+const TPO_CACHE_PREFIX = "tpo:";
+const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
+
+/**
+ * Invalidate a college's cached TPO views. Called from progressController
+ * whenever a student's XP/solved/streak changes, keyed off their email
+ * domain. Fire-and-forget by design — same as the leaderboard/profile
+ * invalidation it sits alongside.
+ */
+export async function invalidateTpoCache(domain) {
+  if (!domain) return;
+  await invalidateCachePrefix(`${TPO_CACHE_PREFIX}students:${domain}`);
+  await invalidateCachePrefix(`${TPO_CACHE_PREFIX}dashboard:${domain}`);
+}
 
 function b2bGate(req, res) {
   if (!B2B_ENABLED) {
@@ -120,25 +140,32 @@ router.get("/students", requireRole("tpo", "admin"),
       const domain = req.userDoc.tpoProfile?.collegeDomain;
       if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
 
-      const students = await User.find({
-        email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-        role: "student",
-      })
-        .select("displayName email totalXP solvedSlugs currentStreak solvedDifficulty topicStats joinedDate")
-        .lean();
+      const { value: formatted, cacheStatus } = await getOrSetCache(
+        `${TPO_CACHE_PREFIX}students:${domain}`,
+        TPO_CACHE_TTL_SECONDS,
+        async () => {
+          const students = await User.find({
+            email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+            role: "student",
+          })
+            .select("displayName email totalXP solvedSlugs currentStreak solvedDifficulty topicStats joinedDate")
+            .lean();
 
-      const formatted = students.map(s => ({
-        name: s.displayName,
-        email: s.email,
-        totalXP: s.totalXP || 0,
-        solvedCount: s.solvedSlugs?.length ?? 0,
-        currentStreak: s.currentStreak || 0,
-        easy: s.solvedDifficulty?.easy || 0,
-        medium: s.solvedDifficulty?.medium || 0,
-        hard: s.solvedDifficulty?.hard || 0,
-        joinedDate: s.joinedDate,
-      }));
+          return students.map(s => ({
+            name: s.displayName,
+            email: s.email,
+            totalXP: s.totalXP || 0,
+            solvedCount: s.solvedSlugs?.length ?? 0,
+            currentStreak: s.currentStreak || 0,
+            easy: s.solvedDifficulty?.easy || 0,
+            medium: s.solvedDifficulty?.medium || 0,
+            hard: s.solvedDifficulty?.hard || 0,
+            joinedDate: s.joinedDate,
+          }));
+        }
+      );
 
+      res.set("X-Cache", cacheStatus);
       return res.json({
         college: req.userDoc.tpoProfile?.collegeName,
         domain,
@@ -165,70 +192,79 @@ router.get("/dashboard", requireRole("tpo", "admin"),
       const domain = req.userDoc.tpoProfile?.collegeDomain;
       if (!domain) return res.status(400).json({ error: "No college domain set." });
 
-      const students = await User.find({
-        email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-        role: "student",
-      })
-        .select("solvedSlugs solvedDifficulty topicStats currentStreak totalXP")
-        .lean();
+      const { value: dashboard, cacheStatus } = await getOrSetCache(
+        `${TPO_CACHE_PREFIX}dashboard:${domain}`,
+        TPO_CACHE_TTL_SECONDS,
+        async () => {
+          const students = await User.find({
+            email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+            role: "student",
+          })
+            .select("solvedSlugs solvedDifficulty topicStats currentStreak totalXP")
+            .lean();
 
-      const totalStudents = students.length;
+          const totalStudents = students.length;
 
-      if (totalStudents === 0) {
-        return res.json({
-          college: req.userDoc.tpoProfile?.collegeName,
-          domain,
-          totalStudents: 0,
-          message: "No students from your college have joined Code Club yet.",
-        });
-      }
+          if (totalStudents === 0) {
+            return { totalStudents: 0, message: "No students from your college have joined Code Club yet." };
+          }
 
-      // ── Aggregate stats ────────────────────────────────────────────────────
-      let totalSolved = 0, totalEasy = 0, totalMedium = 0, totalHard = 0;
-      let activeThisWeek = 0; // streak > 0
-      const topicTotals = {};
+          // ── Aggregate stats ────────────────────────────────────────────────
+          let totalSolved = 0, totalEasy = 0, totalMedium = 0, totalHard = 0;
+          let activeThisWeek = 0; // streak > 0
+          const topicTotals = {};
 
-      students.forEach(s => {
-        const solved = s.solvedSlugs?.length ?? 0;
-        totalSolved += solved;
-        totalEasy += s.solvedDifficulty?.easy ?? 0;
-        totalMedium += s.solvedDifficulty?.medium ?? 0;
-        totalHard += s.solvedDifficulty?.hard ?? 0;
-        if ((s.currentStreak ?? 0) > 0) activeThisWeek++;
+          students.forEach(s => {
+            const solved = s.solvedSlugs?.length ?? 0;
+            totalSolved += solved;
+            totalEasy += s.solvedDifficulty?.easy ?? 0;
+            totalMedium += s.solvedDifficulty?.medium ?? 0;
+            totalHard += s.solvedDifficulty?.hard ?? 0;
+            if ((s.currentStreak ?? 0) > 0) activeThisWeek++;
 
-        const topics = s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {});
-        Object.entries(topics).forEach(([topic, count]) => {
-          topicTotals[topic] = (topicTotals[topic] || 0) + count;
-        });
-      });
+            const topics = s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {});
+            Object.entries(topics).forEach(([topic, count]) => {
+              topicTotals[topic] = (topicTotals[topic] || 0) + count;
+            });
+          });
 
-      const avgSolved = Math.round((totalSolved / totalStudents) * 10) / 10;
+          const avgSolved = Math.round((totalSolved / totalStudents) * 10) / 10;
 
-      // ── Placement Readiness Score (0-100) ──────────────────────────────────
-      // Heuristic: weighted combination of average solves, hard-problem coverage,
-      // and active engagement. This is the #1 number a TPO will look at.
-      const solveScore = Math.min(40, (avgSolved / 100) * 40);           // up to 40 pts for solving 100+ avg
-      const hardScore = Math.min(30, ((totalHard / totalStudents) / 20) * 30); // up to 30 pts for 20+ hard avg
-      const engagementScore = Math.min(30, (activeThisWeek / totalStudents) * 30);  // up to 30 pts for active streaks
-      const readinessScore = Math.round(solveScore + hardScore + engagementScore);
+          // ── Placement Readiness Score (0-100) ────────────────────────────────
+          // Heuristic: weighted combination of average solves, hard-problem coverage,
+          // and active engagement. This is the #1 number a TPO will look at.
+          const solveScore = Math.min(40, (avgSolved / 100) * 40);           // up to 40 pts for solving 100+ avg
+          const hardScore = Math.min(30, ((totalHard / totalStudents) / 20) * 30); // up to 30 pts for 20+ hard avg
+          const engagementScore = Math.min(30, (activeThisWeek / totalStudents) * 30);  // up to 30 pts for active streaks
+          const readinessScore = Math.round(solveScore + hardScore + engagementScore);
 
-      // Topic coverage — sorted by total solves across the class
-      const topicCoverage = Object.entries(topicTotals)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([topic, count]) => ({ topic, totalSolves: count }));
+          // Topic coverage — sorted by total solves across the class
+          const topicCoverage = Object.entries(topicTotals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([topic, count]) => ({ topic, totalSolves: count }));
 
+          return {
+            totalStudents,
+            avgSolved,
+            totalSolved,
+            difficultyBreakdown: { easy: totalEasy, medium: totalMedium, hard: totalHard },
+            activeThisWeek,
+            activePercent: Math.round((activeThisWeek / totalStudents) * 100),
+            readinessScore,
+            topicCoverage,
+          };
+        }
+      );
+
+      res.set("X-Cache", cacheStatus);
+      // college/domain come from the live req.userDoc, not the cached payload,
+      // since they're cheap to read and shouldn't go stale even if the
+      // aggregate numbers do for a couple minutes.
       return res.json({
-        college: req.userDoc.collegeName,
+        college: req.userDoc.tpoProfile?.collegeName,
         domain,
-        totalStudents,
-        avgSolved,
-        totalSolved,
-        difficultyBreakdown: { easy: totalEasy, medium: totalMedium, hard: totalHard },
-        activeThisWeek,
-        activePercent: Math.round((activeThisWeek / totalStudents) * 100),
-        readinessScore,
-        topicCoverage,
+        ...dashboard,
       });
 
     } catch (err) {

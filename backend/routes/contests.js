@@ -17,6 +17,7 @@ import crypto from "crypto";
 import Contest from "../models/Contest.js";
 import Problem from "../models/Problem.js";
 import { requireRole } from "../middleware/roleGuard.js";
+import { getOrSetCache } from "../utils/cache.js";
 
 const router = Router();
 
@@ -40,25 +41,36 @@ router.get("/", async (req, res) => {
     const { status = "active,upcoming", type = "public" } = req.query;
     const statuses = status.split(",");
 
-    const contests = await Contest.find({
-      type: type === "all" ? { $in: ["public","private"] } : type,
-      status: { $in: statuses },
-    })
-      .select("title description type status startsAt endsAt problemSlugs participants createdBy")
-      .sort({ startsAt: 1 })
-      .limit(50)
-      .lean();
+    // Short TTL: contest status/participant counts change as people join,
+    // but this is a browse/list page, not a leaderboard — 30s staleness is
+    // fine and avoids re-querying on every page load during rush periods.
+    const cacheKey = `contests:list:${status}:${type}`;
+    const { value: result, cacheStatus } = await getOrSetCache(
+      cacheKey,
+      30,
+      async () => {
+        const contests = await Contest.find({
+          type: type === "all" ? { $in: ["public","private"] } : type,
+          status: { $in: statuses },
+        })
+          .select("title description type status startsAt endsAt problemSlugs participants createdBy")
+          .sort({ startsAt: 1 })
+          .limit(50)
+          .lean();
 
-    // Sync status based on current time
-    const now = new Date();
-    const result = contests.map(c => ({
-      ...c,
-      participantCount: c.participants?.length ?? 0,
-      problemCount:     c.problemSlugs?.length ?? 0,
-      participants:     undefined, // don't leak full participant list in index
-      isActive:         now >= new Date(c.startsAt) && now <= new Date(c.endsAt),
-    }));
+        // Sync status based on current time
+        const now = new Date();
+        return contests.map(c => ({
+          ...c,
+          participantCount: c.participants?.length ?? 0,
+          problemCount:     c.problemSlugs?.length ?? 0,
+          participants:     undefined, // don't leak full participant list in index
+          isActive:         now >= new Date(c.startsAt) && now <= new Date(c.endsAt),
+        }));
+      }
+    );
 
+    res.set("X-Cache", cacheStatus);
     return res.json({ contests: result });
   } catch (err) {
     return res.status(500).json({ error: "Failed to load contests." });

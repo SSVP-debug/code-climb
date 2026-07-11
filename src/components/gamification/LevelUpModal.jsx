@@ -3,19 +3,18 @@ import { useAppContext } from "../../hooks/useAppContext";
 import { useTheme } from "../../context/ThemeContext";
 import confetti from "canvas-confetti";
 import { share } from "../../utils/share";
-
-function xpToLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
+import { getLevel } from "../../utils/levelUtils";
 
 export default function LevelUpModal() {
   const { totalXP } = useAppContext();
   const { theme } = useTheme();
   const [visible, setVisible] = useState(false);
   const [newLevel, setNewLevel] = useState(null);
-  const prevLevelRef = useRef(xpToLevel(totalXP));
+  const prevLevelRef = useRef(getLevel(totalXP));
   const timerRef = useRef(null);
 
   useEffect(() => {
-    const current = xpToLevel(totalXP);
+    const current = getLevel(totalXP);
     const prev = prevLevelRef.current;
     if (current > prev && prev > 1) {
       setNewLevel(current);
@@ -78,18 +77,6 @@ export default function LevelUpModal() {
             Click outside or press the card to dismiss
           </p>
         </div>
-        <button
-          onClick={() =>
-            share({
-              title: "Level Up!",
-              text: `I just reached Level ${newLevel} on Code Club!`,
-              url: `${window.location.origin}/u/me`,
-            })
-          }
-          className="mt-4 w-full bg-green-500 text-black rounded-xl py-2 font-semibold hover:bg-green-400 transition"
-        >
-          Share
-        </button>
       </div>
       <style>{`@keyframes levelUpPop { from{opacity:0;transform:scale(0.6) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }`}</style>
     </div>

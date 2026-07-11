@@ -1,6 +1,5 @@
 import { ACHIEVEMENTS } from "../config/achievements.js";
-
-function xpToLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
+import { getLevel } from "../utils/xpLevel.js";
 
 export function evaluateAchievements(user) {
   const unlocked  = [];
@@ -11,7 +10,7 @@ export function evaluateAchievements(user) {
   const hard      = user.solvedDifficulty?.hard    ?? 0;
   const streak    = user.currentStreak ?? 0;
   const xp        = user.totalXP ?? 0;
-  const level     = xpToLevel(xp);
+  const level     = getLevel(xp);
   const topicMap  = user.topicStats instanceof Map
     ? Object.fromEntries(user.topicStats)
     : (user.topicStats ?? {});

@@ -20,11 +20,10 @@ import { createRequire } from "module";
 import { isUserPremium } from "./billing.js";
 import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 import { SITE_URL } from "../config/site.js";
+import { getLevel } from "../utils/xpLevel.js";
 
 const require = createRequire(import.meta.url);
 const router  = Router();
-
-function xpToLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
 
 router.get("/", async (req, res) => {
   let PDFDocument;
@@ -58,7 +57,7 @@ router.get("/", async (req, res) => {
       await user.save();
     }
 
-    const level        = xpToLevel(user.totalXP || 0);
+    const level        = getLevel(user.totalXP || 0);
     const solved       = user.solvedSlugs?.length ?? 0;
     const easy         = user.solvedDifficulty?.easy   ?? 0;
     const medium       = user.solvedDifficulty?.medium ?? 0;

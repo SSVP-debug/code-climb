@@ -75,7 +75,7 @@ function RankProgressSection() {
             {totalXP} XP
           </p>
           <p className="text-xs text-green-400 mt-1">
-            {progress.toFixed(0)}% to Level {level + 1}
+            {progress.percent}% to Level {level + 1}
           </p>
         </div>
 
@@ -85,7 +85,7 @@ function RankProgressSection() {
         <div
           className="bg-green-500 h-full rounded-full transition-all duration-700"
           style={{
-            width: `${progress}%`,
+            width: `${progress.percent}%`,
           }}
         />
       </div>

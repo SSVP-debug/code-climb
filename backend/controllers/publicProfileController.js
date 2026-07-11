@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Submission from "../models/Submission.js";
 import { getOrSetCache, invalidateCache } from "../utils/cache.js";
+import { getLevel } from "../utils/xpLevel.js";
 
 // Shorter TTL than problems/leaderboard (2 min vs 5 min) — this endpoint is
 // what recruiters and "share my profile" links hit, and a user who just
@@ -59,7 +60,7 @@ async function fetchProfile(username) {
   if (!user) return null;
   if (!user.isProfilePublic) return { private: true, data: null };
 
-  const level = Math.floor((user.totalXP || 0) / 100) + 1;
+  const level = getLevel(user.totalXP || 0);
 
   // ── Language breakdown — from accepted submissions ─────────────────────
   // Count accepted submissions per language.

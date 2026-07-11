@@ -17,8 +17,19 @@ import Problem from "../models/Problem.js";
 import SkillsTest from "../models/SkillsTest.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireVerified } from "../middleware/requireVerified.js";
+import { getOrSetCache } from "../utils/cache.js";
+import { getLevel } from "../utils/xpLevel.js";
 
 const router = Router();
+
+// Candidate search has many distinct filter/page combinations, so we cache
+// per exact query string rather than per prefix. TTL is short (60s) and we
+// deliberately don't do active invalidation on student progress updates —
+// with this many possible query keys, prefix-invalidating on every solve
+// would thrash the cache for little benefit. A recruiter browsing/paging
+// results tolerates ~60s staleness fine; this is a search UX, not a
+// pass/fail decision surface.
+const CANDIDATES_CACHE_TTL_SECONDS = 60;
 
 // ── 083: POST /api/recruiter/register ────────────────────────────────────────
 router.post("/register", async (req, res) => {
@@ -100,41 +111,52 @@ router.get(
       const limitNum = Math.min(50, parseInt(limit));
       const skip = (pageNum - 1) * limitNum;
 
-      const [students, total] = await Promise.all([
-        User.find(filter)
-          .select("username displayName email totalXP solvedSlugs solvedDifficulty topicStats currentStreak joinedDate profileSignature")
-          .sort({ totalXP: -1 })
-          .skip(skip)
-          .limit(limitNum)
-          .lean(),
-        User.countDocuments(filter),
-      ]);
+      const cacheKey = `recruiter:candidates:${JSON.stringify({ college, topic, minSolved, maxSolved, language, pageNum, limitNum })}`;
 
-      // Apply solvedCount range filter (can't do in Mongo easily without $expr)
-      const filtered = students.filter(s => {
-        const count = s.solvedSlugs?.length ?? 0;
-        return count >= parseInt(minSolved) && count <= parseInt(maxSolved);
-      });
+      const { value: payload, cacheStatus } = await getOrSetCache(
+        cacheKey,
+        CANDIDATES_CACHE_TTL_SECONDS,
+        async () => {
+          const [students, total] = await Promise.all([
+            User.find(filter)
+              .select("username displayName email totalXP solvedSlugs solvedDifficulty topicStats currentStreak joinedDate profileSignature")
+              .sort({ totalXP: -1 })
+              .skip(skip)
+              .limit(limitNum)
+              .lean(),
+            User.countDocuments(filter),
+          ]);
 
-      // Apply language filter via profileSignature or topicStats (best-effort)
-      const result = filtered.map(s => ({
-        username: s.username,
-        displayName: s.displayName,
-        college: s.email?.split("@")[1] || null,
-        totalXP: s.totalXP || 0,
-        level: Math.floor((s.totalXP || 0) / 100) + 1,
-        solvedCount: s.solvedSlugs?.length ?? 0,
-        easy: s.solvedDifficulty?.easy || 0,
-        medium: s.solvedDifficulty?.medium || 0,
-        hard: s.solvedDifficulty?.hard || 0,
-        currentStreak: s.currentStreak || 0,
-        topTopics: Object.entries(s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {}))
-          .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t]) => t),
-        isVerified: !!s.profileSignature?.hash,
-        profileUrl: `/u/${s.username}`,
-      }));
+          // Apply solvedCount range filter (can't do in Mongo easily without $expr)
+          const filtered = students.filter(s => {
+            const count = s.solvedSlugs?.length ?? 0;
+            return count >= parseInt(minSolved) && count <= parseInt(maxSolved);
+          });
 
-      return res.json({ candidates: result, total, page: pageNum, limit: limitNum });
+          // Apply language filter via profileSignature or topicStats (best-effort)
+          const result = filtered.map(s => ({
+            username: s.username,
+            displayName: s.displayName,
+            college: s.email?.split("@")[1] || null,
+            totalXP: s.totalXP || 0,
+            level: getLevel(s.totalXP || 0),
+            solvedCount: s.solvedSlugs?.length ?? 0,
+            easy: s.solvedDifficulty?.easy || 0,
+            medium: s.solvedDifficulty?.medium || 0,
+            hard: s.solvedDifficulty?.hard || 0,
+            currentStreak: s.currentStreak || 0,
+            topTopics: Object.entries(s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {}))
+              .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t]) => t),
+            isVerified: !!s.profileSignature?.hash,
+            profileUrl: `/u/${s.username}`,
+          }));
+
+          return { candidates: result, total, page: pageNum, limit: limitNum };
+        }
+      );
+
+      res.set("X-Cache", cacheStatus);
+      return res.json(payload);
     } catch (err) {
       console.error("[Recruiter] candidates:", err.message);
       return res.status(500).json({ error: "Failed to search candidates." });

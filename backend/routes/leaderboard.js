@@ -11,6 +11,7 @@
 import { Router } from "express";
 import User from "../models/User.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
+import { getLevel } from "../utils/xpLevel.js";
 
 const router = Router();
 
@@ -41,7 +42,7 @@ router.get("/global", async (req, res) => {
           username:       u.username || u.displayName?.toLowerCase().replace(/\s+/g, "_") || "anonymous",
           displayName:    u.displayName || "Anonymous",
           totalXP:        u.totalXP || 0,
-          level:          Math.floor((u.totalXP || 0) / 100) + 1,
+          level:          getLevel(u.totalXP || 0),
           solvedCount:    u.solvedSlugs?.length ?? 0,
           currentStreak:  u.currentStreak || 0,
           easy:           u.solvedDifficulty?.easy   || 0,
@@ -89,7 +90,7 @@ router.get("/college", async (req, res) => {
           username:      u.username || "anonymous",
           displayName:   u.displayName || "Anonymous",
           totalXP:       u.totalXP || 0,
-          level:         Math.floor((u.totalXP || 0) / 100) + 1,
+          level:         getLevel(u.totalXP || 0),
           solvedCount:   u.solvedSlugs?.length ?? 0,
           currentStreak: u.currentStreak || 0,
           easy:          u.solvedDifficulty?.easy   || 0,

@@ -4,6 +4,7 @@ import { computeXPFromSlugs, buildDifficultyMap, XP_BY_DIFFICULTY } from "../uti
 import Problem from "../models/Problem.js";
 import { invalidateLeaderboardCaches } from "../routes/leaderboard.js";
 import { invalidateProfileCache } from "./publicProfileController.js";
+import { invalidateTpoCache } from "../routes/tpo.js";
 import { logger } from "../config/logger.js";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -148,6 +149,15 @@ export async function putProgress(req, res) {
     if (req.userDoc.username) {
       invalidateProfileCache(req.userDoc.username).catch((err) =>
         req.log.warn({ err }, "[Progress] Profile cache invalidation failed")
+      );
+    }
+    // A solve also changes their college's TPO dashboard/roster numbers —
+    // invalidate that domain's cache too so a TPO isn't looking at stale
+    // aggregates for up to 2 minutes after a student's college checks in.
+    const emailDomain = req.userDoc.email?.split("@")[1];
+    if (emailDomain) {
+      invalidateTpoCache(emailDomain).catch((err) =>
+        req.log.warn({ err }, "[Progress] TPO cache invalidation failed")
       );
     }
 
