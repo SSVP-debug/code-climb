@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
+import Button from "../components/ui/Button";
 
 function formatTime(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -166,12 +167,9 @@ export default function InterviewModePage() {
               <h2 className="text-2xl font-bold text-white mb-2">Interview Complete</h2>
               <p className="text-zinc-400 text-sm mb-2">{chatLog.filter(c=>c.role==="interviewer").length} questions asked</p>
               <p className="text-zinc-500 text-xs mb-6">Time used: {formatTime(session.durationMs - timeLeft)}</p>
-              <button
-                onClick={() => navigate(`/problems/${slug}`)}
-                className="px-6 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl font-semibold transition"
-              >
+              <Button onClick={() => navigate(`/problems/${slug}`)}>
                 Back to Problem
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
@@ -189,12 +187,9 @@ export default function InterviewModePage() {
                   <option value="java">Java</option>
                   <option value="cpp">C++</option>
                 </select>
-                <button
-                  onClick={handleSubmit}
-                  className="px-4 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-lg transition"
-                >
+                <Button size="sm" onClick={handleSubmit}>
                   End Interview
-                </button>
+                </Button>
               </div>
               <div className="flex-1">
                 <Editor
@@ -240,13 +235,13 @@ export default function InterviewModePage() {
                     placeholder="Explain your approach…"
                     className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
                   />
-                  <button
+                  <Button
+                    size="sm"
                     onClick={handleAsk}
                     disabled={asking || !userInput.trim()}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white rounded-xl text-sm font-semibold transition"
                   >
                     Send
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

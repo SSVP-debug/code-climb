@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Button from "../ui/Button";
 
 const TOUR_KEY = "cc_tour_v1_done";
 
@@ -74,15 +75,12 @@ export default function OnboardingTour() {
         <h3 className="text-lg font-bold text-white mb-2">{current.title}</h3>
         <p className="text-sm text-zinc-400 leading-relaxed mb-6">{current.body}</p>
         <div className="flex items-center justify-between">
-          <button onClick={dismiss} className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+          <Button variant="ghost" size="sm" onClick={dismiss}>
             Skip tour
-          </button>
-          <button
-            onClick={next}
-            className="bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-5 py-2 rounded-xl transition"
-          >
+          </Button>
+          <Button size="sm" onClick={next}>
             {step < STEPS.length - 1 ? "Next →" : "Let's go →"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

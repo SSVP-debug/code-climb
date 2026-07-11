@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import { SUPPORT_EMAIL } from "../config/site.js";
+import Button from "../components/ui/Button";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -63,7 +65,7 @@ function CreateAssignmentModal({ onClose, onCreated }) {
       onCreated();
       onClose();
     } catch {
-      alert("Failed to create assignment.");
+      toast.error("Failed to create assignment.");
     }
     setSaving(false);
   }
@@ -94,16 +96,17 @@ function CreateAssignmentModal({ onClose, onCreated }) {
           />
         </div>
         <div className="flex gap-2 mt-5">
-          <button onClick={onClose} className="flex-1 py-2 rounded-xl text-sm bg-zinc-800 text-zinc-400 hover:text-white transition">
+          <Button variant="secondary" onClick={onClose} className="flex-1">
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleCreate}
             disabled={saving || !title || !slugsText || !dueDate}
-            className="flex-1 py-2 rounded-xl text-sm bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold transition"
+            loading={saving}
+            className="flex-1"
           >
             {saving ? "Creating…" : "Create"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -313,12 +316,12 @@ export default function TpoDashboardPage() {
 
         {tab === "assignments" && (
           <div>
-            <button
+            <Button
               onClick={() => setShowModal(true)}
-              className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-semibold transition"
+              className="mb-4"
             >
               + New Assignment
-            </button>
+            </Button>
             <div className="space-y-3">
               {assignments.length === 0 ? (
                 <p className="text-zinc-500 text-sm text-center py-12">No assignments yet. Create one above.</p>

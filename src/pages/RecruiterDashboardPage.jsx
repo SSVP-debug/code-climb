@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
+import Button from "../components/ui/Button";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -33,7 +35,10 @@ function SendTestModal({ candidate, onClose, onSent }) {
       body: JSON.stringify({ candidateUsername: candidate.username, problemSlugs, durationMinutes: duration, note }),
     });
     setLoading(false);
-    if (data.error) return alert(data.error);
+    if (data.error) {
+      toast.error(data.error);
+      return;
+    }
     onSent();
     onClose();
   }
@@ -55,11 +60,10 @@ function SendTestModal({ candidate, onClose, onSent }) {
             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none" />
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={onClose} className="flex-1 py-2 rounded-xl text-sm bg-zinc-800 text-zinc-400">Cancel</button>
-          <button onClick={send} disabled={loading || !slugs}
-            className="flex-1 py-2 rounded-xl text-sm bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold">
+          <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+          <Button onClick={send} disabled={loading || !slugs} loading={loading} className="flex-1">
             {loading ? "Sending…" : "Send Test"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -141,10 +145,9 @@ export default function RecruiterDashboardPage() {
         </div>
 
         <FilterBar filters={filters} onChange={updateFilter} />
-        <button onClick={() => fetchCandidates(1)}
-          className="mb-6 px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-semibold transition">
+        <Button onClick={() => fetchCandidates(1)} className="mb-6">
           Search
-        </button>
+        </Button>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -176,14 +179,18 @@ export default function RecruiterDashboardPage() {
                 <span className="text-center text-sm text-red-400">{c.hard}</span>
                 <span className="text-center">{c.isVerified ? "✅" : "—"}</span>
                 <div className="text-right flex gap-2 justify-end">
-                  <a href={`/u/${c.username}`} target="_blank" rel="noreferrer"
-                    className="px-3 py-1 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition">
+                  <Button
+                    href={`/u/${c.username}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    variant="secondary"
+                    size="sm"
+                  >
                     View
-                  </a>
-                  <button onClick={() => setSelected(c)}
-                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                  </Button>
+                  <Button size="sm" onClick={() => setSelected(c)}>
                     Test
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

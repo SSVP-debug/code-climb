@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import DashboardLayout from "../layouts/DashboardLayout";
 import SectionCard from "../components/ui/layout/SectionCard";
+import Button from "../components/ui/Button";
 
 export default function AmbassadorPage() {
   const [loading, setLoading] = useState(true);
@@ -156,13 +157,14 @@ function ApplicationForm({ onSubmitted }) {
           </div>
         )}
 
-        <button
+        <Button
           type="submit"
           disabled={!canSubmit}
-          className="w-full py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl font-semibold transition"
+          loading={submitting}
+          className="w-full"
         >
           {submitting ? "Submitting…" : "Submit Application"}
-        </button>
+        </Button>
       </form>
     </SectionCard>
   );
@@ -243,12 +245,9 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
               {m.claimed ? (
                 <span className="flex-shrink-0 text-xs font-semibold text-green-400">Claimed</span>
               ) : m.achieved ? (
-                <button
-                  onClick={() => onClaim(m.id)}
-                  className="flex-shrink-0 bg-green-600 hover:bg-green-500 transition px-4 py-2 rounded-lg text-xs font-semibold text-white"
-                >
+                <Button size="sm" onClick={() => onClaim(m.id)} className="flex-shrink-0">
                   Claim
-                </button>
+                </Button>
               ) : (
                 <span className="flex-shrink-0 text-xs text-zinc-500">Not yet reached</span>
               )}

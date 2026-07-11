@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
 
 function SettingsPage() {
@@ -46,7 +47,7 @@ function SettingsPage() {
 
                     <button
                         className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition"
-                        onClick={() => alert("Progress reset will be implemented in a future update.")}
+                        onClick={() => toast("Progress reset will be implemented in a future update.")}
                     >
                         Reset Progress
                     </button>

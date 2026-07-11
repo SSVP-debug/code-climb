@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { fetchLeetCodeStats, saveLeetCodeStats } from "../../services/leetcode";
+import Button from "../ui/Button";
 
 const DIFFICULTY_KEYS = ["easySolved", "mediumSolved", "hardSolved"];
 
@@ -127,13 +128,13 @@ function ConnectLeetCodeSection({ initial }) {
           onChange={(e) => setUsername(e.target.value)}
           className="flex-1 min-w-[180px] bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl outline-none focus:border-green-500 transition"
         />
-        <button
+        <Button
           onClick={handleSync}
           disabled={!username.trim() || syncing}
-          className="bg-green-500 hover:bg-green-600 disabled:opacity-50 transition px-5 py-3 rounded-xl font-semibold text-black"
+          loading={syncing}
         >
           {syncing ? "Syncing…" : "Sync"}
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -182,13 +183,15 @@ function ConnectLeetCodeSection({ initial }) {
             ))}
           </div>
 
-          <button
+          <Button
             onClick={handleSave}
             disabled={saving || !username.trim()}
-            className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 transition py-2.5 rounded-lg font-semibold text-black text-sm"
+            loading={saving}
+            size="sm"
+            className="w-full"
           >
             {saving ? "Saving…" : "Save"}
-          </button>
+          </Button>
         </div>
       )}
 

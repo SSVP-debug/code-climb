@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import PageMeta from "../components/seo/PageMeta";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
-import { SITE_DOMAIN } from "../config/site.js";
+import { SITE_DOMAIN, SUPPORT_EMAIL } from "../config/site.js";
+import Button from "../components/ui/Button";
 
 const STATIC_STATS = [
   { key: "problems", value: "Growing", label: "Problem Library" },
@@ -154,12 +155,9 @@ export default function LandingPage() {
           >
             Problems
           </Link>
-          <Link
-            to={user ? "/dashboard" : "/login"}
-            className="text-sm bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-xl font-semibold transition"
-          >
+          <Button to={user ? "/dashboard" : "/login"} size="sm">
             {user ? "Dashboard →" : "Get Started"}
-          </Link>
+          </Button>
         </div>
       </nav>
 
@@ -187,18 +185,20 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
-              <Link
+              <Button
                 to={user ? "/dashboard" : "/login"}
-                className="bg-green-600 hover:bg-green-500 text-white px-7 py-3 rounded-xl font-bold text-sm transition shadow-lg shadow-green-900/30"
+                size="lg"
+                className="shadow-lg shadow-green-900/30"
               >
                 {user ? "Go to Dashboard →" : "Start for Free →"}
-              </Link>
-              <Link
+              </Button>
+              <Button
                 to={user ? "/problems" : "/login"}
-                className="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 px-7 py-3 rounded-xl font-semibold text-sm transition"
+                variant="secondary"
+                size="lg"
               >
                 Browse Problems
-              </Link>
+              </Button>
             </div>
 
             {/* Trust micro-signals */}
@@ -398,12 +398,13 @@ export default function LandingPage() {
           <p className="text-zinc-400 mb-8">
             Join students building consistency, not just solving problems once and forgetting.
           </p>
-          <Link
+          <Button
             to={user ? "/dashboard" : "/login"}
-            className="inline-block bg-green-600 hover:bg-green-500 text-white px-10 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-green-900/30"
+            size="xl"
+            className="shadow-xl shadow-green-900/30"
           >
             {user ? "Go to Dashboard →" : "Start Free — No Card Needed →"}
-          </Link>
+          </Button>
           <p className="text-xs text-zinc-600 mt-4">
             Google sign-in · Ready in 10 seconds
           </p>
@@ -420,6 +421,9 @@ export default function LandingPage() {
           <div className="flex gap-5 text-xs text-zinc-600">
             <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
             <Link to={user ? "/dashboard" : "/login"} className="hover:text-zinc-400 transition">Dashboard</Link>
+            <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
+            <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>
           </div>
         </div>
       </footer>

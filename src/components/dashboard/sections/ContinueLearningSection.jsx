@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import SectionCard from "../../ui/layout/SectionCard";
+import Button from "../../ui/Button";
 import { useAppContext } from "../../../hooks/useAppContext";
 
 function ContinueLearningSection() {
@@ -22,12 +22,9 @@ function ContinueLearningSection() {
           Begin with your first challenge.
         </p>
 
-        <Link
-          to="/problems"
-          className="inline-block bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
-        >
+        <Button to="/problems">
           Explore Problems
-        </Link>
+        </Button>
       </SectionCard>
     );
   }
@@ -60,12 +57,9 @@ function ContinueLearningSection() {
           </p>
         </div>
 
-        <Link
-          to={`/problems/${latestSubmission.problemSlug ?? latestSubmission.problemId}`}
-          className="bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
-        >
+        <Button to={`/problems/${latestSubmission.problemSlug ?? latestSubmission.problemId}`}>
           Continue →
-        </Link>
+        </Button>
 
       </div>
 

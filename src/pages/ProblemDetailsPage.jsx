@@ -27,6 +27,7 @@ import ProblemHeader from "../components/problem/ProblemHeader";
 import ProblemInfo from "../components/problem/ProblemInfo";
 import ProblemEditor from "../components/problem/ProblemEditor";
 import WorkspacePanel from "../components/problem/WorkspacePanel";
+import Button from "../components/ui/Button";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -362,12 +363,12 @@ function ProblemSolver({
               )}
               <ProblemHeader problem={problem} isSolved={isSolved} />
               <ProblemInfo problem={problem} />
-              <button
+              <Button
                 onClick={() => setMobileTab("code")}
-                className="mt-6 w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-xl transition"
+                className="mt-6 w-full"
               >
                 Start Coding →
-              </button>
+              </Button>
             </div>
           )}
 

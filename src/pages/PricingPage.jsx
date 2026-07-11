@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import DashboardLayout from "../layouts/DashboardLayout";
+import Button from "../components/ui/Button";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 
@@ -76,14 +78,14 @@ export default function PricingPage() {
       });
 
       if (order.error) {
-        alert(order.error);
+        toast.error(order.error);
         setLoadingPlan(null);
         return;
       }
 
       const loaded = await loadRazorpayScript();
       if (!loaded) {
-        alert("Could not load payment gateway. Check your connection.");
+        toast.error("Could not load payment gateway. Check your connection.");
         setLoadingPlan(null);
         return;
       }
@@ -103,15 +105,15 @@ export default function PricingPage() {
           });
           if (verify.success) {
             setCurrentPlan(planId);
-            alert("Welcome to Code Club Pro! 🎉");
+            toast.success("Welcome to Code Club Pro! 🎉");
           } else {
-            alert(verify.error || "Payment verification failed.");
+            toast.error(verify.error || "Payment verification failed.");
           }
         },
       });
       rzp.open();
     } catch (err) {
-      alert("Something went wrong. Try again.");
+      toast.error("Something went wrong. Try again.");
     }
     setLoadingPlan(null);
   }
@@ -129,12 +131,9 @@ export default function PricingPage() {
             interview mode — is unlocked for all users. Pricing launches once we've
             grown the platform. Enjoy it while it lasts!
           </p>
-          <button
-            onClick={() => navigate("/problems")}
-            className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-semibold transition"
-          >
+          <Button size="lg" onClick={() => navigate("/problems")}>
             Start Solving →
-          </button>
+          </Button>
         </div>
       </DashboardLayout>
     );
@@ -189,19 +188,15 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <button
+              <Button
+                variant={currentPlan === id || id === "free" ? "secondary" : "primary"}
                 disabled={id === "free" || currentPlan === id || loadingPlan === id}
+                loading={loadingPlan === id}
                 onClick={() => handleUpgrade(id)}
-                className={`w-full py-2.5 rounded-xl text-sm font-semibold transition ${
-                  currentPlan === id
-                    ? "bg-zinc-800 text-zinc-500 cursor-default"
-                    : id === "free"
-                    ? "bg-zinc-800 text-zinc-500 cursor-default"
-                    : "bg-green-600 hover:bg-green-500 text-white disabled:opacity-50"
-                }`}
+                className="w-full"
               >
                 {currentPlan === id ? "Current Plan" : loadingPlan === id ? "Loading…" : plan.cta}
-              </button>
+              </Button>
             </div>
           ))}
         </div>

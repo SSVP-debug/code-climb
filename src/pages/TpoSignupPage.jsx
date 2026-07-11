@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
+import Button from "../components/ui/Button";
 
 export default function TpoSignupPage() {
   const navigate = useNavigate();
@@ -69,13 +70,14 @@ export default function TpoSignupPage() {
             </div>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={loading || !collegeName.trim()}
-            className="w-full py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl font-semibold transition"
+            loading={loading}
+            className="w-full"
           >
             {loading ? "Setting up…" : "Activate College Dashboard"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

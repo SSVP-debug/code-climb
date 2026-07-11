@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../services/api";
+import Button from "../components/ui/Button";
 
 export default function RecruiterSignupPage() {
   const navigate = useNavigate();
@@ -39,10 +40,10 @@ export default function RecruiterSignupPage() {
           </div>
           <p className="text-xs text-zinc-600">Sign in with your company email (e.g. name@google.com). Personal emails (Gmail, Yahoo) are not allowed.</p>
           {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">{error}</div>}
-          <button type="submit" disabled={loading || !form.companyName || !form.designation}
-            className="w-full py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl font-semibold transition">
+          <Button type="submit" disabled={loading || !form.companyName || !form.designation}
+            loading={loading} className="w-full">
             {loading ? "Setting up…" : "Activate Recruiter Access"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
+import Button from "../components/ui/Button";
 
 function countdown(endsAt) {
   const ms = new Date(endsAt) - Date.now();
@@ -39,7 +41,10 @@ function ContestCard({ contest, onJoin }) {
     setJoining(true);
     const data = await apiFetch(`/api/contests/${contest._id}/join`, { method: "POST" });
     setJoining(false);
-    if (data.error) return alert(data.error);
+    if (data.error) {
+      toast.error(data.error);
+      return;
+    }
     onJoin();
     navigate(`/contests/${contest._id}`);
   }
@@ -71,10 +76,9 @@ function ContestCard({ contest, onJoin }) {
 
       {contest.status === "active" && (
         <div className="flex gap-2">
-          <button onClick={handleJoin} disabled={joining}
-            className="flex-1 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition">
+          <Button onClick={handleJoin} disabled={joining} loading={joining} className="flex-1">
             {joining ? "Joining…" : "Join & Compete"}
-          </button>
+          </Button>
           <button onClick={() => navigate(`/contests/${contest._id}`)}
             className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition">
             Leaderboard
@@ -109,7 +113,10 @@ function JoinPrivateModal({ onClose, onJoined }) {
       body: JSON.stringify({ inviteCode: code.trim().toUpperCase() }),
     });
     setLoading(false);
-    if (data.error) return alert(data.error);
+    if (data.error) {
+      toast.error(data.error);
+      return;
+    }
     onJoined();
     onClose();
     navigate(`/contests/${data.contestId}`);
@@ -128,11 +135,10 @@ function JoinPrivateModal({ onClose, onJoined }) {
           className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white font-mono text-lg tracking-widest outline-none focus:border-green-500/50 text-center mb-4"
         />
         <div className="flex gap-2">
-          <button onClick={onClose} className="flex-1 py-2 rounded-xl text-sm bg-zinc-800 text-zinc-400">Cancel</button>
-          <button onClick={handleJoin} disabled={loading || code.length !== 6}
-            className="flex-1 py-2 rounded-xl text-sm bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white font-semibold">
+          <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+          <Button onClick={handleJoin} disabled={loading || code.length !== 6} loading={loading} className="flex-1">
             {loading ? "Joining…" : "Join"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

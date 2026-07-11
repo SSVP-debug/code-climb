@@ -34,6 +34,8 @@ const RecruiterDashboardPage = lazy(() => import("./pages/RecruiterDashboardPage
 const CandidateTestsPage = lazy(() => import("./pages/CandidateTestsPage"));
 const CertificationsPage = lazy(() => import("./pages/CertificationsPage"));
 const CertVerifyPage = lazy(() => import("./pages/CertVerifyPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
 const ContestsPage = lazy(() => import("./pages/ContestsPage"));
 const ContestDetailPage = lazy(() => import("./pages/ContestDetailPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
@@ -167,6 +169,8 @@ function App() {
         {/* ── Phase 7: Certifications ─────────────────────────────────── */}
         <Route path="/certifications" element={<ProtectedRoute><ThemeGate><CertificationsPage /></ThemeGate></ProtectedRoute>} />
         <Route path="/verify/:code" element={<CertVerifyPage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
 
         {/* ── Phase 7: Contests ───────────────────────────────────────── */}
         <Route path="/contests" element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />

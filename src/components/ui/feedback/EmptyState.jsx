@@ -23,6 +23,8 @@
  *   useful inside SectionCard bodies that are already padded.
  */
 
+import Button from "../Button";
+
 function EmptyState({
   icon,
   title,
@@ -40,10 +42,6 @@ function EmptyState({
 
   const iconClass = compact ? "text-3xl mb-3" : "text-4xl mb-4";
 
-  const actionClass =
-    "mt-4 inline-flex items-center justify-center px-5 py-2.5 rounded-xl " +
-    "bg-green-500 hover:bg-green-600 text-black font-semibold text-sm transition";
-
   return (
     <div className={containerClass}>
       {/* Icon */}
@@ -60,13 +58,13 @@ function EmptyState({
       {/* CTA */}
       {hasAction && (
         actionHref ? (
-          <a href={actionHref} className={actionClass}>
+          <Button href={actionHref} size="sm" className="mt-4">
             {actionLabel}
-          </a>
+          </Button>
         ) : (
-          <button onClick={onAction} className={actionClass}>
+          <Button onClick={onAction} size="sm" className="mt-4">
             {actionLabel}
-          </button>
+          </Button>
         )
       )}
     </div>

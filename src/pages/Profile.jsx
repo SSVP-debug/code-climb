@@ -9,6 +9,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
 import SectionCard from "../components/ui/layout/SectionCard";
+import Button from "../components/ui/Button";
 import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
 import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
@@ -123,7 +124,7 @@ function Profile() {
             a.click();
             URL.revokeObjectURL(url);
           })
-          .catch(() => alert("PDF generation failed. Try again."));
+          .catch(() => toast.error("PDF generation failed. Try again."));
       });
     });
   }
@@ -249,18 +250,21 @@ function Profile() {
                   <p className="font-mono mt-1 break-all">
                     {window.location.origin}/u/{currentUsername}
                   </p>
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={handleCopyProfileLink}
-                    className="mt-3 bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm"
+                    className="mt-3"
                   >
                     Copy Profile Link
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="sm"
                     onClick={downloadProfilePDF}
-                    className="mt-3 ml-3 bg-green-500 hover:bg-green-600 text-black px-4 py-2 rounded-lg text-sm font-medium"
+                    className="mt-3 ml-3"
                   >
                     Export Profile
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

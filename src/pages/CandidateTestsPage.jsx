@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
+import Button from "../components/ui/Button";
 
 const STATUS_STYLES = {
   pending:     "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -32,7 +34,10 @@ export default function CandidateTestsPage() {
     setStarting(testId);
     const data = await apiFetch(`/api/candidate/tests/${testId}/start`, { method: "POST" });
     setStarting(null);
-    if (data.error) return alert(data.error);
+    if (data.error) {
+      toast.error(data.error);
+      return;
+    }
     navigate(`/candidate/tests/${testId}`);
   }
 
@@ -83,10 +88,9 @@ export default function CandidateTestsPage() {
 
                 <div className="flex gap-2">
                   {t.status === "pending" && (
-                    <button onClick={() => startTest(t._id)} disabled={starting === t._id}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition">
+                    <Button onClick={() => startTest(t._id)} disabled={starting === t._id} loading={starting === t._id}>
                       {starting === t._id ? "Starting…" : "Start Test"}
-                    </button>
+                    </Button>
                   )}
                   {t.status === "in_progress" && (
                     <button onClick={() => navigate(`/candidate/tests/${t._id}`)}

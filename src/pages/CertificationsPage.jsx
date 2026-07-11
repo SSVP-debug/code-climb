@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -10,7 +11,10 @@ function TrackCard({ track, onClaim }) {
     setClaiming(true);
     const data = await apiFetch(`/api/cert/claim/${track.id}`, { method: "POST" });
     setClaiming(false);
-    if (data.error) return alert(data.error);
+    if (data.error) {
+      toast.error(data.error);
+      return;
+    }
     onClaim();
   }
 

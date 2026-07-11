@@ -1,6 +1,3 @@
-import {
-  Link,
-} from "react-router-dom";
 import { useAppContext } from "../../../hooks/useAppContext";
 import {
   getDailyChallenge,
@@ -8,6 +5,7 @@ import {
 
 import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
+import Button from "../../ui/Button";
 
 function DailyChallengeSection() {
   const { theme } = useTheme();
@@ -82,12 +80,9 @@ function DailyChallengeSection() {
           ✅ Completed Today
         </div>
       ) : (
-        <Link
-          to={`/problems/${challenge.slug}`}
-          className="inline-block bg-green-500 hover:bg-green-600 transition text-black px-6 py-3 rounded-xl font-semibold"
-        >
+        <Button to={`/problems/${challenge.slug}`}>
           {theme.words.solveChallenge}
-        </Link>
+        </Button>
       )}
 
     </SectionCard>
