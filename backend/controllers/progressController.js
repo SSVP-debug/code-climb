@@ -5,6 +5,7 @@ import Problem from "../models/Problem.js";
 import { invalidateLeaderboardCaches } from "../routes/leaderboard.js";
 import { invalidateProfileCache } from "./publicProfileController.js";
 import { invalidateTpoCache } from "../routes/tpo.js";
+import { createNotification } from "../services/notificationService.js";
 import { logger } from "../config/logger.js";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -126,6 +127,7 @@ export async function putProgress(req, res) {
     const existing = new Set(
       req.userDoc.achievements.map((a) => a.key)
     );
+    const newlyAwardedKeys = [];
 
     for (const key of newlyUnlocked) {
       if (!existing.has(key)) {
@@ -133,10 +135,31 @@ export async function putProgress(req, res) {
           key,
           unlockedAt: new Date(),
         });
+        newlyAwardedKeys.push(key);
       }
     }
 
     await req.userDoc.save();
+
+    // One notification per newly-unlocked achievement (a single solve can
+    // trigger more than one, e.g. crossing both a solve-count and a streak
+    // milestone at once — each is worth its own entry in the feed, not a
+    // combined one). Title/message are deliberately generic here — the
+    // frontend resolves the real title/icon from the achievement key via
+    // ACHIEVEMENT_METADATA (the single source of truth for achievement
+    // display text) rather than duplicating that data on the backend too.
+    for (const key of newlyAwardedKeys) {
+      createNotification({
+        userId: req.userDoc._id,
+        type: "achievement",
+        title: "Achievement unlocked!",
+        message: "You unlocked a new achievement — check it out on your profile.",
+        link: "/profile",
+        meta: { achievementKey: key },
+      }).catch((err) =>
+        req.log.warn({ err, key }, "[Progress] Achievement notification failed")
+      );
+    }
 
     // Invalidate caches so the leaderboard and this user's public profile
     // reflect the new XP/streak/solved count on the next request, instead

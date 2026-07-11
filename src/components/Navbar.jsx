@@ -6,6 +6,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
 import AvatarDropdown from "./AvatarDropdown";
 import StreakBadge from "./common/StreakBadge";
+import NotificationBell from "./notifications/NotificationBell";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -64,8 +65,6 @@ function Navbar() {
   };
 
   const nav = navigation[role] ?? navigation.student;
-  console.log("Role:", role);
-  console.log(nav);
   return (
     <nav className="bg-zinc-900 text-white border-b border-zinc-800 relative z-50">
       <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
@@ -106,18 +105,22 @@ function Navbar() {
             size="sm"
           />
 
+          <NotificationBell />
+
           <AvatarDropdown
             user={user}
             onLogout={handleLogout}
           />
         </div>
 
-        {/* Mobile: streak + avatar + hamburger */}
+        {/* Mobile: streak + bell + avatar + hamburger */}
         <div className="flex lg:hidden items-center gap-3">
           <StreakBadge
             streak={currentStreak}
             size="sm"
           />
+
+          <NotificationBell />
           
 
           <AvatarDropdown

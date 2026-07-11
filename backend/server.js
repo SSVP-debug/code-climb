@@ -25,6 +25,7 @@ import { logger, httpLogger } from "./config/logger.js";
 import userRoutes from "./routes/users.js";
 import progressRoutes from "./routes/progress.js";
 import submissionRoutes from "./routes/submissions.js";
+import notificationRoutes from "./routes/notifications.js";
 import compilerRoutes from "./routes/compiler.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import publicProfileRoutes from "./routes/publicProfile.js";
@@ -122,6 +123,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/users", requireAuth, apiLimiter, userRoutes);
 app.use("/api/progress", requireAuth, apiLimiter, progressRoutes);
 app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
+app.use("/api/notifications", requireAuth, apiLimiter, notificationRoutes);
 app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
 app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);

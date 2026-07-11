@@ -18,6 +18,7 @@ import College from "../models/College.js";
 import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
+import { createNotificationBulk } from "../services/notificationService.js";
 
 const require = createRequire(import.meta.url);
 
@@ -295,6 +296,33 @@ router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
       problemSlugs,
       dueDate: new Date(dueDate),
     });
+
+    // Fan out a notification to every student in the college. Fire-and-forget
+    // — a notification hiccup shouldn't fail assignment creation, which has
+    // already succeeded. Uses insertMany under the hood (via
+    // createNotificationBulk), so this stays cheap even for a large roster.
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
+    if (domain) {
+      User.find({
+        email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+        role: "student",
+      })
+        .select("_id")
+        .lean()
+        .then((students) =>
+          createNotificationBulk(
+            students.map((s) => s._id),
+            {
+              type: "assignment_created",
+              title: "New assignment posted",
+              message: `${title} — due ${new Date(dueDate).toLocaleDateString()}`,
+              link: "/problems",
+              meta: { assignmentId: assignment._id },
+            }
+          )
+        )
+        .catch((err) => console.error("[TPO] Assignment notification fan-out failed:", err.message));
+    }
 
     return res.status(201).json(assignment);
   } catch (err) {

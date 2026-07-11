@@ -19,6 +19,7 @@ import { requireRole } from "../middleware/roleGuard.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
 import { getLevel } from "../utils/xpLevel.js";
+import { createNotification } from "../services/notificationService.js";
 
 const router = Router();
 
@@ -238,6 +239,17 @@ router.post(
         durationMs: durationMinutes * 60 * 1000,
         note: note || null,
       });
+
+      createNotification({
+        userId: candidate._id,
+        type: "skills_test_received",
+        title: "You've received a skills test",
+        message: req.userDoc.recruiterProfile?.companyName
+          ? `${req.userDoc.recruiterProfile.companyName} sent you a ${problemSlugs.length}-problem skills test.`
+          : `A recruiter sent you a ${problemSlugs.length}-problem skills test.`,
+        link: "/candidate/tests",
+        meta: { testId: test._id },
+      }).catch((err) => console.error("[Recruiter] Skills-test notification failed:", err.message));
 
       return res.status(201).json({
         testId: test._id,
