@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ACHIEVEMENTS } from "../../../data/achievements";
+import { ACHIEVEMENT_METADATA } from "../../../config/achievementMetadata";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
@@ -27,9 +27,7 @@ function RecentAchievementCard() {
 
   const latest = achievements[achievements.length - 1];
 
-  const achievement = ACHIEVEMENTS.find(
-    (a) => a.key === latest.key
-  );
+  const achievement = ACHIEVEMENT_METADATA[latest.key];
 
   if (!achievement) return null;
 

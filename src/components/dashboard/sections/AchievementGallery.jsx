@@ -1,4 +1,4 @@
-import { ACHIEVEMENTS } from "../../../data/achievements";
+import { ACHIEVEMENTS_LIST } from "../../../config/achievementMetadata";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
@@ -30,7 +30,7 @@ function AchievementGallery() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {ACHIEVEMENTS.map((achievement) => {
+          {ACHIEVEMENTS_LIST.map((achievement) => {
             const isUnlocked =
               unlocked.has(achievement.key);
 
