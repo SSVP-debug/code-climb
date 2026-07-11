@@ -29,7 +29,7 @@ const VIEWS = {
 function ProblemsPage() {
   const { theme } = useTheme();
   const { problems, loading, error } = useProblems();
-  const { solvedProblems } = useAppContext();
+  const { solvedProblems, topicStats } = useAppContext();
 
   const [activeView, setActiveView] = useState(() => {
     try {
@@ -200,6 +200,18 @@ function ProblemsPage() {
       }
       : {};
 
+  const patternsProps =
+    activeView === "patterns"
+      ? {
+        problems,
+        topicStats,
+        setSelectedTopic,
+        setActiveView,
+      }
+      : {};
+
+  const activeViewProps = { ...browseProps, ...patternsProps };
+
   return (
     <div className="h-screen flex flex-col bg-black text-white overflow-hidden">
 
@@ -267,7 +279,7 @@ function ProblemsPage() {
               </button>
             </div>
 
-            {ActiveView && <ActiveView {...browseProps} />}
+            {ActiveView && <ActiveView {...activeViewProps} />}
 
           </div>
         </main>
