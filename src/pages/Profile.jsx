@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "../services/api";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useTheme } from "../context/ThemeContext";
@@ -296,6 +296,42 @@ function Profile() {
               <p className="text-3xl font-bold mt-1">{rank}</p>
               <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
             </SectionCard>
+          </div>
+        </ContentSlot>
+
+        {/* ── 4a. Insights & Certifications ─────────────────────────────── */}
+        {/* Analytics and Certifications used to be separate top-level nav
+            items. They live here now — personal, deep-dive detail belongs
+            on the Profile page, not in the main navbar. */}
+        <ContentSlot id="profile-insights">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              to="/analytics"
+              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-green-500/50 transition"
+            >
+              <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center text-xl flex-shrink-0">
+                📊
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold">{theme.words.analytics}</p>
+                <p className="text-zinc-500 text-sm">Deep dive into your solving patterns.</p>
+              </div>
+              <span className="ml-auto text-zinc-500 group-hover:text-green-400 transition flex-shrink-0">→</span>
+            </Link>
+
+            <Link
+              to="/certifications"
+              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-green-500/50 transition"
+            >
+              <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center text-xl flex-shrink-0">
+                🎖️
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold">Certifications</p>
+                <p className="text-zinc-500 text-sm">View and share what you've earned.</p>
+              </div>
+              <span className="ml-auto text-zinc-500 group-hover:text-green-400 transition flex-shrink-0">→</span>
+            </Link>
           </div>
         </ContentSlot>
 

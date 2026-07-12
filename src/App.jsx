@@ -29,6 +29,7 @@ const PublicProfile = lazy(() => import("./pages/PublicProfile"));
 const ThemeSelectionPage = lazy(() => import("./pages/ThemeSelectionPage"));
 const ThemeConfirmationPage = lazy(() => import("./pages/ThemeConfirmationPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
+const ClubPage = lazy(() => import("./pages/ClubPage"));
 const RecruiterSignupPage = lazy(() => import("./pages/RecruiterSignupPage"));
 const RecruiterDashboardPage = lazy(() => import("./pages/RecruiterDashboardPage"));
 const CandidateTestsPage = lazy(() => import("./pages/CandidateTestsPage"));
@@ -105,6 +106,16 @@ function App() {
           element={
             <ProtectedRoute>
               <ThemeGate><LeaderboardPage /></ThemeGate>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Club hub — consolidates Leaderboard, Contests, Ambassador ──── */}
+        <Route
+          path="/club"
+          element={
+            <ProtectedRoute>
+              <ThemeGate><ClubPage /></ThemeGate>
             </ProtectedRoute>
           }
         />

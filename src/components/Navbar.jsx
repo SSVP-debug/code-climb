@@ -25,16 +25,13 @@ function Navbar() {
       primary: [
         { to: "/dashboard", label: theme.words.dashboard },
         { to: "/problems", label: theme.words.problems },
-        { to: "/leaderboard", label: "Leaderboard" },
+        { to: "/club", label: "Club" },
       ],
-      secondary: [
-        { to: "/analytics", label: theme.words.analytics },
-        { to: "/contests", label: "Contests" },
-        { to: "/certifications", label: "Certifications" },
-        { to: "/ambassador", label: "Ambassador" },
-        { to: "/recruiter/signup", label: "Recruiters" },
-        { to: "/pricing", label: "Pricing" },
-      ],
+      // Analytics & Certifications now live inside Profile (avatar → View Profile).
+      // Leaderboard, Contests & Ambassador now live inside Club, above.
+      // Recruiters stay discoverable from the landing page footer; Pricing
+      // stays one tap away in the avatar menu — neither needs a seat here.
+      secondary: [],
     },
 
     recruiter: {
@@ -88,17 +85,19 @@ function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
-            {nav.secondary.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-sm text-zinc-400 hover:text-white transition"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          {nav.secondary.length > 0 && (
+            <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
+              {nav.secondary.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="text-sm text-zinc-400 hover:text-white transition"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          )}
 
           <StreakBadge
             streak={currentStreak}

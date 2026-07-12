@@ -1,8 +1,17 @@
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
+import { DEFAULT_THEME } from "../themes";
 
 function SettingsPage() {
-    const { theme } = useTheme();
+    const { theme, themeId, setTheme } = useTheme();
+    const isDefaultTheme = themeId === DEFAULT_THEME;
+
+    const handleResetTheme = () => {
+        if (isDefaultTheme) return;
+
+        setTheme(DEFAULT_THEME);
+        toast.success("Universe reset to default.");
+    };
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-10 text-white">
@@ -19,6 +28,20 @@ function SettingsPage() {
 
                     <p className="font-semibold mt-2">
                         {theme.name}
+                    </p>
+
+                    <button
+                        onClick={handleResetTheme}
+                        disabled={isDefaultTheme}
+                        className="mt-4 px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-800"
+                    >
+                        Reset to Default
+                    </button>
+
+                    <p className="mt-2 text-sm text-zinc-500">
+                        {isDefaultTheme
+                            ? "You're on the default experience — no universe theming applied."
+                            : "Clears your universe selection and switches to a clean, unthemed experience with plain labels (Dashboard, Problems, Profile)."}
                     </p>
                 </section>
 

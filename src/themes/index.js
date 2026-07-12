@@ -3,8 +3,10 @@ import { breakingBugTheme }    from "./themes/breakingBugTheme";
 import { ghostProtocolTheme }  from "./themes/ghostProtocolTheme";
 import { survivalCodeTheme }   from "./themes/survivalCodeTheme";
 import { debugDynastyTheme }   from "./themes/debugDynastyTheme";
+import { defaultTheme }        from "./themes/defaultTheme";
 
 export const THEMES = {
+  default:        defaultTheme,
   codeHeist:      codeHeistTheme,
   breakingBug:    breakingBugTheme,
   ghostProtocol:  ghostProtocolTheme,
@@ -12,7 +14,8 @@ export const THEMES = {
   debugDynasty:   debugDynastyTheme,
 };
 
-export const DEFAULT_THEME = "codeHeist";
+// The neutral, unthemed fallback — distinct from every story universe.
+export const DEFAULT_THEME = "default";
 
 export function getTheme(themeId) {
   return THEMES[themeId] ?? THEMES[DEFAULT_THEME];
