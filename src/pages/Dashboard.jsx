@@ -21,12 +21,9 @@ function Dashboard() {
     <DashboardLayout>
       <OnboardingTour />
       <LevelUpModal />
-      <div className="space-y-8">
-        <DashboardSections />
-      </div>
+      <DashboardSections />
     </DashboardLayout>
   );
 }
 
 export default Dashboard;
-
