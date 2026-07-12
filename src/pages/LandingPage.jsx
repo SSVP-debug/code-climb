@@ -48,6 +48,13 @@ function useLiveStats() {
 // ── Feature cards ─────────────────────────────────────────────────────────────
 const FEATURES = [
   {
+    icon: "🎙️",
+    title: "Live AI Mock Interviews",
+    description:
+      "Practice with an AI interviewer that asks follow-ups, pushes on your approach, and gives real feedback not just a hint panel. The closest thing to a real interview before the real interview.",
+    badge: "Live",
+  },
+  {
     icon: "🧪",
     title: "Themed Universes",
     description:
@@ -66,7 +73,7 @@ const FEATURES = [
     title: "AI Coaching",
     description:
       "Stuck? Get topic-level insights powered by Claude. Understand your weak patterns and what to practice next not just \"try harder.\"",
-    badge: "Live",
+    badge: null,
   },
   {
     icon: "🔥",
@@ -88,6 +95,36 @@ const FEATURES = [
     description:
       `Share your solve history at ${SITE_DOMAIN}/u/yourname. Built to impress recruiters show your consistency, not just a resume line.`,
     badge: "Beta",
+  },
+];
+
+// ── Who Code Club is built for — the actual moat vs. individual-practice
+// tools like LeetCode/GeeksForGeeks/NeetCode, none of which have a TPO
+// dashboard, a recruiter portal, or live AI mock interviews. ────────────────
+const AUDIENCES = [
+  {
+    icon: "🧑‍🎓",
+    title: "Students",
+    description:
+      "Practice, build streaks, and get AI mock-interview reps before the real thing.",
+    cta: "Start solving",
+    to: "/login",
+  },
+  {
+    icon: "🏫",
+    title: "TPOs",
+    description:
+      "One dashboard for your entire batch's placement readiness solve counts, streaks, topic coverage, and a readiness score, not spreadsheets.",
+    cta: "TPO dashboard",
+    to: "/tpo/signup",
+  },
+  {
+    icon: "🧑‍💼",
+    title: "Recruiters",
+    description:
+      "Search verified candidates by solve history and topic strength, and send skills tests directly no resume guesswork.",
+    cta: "Recruiter access",
+    to: "/recruiter/signup",
   },
 ];
 
@@ -136,7 +173,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <PageMeta
         title="Code Club DSA Practice for Placement Season"
-        description="Solve curated DSA problems in themed universes. Track streaks, earn XP, get AI coaching. Free for engineering students preparing for campus placements."
+        description="Solve curated DSA problems, practice live AI mock interviews, and get discovered. Free for students, with a placement dashboard for TPOs and a candidate search portal for recruiters."
         path="/"
       />
 
@@ -179,8 +216,9 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-              Solve real interview problems in themed universes. Track streaks,
-              earn XP, get AI coaching. No overwhelm, Just your
+              Solve real interview problems, practice live AI mock interviews,
+              and build a public solve history recruiters actually check.
+              No overwhelm, Just your
               <strong className="text-white"> Code Club.</strong>
             </p>
 
@@ -351,6 +389,47 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Built for the whole pipeline ─────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+        <div className="text-center mb-12">
+          <p className="text-xs text-green-500 uppercase tracking-widest font-semibold mb-3">
+            Beyond individual practice
+          </p>
+          <h2 className="text-3xl md:text-4xl font-black mb-4">
+            Built for the whole placement pipeline.
+          </h2>
+          <p className="text-zinc-400 max-w-xl mx-auto">
+            LeetCode and GeeksForGeeks stop at the student. Code Club connects
+            practice to placement TPOs get a readiness dashboard, recruiters
+            get a candidate search, students get seen.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {AUDIENCES.map((a) => (
+            <div
+              key={a.title}
+              className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col"
+            >
+              <span className="text-3xl mb-4">{a.icon}</span>
+              <h3 className="font-bold text-white mb-2">{a.title}</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed flex-1">
+                {a.description}
+              </p>
+              <Link
+                to={a.to}
+                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-green-400 hover:text-green-300 transition"
+              >
+                {a.cta}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── Competitor callout ────────────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 md:p-10">
@@ -359,30 +438,30 @@ export default function LandingPage() {
               <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">LeetCode Premium</p>
               <ul className="space-y-2 text-zinc-400">
                 <li className="flex items-center gap-2"><span className="text-red-500">✗</span> ₹8,500 / year</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> Cold, corporate UI</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No TPO dashboard</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No recruiter portal</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No live AI mock interviews</li>
                 <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No India-specific features</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No gamification</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No AI coaching</li>
               </ul>
             </div>
             <div>
               <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">GeeksForGeeks</p>
               <ul className="space-y-2 text-zinc-400">
                 <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> Free but ad-heavy</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> Cluttered, slow UI</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No TPO dashboard</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No recruiter portal</li>
+                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No live AI mock interviews</li>
                 <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> India-focused content</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No consistency tracking</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No AI coaching</li>
               </ul>
             </div>
             <div className="border border-green-500/30 bg-green-500/5 rounded-xl p-5">
               <p className="text-xs text-green-400 uppercase tracking-widest mb-3 font-semibold">Code Club</p>
               <ul className="space-y-2 text-zinc-300">
                 <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Free to start</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Beautiful themed UI</li>
+                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> TPO readiness dashboard</li>
+                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Recruiter candidate search</li>
+                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Live AI mock interviews</li>
                 <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Built for Indian placements</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Streaks, XP, achievements</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> AI coaching (Claude)</li>
               </ul>
             </div>
           </div>
@@ -421,6 +500,8 @@ export default function LandingPage() {
           <div className="flex gap-5 text-xs text-zinc-600">
             <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
             <Link to={user ? "/dashboard" : "/login"} className="hover:text-zinc-400 transition">Dashboard</Link>
+            <Link to="/tpo/signup" className="hover:text-zinc-400 transition">For TPOs</Link>
+            <Link to="/recruiter/signup" className="hover:text-zinc-400 transition">For Recruiters</Link>
             <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
             <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>
