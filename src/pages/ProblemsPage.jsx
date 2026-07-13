@@ -141,6 +141,42 @@ function ProblemsPage() {
     ];
   }, [problems]);
 
+  // Live suggestion chips shown under the search box as the person types.
+  // Topics already have their own always-visible chip row below, so this
+  // only surfaces companies and patterns — the two dimensions search
+  // couldn't reach before ("Google", "sliding window") — capped to a
+  // handful, ranked by how many problems each match covers.
+  const searchSuggestions = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (term.length < 2) return [];
+
+    const counts = new Map(); // "type:value" -> { type, value, count }
+
+    for (const problem of problems) {
+      if (problem.pattern?.toLowerCase().includes(term)) {
+        const key = `pattern:${problem.pattern}`;
+        counts.set(key, {
+          type: "pattern",
+          value: problem.pattern,
+          count: (counts.get(key)?.count || 0) + 1,
+        });
+      }
+      for (const company of problem.companies || []) {
+        if (!company.toLowerCase().includes(term)) continue;
+        const key = `company:${company}`;
+        counts.set(key, {
+          type: "company",
+          value: company,
+          count: (counts.get(key)?.count || 0) + 1,
+        });
+      }
+    }
+
+    return [...counts.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+  }, [problems, searchTerm]);
+
   const filtered = useMemo(() => {
     return problems.filter((problem) => {
       const matchesDifficulty =
@@ -151,9 +187,13 @@ function ProblemsPage() {
         selectedTopic === "All" ||
         problem.topic === selectedTopic;
 
-      const matchesSearch = problem.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const term = searchTerm.trim().toLowerCase();
+      const matchesSearch =
+        term === "" ||
+        problem.title.toLowerCase().includes(term) ||
+        problem.topic?.toLowerCase().includes(term) ||
+        problem.pattern?.toLowerCase().includes(term) ||
+        problem.companies?.some((c) => c.toLowerCase().includes(term));
 
       const matchesSolved =
         !hideSolved ||
@@ -180,6 +220,16 @@ function ProblemsPage() {
   // state drives it as a slide-over sheet instead, toggled from the topbar.
   const [learningHubOpen, setLearningHubOpen] = useState(false);
 
+  // Shared by AICoachCard (right rail) — same "jump into Browse pre-filtered"
+  // behavior as PatternView's topic cards, just triggered from a different
+  // surface. Also closes the mobile slide-over so the person actually lands
+  // on Browse instead of staring at a hub sheet over it.
+  function handlePracticeTopic(topic) {
+    setSelectedTopic(topic);
+    setActiveView("browse");
+    setLearningHubOpen(false);
+  }
+
   const ActiveView = VIEWS[activeView] ?? null;
 
   const browseProps =
@@ -195,6 +245,7 @@ function ProblemsPage() {
         setSelectedDifficulty,
         searchTerm,
         setSearchTerm,
+        searchSuggestions,
         hideSolved,
         toggleHideSolved,
       }
@@ -293,6 +344,8 @@ function ProblemsPage() {
             problems={problems}
             solvedCount={solvedCount}
             progress={progress}
+            topicStats={topicStats}
+            onPracticeTopic={handlePracticeTopic}
           />
         </aside>
 
@@ -318,6 +371,8 @@ function ProblemsPage() {
                 problems={problems}
                 solvedCount={solvedCount}
                 progress={progress}
+                topicStats={topicStats}
+                onPracticeTopic={handlePracticeTopic}
               />
             </aside>
           </>

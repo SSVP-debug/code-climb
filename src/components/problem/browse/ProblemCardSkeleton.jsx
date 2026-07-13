@@ -6,6 +6,7 @@ function ProblemCardSkeleton() {
         <div className="h-5 w-20 bg-zinc-700 rounded" />
       </div>
       <div className="mt-3 h-3.5 w-1/4 bg-zinc-800 rounded" />
+      <div className="mt-2 h-3 w-1/3 bg-zinc-800/70 rounded" />
     </div>
   );
 }

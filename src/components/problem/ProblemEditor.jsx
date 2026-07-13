@@ -1,7 +1,14 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { Maximize2, Minimize2, RotateCcw, Copy, Check, Minus, Plus } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
-import { saveCode } from "../../utils/editorStorage";
+import {
+  saveCode,
+  loadFontSize,
+  saveFontSize,
+  EDITOR_FONT_SIZE_MIN,
+  EDITOR_FONT_SIZE_MAX,
+} from "../../utils/editorStorage";
 
 function ProblemEditor({
   slug,
@@ -13,12 +20,38 @@ function ProblemEditor({
   setCustomInput,
   onRun,
   onSubmit,
+  onReset,
   running,
   submitting,
 }) {
   const [showAdvancedTesting, setShowAdvancedTesting] = useState(false);
+  const [fontSize, setFontSize] = useState(loadFontSize);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
   const { theme } = useTheme();
   const editorRef = useRef(null);
+
+  function adjustFontSize(delta) {
+    setFontSize((prev) => {
+      const next = Math.min(
+        EDITOR_FONT_SIZE_MAX,
+        Math.max(EDITOR_FONT_SIZE_MIN, prev + delta)
+      );
+      saveFontSize(next);
+      return next;
+    });
+  }
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setJustCopied(true);
+      setTimeout(() => setJustCopied(false), 1500);
+    } catch {
+      // Clipboard API can fail on insecure origins / permissions — fail
+      // quietly rather than surfacing a scary error for a nice-to-have.
+    }
+  }
 
   /**
    * Called once when Monaco mounts.
@@ -53,6 +86,7 @@ function ProblemEditor({
       monaco.KeyCode.Escape,
       () => {
         setShowAdvancedTesting(false);
+        setIsFullscreen(false);
       }
     );
 
@@ -66,15 +100,11 @@ function ProblemEditor({
   }
 
   return (
-    <div className="
-      flex flex-col
-      h-full
-      bg-zinc-900
-      border border-zinc-800
-      rounded-2xl
-      overflow-hidden
-      shadow-xl
-    ">
+    <div className={
+      isFullscreen
+        ? "fixed inset-0 z-50 flex flex-col bg-zinc-900 shadow-2xl"
+        : "flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl"
+    }>
       {/* ── Editor Header ────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
 
@@ -93,6 +123,66 @@ function ProblemEditor({
             <option value="java">Java</option>
             <option value="cpp">C++</option>
           </select>
+
+          {/* Font size — a reading preference, not a per-problem setting,
+              so it persists globally (utils/editorStorage.js) rather than
+              per-slug like code/language. */}
+          <div className="hidden sm:flex items-center gap-0.5 ml-1 bg-zinc-800/60 rounded-md px-0.5">
+            <button
+              type="button"
+              onClick={() => adjustFontSize(-1)}
+              disabled={fontSize <= EDITOR_FONT_SIZE_MIN}
+              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+              title="Decrease font size"
+            >
+              <Minus size={13} />
+            </button>
+            <span className="text-xs text-zinc-400 w-5 text-center tabular-nums select-none">
+              {fontSize}
+            </span>
+            <button
+              type="button"
+              onClick={() => adjustFontSize(1)}
+              disabled={fontSize >= EDITOR_FONT_SIZE_MAX}
+              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+              title="Increase font size"
+            >
+              <Plus size={13} />
+            </button>
+          </div>
+
+          {onReset && (
+            <button
+              type="button"
+              onClick={onReset}
+              className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
+              title="Reset to starter code"
+            >
+              <RotateCcw size={14} />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
+            title="Copy code"
+          >
+            {justCopied ? (
+              <Check size={14} className="text-green-400" />
+            ) : (
+              <Copy size={14} />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsFullscreen((prev) => !prev)}
+            className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
+            title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen / Zen mode"}
+          >
+            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+          </button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -140,7 +230,7 @@ function ProblemEditor({
           onMount={handleEditorMount}
           saveViewState={true}
           options={{
-            fontSize: 14,
+            fontSize,
             minimap: { enabled: false },
             padding: { top: 16, bottom: 16 },
             scrollBeyondLastLine: false,

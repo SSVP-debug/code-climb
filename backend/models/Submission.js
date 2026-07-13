@@ -89,6 +89,12 @@ submissionSchema.index({ userId: 1, problemSlug: 1 });
 // Index: covers insights query filtering by status
 submissionSchema.index({ userId: 1, status: 1 });
 
+// Index: covers the global per-problem acceptance-rate aggregation
+// (problemController.getAcceptanceRates) which groups ALL users'
+// submissions by problemSlug — without this, that aggregation would
+// fall back to a full collection scan as submission volume grows.
+submissionSchema.index({ problemSlug: 1, status: 1 });
+
 const Submission = mongoose.model("Submission", submissionSchema);
 
 export default Submission;

@@ -14,6 +14,9 @@ function ProblemCard({ problem }) {
     pattern,
     estimatedTime,
     learningLabel,
+    companies,
+    xp,
+    acceptanceRate,
   } = problem;
 
 
@@ -77,12 +80,31 @@ function ProblemCard({ problem }) {
               {learningLabel}
             </p>
           )}
+
+          {companies?.length > 0 && (
+            <p className="text-xs text-zinc-500 mt-1 truncate">
+              {companies.slice(0, 2).join(" · ")}
+              {companies.length > 2 && ` +${companies.length - 2} more`}
+            </p>
+          )}
         </div>
 
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 flex-wrap justify-end flex-shrink-0">
+
+        {typeof acceptanceRate === "number" && (
+          <span className="hidden sm:inline text-xs text-zinc-500 whitespace-nowrap">
+            {acceptanceRate}% solved
+          </span>
+        )}
+
+        {typeof xp === "number" && (
+          <span className="hidden sm:inline text-xs text-purple-400 font-medium whitespace-nowrap">
+            +{xp} XP
+          </span>
+        )}
 
         {estimatedTime && (
           <span className="text-xs text-zinc-400 whitespace-nowrap">

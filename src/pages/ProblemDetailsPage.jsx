@@ -243,6 +243,15 @@ function ProblemSolver({
     );
   };
 
+  // Resets the buffer back to the problem's starter template for the
+  // current language — and persists that reset immediately, so refreshing
+  // the page right after doesn't bring back the discarded attempt.
+  const handleResetCode = () => {
+    const starter = problem.starterCode?.[language] ?? "";
+    setCode(starter);
+    saveCode(slug, language, starter);
+  };
+
   const handleRunCode = async () => {
     if (running) return;
     try {
@@ -398,6 +407,7 @@ function ProblemSolver({
                     setCustomInput={setCustomInput}
                     onRun={handleRunCode}
                     onSubmit={handleSubmitCode}
+                    onReset={handleResetCode}
                     running={running}
                     submitting={submitting}
                   />
@@ -505,6 +515,7 @@ gap-3
                     setCustomInput={setCustomInput}
                     onRun={handleRunCode}
                     onSubmit={handleSubmitCode}
+                    onReset={handleResetCode}
                     running={running}
                     submitting={submitting}
                   />

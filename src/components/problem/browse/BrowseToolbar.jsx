@@ -22,6 +22,7 @@ function BrowseToolbar({
   setSelectedDifficulty,
   searchTerm,
   setSearchTerm,
+  searchSuggestions = [],
   hideSolved,
   toggleHideSolved,
 }) {
@@ -56,6 +57,28 @@ function BrowseToolbar({
           </button>
         )}
       </div>
+
+      {/* ── Search suggestions ─────────────────────────────────────────── */}
+      {/* Only companies/patterns — topics already have their own always-
+          visible chip row below, so surfacing them here too would be
+          redundant. */}
+      {searchSuggestions.length > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap -mt-1">
+          <span className="text-[10px] uppercase tracking-widest text-zinc-600 mr-0.5">
+            Matches
+          </span>
+          {searchSuggestions.map((s) => (
+            <button
+              key={`${s.type}:${s.value}`}
+              onClick={() => setSearchTerm(s.value)}
+              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-green-500/50 hover:text-white transition-colors"
+            >
+              {s.value}
+              <span className="text-zinc-600 ml-1">{s.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── Hide Solved toggle ──────────────────────────────────────────── */}
       {/* The #1 filter returning users need — placed prominently above topic/diff */}
