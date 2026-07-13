@@ -1,165 +1,54 @@
-import { useState, useEffect } from "react";
-import { apiFetch } from "../services/api";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useTheme } from "../context/ThemeContext";
 import DashboardLayout from "../layouts/DashboardLayout";
+import { getLevel, getLevelProgress } from "../utils/xpLevel";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
 import SectionCard from "../components/ui/layout/SectionCard";
-import Button from "../components/ui/Button";
 import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
-import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
 import AchievementGallery from "../components/dashboard/sections/AchievementGallery";
-
-
-// ── Integrations data ──────────────────────────────────────────────────────────
-
-const INTEGRATIONS = [
-  {
-    id: "google",
-    name: "Google Account",
-    description: "Sign in and sync your identity across devices.",
-    status: "connected",
-    icon: "G",
-    iconBg: "bg-white",
-    iconColor: "text-zinc-900",
-  },
-  {
-    id: "codeforces",
-    name: "Codeforces",
-    description: "Track competitive programming performance and ratings.",
-    status: "planned",
-    icon: "CF",
-    iconBg: "bg-blue-600",
-    iconColor: "text-white",
-  },
-  {
-    id: "gfg",
-    name: "GeeksforGeeks",
-    description: "Import coding activity, streaks, and achievements.",
-    status: "planned",
-    icon: "G",
-    iconBg: "bg-green-600",
-    iconColor: "text-white",
-  },
-];
-
-// ── StatusBadge — unchanged ────────────────────────────────────────────────────
-
-function StatusBadge({ status }) {
-  if (status === "connected") {
-    return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
-        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-        Connected
-      </span>
-    );
-  }
-  if (status === "coming-soon") {
-    return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-700 text-zinc-300 border border-zinc-600">
-        Coming Soon
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-500 border border-zinc-700">
-      Planned
-    </span>
-  );
-}
-
-// ── IntegrationRow — unchanged ─────────────────────────────────────────────────
-
-function IntegrationRow({ integration }) {
-  const { name, description, status, icon, iconBg, iconColor } = integration;
-  return (
-    <div className="flex items-center justify-between py-4 border-b border-zinc-800 last:border-0">
-      <div className="flex items-center gap-4">
-        <div
-          className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center text-sm font-bold ${iconColor} flex-shrink-0`}
-        >
-          {icon}
-        </div>
-        <div>
-          <p className="font-medium text-white text-sm">{name}</p>
-          <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
-        </div>
-      </div>
-      <div className="flex-shrink-0 ml-4">
-        <StatusBadge status={status} />
-      </div>
-    </div>
-  );
-}
+import ActivityHeatmap from "../components/profile/ActivityHeatmap";
+import SkillRadar from "../components/profile/SkillRadar";
+import CodingDNA from "../components/profile/CodingDNA";
+import JourneyTimeline from "../components/profile/JourneyTimeline";
+import RecruiterSnapshot from "../components/profile/RecruiterSnapshot";
+import PinnedProblems from "../components/profile/PinnedProblems";
+import ProfileCompletion from "../components/profile/ProfileCompletion";
 
 // ── Profile ────────────────────────────────────────────────────────────────────
+// Phase 9B: Coding Identity build-out. Hero now shows the real XP-derived
+// level (getLevel/getLevelProgress — same math as the public profile and
+// backend) instead of the old solvedProblems.length value that was
+// mislabeled "Level". Heatmap/Skill Radar/Coding DNA/Journey Timeline all
+// run off data already hydrated into AppContext (topicStats, activityDates,
+// totalXP, longestStreak, achievements, submissions, joinedDate) — no new
+// endpoints. See PROJECT_STATE.md Phase 9 for the rest of the plan.
 
 function Profile() {
-  const navigate = useNavigate();
   const { user } = useAuth();
-
-  const [currentUsername, setCurrentUsername] = useState("");
-  const [username, setUsername] = useState("");
-  const [savingUsername, setSavingUsername] = useState(false);
-  const [leetcodeInitial, setLeetcodeInitial] = useState(null);
-
-  function downloadProfilePDF() {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-    import("../services/auth").then(({ getIdToken }) => {
-      getIdToken().then(token => {
-        fetch(`${API_URL}/api/profile/pdf`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then(r => r.blob())
-          .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${currentUsername || "profile"}_CodeClub_Profile.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
-          })
-          .catch(() => toast.error("PDF generation failed. Try again."));
-      });
-    });
-  }
-
-  useEffect(() => {
-    async function loadProfileInfo() {
-      try {
-        const data = await apiFetch("/api/users/me");
-        setCurrentUsername(data.username || "");
-        setUsername(data.username || "");
-        if (data.leetcodeUsername) {
-          setLeetcodeInitial({
-            username: data.leetcodeUsername,
-            ...data.leetcodeStats,
-          });
-        }
-      } catch {
-        // ignore — username is cosmetic, not critical
-      }
-    }
-    loadProfileInfo();
-  }, []);
-
   const { theme } = useTheme();
   const {
     solvedProblems,
     recentActivity,
     submissions,
     currentStreak,
+    longestStreak,
+    totalXP,
+    topicStats,
+    activityDates,
+    solvedDifficulty,
+    achievements,
+    joinedDate,
+    role,
   } = useAppContext();
 
-
-  const joinedDate = user?.createdAt || "Recently";
   const recentSubmissions = submissions.slice(0, 5);
-  const level = solvedProblems.length;
+
+  const level = getLevel(totalXP);
+  const { current, needed, percent } = getLevelProgress(totalXP);
 
   const rank =
     level < 5 ? "Beginner" :
@@ -167,28 +56,9 @@ function Profile() {
         level < 30 ? "Intermediate" :
           level < 60 ? "Advanced" : "Expert";
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
-  async function handleSaveUsername() {
-    try {
-      setSavingUsername(true);
-      const result = await apiFetch("/api/users/me", {
-        method: "PATCH",
-        body: JSON.stringify({ username }),
-      });
-      setCurrentUsername(result.username);
-      toast.success("Username saved");
-    } catch (err) {
-      toast.error(err.message || "Failed to save username");
-    } finally {
-      setSavingUsername(false);
-    }
-  }
-
-  function handleCopyProfileLink() {
-    navigator.clipboard.writeText(`${window.location.origin}/u/${currentUsername}`);
-    toast.success("Profile link copied!");
-  }
+  const joinedDisplay = joinedDate
+    ? new Date(joinedDate).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+    : "Recently";
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -198,108 +68,121 @@ function Profile() {
 
         <h1 className="text-4xl font-bold">Profile</h1>
 
-        {/* ── 1. User identity card ─────────────────────────────────────── */}
-        {/*
-          No title prop → SectionCard renders no header, matching the original
-          layout where the avatar IS the visual hierarchy anchor.
-        */}
+        {/* ── 1. Hero ──────────────────────────────────────────────────── */}
         <ContentSlot id="profile-identity">
-          <SectionCard className="flex items-center gap-6">
-            {user?.photoURL ? (
-              <img
-                src={user.photoURL}
-                alt={user.displayName || "User"}
-                className="w-20 h-20 rounded-full flex-shrink-0"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-2xl font-bold flex-shrink-0">
-                {(user?.displayName || "U")[0]}
-              </div>
-            )}
-            <div>
-              <h2 className="text-2xl font-semibold">{user?.displayName || "User"}</h2>
-              <p className="text-zinc-400">{user?.email}</p>
-              <p className="text-zinc-500 text-sm mt-1">Joined {joinedDate}</p>
-            </div>
-          </SectionCard>
-        </ContentSlot>
-
-        {/* ── 2. Public profile / username ──────────────────────────────── */}
-        <ContentSlot id="profile-public">
-          <SectionCard title="Public Profile">
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Choose a username"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
-              />
-
-              <button
-                disabled={savingUsername}
-                onClick={handleSaveUsername}
-                className="bg-green-500 text-black px-4 py-2 rounded-xl font-medium"
-              >
-                Save Username
-              </button>
-
-              {currentUsername && (
-                <div className="bg-zinc-800 rounded-xl p-4">
-                  <p className="text-sm text-zinc-400">Public URL</p>
-                  <p className="font-mono mt-1 break-all">
-                    {window.location.origin}/u/{currentUsername}
-                  </p>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleCopyProfileLink}
-                    className="mt-3"
-                  >
-                    Copy Profile Link
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={downloadProfilePDF}
-                    className="mt-3 ml-3"
-                  >
-                    Export Profile
-                  </Button>
+          <SectionCard>
+            <div className="flex items-start gap-6">
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || "User"}
+                  className="w-20 h-20 rounded-full flex-shrink-0"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                  {(user?.displayName || "U")[0]}
                 </div>
               )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h2 className="text-2xl font-semibold">{user?.displayName || "User"}</h2>
+                    <p className="text-zinc-400 text-sm">{user?.email}</p>
+                    <p className="text-zinc-500 text-sm mt-1">Joined {joinedDisplay}</p>
+                  </div>
+                  <Link
+                    to="/settings"
+                    className="flex-shrink-0 text-sm text-zinc-400 hover:text-white transition whitespace-nowrap"
+                  >
+                    Account settings →
+                  </Link>
+                </div>
+
+                {/* Level / XP progress */}
+                <div className="mt-5">
+                  <div className="flex items-baseline justify-between mb-1.5">
+                    <span className="text-sm font-semibold text-white">
+                      Level {level} · {rank}
+                    </span>
+                    <span className="text-xs text-zinc-500">
+                      {current.toLocaleString()} / {needed.toLocaleString()} XP to next level
+                    </span>
+                  </div>
+                  <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all"
+                      style={{ width: `${Math.min(percent, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick stat pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+              <div className="bg-zinc-800 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold">{totalXP.toLocaleString()}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Total XP</p>
+              </div>
+              <div className="bg-zinc-800 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold">{solvedProblems.length}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Solved</p>
+              </div>
+              <div className="bg-zinc-800 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold">🔥 {currentStreak}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Current Streak</p>
+              </div>
+              <div className="bg-zinc-800 rounded-xl p-3 text-center">
+                <p className="text-xl font-bold">{longestStreak}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Longest Streak</p>
+              </div>
             </div>
           </SectionCard>
         </ContentSlot>
 
-        
+        {/* ── 2. Profile Completion nudge ──────────────────────────────── */}
+        {/* Self-hides at 100% — see ProfileCompletion.jsx for why there's
+            no "unlock 50 XP" reward here despite the audit mockup showing
+            one: that needs a new backend XP-grant hook, flagged not faked. */}
+        <ContentSlot id="profile-completion">
+          <ProfileCompletion />
+        </ContentSlot>
 
-        {/* ── 4. Stats row ──────────────────────────────────────────────── */}
-        {/*
-          Three equal-width stat cards — kept as a raw grid because these
-          are not individually wrapped sections; they form one visual unit.
-          Future: extract into a <StatGrid> if it grows beyond 3 items.
-        */}
-        <ContentSlot id="profile-stats">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SectionCard>
-              <p className="text-zinc-400 text-sm">Solved</p>
-              <p className="text-3xl font-bold mt-1">{solvedProblems.length}</p>
-            </SectionCard>
+        {/* ── 3. Recruiter Snapshot ────────────────────────────────────── */}
+        {/* Only meaningful for students — recruiter/TPO/admin accounts
+            don't have a "looking for opportunities" state of their own. */}
+        {role === "student" && (
+          <ContentSlot id="profile-recruiter-snapshot">
+            <RecruiterSnapshot />
+          </ContentSlot>
+        )}
 
-            <SectionCard>
-              <p className="text-zinc-400 text-sm">Current Streak</p>
-              <p className="text-3xl font-bold mt-1">{currentStreak}</p>
-            </SectionCard>
-
-            <SectionCard>
-              <p className="text-zinc-400 text-sm">Rank</p>
-              <p className="text-3xl font-bold mt-1">{rank}</p>
-              <p className="text-zinc-500 text-sm mt-1">Level {level}</p>
-            </SectionCard>
+        {/* ── 4. Activity Heatmap + Skill Radar ───────────────────────────── */}
+        {/* Both components already existed and already worked — ActivityHeatmap
+            was mounted only on the public /u/:username page, never here. */}
+        <ContentSlot id="profile-heatmap-radar">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ActivityHeatmap activityDates={activityDates} />
+            <SkillRadar topicStats={topicStats} />
           </div>
         </ContentSlot>
 
-        {/* ── 4a. Insights & Certifications ─────────────────────────────── */}
+        {/* ── 5. Coding DNA ────────────────────────────────────────────── */}
+        <ContentSlot id="profile-coding-dna">
+          <CodingDNA
+            submissions={submissions}
+            topicStats={topicStats}
+            solvedDifficulty={solvedDifficulty}
+            longestStreak={longestStreak}
+          />
+        </ContentSlot>
+
+        {/* ── 6. Pinned Problems ───────────────────────────────────────── */}
+        <ContentSlot id="profile-pinned-problems">
+          <PinnedProblems />
+        </ContentSlot>
+
+        {/* ── 7. Insights & Certifications ───────────────────────────────── */}
         {/* Analytics and Certifications used to be separate top-level nav
             items. They live here now — personal, deep-dive detail belongs
             on the Profile page, not in the main navbar. */}
@@ -335,40 +218,19 @@ function Profile() {
           </div>
         </ContentSlot>
 
-        {/* ── 4b. Achievements ──────────────────────────────────────────── */}
-        {/* Fixes the Dashboard's "View All →" link (RecentAchievementCard),
-            which has always pointed here — this gallery didn't exist on this
-            page until now. Component was fully built but never imported
-            anywhere (see phase-audit findings). */}
+        {/* ── 8. Achievements ──────────────────────────────────────────── */}
         <ContentSlot id="profile-achievements">
           <AchievementGallery />
         </ContentSlot>
 
-        {/* ── 5. Integrations ───────────────────────────────────────────── */}
-        <ContentSlot id="profile-integrations">
-          <SectionCard
-            title="Integrations"
-            subtitle="Connect your coding profiles to unlock unified analytics and cross-platform insights."
-            action={
-              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-lg">
-                More platforms coming
-              </span>
-            }
-          >
-            <div className="pb-4 mb-4 border-b border-zinc-800">
-              <ConnectLeetCodeSection initial={leetcodeInitial} />
-            </div>
-            <div className="divide-y divide-zinc-800">
-              {INTEGRATIONS.map((integration) => (
-                <IntegrationRow key={integration.id} integration={integration} />
-              ))}
-            </div>
-          </SectionCard>
+        {/* ── 9. Journey Timeline ──────────────────────────────────────── */}
+        <ContentSlot id="profile-journey">
+          <JourneyTimeline joinedDate={joinedDate} achievements={achievements} />
         </ContentSlot>
 
-        {/* ── 6. Recent Activity ────────────────────────────────────────── */}
+        {/* ── 10. Recent Activity ────────────────────────────────────────── */}
         <ContentSlot id="profile-activity">
-          <SectionCard title="Recent Activity">
+          <SectionCard title="Recent Activity" icon="⚡">
             {recentActivity.length === 0 ? (
               <EmptyState
                 icon="📭"
@@ -404,9 +266,9 @@ function Profile() {
           </SectionCard>
         </ContentSlot>
 
-        {/* ── 7. Recent Submissions ─────────────────────────────────────── */}
+        {/* ── 11. Recent Submissions ─────────────────────────────────────── */}
         <ContentSlot id="profile-submissions">
-          <SectionCard title="Recent Submissions">
+          <SectionCard title="Recent Submissions" icon="📝">
             {recentSubmissions.length === 0 ? (
               <EmptyState
                 icon="📝"

@@ -1,11 +1,162 @@
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
+import { useAppContext } from "../hooks/useAppContext";
 import { DEFAULT_THEME } from "../themes";
+import { apiFetch } from "../services/api";
+import DashboardLayout from "../layouts/DashboardLayout";
+import Button from "../components/ui/Button";
+import ConnectLeetCodeSection from "../components/dashboard/ConnectLeetCodeSection";
+
+// ── Integrations data ──────────────────────────────────────────────────────────
+// Moved here verbatim from Profile.jsx (Phase 9A) — this is account
+// management, it belongs next to the other "Account" controls, not mixed
+// into the coding-identity page.
+
+const INTEGRATIONS = [
+  {
+    id: "google",
+    name: "Google Account",
+    description: "Sign in and sync your identity across devices.",
+    status: "connected",
+    icon: "G",
+    iconBg: "bg-white",
+    iconColor: "text-zinc-900",
+  },
+  {
+    id: "codeforces",
+    name: "Codeforces",
+    description: "Track competitive programming performance and ratings.",
+    status: "planned",
+    icon: "CF",
+    iconBg: "bg-blue-600",
+    iconColor: "text-white",
+  },
+  {
+    id: "gfg",
+    name: "GeeksforGeeks",
+    description: "Import coding activity, streaks, and achievements.",
+    status: "planned",
+    icon: "G",
+    iconBg: "bg-green-600",
+    iconColor: "text-white",
+  },
+];
+
+function StatusBadge({ status }) {
+  if (status === "connected") {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+        Connected
+      </span>
+    );
+  }
+  if (status === "coming-soon") {
+    return (
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-700 text-zinc-300 border border-zinc-600">
+        Coming Soon
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-500 border border-zinc-700">
+      Planned
+    </span>
+  );
+}
+
+function IntegrationRow({ integration }) {
+  const { name, description, status, icon, iconBg, iconColor } = integration;
+  return (
+    <div className="flex items-center justify-between py-4 border-b border-zinc-800 last:border-0">
+      <div className="flex items-center gap-4">
+        <div
+          className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center text-sm font-bold ${iconColor} flex-shrink-0`}
+        >
+          {icon}
+        </div>
+        <div>
+          <p className="font-medium text-white text-sm">{name}</p>
+          <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
+        </div>
+      </div>
+      <div className="flex-shrink-0 ml-4">
+        <StatusBadge status={status} />
+      </div>
+    </div>
+  );
+}
 
 function SettingsPage() {
     const { theme, themeId, setTheme } = useTheme();
     const isDefaultTheme = themeId === DEFAULT_THEME;
 
+    // ── Account state ────────────────────────────────────────────────────
+    // Phase 9E: username/leetcode now live in AppContext (hydrated once at
+    // boot via /api/init) instead of this page fetching /api/users/me on
+    // its own — same data, one source of truth, one fewer round trip.
+    const {
+        username: currentUsername,
+        setUsername: setCurrentUsername,
+        leetcodeUsername,
+        leetcodeStats,
+    } = useAppContext();
+
+    const [username, setUsernameDraft] = useState(currentUsername);
+    const [savingUsername, setSavingUsername] = useState(false);
+
+    useEffect(() => {
+        setUsernameDraft(currentUsername);
+    }, [currentUsername]);
+
+    const leetcodeInitial = leetcodeUsername
+        ? { username: leetcodeUsername, ...leetcodeStats }
+        : null;
+
+    async function handleSaveUsername() {
+        try {
+            setSavingUsername(true);
+            const result = await apiFetch("/api/users/me", {
+                method: "PATCH",
+                body: JSON.stringify({ username }),
+            });
+            setCurrentUsername(result.username);
+            toast.success("Username saved");
+        } catch (err) {
+            toast.error(err.message || "Failed to save username");
+        } finally {
+            setSavingUsername(false);
+        }
+    }
+
+    function handleCopyProfileLink() {
+        navigator.clipboard.writeText(`${window.location.origin}/u/${currentUsername}`);
+        toast.success("Profile link copied!");
+    }
+
+    function downloadProfilePDF() {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        import("../services/auth").then(({ getIdToken }) => {
+            getIdToken().then(token => {
+                fetch(`${API_URL}/api/profile/pdf`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                    .then(r => r.blob())
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `${currentUsername || "profile"}_CodeClub_Profile.pdf`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    })
+                    .catch(() => toast.error("PDF generation failed. Try again."));
+            });
+        });
+    }
+
+    // ── Theme handler (unchanged) ────────────────────────────────────────────
     const handleResetTheme = () => {
         if (isDefaultTheme) return;
 
@@ -14,10 +165,82 @@ function SettingsPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-10 text-white">
+        <DashboardLayout>
+        <div className="max-w-4xl mx-auto text-white">
             <h1 className="text-3xl font-bold mb-8">Settings</h1>
 
             <div className="space-y-6">
+
+                {/* ── Account: username + public URL + export ────────────────── */}
+                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                    <h2 className="text-xl font-semibold mb-2">Account</h2>
+                    <p className="text-zinc-400 text-sm mb-4">
+                        Your username determines your public Code Club profile URL.
+                    </p>
+
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsernameDraft(e.target.value)}
+                            placeholder="Choose a username"
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
+                        />
+
+                        <Button
+                            disabled={savingUsername}
+                            onClick={handleSaveUsername}
+                        >
+                            Save Username
+                        </Button>
+
+                        {currentUsername && (
+                            <div className="bg-zinc-800 rounded-xl p-4">
+                                <p className="text-sm text-zinc-400">Public URL</p>
+                                <p className="font-mono mt-1 break-all">
+                                    {window.location.origin}/u/{currentUsername}
+                                </p>
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={handleCopyProfileLink}
+                                    className="mt-3"
+                                >
+                                    Copy Profile Link
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    onClick={downloadProfilePDF}
+                                    className="mt-3 ml-3"
+                                >
+                                    Export Profile
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* ── Integrations ────────────────────────────────────────────── */}
+                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-xl font-semibold">Integrations</h2>
+                        <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-lg">
+                            More platforms coming
+                        </span>
+                    </div>
+                    <p className="text-zinc-400 text-sm mb-4">
+                        Connect your coding profiles to unlock unified analytics and cross-platform insights.
+                    </p>
+
+                    <div className="pb-4 mb-4 border-b border-zinc-800">
+                        <ConnectLeetCodeSection initial={leetcodeInitial} />
+                    </div>
+                    <div className="divide-y divide-zinc-800">
+                        {INTEGRATIONS.map((integration) => (
+                            <IntegrationRow key={integration.id} integration={integration} />
+                        ))}
+                    </div>
+                </section>
 
                 <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
                     <h2 className="text-xl font-semibold mb-2">Appearance</h2>
@@ -82,6 +305,7 @@ function SettingsPage() {
 
             </div>
         </div>
+        </DashboardLayout>
     );
 }
 

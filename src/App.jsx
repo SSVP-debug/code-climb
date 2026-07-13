@@ -99,7 +99,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <ThemeGate><SettingsPage /></ThemeGate>
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/leaderboard"

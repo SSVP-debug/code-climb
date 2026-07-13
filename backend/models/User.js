@@ -145,6 +145,34 @@ const userSchema = new mongoose.Schema(
       cancelledAt: { type: Date, default: null },
     },
 
+    // ── Pinned Favorite Problems (Phase 9D) ─────────────────────────────
+    // Denormalized (slug + title + difficulty stored together) at pin
+    // time, same convention as recentActivity above — avoids a Problem
+    // join on every public-profile view. Capped at 6, enforced in
+    // userController.js, not here (schema-level array caps are awkward
+    // with Mongoose's update operators).
+    pinnedProblems: {
+      type: [
+        {
+          slug: String,
+          title: String,
+          difficulty: String,
+        },
+      ],
+      default: [],
+    },
+
+    // ── Recruiter Snapshot (Phase 9C) ───────────────────────────────────
+    // NOT to be confused with recruiterProfile above — that's for users
+    // whose role IS "recruiter". This is what a STUDENT fills in so
+    // recruiters/TPOs viewing their profile know availability at a glance.
+    // Surfaced read-only on the public profile; editable on /profile.
+    recruiterSnapshot: {
+      availableForWork: { type: Boolean, default: false },
+      preferredRole: { type: String, default: null, trim: true, maxlength: 60 },
+      expectedGraduation: { type: String, default: null, trim: true, maxlength: 20 },
+    },
+
     // ── Role system ─────────────────────────────────────────────
     role: {
       type: String,

@@ -57,6 +57,15 @@ router.get("/", async (req, res) => {
     return res.json({
       user: {
         role: req.userDoc.role,
+        username: req.userDoc.username || "",
+        leetcodeUsername: req.userDoc.leetcodeUsername || "",
+        leetcodeStats: req.userDoc.leetcodeStats || null,
+        recruiterSnapshot: {
+          availableForWork: req.userDoc.recruiterSnapshot?.availableForWork ?? false,
+          preferredRole: req.userDoc.recruiterSnapshot?.preferredRole ?? null,
+          expectedGraduation: req.userDoc.recruiterSnapshot?.expectedGraduation ?? null,
+        },
+        pinnedProblems: req.userDoc.pinnedProblems || [],
       },
 
       progress: progressToClient(req.userDoc),

@@ -16,7 +16,7 @@ function AchievementGallery() {
   );
 
   return (
-    <SectionCard title={theme.words.achievements}>
+    <SectionCard title={theme.words.achievements} icon="🏆">
 
 
 

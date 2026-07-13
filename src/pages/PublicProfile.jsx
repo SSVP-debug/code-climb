@@ -3,6 +3,8 @@ import PageMeta from "../components/seo/PageMeta";
 import { useParams } from "react-router-dom";
 import ActivityHeatmap
     from "../components/profile/ActivityHeatmap";
+import SkillRadar
+    from "../components/profile/SkillRadar";
 import {
     ACHIEVEMENT_METADATA,
 } from "../config/achievementMetadata";
@@ -79,13 +81,30 @@ function PublicProfile() {
 
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div>
-                        <h1 className="text-4xl font-bold">
-                            {profile.displayName}
-                        </h1>
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <h1 className="text-4xl font-bold">
+                                {profile.displayName}
+                            </h1>
+                            {profile.recruiterSnapshot?.availableForWork && (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                                    Available for opportunities
+                                </span>
+                            )}
+                        </div>
 
                         <p className="text-zinc-400 mt-2">
                             @{profile.username}
                         </p>
+
+                        {(profile.recruiterSnapshot?.preferredRole || profile.recruiterSnapshot?.expectedGraduation) && (
+                            <p className="text-zinc-500 text-sm mt-1">
+                                {[
+                                    profile.recruiterSnapshot?.preferredRole,
+                                    profile.recruiterSnapshot?.expectedGraduation && `Graduating ${profile.recruiterSnapshot.expectedGraduation}`,
+                                ].filter(Boolean).join(" · ")}
+                            </p>
+                        )}
                     </div>
 
                     <LinkedInShareButton
@@ -286,6 +305,28 @@ function PublicProfile() {
                         </div>
                     )}
 
+                    {/* ── Pinned Problems ───────────────────────────────────────── */}
+                    {profile.pinnedProblems && profile.pinnedProblems.length > 0 && (
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+                                Pinned Problems
+                            </h3>
+                            <div className="space-y-2">
+                                {profile.pinnedProblems.map((p) => (
+                                    <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
+                                        <span className="text-sm text-zinc-300">{p.title}</span>
+                                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p.difficulty === "Easy" ? "bg-green-500/10 text-green-400" :
+                                            p.difficulty === "Medium" ? "bg-yellow-500/10 text-yellow-400" :
+                                                "bg-red-500/10 text-red-400"
+                                            }`}>
+                                            {p.difficulty}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* ── Recent Solves ─────────────────────────────────────────── */}
                     {profile.recentSolves && profile.recentSolves.length > 0 && (
                         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
@@ -307,26 +348,7 @@ function PublicProfile() {
                             </div>
                         </div>
                     )}
-                    <div className="grid gap-3">
-
-                        {Object.entries(
-                            profile.topicStats || {}
-                        ).map(
-                            ([topic, count]) => (
-                                <div
-                                    key={topic}
-                                    className="bg-zinc-800 rounded-xl p-4 flex justify-between"
-                                >
-                                    <span>{topic}</span>
-
-                                    <span className="font-bold">
-                                        {count}
-                                    </span>
-                                </div>
-                            )
-                        )}
-
-                    </div>
+                    <SkillRadar topicStats={profile.topicStats || {}} />
 
                 </div>
 

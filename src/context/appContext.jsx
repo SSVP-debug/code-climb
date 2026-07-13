@@ -120,6 +120,31 @@ function AppContextProvider({ children }) {
   const [totalXP, setTotalXP] = useState(0);
   const [role, setRole] = useState("student");
 
+  // /api/init's progress payload has always included joinedDate (see
+  // backend/controllers/progressController.js), but it was never captured
+  // here — Profile.jsx was reading user?.createdAt off the raw Firebase
+  // Auth object instead, which has no such field, so it always fell back
+  // to "Recently". Real fix: hydrate the real value from Mongo.
+  const [joinedDate, setJoinedDate] = useState(null);
+
+  // Phase 9C — editable via updateRecruiterSnapshot below, hydrated from
+  // /api/init's bootUser (not progressToClient — this is account data,
+  // not progress data, same distinction as joinedDate vs XP/streaks).
+  const [recruiterSnapshot, setRecruiterSnapshot] = useState({
+    availableForWork: false,
+    preferredRole: null,
+    expectedGraduation: null,
+  });
+
+  // Phase 9E — consolidated here instead of SettingsPage's own fetch
+  // (single source of truth; also needed by ProfileCompletion).
+  const [username, setUsername] = useState("");
+  const [leetcodeUsername, setLeetcodeUsername] = useState("");
+  const [leetcodeStats, setLeetcodeStats] = useState(null);
+
+  // Phase 9D — [{ slug, title, difficulty }], denormalized at pin time.
+  const [pinnedProblems, setPinnedProblems] = useState([]);
+
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
   // --------------------------------------------------
@@ -220,6 +245,24 @@ function AppContextProvider({ children }) {
         setTotalXP(
           progress.totalXP || 0
         );
+
+        setJoinedDate(
+          progress.joinedDate || null
+        );
+
+        if (bootUser?.recruiterSnapshot) {
+          setRecruiterSnapshot({
+            availableForWork: bootUser.recruiterSnapshot.availableForWork ?? false,
+            preferredRole: bootUser.recruiterSnapshot.preferredRole ?? null,
+            expectedGraduation: bootUser.recruiterSnapshot.expectedGraduation ?? null,
+          });
+        }
+
+        setPinnedProblems(bootUser?.pinnedProblems || []);
+
+        setUsername(bootUser?.username || "");
+        setLeetcodeUsername(bootUser?.leetcodeUsername || "");
+        setLeetcodeStats(bootUser?.leetcodeStats || null);
 
 
       } catch (err) {
@@ -462,6 +505,44 @@ function AppContextProvider({ children }) {
   }
 
   // --------------------------------------------------
+  // RECRUITER SNAPSHOT (Phase 9C)
+  // --------------------------------------------------
+
+  async function updateRecruiterSnapshot(patch) {
+    const result = await apiFetch("/api/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ recruiterSnapshot: patch }),
+    });
+    setRecruiterSnapshot({
+      availableForWork: result.recruiterSnapshot?.availableForWork ?? false,
+      preferredRole: result.recruiterSnapshot?.preferredRole ?? null,
+      expectedGraduation: result.recruiterSnapshot?.expectedGraduation ?? null,
+    });
+    return result.recruiterSnapshot;
+  }
+
+  // --------------------------------------------------
+  // PINNED PROBLEMS (Phase 9D)
+  // --------------------------------------------------
+
+  async function pinProblem(slug) {
+    const result = await apiFetch("/api/users/me/pinned-problems", {
+      method: "POST",
+      body: JSON.stringify({ slug }),
+    });
+    setPinnedProblems(result.pinnedProblems || []);
+    return result.pinnedProblems;
+  }
+
+  async function unpinProblem(slug) {
+    const result = await apiFetch(`/api/users/me/pinned-problems/${slug}`, {
+      method: "DELETE",
+    });
+    setPinnedProblems(result.pinnedProblems || []);
+    return result.pinnedProblems;
+  }
+
+  // --------------------------------------------------
   // --------------------------------------------------
   // CONTEXT
   // --------------------------------------------------
@@ -482,6 +563,18 @@ function AppContextProvider({ children }) {
     submissions,
     role,
     totalXP,
+    joinedDate,
+    recruiterSnapshot,
+    updateRecruiterSnapshot,
+    pinnedProblems,
+    pinProblem,
+    unpinProblem,
+    username,
+    setUsername,
+    leetcodeUsername,
+    setLeetcodeUsername,
+    leetcodeStats,
+    setLeetcodeStats,
     addSubmission,
     markProblemSolved,
     newAchievements,

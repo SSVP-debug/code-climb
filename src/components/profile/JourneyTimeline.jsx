@@ -1,0 +1,83 @@
+import { useMemo } from "react";
+import SectionCard from "../ui/layout/SectionCard";
+import EmptyState from "../ui/feedback/EmptyState";
+import { ACHIEVEMENT_METADATA } from "../../config/achievementMetadata";
+
+/**
+ * JourneyTimeline
+ *
+ * Built entirely from joinedDate + achievements[].unlockedAt (both already
+ * on the User document — see backend/models/User.js achievements schema).
+ * No new backend work: this is "Joined" plus every achievement unlock,
+ * sorted chronologically. Milestones the audit mocked up (e.g. "Reached
+ * Level 5") aren't included because there's no historical XP snapshot to
+ * derive them from — would need a real event log, flagged for a later
+ * phase rather than faked here.
+ */
+function JourneyTimeline({ joinedDate, achievements = [] }) {
+  const events = useMemo(() => {
+    const list = [];
+
+    if (joinedDate) {
+      list.push({
+        key: "joined",
+        date: new Date(joinedDate),
+        icon: "🚀",
+        label: "Joined Code Club",
+      });
+    }
+
+    achievements
+      .filter((a) => a.unlockedAt)
+      .forEach((a) => {
+        const meta = ACHIEVEMENT_METADATA[a.key];
+        if (!meta) return;
+        list.push({
+          key: a.key,
+          date: new Date(a.unlockedAt),
+          icon: meta.icon,
+          label: meta.title,
+        });
+      });
+
+    return list.sort((a, b) => a.date - b.date);
+  }, [joinedDate, achievements]);
+
+  return (
+    <SectionCard title="Journey Timeline" icon="🧭">
+      {events.length === 0 ? (
+        <EmptyState
+          icon="🧭"
+          title="Your journey starts here"
+          description="Milestones will appear as you solve and unlock achievements."
+          compact
+        />
+      ) : (
+        <div className="space-y-0">
+          {events.map((event, i) => (
+            <div key={event.key} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm flex-shrink-0">
+                  {event.icon}
+                </div>
+                {i < events.length - 1 && (
+                  <div className="w-px flex-1 bg-zinc-800 my-1" />
+                )}
+              </div>
+              <div className="pb-6 min-w-0">
+                <p className="font-medium">{event.label}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">
+                  {event.date.toLocaleDateString(undefined, {
+                    year: "numeric", month: "short", day: "numeric",
+                  })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionCard>
+  );
+}
+
+export default JourneyTimeline;

@@ -126,6 +126,16 @@ async function fetchProfile(username) {
             ...user.leetcodeStats,
           }
         : null,
+      // Recruiter Snapshot (Phase 9C) — read-only here; editable only via
+      // PATCH /api/users/me from the owner's own /profile page.
+      recruiterSnapshot: {
+        availableForWork: user.recruiterSnapshot?.availableForWork ?? false,
+        preferredRole: user.recruiterSnapshot?.preferredRole ?? null,
+        expectedGraduation: user.recruiterSnapshot?.expectedGraduation ?? null,
+      },
+      // Pinned Favorite Problems (Phase 9D) — already denormalized
+      // (slug/title/difficulty) at pin time, no join needed here.
+      pinnedProblems: user.pinnedProblems || [],
     },
   };
 }
