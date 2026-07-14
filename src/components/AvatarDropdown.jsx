@@ -1,9 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck } from "lucide-react";
+import { useAppContext } from "../hooks/useAppContext";
+import problems from "../data/problems";
+import { getDailyChallenge } from "../utils/dailyChallenge";
+import { getLastVisitedProblem } from "../utils/recentProblem";
 
 function AvatarDropdown({ user, onLogout, mobile = false }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const { totalXP, currentStreak, solvedProblems, role } = useAppContext();
+  const isStudent = role === "student" || !role;
+
+  const lastVisitedSlug = getLastVisitedProblem();
+
+  function goToRandomProblem() {
+    const pick = problems[Math.floor(Math.random() * problems.length)];
+    setOpen(false);
+    navigate(`/problems/${pick.slug}`);
+  }
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -53,11 +69,71 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
+        <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
           <div className="px-4 py-4 border-b border-zinc-800">
             <p className="font-semibold">{user?.displayName}</p>
             <p className="text-xs text-zinc-400">{user?.email}</p>
           </div>
+
+          {/* Quick Stats — recruiter/TPO/admin accounts don't have XP,
+              streaks, or solved counts in any meaningful sense. */}
+          {isStudent && (
+          <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-zinc-800">
+            <div className="flex flex-col items-center gap-1">
+              <Zap size={14} className="text-yellow-400" />
+              <span className="text-sm font-semibold">{totalXP ?? 0}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">XP</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <Flame size={14} className="text-orange-400" />
+              <span className="text-sm font-semibold">{currentStreak ?? 0}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Streak</span>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <CheckCircle2 size={14} className="text-green-400" />
+              <span className="text-sm font-semibold">{solvedProblems?.length ?? 0}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Solved</span>
+            </div>
+          </div>
+          )}
+
+          {/* Quick Actions — same reasoning: these all point at student
+              problem-solving flows. */}
+          {isStudent && (
+          <div className="py-2 border-b border-zinc-800">
+            <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+              Quick Actions
+            </p>
+
+            {lastVisitedSlug && (
+              <Link
+                to={`/problems/${lastVisitedSlug}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
+              >
+                <RotateCcw size={14} className="text-zinc-500" />
+                Resume Problem
+              </Link>
+            )}
+
+            <button
+              onClick={goToRandomProblem}
+              className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm text-left"
+            >
+              <Shuffle size={14} className="text-zinc-500" />
+              Random Problem
+            </button>
+
+            <Link
+              to={`/problems/${getDailyChallenge().slug}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
+            >
+              <CalendarCheck size={14} className="text-zinc-500" />
+              Daily Challenge
+            </Link>
+          </div>
+          )}
 
           <div className="py-2">
             <Link
