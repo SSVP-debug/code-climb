@@ -40,6 +40,28 @@ export async function requireAuth(req, res, next) {
       }
 
       req.userDoc = userDoc;
+      req.actingAdminDoc = null;
+
+      // ── Admin impersonation ("Login As") ────────────────────────────
+      // If this admin currently has a target set, swap req.userDoc to the
+      // target for the rest of the request — every downstream route
+      // (roleGuard, requireVerified, data ownership, everything) then
+      // transparently operates as that user. req.actingAdminDoc keeps the
+      // real admin's identity so admin-only routes (switch target, exit)
+      // stay reachable without needing to exit impersonation first.
+      if (userDoc.role === "admin" && userDoc.impersonating?.targetUserId) {
+        const targetUser = await User.findById(userDoc.impersonating.targetUserId);
+
+        if (targetUser) {
+          req.actingAdminDoc = userDoc;
+          req.userDoc = targetUser;
+        } else {
+          // Target account no longer exists (e.g. deleted) — clear the
+          // stale pointer instead of leaving the admin stuck.
+          userDoc.impersonating = { targetUserId: null, startedAt: null };
+          await userDoc.save();
+        }
+      }
     } catch (mongoError) {
       req.log.warn({ err: mongoError }, "[Auth] Mongo unavailable, continuing with Firebase auth only");
 

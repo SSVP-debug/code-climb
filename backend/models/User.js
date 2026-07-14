@@ -181,6 +181,17 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
+    // ── Admin impersonation ("Login As") ──────────────────────────────────
+    // Only ever meaningful on an admin account. When set, requireAuth
+    // transparently swaps req.userDoc to the target user for the duration
+    // of the request, while req.actingAdminDoc keeps the real admin's
+    // identity so admin-only routes (switch target, exit) stay reachable.
+    // See middleware/auth.js and ImpersonationLog for the audit trail.
+    impersonating: {
+      targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      startedAt: { type: Date, default: null },
+    },
+
     // ── Recruiter-specific fields ─────────────────────────────────────────
     recruiterProfile: {
       companyName: { type: String, default: null },

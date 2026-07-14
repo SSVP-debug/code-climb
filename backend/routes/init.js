@@ -41,6 +41,7 @@ router.get("/", async (req, res) => {
           leetcodeUsername: "",
         },
         submissions: [],
+        impersonation: { active: false },
         _dbDown: true,
       });
     }
@@ -53,6 +54,22 @@ router.get("/", async (req, res) => {
         .limit(50)
         .lean(),
     ]);
+
+    // Admin impersonation state — req.actingAdminDoc is only set (by
+    // requireAuth) while an admin is actively viewing as someone else.
+    // `user.role` above already reflects the impersonated target (by
+    // design, so the rest of the app behaves exactly as that user); this
+    // block is purely so the UI can show "Impersonating X" instead of the
+    // normal "Admin Preview" strip, and offer an Exit action.
+    const impersonation = req.actingAdminDoc
+      ? {
+          active: true,
+          adminEmail: req.actingAdminDoc.email,
+          targetEmail: req.userDoc.email,
+          targetDisplayName: req.userDoc.displayName,
+          targetRole: req.userDoc.role,
+        }
+      : { active: false };
 
     return res.json({
       user: {
@@ -67,6 +84,8 @@ router.get("/", async (req, res) => {
         },
         pinnedProblems: req.userDoc.pinnedProblems || [],
       },
+
+      impersonation,
 
       progress: progressToClient(req.userDoc),
 

@@ -1,33 +1,34 @@
 /**
- * Admin routes — Phase B: verification approval queue.
+ * Admin routes.
  *
- * GET  /api/admin/pending              — list everything awaiting manual review
- * POST /api/admin/recruiters/:id/approve
- * POST /api/admin/recruiters/:id/reject
- * POST /api/admin/tpo/:collegeId/approve
- * POST /api/admin/tpo/:collegeId/reject
+ * Verification queue (Phase B):
+ *   GET  /api/admin/pending
+ *   POST /api/admin/recruiters/:id/approve | /reject
+ *   POST /api/admin/tpo/:collegeId/approve | /reject
  *
- * All routes require role="admin". Note: this router is mounted in
- * server.js WITH requireAuth + apiLimiter (fixed alongside this file —
- * it was previously mounted without requireAuth, which meant req.userDoc
- * was never populated and requireRole("admin") silently 403'd on every
- * call. The one pre-existing endpoint here was unreachable in practice.)
+ * Impersonation — "Login As" (this phase):
+ *   GET  /api/admin/users                    — searchable/paginated user list
+ *   POST /api/admin/impersonate/:userId       — start viewing as that user
+ *   POST /api/admin/impersonate/stop          — return to your own admin session
+ *
+ * Every route here uses requireAdmin (not requireRole("admin")) — see
+ * middleware/roleGuard.js for why: while impersonating, req.userDoc.role
+ * reflects the *target's* role by design, so a plain requireRole("admin")
+ * would lock you out of switching targets or exiting.
  */
 import { Router } from "express";
 import College from "../models/College.js";
 import User from "../models/User.js";
-import { requireRole } from "../middleware/roleGuard.js";
+import ImpersonationLog from "../models/ImpersonationLog.js";
+import { requireAdmin } from "../middleware/roleGuard.js";
 import { createNotification } from "../services/notificationService.js";
 
 const router = Router();
 
-// Only the fields an admin needs to make an approve/reject decision —
-// never the full user document.
-const RECRUITER_QUEUE_FIELDS =
-  "email displayName recruiterProfile createdAt";
+const RECRUITER_QUEUE_FIELDS = "email displayName recruiterProfile createdAt";
 
 // ── GET /api/admin/pending ──────────────────────────────────────────────────
-router.get("/pending", requireRole("admin"), async (req, res) => {
+router.get("/pending", requireAdmin, async (req, res) => {
   try {
     const [recruiters, tpoColleges] = await Promise.all([
       User.find(
@@ -69,7 +70,7 @@ router.get("/pending", requireRole("admin"), async (req, res) => {
 });
 
 // ── POST /api/admin/recruiters/:id/approve ──────────────────────────────────
-router.post("/recruiters/:id/approve", requireRole("admin"), async (req, res) => {
+router.post("/recruiters/:id/approve", requireAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -87,7 +88,7 @@ router.post("/recruiters/:id/approve", requireRole("admin"), async (req, res) =>
       title: "Recruiter access approved",
       message: `You're verified for ${user.recruiterProfile.companyName}. Your dashboard is ready.`,
       link: "/recruiter/dashboard",
-    }).catch(() => {}); // fire-and-forget — never block the approval on this
+    }).catch(() => {});
 
     return res.json({ success: true });
   } catch {
@@ -96,9 +97,7 @@ router.post("/recruiters/:id/approve", requireRole("admin"), async (req, res) =>
 });
 
 // ── POST /api/admin/recruiters/:id/reject ───────────────────────────────────
-// Reverts the account back to a plain student — they're free to re-apply
-// (e.g. after fixing a typo'd company name) rather than being locked out.
-router.post("/recruiters/:id/reject", requireRole("admin"), async (req, res) => {
+router.post("/recruiters/:id/reject", requireAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -135,7 +134,7 @@ router.post("/recruiters/:id/reject", requireRole("admin"), async (req, res) => 
 });
 
 // ── POST /api/admin/tpo/:collegeId/approve ──────────────────────────────────
-router.post("/tpo/:collegeId/approve", requireRole("admin"), async (req, res) => {
+router.post("/tpo/:collegeId/approve", requireAdmin, async (req, res) => {
   try {
     const college = await College.findById(req.params.collegeId);
 
@@ -148,10 +147,6 @@ router.post("/tpo/:collegeId/approve", requireRole("admin"), async (req, res) =>
     college.verifiedAt = now;
     await college.save();
 
-    // In the ordinary case this is just the one requester (adminUserId) —
-    // updateMany here is defensive for the (currently impossible, but
-    // cheap to guard) case of more than one unverified tpoProfile pointing
-    // at the same domain.
     await User.updateMany(
       { role: "tpo", "tpoProfile.collegeDomain": college.domain, "tpoProfile.verified": false },
       { $set: { "tpoProfile.verified": true, "tpoProfile.verifiedAt": now } }
@@ -174,9 +169,7 @@ router.post("/tpo/:collegeId/approve", requireRole("admin"), async (req, res) =>
 });
 
 // ── POST /api/admin/tpo/:collegeId/reject ───────────────────────────────────
-// Removes the pending College claim entirely and reverts the requester to
-// a plain student — same "free to re-apply" pattern as recruiter reject.
-router.post("/tpo/:collegeId/reject", requireRole("admin"), async (req, res) => {
+router.post("/tpo/:collegeId/reject", requireAdmin, async (req, res) => {
   try {
     const college = await College.findById(req.params.collegeId);
 
@@ -215,6 +208,156 @@ router.post("/tpo/:collegeId/reject", requireRole("admin"), async (req, res) => 
     return res.json({ success: true });
   } catch {
     return res.status(500).json({ error: "Failed to reject TPO request." });
+  }
+});
+
+// ── GET /api/admin/users ─────────────────────────────────────────────────────
+// Searchable, paginated user list backing the "Login As" table. Admin
+// accounts are excluded entirely — impersonating another admin isn't a
+// supported flow (see the guard in POST /impersonate/:userId too).
+router.get("/users", requireAdmin, async (req, res) => {
+  try {
+    const { role, search, page = 1, limit = 20 } = req.query;
+
+    const filter = { role: { $ne: "admin" } };
+    if (role && ["student", "recruiter", "tpo"].includes(role)) {
+      filter.role = role;
+    }
+    if (search) {
+      filter.$or = [
+        { displayName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { username: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(50, parseInt(limit));
+
+    const [users, total] = await Promise.all([
+      User.find(
+        filter,
+        "displayName email username role recruiterProfile.companyName recruiterProfile.verified tpoProfile.collegeName tpoProfile.verified createdAt"
+      )
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
+        .lean(),
+      User.countDocuments(filter),
+    ]);
+
+    return res.json({
+      users: users.map((u) => ({
+        id: u._id,
+        displayName: u.displayName,
+        email: u.email,
+        username: u.username,
+        role: u.role,
+        label:
+          u.role === "recruiter"
+            ? u.recruiterProfile?.companyName
+            : u.role === "tpo"
+            ? u.tpoProfile?.collegeName
+            : null,
+        verified:
+          u.role === "recruiter"
+            ? Boolean(u.recruiterProfile?.verified)
+            : u.role === "tpo"
+            ? Boolean(u.tpoProfile?.verified)
+            : true,
+        joinedAt: u.createdAt,
+      })),
+      total,
+      page: pageNum,
+      limit: limitNum,
+    });
+  } catch (err) {
+    console.error("[Admin] users list error:", err.message);
+    return res.status(500).json({ error: "Failed to load users." });
+  }
+});
+
+// ── POST /api/admin/impersonate/:userId ─────────────────────────────────────
+router.post("/impersonate/:userId", requireAdmin, async (req, res) => {
+  try {
+    // req.actingAdminDoc is only set while already impersonating (switching
+    // targets directly); otherwise req.userDoc IS the real admin.
+    const adminDoc = req.actingAdminDoc || req.userDoc;
+    const target = await User.findById(req.params.userId);
+
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Impersonating another admin isn't supported." });
+    }
+    if (String(target._id) === String(adminDoc._id)) {
+      return res.status(400).json({ error: "You can't impersonate yourself." });
+    }
+
+    // Switching targets mid-impersonation — close out the previous log entry.
+    if (adminDoc.impersonating?.targetUserId) {
+      await ImpersonationLog.updateOne(
+        {
+          adminId: adminDoc._id,
+          targetUserId: adminDoc.impersonating.targetUserId,
+          endedAt: null,
+        },
+        { $set: { endedAt: new Date() } }
+      );
+    }
+
+    const now = new Date();
+    adminDoc.impersonating = { targetUserId: target._id, startedAt: now };
+    await adminDoc.save();
+
+    await ImpersonationLog.create({
+      adminId: adminDoc._id,
+      adminEmail: adminDoc.email,
+      targetUserId: target._id,
+      targetEmail: target.email,
+      targetRole: target.role,
+      startedAt: now,
+    });
+
+    return res.json({
+      success: true,
+      impersonating: {
+        id: target._id,
+        email: target.email,
+        displayName: target.displayName,
+        role: target.role,
+      },
+    });
+  } catch (err) {
+    console.error("[Admin] impersonate start error:", err.message);
+    return res.status(500).json({ error: "Failed to start impersonation." });
+  }
+});
+
+// ── POST /api/admin/impersonate/stop ────────────────────────────────────────
+router.post("/impersonate/stop", requireAdmin, async (req, res) => {
+  try {
+    const adminDoc = req.actingAdminDoc || req.userDoc;
+
+    if (adminDoc.impersonating?.targetUserId) {
+      await ImpersonationLog.updateOne(
+        {
+          adminId: adminDoc._id,
+          targetUserId: adminDoc.impersonating.targetUserId,
+          endedAt: null,
+        },
+        { $set: { endedAt: new Date() } }
+      );
+    }
+
+    adminDoc.impersonating = { targetUserId: null, startedAt: null };
+    await adminDoc.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("[Admin] impersonate stop error:", err.message);
+    return res.status(500).json({ error: "Failed to stop impersonation." });
   }
 });
 

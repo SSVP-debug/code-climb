@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAppContext } from "../../hooks/useAppContext";
+import { apiFetch } from "../../services/api";
 
 const VIEW_TARGETS = [
   { label: "Student", path: "/dashboard" },
@@ -12,13 +14,52 @@ const VIEW_TARGETS = [
  *
  * Mounted once at the top of App.jsx, above <Routes>, so it persists
  * across navigation instead of being re-implemented per dashboard page.
- * Renders nothing unless the signed-in account's real role (from
- * AppContext, sourced from /api/init) is "admin" — never based on which
- * dashboard is currently open, so it can't be spoofed by URL alone.
+ *
+ * Two states, both driven by AppContext (sourced from /api/init):
+ *   - impersonation.active — an admin is currently viewing as a real user
+ *     via "Login As". Shows who, with an Exit action.
+ *   - role === "admin" (and not impersonating) — the plain God Mode strip
+ *     with quick jumps into your own live dashboards + the console.
+ * Renders nothing for anyone else.
  */
 export default function AdminPreviewBanner() {
-  const { role } = useAppContext();
+  const { role, impersonation } = useAppContext();
   const location = useLocation();
+  const [exiting, setExiting] = useState(false);
+
+  async function exitImpersonation() {
+    setExiting(true);
+    try {
+      await apiFetch("/api/admin/impersonate/stop", { method: "POST" });
+    } catch {
+      // fall through to reload regardless — worst case they land back on
+      // /admin still impersonating and can hit Exit again.
+    }
+    // Full reload, not client-side navigate: AppContext holds a lot of
+    // per-identity state (XP, submissions, solved problems, …) that all
+    // needs a clean refetch for whichever identity is active next.
+    window.location.href = "/admin";
+  }
+
+  if (impersonation?.active) {
+    return (
+      <div className="sticky top-0 z-[70] bg-amber-950 border-b border-amber-700/60 text-amber-200">
+        <div className="max-w-6xl mx-auto px-4 py-1.5 flex items-center justify-between gap-3 flex-wrap text-xs">
+          <span className="font-semibold tracking-wide whitespace-nowrap">
+            ⚠ Impersonating {impersonation.targetDisplayName || impersonation.targetEmail}{" "}
+            <span className="font-normal text-amber-400">({impersonation.targetRole})</span>
+          </span>
+          <button
+            onClick={exitImpersonation}
+            disabled={exiting}
+            className="px-2.5 py-1 rounded-md bg-amber-800/60 hover:bg-amber-800 transition disabled:opacity-60"
+          >
+            {exiting ? "Exiting…" : "Exit Impersonation"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (role !== "admin") return null;
 

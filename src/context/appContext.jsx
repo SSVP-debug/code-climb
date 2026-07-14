@@ -120,6 +120,14 @@ function AppContextProvider({ children }) {
   const [totalXP, setTotalXP] = useState(0);
   const [role, setRole] = useState("student");
 
+  // Admin "Login As" state — sourced from /api/init's `impersonation`
+  // block. { active: false } when not impersonating, or
+  // { active: true, adminEmail, targetEmail, targetDisplayName, targetRole }
+  // while an admin is viewing as someone else. `role` above already
+  // reflects the target during impersonation (by design); this is purely
+  // for the banner + Exit action.
+  const [impersonation, setImpersonation] = useState({ active: false });
+
   // /api/init's progress payload has always included joinedDate (see
   // backend/controllers/progressController.js), but it was never captured
   // here — Profile.jsx was reading user?.createdAt off the raw Firebase
@@ -161,6 +169,7 @@ function AppContextProvider({ children }) {
           user: bootUser,
           progress,
           submissions: mongoSubmissions,
+          impersonation: bootImpersonation,
           _dbDown,
         } = await apiFetch("/api/init");
         console.log("Boot user:", bootUser);
@@ -171,6 +180,7 @@ function AppContextProvider({ children }) {
         console.log("Setting role:", bootUser?.role);
 
         setRole(bootUser?.role || "student");
+        setImpersonation(bootImpersonation || { active: false });
 
         setSolvedProblems(
           progress.solvedSlugs || []
@@ -562,6 +572,7 @@ function AppContextProvider({ children }) {
     weeklyGoal: 10,
     submissions,
     role,
+    impersonation,
     totalXP,
     joinedDate,
     recruiterSnapshot,
