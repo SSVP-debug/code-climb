@@ -108,7 +108,7 @@ const AUDIENCES = [
     description:
       "Practice, build streaks, and get AI mock-interview reps before the real thing.",
     cta: "Start solving",
-    to: "/login",
+    to: "/login?role=student",
   },
   {
     icon: "🏫",
@@ -116,7 +116,7 @@ const AUDIENCES = [
     description:
       "One dashboard for your entire batch's placement readiness solve counts, streaks, topic coverage, and a readiness score, not spreadsheets.",
     cta: "TPO dashboard",
-    to: "/tpo/signup",
+    to: "/login?role=tpo",
   },
   {
     icon: "🧑‍💼",
@@ -124,7 +124,7 @@ const AUDIENCES = [
     description:
       "Search verified candidates by solve history and topic strength, and send skills tests directly no resume guesswork.",
     cta: "Recruiter access",
-    to: "/recruiter/signup",
+    to: "/login?role=recruiter",
   },
 ];
 
@@ -187,12 +187,12 @@ export default function LandingPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link
-            to={user ? "/problems" : "/login"}
+            to={user ? "/problems" : "/login?role=student"}
             className="text-sm text-zinc-400 hover:text-white transition px-4 py-2"
           >
             Problems
           </Link>
-          <Button to={user ? "/dashboard" : "/login"} size="sm">
+          <Button to={user ? "/dashboard" : "/portal"} size="sm">
             {user ? "Dashboard →" : "Get Started"}
           </Button>
         </div>
@@ -224,14 +224,14 @@ export default function LandingPage() {
 
             <div className="flex flex-wrap gap-3 mb-10">
               <Button
-                to={user ? "/dashboard" : "/login"}
+                to={user ? "/dashboard" : "/portal"}
                 size="lg"
                 className="shadow-lg shadow-green-900/30"
               >
                 {user ? "Go to Dashboard →" : "Start for Free →"}
               </Button>
               <Button
-                to={user ? "/problems" : "/login"}
+                to={user ? "/problems" : "/login?role=student"}
                 variant="secondary"
                 size="lg"
               >
@@ -344,7 +344,7 @@ export default function LandingPage() {
 
         <div className="text-center">
           <Link
-            to={user ? "/theme-selection" : "/login"}
+            to={user ? "/theme-selection" : "/login?role=student"}
             className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition"
           >
             More universes coming soon
@@ -478,7 +478,7 @@ export default function LandingPage() {
             Join students building consistency, not just solving problems once and forgetting.
           </p>
           <Button
-            to={user ? "/dashboard" : "/login"}
+            to={user ? "/dashboard" : "/portal"}
             size="xl"
             className="shadow-xl shadow-green-900/30"
           >
@@ -499,9 +499,9 @@ export default function LandingPage() {
           </p>
           <div className="flex gap-5 text-xs text-zinc-600">
             <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
-            <Link to={user ? "/dashboard" : "/login"} className="hover:text-zinc-400 transition">Dashboard</Link>
-            <Link to="/tpo/signup" className="hover:text-zinc-400 transition">For TPOs</Link>
-            <Link to="/recruiter/signup" className="hover:text-zinc-400 transition">For Recruiters</Link>
+            <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">Dashboard</Link>
+            <Link to="/login?role=tpo" className="hover:text-zinc-400 transition">For TPOs</Link>
+            <Link to="/login?role=recruiter" className="hover:text-zinc-400 transition">For Recruiters</Link>
             <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
             <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>

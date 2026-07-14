@@ -11,8 +11,10 @@ import ThemeGate from "./routes/ThemeGate";
 // NotFoundPage: tiny, no reason to split.
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
+import PortalPage from "./pages/PortalPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SettingsPage from "./pages/SettingsPage";
+import AdminPreviewBanner from "./components/admin/AdminPreviewBanner";
 
 // ── Lazily loaded ──────────────────────────────────────────────────────────
 // Each lazy() call creates a separate JS chunk.
@@ -44,6 +46,7 @@ const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
 const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
 const TpoDashboardPage = lazy(() => import("./pages/TpoDashboardPage"));
+const AdminConsolePage = lazy(() => import("./pages/AdminConsolePage"));
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
 // so there's no white flash during navigation.
@@ -61,10 +64,12 @@ function PageLoader() {
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <AdminPreviewBanner />
       <Routes>
 
         {/* ── Public routes ──────────────────────────────────────────────── */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/portal" element={<PortalPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/u/:username" element={<PublicProfile />} />
 
@@ -216,6 +221,18 @@ function App() {
               <ThemeGate>
                 <InterviewModePage />
               </ThemeGate>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ── Phase C: Admin Console + View-As God Mode ────────────────── */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={["admin"]}>
+                <AdminConsolePage />
+              </RoleRoute>
             </ProtectedRoute>
           }
         />

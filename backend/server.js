@@ -165,7 +165,7 @@ app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 // ── Phase 8 / Batch E fix: mount previously-orphaned route modules ──────────
 // B2B (TPO) dashboard — gated internally by B2B_ENABLED, same as before.
 app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", requireAuth, apiLimiter, adminRoutes);
 app.use("/api/assignments/student", requireAuth, apiLimiter, studentAssignmentsRouter);
 // Billing (Razorpay) — gated internally by MONETIZATION_ENABLED. NOTE: /plans
 // (meant public) and /webhook (meant no-auth, raw-body signature check) both

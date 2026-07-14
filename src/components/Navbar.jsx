@@ -55,9 +55,13 @@ function Navbar() {
 
     admin: {
       primary: [
-        { to: "/dashboard", label: "Admin" },
+        { to: "/admin", label: "Admin Console" },
       ],
-      secondary: [],
+      secondary: [
+        { to: "/dashboard", label: "Student" },
+        { to: "/recruiter/dashboard", label: "Recruiter" },
+        { to: "/tpo/dashboard", label: "TPO" },
+      ],
     },
   };
 

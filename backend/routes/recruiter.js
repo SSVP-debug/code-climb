@@ -20,6 +20,7 @@ import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
 import { getLevel } from "../utils/xpLevel.js";
 import { createNotification } from "../services/notificationService.js";
+import { isDomainAutoVerified } from "../utils/domainVerification.js";
 
 const router = Router();
 
@@ -65,10 +66,29 @@ router.post("/register", async (req, res) => {
     }
 
     req.userDoc.role = "recruiter";
-    req.userDoc.recruiterProfile = { companyName, designation, companyDomain: domain, verified: false };
+
+    // Hybrid verification (Phase B): known company domains skip the queue
+    // entirely. Everything else is created pending, same as before, and
+    // shows up in GET /api/admin/pending for manual approval.
+    const autoVerified = await isDomainAutoVerified(domain, "company");
+
+    req.userDoc.recruiterProfile = {
+      companyName,
+      designation,
+      companyDomain: domain,
+      verified: autoVerified,
+      verifiedAt: autoVerified ? new Date() : null,
+    };
     await req.userDoc.save();
 
-    return res.json({ success: true, role: "recruiter", companyName, domain });
+    return res.json({
+      success: true,
+      role: "recruiter",
+      companyName,
+      domain,
+      verified: autoVerified,
+      status: autoVerified ? "verified" : "pending",
+    });
   } catch (err) {
     console.error("[Recruiter] register:", err.message);
     return res.status(500).json({ error: "Failed to register recruiter." });

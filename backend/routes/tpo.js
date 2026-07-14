@@ -19,6 +19,7 @@ import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
 import { createNotificationBulk } from "../services/notificationService.js";
+import { isDomainAutoVerified } from "../utils/domainVerification.js";
 
 const require = createRequire(import.meta.url);
 
@@ -76,30 +77,48 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Prevent multiple claims for the same institution
-    // Prevent multiple claims for the same institution
+    // A second TPO from a domain that's already verified doesn't need
+    // another manual review — the college itself has already been vetted.
+    // A domain that's still pending review stays blocked from a second
+    // claim, same as before, to avoid two conflicting requests in the queue.
     const existingCollege = await College.findOne({ domain });
 
-    if (existingCollege) {
+    if (existingCollege && !existingCollege.verified) {
       return res.status(409).json({
-        error: "This college is already registered.",
-        status: existingCollege.verified ? "verified" : "pending",
+        error: "This college is already registered and pending verification.",
+        status: "pending",
       });
     }
 
-    // Create pending college request
-    await College.create({
-      domain,
-      name: collegeName,
-      adminUserId: req.userDoc._id,
-    });
+    const now = new Date();
+    // Hybrid verification (Phase B): known college domains — including one
+    // already verified via an earlier TPO from the same college — skip the
+    // queue. Everything else is created pending and shows up in
+    // GET /api/admin/pending for manual approval.
+    const autoVerified =
+      Boolean(existingCollege?.verified) || (await isDomainAutoVerified(domain, "college"));
 
-    // Mark user as pending TPO
+    if (!existingCollege) {
+      await College.create({
+        domain,
+        name: collegeName,
+        verified: autoVerified,
+        verifiedAt: autoVerified ? now : null,
+        adminUserId: req.userDoc._id,
+      });
+    }
+
+    // Mark user as TPO. Previously this dropped collegeDomain/collegeName
+    // entirely — tpoProfile only ever got verificationStatus (not even a
+    // real schema field) + verified + requestedAt, so every TPO's own
+    // college identity was silently lost. Fixed here.
     req.userDoc.role = "tpo";
     req.userDoc.tpoProfile = {
-      verificationStatus: "pending",
-      verified: false,
-      requestedAt: new Date(),
+      collegeDomain: domain,
+      collegeName,
+      verified: autoVerified,
+      requestedAt: now,
+      verifiedAt: autoVerified ? now : null,
     };
 
     await req.userDoc.save();
@@ -107,8 +126,11 @@ router.post("/register", async (req, res) => {
     return res.status(201).json({
       success: true,
       role: "tpo",
-      message:
-        "Your college registration request has been submitted for verification.",
+      verified: autoVerified,
+      status: autoVerified ? "verified" : "pending",
+      message: autoVerified
+        ? "Your college is verified. You're all set — head to your dashboard."
+        : "Your college registration request has been submitted for verification.",
     });
   } catch (err) {
     console.error("[TPO] register error:", err.message);
