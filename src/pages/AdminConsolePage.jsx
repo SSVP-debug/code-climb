@@ -22,21 +22,28 @@ const VIEW_AS = [
     label: "Student",
     accent: "border-green-500/30 hover:border-green-500/60",
     icon: "🧑‍💻",
-    path: "/dashboard",
+    pages: [{ label: "Dashboard", path: "/dashboard" }],
   },
   {
     id: "recruiter",
     label: "Recruiter",
     accent: "border-sky-500/30 hover:border-sky-500/60",
     icon: "🎯",
-    path: "/recruiter/dashboard",
+    pages: [
+      { label: "Candidates", path: "/recruiter/dashboard?tab=candidates" },
+      { label: "Sent Tests", path: "/recruiter/dashboard?tab=tests" },
+    ],
   },
   {
     id: "tpo",
     label: "TPO",
     accent: "border-violet-500/30 hover:border-violet-500/60",
     icon: "🏫",
-    path: "/tpo/dashboard",
+    pages: [
+      { label: "Overview", path: "/tpo/dashboard?tab=overview" },
+      { label: "Students", path: "/tpo/dashboard?tab=students" },
+      { label: "Assignments", path: "/tpo/dashboard?tab=assignments" },
+    ],
   },
 ];
 
@@ -209,17 +216,26 @@ export default function AdminConsolePage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {VIEW_AS.map((v) => (
-                <Link
+                <div
                   key={v.id}
-                  to={v.path}
-                  className={`flex items-center gap-3 bg-zinc-900/60 border rounded-xl px-4 py-3 transition ${v.accent}`}
+                  className={`bg-zinc-900/60 border rounded-xl px-4 py-3 transition ${v.accent}`}
                 >
-                  <span className="text-2xl" aria-hidden="true">{v.icon}</span>
-                  <div>
-                    <p className="text-white text-sm font-semibold">{v.label}</p>
-                    <p className="text-zinc-500 text-xs font-mono">{v.path}</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl" aria-hidden="true">{v.icon}</span>
+                    <p className="text-white text-sm font-semibold">{v.label} portal</p>
                   </div>
-                </Link>
+                  <div className="flex flex-col gap-1.5">
+                    {v.pages.map((p) => (
+                      <Link
+                        key={p.path}
+                        to={p.path}
+                        className="text-xs font-mono text-zinc-400 hover:text-white bg-black/30 hover:bg-black/50 rounded-lg px-2.5 py-1.5 transition"
+                      >
+                        {p.label} →
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             <p className="text-zinc-600 text-xs mt-2">

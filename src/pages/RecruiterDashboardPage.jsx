@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const VALID_TABS = ["candidates", "tests"];
 
 function FilterBar({ filters, onChange }) {
   return (
@@ -70,7 +72,100 @@ function SendTestModal({ candidate, onClose, onSent }) {
   );
 }
 
+const STATUS_STYLES = {
+  pending: "bg-zinc-800 text-zinc-400",
+  in_progress: "bg-sky-500/10 text-sky-400",
+  submitted: "bg-green-500/10 text-green-400",
+  expired: "bg-red-500/10 text-red-400",
+};
+
+function SentTestsTab() {
+  const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await apiFetch("/api/recruiter/skills-tests");
+        setTests(data.tests || []);
+      } catch (err) {
+        toast.error(err.message || "Failed to load sent tests.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (tests.length === 0) {
+    return (
+      <p className="text-center text-zinc-600 py-12 text-sm">
+        No skills tests sent yet — send one from the Candidates tab.
+      </p>
+    );
+  }
+
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div className="grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+        <span className="col-span-2">Candidate</span>
+        <span>Problems</span>
+        <span className="text-center">Status</span>
+        <span className="text-center">Score</span>
+        <span className="text-right">Sent</span>
+      </div>
+      {tests.map((t) => (
+        <div key={t.id} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
+          <div className="col-span-2">
+            <p className="text-sm text-white font-medium">{t.candidateUsername}</p>
+            {t.note && <p className="text-xs text-zinc-500 truncate">{t.note}</p>}
+          </div>
+          <span className="text-xs text-zinc-400">{t.problemSlugs.length} problems</span>
+          <span className="text-center">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLES[t.status] || STATUS_STYLES.pending}`}>
+              {t.status.replace("_", " ")}
+            </span>
+          </span>
+          <span className="text-center text-sm text-green-400 font-semibold">
+            {t.score != null ? `${t.score}%` : "—"}
+          </span>
+          <span className="text-right text-xs text-zinc-500">
+            {new Date(t.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function RecruiterDashboardPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Deep-linkable via ?tab=candidates|tests — same pattern as the TPO
+  // dashboard, so the admin console (or anyone) can link straight to
+  // either section instead of only the page's default view.
+  const [tab, setTabState] = useState(() => {
+    const fromUrl = searchParams.get("tab");
+    return VALID_TABS.includes(fromUrl) ? fromUrl : "candidates";
+  });
+
+  function setTab(next) {
+    setTabState(next);
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("tab", next);
+      return params;
+    }, { replace: true });
+  }
+
   const [candidates, setCandidates] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -140,72 +235,95 @@ export default function RecruiterDashboardPage() {
     <div className="min-h-screen bg-black px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Candidate Search</h1>
-          <p className="text-zinc-500 text-sm">{total} candidates found</p>
+          <h1 className="text-2xl font-black text-white">Recruiter Portal</h1>
+          <p className="text-zinc-500 text-sm">
+            {tab === "candidates" ? `${total} candidates found` : "Skills tests you've sent"}
+          </p>
         </div>
 
-        <FilterBar filters={filters} onChange={updateFilter} />
-        <Button onClick={() => fetchCandidates(1)} className="mb-6">
-          Search
-        </Button>
+        {/* Tabs — same visual pattern as the TPO dashboard */}
+        <div className="flex gap-2 mb-6">
+          {VALID_TABS.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${
+                tab === t ? "bg-green-600 text-white" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+              }`}
+            >
+              {t === "candidates" ? "Candidates" : "Sent Tests"}
+            </button>
+          ))}
+        </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
-              <span className="col-span-2">Candidate</span>
-              <span className="text-center">Solved</span>
-              <span className="text-center">Hard</span>
-              <span className="text-center">Verified</span>
-              <span className="text-right">Action</span>
-            </div>
-            {candidates.length === 0 ? (
-              <p className="text-center text-zinc-600 py-12 text-sm">No candidates match your filters.</p>
-            ) : candidates.map(c => (
-              <div key={c.username} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
-                <div className="col-span-2">
-                  <p className="text-sm text-white font-medium">{c.displayName}</p>
-                  <p className="text-xs text-zinc-500">{c.college || "—"}</p>
-                  <div className="flex gap-1 mt-1 flex-wrap">
-                    {c.topTopics.map(t => (
-                      <span key={t} className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">{t}</span>
-                    ))}
-                  </div>
-                </div>
-                <span className="text-center text-sm text-green-400 font-semibold">{c.solvedCount}</span>
-                <span className="text-center text-sm text-red-400">{c.hard}</span>
-                <span className="text-center">{c.isVerified ? "✅" : "—"}</span>
-                <div className="text-right flex gap-2 justify-end">
-                  <Button
-                    href={`/u/${c.username}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    variant="secondary"
-                    size="sm"
-                  >
-                    View
-                  </Button>
-                  <Button size="sm" onClick={() => setSelected(c)}>
-                    Test
-                  </Button>
-                </div>
+        {tab === "candidates" && (
+          <>
+            <FilterBar filters={filters} onChange={updateFilter} />
+            <Button onClick={() => fetchCandidates(1)} className="mb-6">
+              Search
+            </Button>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
               </div>
-            ))}
-          </div>
+            ) : (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                <div className="grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+                  <span className="col-span-2">Candidate</span>
+                  <span className="text-center">Solved</span>
+                  <span className="text-center">Hard</span>
+                  <span className="text-center">Verified</span>
+                  <span className="text-right">Action</span>
+                </div>
+                {candidates.length === 0 ? (
+                  <p className="text-center text-zinc-600 py-12 text-sm">No candidates match your filters.</p>
+                ) : candidates.map(c => (
+                  <div key={c.username} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                    <div className="col-span-2">
+                      <p className="text-sm text-white font-medium">{c.displayName}</p>
+                      <p className="text-xs text-zinc-500">{c.college || "—"}</p>
+                      <div className="flex gap-1 mt-1 flex-wrap">
+                        {c.topTopics.map(t => (
+                          <span key={t} className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-center text-sm text-green-400 font-semibold">{c.solvedCount}</span>
+                    <span className="text-center text-sm text-red-400">{c.hard}</span>
+                    <span className="text-center">{c.isVerified ? "✅" : "—"}</span>
+                    <div className="text-right flex gap-2 justify-end">
+                      <Button
+                        href={`/u/${c.username}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        variant="secondary"
+                        size="sm"
+                      >
+                        View
+                      </Button>
+                      <Button size="sm" onClick={() => setSelected(c)}>
+                        Test
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {total > 20 && (
+              <div className="flex justify-center gap-3 mt-6">
+                <button onClick={() => fetchCandidates(page - 1)} disabled={page === 1}
+                  className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">← Prev</button>
+                <span className="text-sm text-zinc-500 py-2">Page {page}</span>
+                <button onClick={() => fetchCandidates(page + 1)} disabled={candidates.length < 20}
+                  className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">Next →</button>
+              </div>
+            )}
+          </>
         )}
 
-        {total > 20 && (
-          <div className="flex justify-center gap-3 mt-6">
-            <button onClick={() => fetchCandidates(page - 1)} disabled={page === 1}
-              className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">← Prev</button>
-            <span className="text-sm text-zinc-500 py-2">Page {page}</span>
-            <button onClick={() => fetchCandidates(page + 1)} disabled={candidates.length < 20}
-              className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">Next →</button>
-          </div>
-        )}
+        {tab === "tests" && <SentTestsTab />}
       </div>
       {selected && <SendTestModal candidate={selected} onClose={() => setSelected(null)} onSent={() => { }} />}
     </div>

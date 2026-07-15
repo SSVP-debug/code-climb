@@ -283,6 +283,41 @@ router.post(
     }
   });
 
+// ── GET /api/recruiter/skills-tests — list tests this recruiter has sent ────
+// (distinct from GET /skills-test/:id below, which fetches one by id — this
+// backs the "Sent Tests" tab so a recruiter can see everything they've sent
+// without knowing individual test ids.)
+router.get(
+  "/skills-tests",
+  requireRole("recruiter", "admin"),
+  requireVerified,
+  async (req, res) => {
+    try {
+      const tests = await SkillsTest.find({ recruiterId: req.userDoc._id })
+        .sort({ createdAt: -1 })
+        .limit(100)
+        .lean();
+
+      return res.json({
+        tests: tests.map((t) => ({
+          id: t._id,
+          candidateUsername: t.candidateUsername,
+          problemSlugs: t.problemSlugs,
+          status: t.status,
+          score: t.score,
+          note: t.note,
+          createdAt: t.createdAt,
+          expiresAt: t.expiresAt,
+          submittedAt: t.submittedAt,
+        })),
+      });
+    } catch (err) {
+      console.error("[Recruiter] skills-tests list:", err.message);
+      return res.status(500).json({ error: "Failed to fetch sent tests." });
+    }
+  }
+);
+
 // ── 086: GET /api/recruiter/skills-test/:id — recruiter checks results ────────
 router.get(
   "/skills-test/:id",

@@ -5,7 +5,7 @@
   "type": "module",
   "main": "server.js",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "nodemon --exec \"node --import ./instrument.js\" --ext js,mjs,json,env server.js",

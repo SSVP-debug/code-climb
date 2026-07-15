@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
@@ -114,12 +115,30 @@ function CreateAssignmentModal({ onClose, onCreated }) {
 }
 
 export default function TpoDashboardPage() {
+  const VALID_TABS = ["overview", "students", "assignments"];
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [enabled, setEnabled] = useState(null);
   const [dashboard, setDashboard] = useState(null);
   const [students, setStudents] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("overview");
+  // Deep-linkable via ?tab=overview|students|assignments — falls back to
+  // "overview" for anything missing or invalid.
+  const [tab, setTabState] = useState(() => {
+    const fromUrl = searchParams.get("tab");
+    return VALID_TABS.includes(fromUrl) ? fromUrl : "overview";
+  });
+
+  function setTab(next) {
+    setTabState(next);
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("tab", next);
+      return params;
+    }, { replace: true });
+  }
+
   const [showModal, setShowModal] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
 
