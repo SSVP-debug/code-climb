@@ -21,8 +21,12 @@
 export const VALID_PORTAL_ROLES = ["student", "recruiter", "tpo"];
 
 export function getPostLoginDestination(role, intent) {
-  if (role === "recruiter") return "/recruiter/dashboard";
-  if (role === "tpo") return "/tpo/dashboard";
+  // Explicit default tab per role — TpoDashboardPage/RecruiterDashboardPage
+  // both also fall back to the same tab when ?tab= is missing, but naming
+  // it here keeps the "where does this role land" decision in one place,
+  // used by both LoginPage (real auth) and the admin console's Login As.
+  if (role === "recruiter") return "/recruiter/dashboard?tab=candidates";
+  if (role === "tpo") return "/tpo/dashboard?tab=overview";
   if (role === "admin") return "/dashboard";
 
   // role is "student" (or unset) — the account has not upgraded yet.
