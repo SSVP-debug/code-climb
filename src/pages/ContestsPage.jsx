@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
+import { getTimeRemaining } from "../utils/countdown";
 
 function countdown(endsAt) {
-  const ms = new Date(endsAt) - Date.now();
-  if (ms <= 0) return "Ended";
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  const s = Math.floor((ms % 60000) / 1000);
-  return h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
+  const { isEnded, days, hours, minutes, seconds } = getTimeRemaining(endsAt);
+  if (isEnded) return "Ended";
+  const totalHours = days * 24 + hours;
+  return totalHours > 0 ? `${totalHours}h ${minutes}m` : `${minutes}m ${seconds}s`;
 }
 
 function StatusBadge({ status }) {

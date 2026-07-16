@@ -1,4 +1,5 @@
 import Submission from "../models/Submission.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 
 // POST /api/insights — returns Claude-generated coaching text
 // req.userDoc is guaranteed by requireAuth middleware
@@ -46,10 +47,9 @@ export async function getInsights(req, res) {
     return { slug, attempts: attempts.length, solved, languages };
   });
 
-  // topicStats is a Mongoose Map — convert to plain object
-  const topicStats = userDoc.topicStats
-    ? Object.fromEntries(userDoc.topicStats)
-    : {};
+  // topicStats is stored as an array of { topic, count } subdocuments —
+  // convert to the plain-object wire format the rest of this function expects.
+  const topicStats = topicStatsToObject(userDoc.topicStats);
 
   const solvedDifficulty = userDoc.solvedDifficulty || {
     easy: 0,

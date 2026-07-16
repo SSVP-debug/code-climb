@@ -1,17 +1,3 @@
-/**
- * Contest routes — commits 089–090
- *
- * PUBLIC CONTESTS (089)
- * GET  /api/contests                    — list upcoming/active/ended public contests
- * POST /api/contests                    — create contest (admin/tpo only)
- * GET  /api/contests/:id                — get contest detail + leaderboard
- * POST /api/contests/:id/join           — join a public contest
- * POST /api/contests/:id/solve          — mark problem solved in contest
- *
- * PRIVATE CONTESTS (090)
- * POST /api/contests/private            — TPO creates private contest
- * POST /api/contests/join-private       — join via invite code
- */
 import { Router } from "express";
 import crypto from "crypto";
 import Contest from "../models/Contest.js";
@@ -247,24 +233,45 @@ router.post("/:id/solve", async (req, res) => {
     if (contest.status !== "active") return res.status(400).json({ error: "Contest is not active." });
     if (!contest.problemSlugs.includes(slug)) return res.status(400).json({ error: "Problem not in contest." });
 
-    const pIdx = contest.participants.findIndex(
+    const participant = contest.participants.find(
       p => p.userId.toString() === req.userDoc._id.toString()
     );
-    if (pIdx === -1) return res.status(403).json({ error: "Not joined this contest." });
-
-    const participant = contest.participants[pIdx];
-    if (participant.solvedSlugs.includes(slug)) {
-      return res.json({ alreadySolved: true, score: participant.score });
-    }
+    if (!participant) return res.status(403).json({ error: "Not joined this contest." });
 
     // Score: 100 points per problem (can extend with time-bonus later)
-    participant.solvedSlugs.push(slug);
-    participant.score += 100;
-    contest.participants[pIdx] = participant;
-    contest.markModified("participants");
-    await contest.save();
+    const SOLVE_SCORE = 100;
 
-    return res.json({ success: true, score: participant.score });
+    // Atomic update: the filter only matches this participant subdocument
+    // when they haven't already solved this slug, so two concurrent solve
+    // requests can't both push the slug or double-award points. Previously
+    // this was a load-mutate-save on the whole Contest document, which
+    // could race and lose an update under concurrent solves.
+    const updated = await Contest.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        participants: { $elemMatch: { userId: req.userDoc._id, solvedSlugs: { $ne: slug } } },
+      },
+      {
+        $push: { "participants.$.solvedSlugs": slug },
+        $inc: { "participants.$.score": SOLVE_SCORE },
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      // Lost the race to another concurrent solve for this slug, or it was
+      // already solved earlier — either way, "already solved" is correct.
+      const current = await Contest.findById(req.params.id).lean();
+      const currentParticipant = current?.participants.find(
+        p => p.userId.toString() === req.userDoc._id.toString()
+      );
+      return res.json({ alreadySolved: true, score: currentParticipant?.score ?? participant.score });
+    }
+
+    const updatedParticipant = updated.participants.find(
+      p => p.userId.toString() === req.userDoc._id.toString()
+    );
+    return res.json({ success: true, score: updatedParticipant.score });
   } catch (err) {
     return res.status(500).json({ error: "Failed to record solve." });
   }

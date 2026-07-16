@@ -1,21 +1,9 @@
 import { useMemo } from "react";
 import { Sparkles } from "lucide-react";
-import SectionCard from "../../ui/layout/SectionCard";
-import { rankTopicsByCompletion } from "../../../utils/rankTopics";
+import SectionCard from "../ui/layout/SectionCard";
+import { rankTopicsByCompletion } from "../../utils/rankTopics";
 
 const SHOW_COUNT = 2;
-
-/**
- * AICoachCard
- *
- * Reuses the exact same topic-completion ranking as PatternView's "Focus
- * Areas" — no new backend data, no separate "AI" call. "AI Coach" here is
- * framing, not a live model call; it's the same weak-topic signal already
- * computed from topicStats, just surfaced somewhere higher-traffic.
- *
- * Only renders once there's at least one attempted-but-incomplete topic —
- * an account with zero solves yet has nothing meaningful to point at.
- */
 function AICoachCard({ problems, topicStats, onPracticeTopic }) {
   const weakTopics = useMemo(() => {
     const ranked = rankTopicsByCompletion(problems, topicStats);

@@ -1,20 +1,7 @@
-/**
- * POST /api/hints/:slug
- * Body: { level: 1|2|3, language: "python"|"javascript"|"java"|"cpp" }
- *
- * Returns a progressive AI hint for the given problem + level.
- * Level 1 = gentle nudge (direction only)
- * Level 2 = approach hint (which pattern/data structure)
- * Level 3 = near-solution (concrete step-by-step, no code)
- *
- * Cached in MongoDB per (slug, level) for 30 days — drastically reduces
- * Claude API costs since the same hints are served to all users.
- *
- * Rate limited: 10 hint requests per user per hour (via aiLimiter).
- */
 import { Router } from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import Problem from "../models/Problem.js";
+import User from "../models/User.js";
 import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 
 const router = Router({ mergeParams: true });
@@ -51,18 +38,49 @@ router.post("/", async (req, res) => {
     // Premium users (or everyone, while MONETIZATION_ENABLED=false) skip this.
     if (!req.isPremium && req.userDoc) {
       const today = new Date().toISOString().split("T")[0];
-      const hintLog = req.userDoc.dailyHintLog || {};
-      const usedToday = hintLog.date === today ? (hintLog.count || 0) : 0;
+      const freeLimit = PREMIUM_FEATURES.UNLIMITED_AI_HINTS.freeLimitPerDay;
 
-      if (usedToday >= PREMIUM_FEATURES.UNLIMITED_AI_HINTS.freeLimitPerDay) {
+      // Atomic conditional update: the filter only matches (and the update
+      // only applies) if today's count is still under the limit, or if
+      // dailyHintLog is from a previous day and needs to reset. Mongo
+      // evaluates the filter and applies the update as a single atomic
+      // operation per document, so two concurrent requests can't both read
+      // "2 used" and both write "3 used" — one of them will always see the
+      // other's write first. Previously this was read-check-save on
+      // req.userDoc, which raced under concurrent requests.
+      const grant = await User.findOneAndUpdate(
+        {
+          _id: req.userDoc._id,
+          $or: [
+            { "dailyHintLog.date": { $ne: today } },
+            { "dailyHintLog.date": today, "dailyHintLog.count": { $lt: freeLimit } },
+          ],
+        },
+        [
+          {
+            $set: {
+              dailyHintLog: {
+                date: today,
+                count: {
+                  $cond: [
+                    { $eq: ["$dailyHintLog.date", today] },
+                    { $add: [{ $ifNull: ["$dailyHintLog.count", 0] }, 1] },
+                    1,
+                  ],
+                },
+              },
+            },
+          },
+        ],
+        { new: true }
+      ).select("dailyHintLog");
+
+      if (!grant) {
         return res.status(402).json({
-          error: `Free plan includes ${PREMIUM_FEATURES.UNLIMITED_AI_HINTS.freeLimitPerDay} hints/day. Upgrade to Pro for unlimited hints.`,
+          error: `Free plan includes ${freeLimit} hints/day. Upgrade to Pro for unlimited hints.`,
           upgradeUrl: "/pricing",
         });
       }
-
-      req.userDoc.dailyHintLog = { date: today, count: usedToday + 1 };
-      await req.userDoc.save();
     }
 
     // Cache check

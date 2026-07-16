@@ -1,13 +1,3 @@
-/**
- * GET /api/problems/:slug/editorial
- *
- * Returns the editorial for a problem.
- * Auth required. Editorial visible only after the user has solved the problem.
- * Admin (email ends in @codeclub.admin) can always read.
- *
- * POST /api/problems/:slug/editorial  (admin only)
- * Body: { content: "## Approach\n..." }
- */
 import { Router } from "express";
 import Problem from "../models/Problem.js";
 import { isUserPremium } from "./billing.js";
@@ -55,8 +45,6 @@ router.get("/", async (req, res) => {
 
 router.post("/", requireRole("admin"), async (req, res) => {
   try {
-    const isAdmin = req.auth?.email?.endsWith("@codeclub.admin") ?? false;
-
     const { slug }    = req.params;
     const { content } = req.body;
 

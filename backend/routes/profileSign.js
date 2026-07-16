@@ -1,5 +1,6 @@
 import { Router } from "express";
 import crypto from "crypto";
+import { getProfileSignSecret } from "../config/env.js";
 
 const router = Router();
 
@@ -8,7 +9,7 @@ router.post("/sign", async (req, res) => {
   try {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
-    const secret     = process.env.PROFILE_SIGN_SECRET || "codeclub-verify-secret";
+    const secret     = getProfileSignSecret();
     const solvedCount = req.userDoc.solvedSlugs?.length ?? 0;
     const signedAt   = new Date();
     const payload    = `${req.userDoc._id}:${solvedCount}:${signedAt.toISOString()}`;
@@ -19,6 +20,7 @@ router.post("/sign", async (req, res) => {
 
     return res.json({ success: true, signedAt, solvedCount });
   } catch (err) {
+    req.log?.error?.({ err }, "[ProfileSign] sign failed");
     return res.status(500).json({ error: "Failed to sign profile." });
   }
 });

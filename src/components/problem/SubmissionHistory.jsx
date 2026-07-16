@@ -1,6 +1,6 @@
 import React from "react";
 import { formatRuntime, formatDate } from "../../utils/formatters";
-import { getStatusColor } from "../../utils/statusStyles";
+import { getStatusMeta } from "../../utils/statusMessages";
 
 function SubmissionHistory({ submissions, onSelectSubmission }) {
 
@@ -32,7 +32,7 @@ function SubmissionHistory({ submissions, onSelectSubmission }) {
               className="group bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-4 cursor-pointer hover:bg-zinc-800/60 hover:border-zinc-600 transition-all active:scale-[0.98]"
             >
               <div className="flex justify-between items-start mb-2">
-                <span className={`text-[15px] font-bold ${getStatusColor(submission.status)}`}>
+                <span className={`text-[15px] font-bold ${getStatusMeta(submission.status).color}`}>
                   {submission.status.split(' ')[0]}
                 </span>
                 <span className="text-[10px] font-bold text-zinc-500 uppercase bg-zinc-900/50 px-2 py-0.5 rounded border border-zinc-800">

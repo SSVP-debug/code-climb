@@ -38,6 +38,8 @@ import User from "../models/User.js";
 import College from "../models/College.js";
 import Problem from "../models/Problem.js";
 import { computeXPFromSlugs, buildDifficultyMap } from "../utils/computeXP.js";
+import { extractEmailDomain } from "../utils/domainVerification.js";
+import { topicStatsFromObject } from "../utils/topicStats.js";
 
 const DEMO_COLLEGE_DOMAIN = "demo-institute.codeclub.dev";
 const DEMO_COLLEGE_NAME = "Demo Institute of Technology";
@@ -118,6 +120,7 @@ async function seedDemoAccounts() {
       $set: {
         firebaseUid: "demo-firebase-tpo",
         email: `demo.tpo@${DEMO_COLLEGE_DOMAIN}`,
+        emailDomain: DEMO_COLLEGE_DOMAIN.toLowerCase(),
         displayName: "Demo TPO Contact",
         username: "demo-tpo-contact",
         role: "tpo",
@@ -147,6 +150,7 @@ async function seedDemoAccounts() {
       $set: {
         firebaseUid: "demo-firebase-recruiter",
         email: `demo.recruiter@${DEMO_COMPANY_DOMAIN}`,
+        emailDomain: DEMO_COMPANY_DOMAIN.toLowerCase(),
         displayName: "Demo Recruiter Contact",
         username: "demo-recruiter-contact",
         role: "recruiter",
@@ -203,13 +207,14 @@ async function seedDemoAccounts() {
         $set: {
           firebaseUid,
           email,
+          emailDomain: extractEmailDomain(email),
           displayName: student.name,
           username: `demo-${student.slug}`,
           role: "student",
           isProfilePublic: true,
           solvedSlugs,
           solvedDifficulty,
-          topicStats: Object.fromEntries(topicStats),
+          topicStats: topicStatsFromObject(Object.fromEntries(topicStats)),
           totalXP,
           currentStreak: student.streak,
           longestStreak: student.streak,

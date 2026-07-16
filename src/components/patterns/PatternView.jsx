@@ -1,21 +1,8 @@
 import { useMemo } from "react";
 import { AlertTriangle, ChevronRight } from "lucide-react";
-import { rankTopicsByCompletion } from "../../../utils/rankTopics";
+import { rankTopicsByCompletion } from "../../utils/rankTopics";
 
-// How many of the weakest topics get the "Focus Areas" callout treatment.
 const FOCUS_COUNT = 3;
-
-/**
- * PatternView — replaces the old placeholder. Groups the catalog by
- * `problem.topic` (Arrays, Trees, Graphs, ...) and ranks by completion %
- * using topicStats (solved count per topic, already tracked in
- * AppContext — see context/appContext.jsx). No new backend data needed:
- * "weak topic" here just means "lowest solved / total in the catalog".
- *
- * Clicking a topic reuses the exact same filter the Browse view's topic
- * chips use (setSelectedTopic), then jumps activeView back to "browse" —
- * so this is a shortcut into Browse, not a parallel problem list.
- */
 function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) {
   const topicRows = useMemo(
     () => rankTopicsByCompletion(problems, topicStats),

@@ -1,13 +1,3 @@
-/**
- * TPO (Training & Placement Officer) routes — B2B college admin features.
- *
- * Entirely gated by B2B_ENABLED feature flag. Reuses the same Firebase auth
- * as students — a TPO is just a User with role="tpo" + a collegeDomain.
- *
- * POST /api/tpo/register        — convert current user into a TPO (one-time)
- * GET  /api/tpo/me               — get TPO profile + college info
- * GET  /api/tpo/students         — list all students from their college domain
- */
 import { Router } from "express";
 import User from "../models/User.js";
 import { B2B_ENABLED } from "../config/featureFlags.js";
@@ -18,6 +8,7 @@ import College from "../models/College.js";
 import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 import { createNotificationBulk } from "../services/notificationService.js";
 import { isDomainAutoVerified } from "../utils/domainVerification.js";
 
@@ -168,7 +159,7 @@ router.get("/students", requireRole("tpo", "admin"),
         TPO_CACHE_TTL_SECONDS,
         async () => {
           const students = await User.find({
-            email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+            emailDomain: domain.toLowerCase(),
             role: "student",
           })
             .select("displayName email totalXP solvedSlugs currentStreak solvedDifficulty topicStats joinedDate")
@@ -220,7 +211,7 @@ router.get("/dashboard", requireRole("tpo", "admin"),
         TPO_CACHE_TTL_SECONDS,
         async () => {
           const students = await User.find({
-            email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+            emailDomain: domain.toLowerCase(),
             role: "student",
           })
             .select("solvedSlugs solvedDifficulty topicStats currentStreak totalXP")
@@ -245,7 +236,7 @@ router.get("/dashboard", requireRole("tpo", "admin"),
             totalHard += s.solvedDifficulty?.hard ?? 0;
             if ((s.currentStreak ?? 0) > 0) activeThisWeek++;
 
-            const topics = s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {});
+            const topics = topicStatsToObject(s.topicStats);
             Object.entries(topics).forEach(([topic, count]) => {
               topicTotals[topic] = (topicTotals[topic] || 0) + count;
             });
@@ -326,7 +317,7 @@ router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
     const domain = req.userDoc.tpoProfile?.collegeDomain;
     if (domain) {
       User.find({
-        email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+        emailDomain: domain.toLowerCase(),
         role: "student",
       })
         .select("_id")
@@ -368,9 +359,10 @@ router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
       .lean();
 
     // Compute completion % per assignment
-    const domain = req.userDoc.collegeDomain;
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
+    if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
     const students = await User.find({
-      email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+      emailDomain: domain.toLowerCase(),
       role: "student",
     }).select("solvedSlugs").lean();
 
@@ -454,8 +446,9 @@ router.get("/report/pdf", requireRole("tpo", "admin"),
 
 
       const domain = req.userDoc.tpoProfile?.collegeDomain;
+      if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
       const students = await User.find({
-        email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+        emailDomain: domain.toLowerCase(),
         role: "student",
       })
         .select("displayName totalXP solvedSlugs solvedDifficulty currentStreak topicStats")

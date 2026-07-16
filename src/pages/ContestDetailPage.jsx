@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../services/api";
+import { getTimeRemaining } from "../utils/countdown";
 
 function formatTime(endsAt) {
-  const ms = new Date(endsAt) - Date.now();
-  if (ms <= 0) return "00:00:00";
-  const h = String(Math.floor(ms / 3600000)).padStart(2,"0");
-  const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2,"0");
-  const s = String(Math.floor((ms % 60000) / 1000)).padStart(2,"0");
-  return `${h}:${m}:${s}`;
+  const { isEnded, days, hours, minutes, seconds } = getTimeRemaining(endsAt);
+  if (isEnded) return "00:00:00";
+  const totalHours = days * 24 + hours;
+  return `${String(totalHours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 export default function ContestDetailPage() {

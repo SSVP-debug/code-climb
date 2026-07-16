@@ -57,3 +57,20 @@ export function maskMongoUri(uri) {
     "://$1:***@"
   );
 }
+
+export function getProfileSignSecret() {
+  const secret = process.env.PROFILE_SIGN_SECRET?.trim();
+
+  if (!secret) {
+    // Deliberately no fallback here. A hardcoded fallback secret checked
+    // into source control means anyone who reads the code can forge a
+    // valid profile signature the moment this env var is ever unset in an
+    // environment — signing and verification must fail loudly instead.
+    throw new Error(
+      "PROFILE_SIGN_SECRET is missing. Set it in backend/.env — profile " +
+      "signing must not fall back to a hardcoded secret."
+    );
+  }
+
+  return secret;
+}

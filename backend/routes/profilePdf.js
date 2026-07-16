@@ -1,26 +1,10 @@
-/**
- * GET /api/profile/pdf
- *
- * Generates a recruiter-ready PDF of the authenticated user's profile.
- * Returns PDF bytes directly (Content-Type: application/pdf).
- *
- * Includes:
- *   - Name, username, join date
- *   - XP, level, streak stats
- *   - Difficulty breakdown (Easy / Medium / Hard)
- *   - Topic breakdown (sorted by count)
- *   - Last 10 solved problems
- *   - Verifiable URL to public profile
- *
- * Uses pdfkit — already a common Node dependency.
- * Install if missing: npm install pdfkit --save (in backend/)
- */
 import { Router } from "express";
 import { createRequire } from "module";
 import { isUserPremium } from "./billing.js";
 import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 import { SITE_URL } from "../config/site.js";
 import { getLevel } from "../utils/xpLevel.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 
 const require = createRequire(import.meta.url);
 const router  = Router();
@@ -64,9 +48,7 @@ router.get("/", async (req, res) => {
     const hard         = user.solvedDifficulty?.hard   ?? 0;
     const streak       = user.currentStreak   ?? 0;
     const bestStreak   = user.longestStreak   ?? 0;
-    const topicStats   = user.topicStats instanceof Map
-      ? Object.fromEntries(user.topicStats)
-      : (user.topicStats ?? {});
+    const topicStats   = topicStatsToObject(user.topicStats);
     const recentSolves = (user.recentActivity || []).slice(0, 10);
     const profileUrl   = `${SITE_URL}/u/${user.username || "anonymous"}`;
 

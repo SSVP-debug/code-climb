@@ -1,17 +1,8 @@
 import { Link } from "react-router-dom";
-import problems from "../../../data/problems";
-import { getLastVisitedProblem } from "../../../utils/recentProblem";
-import { useAppContext } from "../../../hooks/useAppContext";
+import problems from "../../data/problems";
+import { getLastVisitedProblem } from "../../utils/recentProblem";
+import { useAppContext } from "../../hooks/useAppContext";
 
-/**
- * ContinueLearningCard
- *
- * Was a hardcoded placeholder ("No problem in progress" always). Now backed
- * by utils/recentProblem.js, which ProblemDetailsPage writes to on every
- * visit. Looks up display info (title/topic) from the static problem
- * catalog — same lightweight pattern utils/dailyChallenge.js already uses,
- * rather than threading the full fetched+enriched problems list down here.
- */
 function ContinueLearningCard() {
   const { solvedProblems } = useAppContext();
 

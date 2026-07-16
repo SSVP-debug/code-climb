@@ -2,7 +2,7 @@ import ContinueLearningCard from "./ContinueLearningCard";
 import DailyMissionCard from "./DailyMissionCard";
 import LearningProgressCard from "./LearningProgressCard";
 import AICoachCard from "./AICoachCard";
-import ContestCountdownCard from "../../dashboard/sections/ContestCountdownCard";
+import ContestCountdownCard from "../dashboard/sections/ContestCountdownCard";
 
 function LearningWorkspace({
   problems = [],

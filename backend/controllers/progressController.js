@@ -7,13 +7,9 @@ import { invalidateProfileCache } from "./publicProfileController.js";
 import { invalidateTpoCache } from "../routes/tpo.js";
 import { createNotification } from "../services/notificationService.js";
 import { logger } from "../config/logger.js";
+import { topicStatsToObject, topicStatsFromObject } from "../utils/topicStats.js";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-
-function mapTopicStats(topicStats) {
-  if (topicStats instanceof Map) return Object.fromEntries(topicStats);
-  return topicStats || {};
-}
 
 /**
  * Compute a user's total XP server-side from their solvedSlugs.
@@ -42,7 +38,7 @@ async function recomputeXP(solvedSlugs) {
 export function progressToClient(user) {
   return {
     solvedSlugs: user.solvedSlugs || [],
-    topicStats: mapTopicStats(user.topicStats),
+    topicStats: topicStatsToObject(user.topicStats),
     activityDates: user.activityDates || [],
     achievements: user.achievements || [],
     dailyChallengeHistory: user.dailyChallengeHistory || [],
@@ -96,7 +92,7 @@ export async function putProgress(req, res) {
     }
 
     if (topicStats && typeof topicStats === "object") {
-      req.userDoc.topicStats = new Map(Object.entries(topicStats));
+      req.userDoc.topicStats = topicStatsFromObject(topicStats);
     }
 
     if (solvedDifficulty && typeof solvedDifficulty === "object") {

@@ -30,6 +30,7 @@ import compilerRoutes from "./routes/compiler.js";
 import problemRoutes from "./routes/problemRoutes.js";
 import publicProfileRoutes from "./routes/publicProfile.js";
 import billingWebhookRoutes from "./routes/billingWebhook.js";
+import healthRoutes from "./routes/health.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
@@ -117,6 +118,13 @@ app.get("/api/health", (req, res) => {
     mongo: process.env.MONGODB_URI?.startsWith("mongodb") ? "configured" : "missing",
   });
 });
+
+// GET /api/health/compiler — Judge0 circuit-breaker/request stats. Written
+// but never mounted until now (routes/health.js existed, was never
+// imported). Note: services/judge0Health.js's updateJudge0Health() is also
+// never called anywhere, so today this will always report zeroed counters —
+// tracked as a follow-up for the observability phase, not fixed here.
+app.use("/api/health", healthRoutes);
 
 
 // ─── Protected routes (Firebase token required for ALL of these) ────────────

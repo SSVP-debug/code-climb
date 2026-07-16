@@ -1,17 +1,10 @@
-/**
- * Certification routes — commits 087–088
- *
- * GET  /api/cert/tracks           — list all available tracks + user progress
- * POST /api/cert/claim/:trackId   — claim certificate if track complete
- * GET  /api/cert/verify/:code     — public verify a certificate by code
- * GET  /api/cert/:code/pdf        — download certificate PDF
- */
 import { Router } from "express";
 import crypto from "crypto";
 import { createRequire } from "module";
 import User from "../models/User.js";
 import Problem from "../models/Problem.js";
 import { SITE_URL } from "../config/site.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 
 const router  = Router();
 const require = createRequire(import.meta.url);
@@ -33,10 +26,7 @@ export const TRACKS = [
 // ── GET /api/cert/tracks ────────────────────────────────────────────────────
 router.get("/tracks", async (req, res) => {
   try {
-    const topicStats = req.userDoc?.topicStats instanceof Map
-      ? Object.fromEntries(req.userDoc.topicStats)
-      : (req.userDoc?.topicStats || {});
-
+    const topicStats = topicStatsToObject(req.userDoc?.topicStats);
     const earned = new Set((req.userDoc?.certificates || []).map(c => c.trackId));
 
     const tracks = TRACKS.map(t => ({
@@ -59,10 +49,7 @@ router.post("/claim/:trackId", async (req, res) => {
     const track = TRACKS.find(t => t.id === req.params.trackId);
     if (!track) return res.status(404).json({ error: "Track not found." });
 
-    const topicStats = req.userDoc?.topicStats instanceof Map
-      ? Object.fromEntries(req.userDoc.topicStats)
-      : (req.userDoc?.topicStats || {});
-
+    const topicStats = topicStatsToObject(req.userDoc?.topicStats);
     const solved = topicStats[track.topic] || 0;
     if (solved < track.minSolve) {
       return res.status(400).json({

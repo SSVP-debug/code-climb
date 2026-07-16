@@ -1,13 +1,8 @@
 import React from "react";
+import { getStatusMeta } from "../../utils/statusMessages";
 
 function SubmissionDetailsModal({ submission, onClose }) {
   if (!submission) return null;
-
-  const getStatusColor = (status) => {
-    if (!status) return "text-zinc-400";
-    if (status.includes("Accepted")) return "text-green-400";
-    return "text-rose-400";
-  };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -38,7 +33,7 @@ function SubmissionDetailsModal({ submission, onClose }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Status</p>
-              <p className={`text-sm font-bold ${getStatusColor(submission.status)}`}>{submission.status}</p>
+              <p className={`text-sm font-bold ${getStatusMeta(submission.status).color}`}>{submission.status}</p>
             </div>
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Language</p>
@@ -46,7 +41,7 @@ function SubmissionDetailsModal({ submission, onClose }) {
             </div>
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Runtime</p>
-              <p className="text-sm font-bold text-zinc-200 font-mono">{formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(formatRuntime(submission.executionTime)))))) || '0'}ms</p>
+              <p className="text-sm font-bold text-zinc-200 font-mono">{formatRuntime(submission.executionTime) || '0'}ms</p>
             </div>
             <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Passed</p>

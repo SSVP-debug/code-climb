@@ -11,10 +11,10 @@ import { useProblems } from "../hooks/useProblems";
 
 import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
 import ProblemsNavigation from "../components/problem/navigation/ProblemsNavigation";
-import LearningWorkspace from "../components/problem/learning/LearningWorkspace";
+import LearningWorkspace from "../components/learning/LearningWorkspace";
 
 import BrowseView from "../components/problem/browse/BrowseView";
-import PatternView from "../components/problem/patterns/PatternView";
+import PatternView from "../components/patterns/PatternView";
 import PlaylistView from "../components/problem/playlists/PlaylistView";
 import SavedView from "../components/problem/saved/SavedView";
 

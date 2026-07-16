@@ -1,22 +1,3 @@
-/**
- * Campus Ambassador Portal.
- *
- * POST /api/ambassador/apply           — submit an application
- * GET  /api/ambassador/status          — check your own application status
- * GET  /api/ambassador/dashboard       — approved ambassadors: referral
- *                                         stats (reused from the existing
- *                                         referral system) + milestones
- * POST /api/ambassador/claim-milestone — claim a reward once threshold is hit
- *
- * Admin review:
- * GET  /api/ambassador/pending           — list pending applications
- * POST /api/ambassador/:id/review        — approve or reject
- *
- * Deliberately does NOT reimplement referral code generation or referral
- * counting — those already exist and work (routes/referral.js). This file
- * only owns the application/approval workflow and the ambassador-specific
- * milestone layer on top.
- */
 import { Router } from "express";
 import Ambassador from "../models/Ambassador.js";
 import User from "../models/User.js";
@@ -145,10 +126,6 @@ router.post("/claim-milestone", async (req, res) => {
       return res.status(403).json({ error: "You must be an approved ambassador." });
     }
 
-    if (application.milestonesClaimed.includes(milestoneId)) {
-      return res.status(409).json({ error: "Milestone already claimed." });
-    }
-
     const code = await getOrCreateReferralCode(req.userDoc);
     const referredCount = await User.countDocuments({ referredBy: code });
 
@@ -158,13 +135,29 @@ router.post("/claim-milestone", async (req, res) => {
       });
     }
 
-    // Extend the SAME field the base referral system already uses —
-    // stacking on top, not a parallel reward ledger.
-    req.userDoc.referralRewardDays = (req.userDoc.referralRewardDays || 0) + milestone.rewardDays;
-    await req.userDoc.save();
+    // Atomic claim: the filter only matches (and only pushes) if this
+    // milestone hasn't already been claimed, so two concurrent requests for
+    // the same milestone can't both pass and both award the reward days.
+    // Previously this was a read-check-save on two separate documents
+    // (Ambassador + User), which could race.
+    const claimedApplication = await Ambassador.findOneAndUpdate(
+      { _id: application._id, milestonesClaimed: { $ne: milestoneId } },
+      { $push: { milestonesClaimed: milestoneId } },
+      { new: true }
+    );
 
-    application.milestonesClaimed.push(milestoneId);
-    await application.save();
+    if (!claimedApplication) {
+      return res.status(409).json({ error: "Milestone already claimed." });
+    }
+
+    // Extend the SAME field the base referral system already uses —
+    // stacking on top, not a parallel reward ledger. Safe to apply
+    // unconditionally now that the claim above is guaranteed exclusive.
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userDoc._id,
+      { $inc: { referralRewardDays: milestone.rewardDays } },
+      { new: true }
+    ).select("referralRewardDays");
 
     req.log.info(
       { userId: req.userDoc._id.toString(), milestoneId, rewardDays: milestone.rewardDays },
@@ -174,7 +167,7 @@ router.post("/claim-milestone", async (req, res) => {
     return res.json({
       claimed: milestoneId,
       rewardDays: milestone.rewardDays,
-      totalRewardDays: req.userDoc.referralRewardDays,
+      totalRewardDays: updatedUser.referralRewardDays,
     });
   } catch (err) {
     req.log.error({ err }, "[Ambassador] claim-milestone failed");

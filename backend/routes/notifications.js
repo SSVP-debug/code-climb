@@ -1,45 +1,60 @@
-import mongoose from "mongoose";
+import { Router } from "express";
+import {
+  listNotifications,
+  getUnreadCount,
+  markAsRead,
+  markAllAsRead,
+} from "../services/notificationService.js";
 
-/**
- * Notification — a single in-app notification for one user.
- *
- * Deliberately generic across all four user roles (student/TPO/recruiter/
- * admin) rather than having separate schemas per event type, so adding a
- * new notification-triggering event later (a new achievement category, a
- * contest starting, a certification issued, etc.) is a one-line
- * `createNotification()` call, not a schema change.
- *
- * `type` is a free-form string rather than a hard enum on purpose — new
- * event types can be added without a migration. Known types as of this
- * writing: "achievement", "assignment_created", "skills_test_received".
- *
- * `link` is a frontend route the notification should navigate to when
- * clicked (e.g. "/problems/two-sum", "/profile"). Optional.
- *
- * `meta` carries type-specific extra data the frontend might want (e.g.
- * `{ achievementKey: "solve_100" }`) without needing a schema change per type.
- */
-const notificationSchema = new mongoose.Schema(
-  {
-    userId:  { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    type:    { type: String, required: true },
-    title:   { type: String, required: true },
-    message: { type: String, default: "" },
-    link:    { type: String, default: null },
-    read:    { type: Boolean, default: false },
-    meta:    { type: mongoose.Schema.Types.Mixed, default: null },
-  },
-  { timestamps: true }
-);
+const router = Router();
 
-// Primary access pattern: "this user's notifications, newest first" —
-// covers both the full feed and the unread-only feed since read is a
-// simple boolean filter on top of this index.
-notificationSchema.index({ userId: 1, createdAt: -1 });
-notificationSchema.index({ userId: 1, read: 1 });
+// GET /api/notifications?limit=20&before=<ISO date>&unreadOnly=true
+router.get("/", async (req, res) => {
+  try {
+    const { limit, before, unreadOnly } = req.query;
+    const notifications = await listNotifications(req.userDoc._id, {
+      limit: limit ? parseInt(limit) : undefined,
+      before: before || null,
+      unreadOnly: unreadOnly === "true",
+    });
+    return res.json({ notifications });
+  } catch (err) {
+    req.log?.error?.({ err }, "[Notifications] list failed");
+    return res.status(500).json({ error: "Failed to load notifications." });
+  }
+});
 
-const Notification =
-  mongoose.models.Notification ||
-  mongoose.model("Notification", notificationSchema);
+// GET /api/notifications/unread-count — cheap poll target for the bell badge
+router.get("/unread-count", async (req, res) => {
+  try {
+    const count = await getUnreadCount(req.userDoc._id);
+    return res.json({ count });
+  } catch (err) {
+    req.log?.error?.({ err }, "[Notifications] unread-count failed");
+    return res.status(500).json({ error: "Failed to load unread count." });
+  }
+});
 
-export default Notification;
+// POST /api/notifications/:id/read
+router.post("/:id/read", async (req, res) => {
+  try {
+    await markAsRead(req.userDoc._id, req.params.id);
+    return res.json({ ok: true });
+  } catch (err) {
+    req.log?.error?.({ err }, "[Notifications] mark-read failed");
+    return res.status(500).json({ error: "Failed to mark notification as read." });
+  }
+});
+
+// POST /api/notifications/read-all
+router.post("/read-all", async (req, res) => {
+  try {
+    await markAllAsRead(req.userDoc._id);
+    return res.json({ ok: true });
+  } catch (err) {
+    req.log?.error?.({ err }, "[Notifications] mark-all-read failed");
+    return res.status(500).json({ error: "Failed to mark notifications as read." });
+  }
+});
+
+export default router;

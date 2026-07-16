@@ -136,7 +136,7 @@ export function isAccepted(status) {
 
 /**
  * Returns true if the verdict represents a passing run (no errors).
- * Used by ProblemResults to decide which panel to show.
+ * Used by SubmissionResultBanner to decide which banner styling to show.
  */
 export function isCleanRun(status) {
   return status === "Executed ✓";

@@ -1,14 +1,3 @@
-/**
- * LearningProgressCard
- *
- * Circular progress ring + difficulty breakdown.
- * TODO: wire up easy/medium/hard counts from user progress API.
- *
- * Props:
- *   solvedCount — total problems solved
- *   total       — total problems available
- *   progress    — 0-100 percentage
- */
 function LearningProgressCard({ solvedCount = 0, total = 0, progress = 0 }) {
   // Placeholder breakdown — replace with real data from user progress.
   const breakdown = [

@@ -1,5 +1,6 @@
 import { ACHIEVEMENTS } from "../config/achievements.js";
 import { getLevel } from "../utils/xpLevel.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 
 export function evaluateAchievements(user) {
   const unlocked  = [];
@@ -11,9 +12,7 @@ export function evaluateAchievements(user) {
   const streak    = user.currentStreak ?? 0;
   const xp        = user.totalXP ?? 0;
   const level     = getLevel(xp);
-  const topicMap  = user.topicStats instanceof Map
-    ? Object.fromEntries(user.topicStats)
-    : (user.topicStats ?? {});
+  const topicMap  = topicStatsToObject(user.topicStats);
   const maxTopic  = Math.max(0, ...Object.values(topicMap));
 
   function award(key) {

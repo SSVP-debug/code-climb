@@ -1,18 +1,7 @@
-/**
- * Recruiter routes — Phase 7 (083–086)
- *
- * POST /api/recruiter/register        — convert account to recruiter (083)
- * GET  /api/recruiter/candidates      — search candidates (084)
- * GET  /api/recruiter/verify/:username — verify profile signature (085)
- * POST /api/recruiter/skills-test     — send a 90-min skills test (086)
- * GET  /api/recruiter/skills-test/:id — get test status/results (086)
- *
- * All routes need auth. register is open to any user.
- * Everything else requires role="recruiter".
- */
 import { Router } from "express";
 import crypto from "crypto";
 import User from "../models/User.js";
+import { getProfileSignSecret } from "../config/env.js";
 import Problem from "../models/Problem.js";
 import SkillsTest from "../models/SkillsTest.js";
 import { requireRole } from "../middleware/roleGuard.js";
@@ -21,6 +10,7 @@ import { getOrSetCache } from "../utils/cache.js";
 import { getLevel } from "../utils/xpLevel.js";
 import { createNotification } from "../services/notificationService.js";
 import { isDomainAutoVerified } from "../utils/domainVerification.js";
+import { topicStatsToObject } from "../utils/topicStats.js";
 
 const router = Router();
 
@@ -120,17 +110,31 @@ router.get(
       };
 
       if (college) {
-        filter.email = { $regex: `@${college.replace(/\./g, "\\.")}`, $options: "i" };
+        // Anchored-prefix regex on the indexed emailDomain field — Mongo can
+        // use the index for a regex anchored at the start (unlike the old
+        // unanchored `email: { $regex: "@..." }`, which forced a full
+        // collection scan). Kept as a regex rather than an exact match so
+        // recruiters can still type a partial domain (e.g. "marwadi") and
+        // match "marwadiuniversity.ac.in" — same behavior as before.
+        filter.emailDomain = { $regex: `^${college.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, $options: "i" };
       }
 
       if (topic) {
-        // topicStats is a Map — filter students who solved at least 1 in this topic
-        filter[`topicStats.${topic}`] = { $gte: 1 };
+        // topicStats is an array of { topic, count } subdocuments — needs
+        // $elemMatch to find "at least one element with this topic and
+        // count >= 1". The old dot-path filter (`topicStats.${topic}`)
+        // was left over from when this was a Mongoose Map field and never
+        // matched anything after the migration to an array — this filter
+        // silently returned zero candidates whenever a topic was selected.
+        filter.topicStats = { $elemMatch: { topic, count: { $gte: 1 } } };
       }
 
       const pageNum = Math.max(1, parseInt(page));
       const limitNum = Math.min(50, parseInt(limit));
       const skip = (pageNum - 1) * limitNum;
+
+      const minSolvedNum = parseInt(minSolved) || 0;
+      const maxSolvedNum = parseInt(maxSolved) || 9999;
 
       const cacheKey = `recruiter:candidates:${JSON.stringify({ college, topic, minSolved, maxSolved, language, pageNum, limitNum })}`;
 
@@ -138,35 +142,56 @@ router.get(
         cacheKey,
         CANDIDATES_CACHE_TTL_SECONDS,
         async () => {
-          const [students, total] = await Promise.all([
-            User.find(filter)
-              .select("username displayName email totalXP solvedSlugs solvedDifficulty topicStats currentStreak joinedDate profileSignature")
-              .sort({ totalXP: -1 })
-              .skip(skip)
-              .limit(limitNum)
-              .lean(),
-            User.countDocuments(filter),
+          // solvedCount range filter now runs inside Mongo, before $skip/$limit,
+          // so pagination and `total` both reflect the filtered set (previously
+          // this filter ran in JS *after* skip/limit had already been applied,
+          // which could silently return fewer than `limit` results per page and
+          // report an inflated `total`).
+          const [aggResult] = await User.aggregate([
+            { $match: filter },
+            { $addFields: { solvedCount: { $size: { $ifNull: ["$solvedSlugs", []] } } } },
+            { $match: { solvedCount: { $gte: minSolvedNum, $lte: maxSolvedNum } } },
+            { $sort: { totalXP: -1 } },
+            {
+              $facet: {
+                data: [
+                  { $skip: skip },
+                  { $limit: limitNum },
+                  {
+                    $project: {
+                      username: 1,
+                      displayName: 1,
+                      email: 1,
+                      totalXP: 1,
+                      solvedCount: 1,
+                      solvedDifficulty: 1,
+                      topicStats: 1,
+                      currentStreak: 1,
+                      profileSignature: 1,
+                    },
+                  },
+                ],
+                totalCount: [{ $count: "count" }],
+              },
+            },
           ]);
 
-          // Apply solvedCount range filter (can't do in Mongo easily without $expr)
-          const filtered = students.filter(s => {
-            const count = s.solvedSlugs?.length ?? 0;
-            return count >= parseInt(minSolved) && count <= parseInt(maxSolved);
-          });
+          const students = aggResult?.data ?? [];
+          const total = aggResult?.totalCount?.[0]?.count ?? 0;
 
           // Apply language filter via profileSignature or topicStats (best-effort)
-          const result = filtered.map(s => ({
+          const result = students.map(s => ({
             username: s.username,
             displayName: s.displayName,
             college: s.email?.split("@")[1] || null,
             totalXP: s.totalXP || 0,
             level: getLevel(s.totalXP || 0),
-            solvedCount: s.solvedSlugs?.length ?? 0,
+            solvedCount: s.solvedCount ?? 0,
             easy: s.solvedDifficulty?.easy || 0,
             medium: s.solvedDifficulty?.medium || 0,
             hard: s.solvedDifficulty?.hard || 0,
             currentStreak: s.currentStreak || 0,
-            topTopics: Object.entries(s.topicStats instanceof Map ? Object.fromEntries(s.topicStats) : (s.topicStats || {}))
+            topTopics: Object.entries(topicStatsToObject(s.topicStats))
               .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t]) => t),
             isVerified: !!s.profileSignature?.hash,
             profileUrl: `/u/${s.username}`,
@@ -201,7 +226,7 @@ router.get("/verify/:username", async (req, res) => {
     }
 
     // Re-compute expected hash
-    const secret = process.env.PROFILE_SIGN_SECRET || "codeclub-verify-secret";
+    const secret = getProfileSignSecret();
     const payload = `${user._id}:${sig.solvedCount}:${sig.signedAt}`;
     const expected = crypto.createHmac("sha256", secret).update(payload).digest("hex");
 
@@ -220,6 +245,7 @@ router.get("/verify/:username", async (req, res) => {
       reason: !verified ? "Signature invalid." : !countMatch ? "Solve count changed since signing." : null,
     });
   } catch (err) {
+    req.log?.error?.({ err }, "[Recruiter] verify failed");
     return res.status(500).json({ error: "Verification failed." });
   }
 });

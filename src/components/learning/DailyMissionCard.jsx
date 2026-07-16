@@ -1,9 +1,3 @@
-/**
- * DailyMissionCard
- *
- * Surfaces daily challenges with XP rewards.
- * TODO: wire up to daily-mission API or date-seeded problem selector.
- */
 function DailyMissionCard() {
   // Placeholder missions — replace with real API data.
   const missions = [

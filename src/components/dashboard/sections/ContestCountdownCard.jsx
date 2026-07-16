@@ -2,24 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../../../services/api";
 import SectionCard from "../../ui/layout/SectionCard";
+import { breakDownMs } from "../../../utils/countdown";
 
-/**
- * ContestCountdownCard
- *
- * Uses the existing GET /api/contests?status=upcoming&type=public endpoint
- * (already built for ContestsPage, already Redis-cached 30s server-side —
- * see backend/routes/contests.js) and just takes the earliest result,
- * which the backend already returns sorted by startsAt ascending. No new
- * backend endpoint needed.
- */
 function formatCountdown(msRemaining) {
   if (msRemaining <= 0) return null;
-
-  const totalMinutes = Math.floor(msRemaining / 60000);
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
-
+  const { days, hours, minutes } = breakDownMs(msRemaining);
   return { days, hours, minutes };
 }
 

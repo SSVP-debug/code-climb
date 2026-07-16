@@ -69,7 +69,13 @@ const submissionSchema = new mongoose.Schema(
     executionTime: String,
     expectedOutput: mongoose.Schema.Types.Mixed,
     actualOutput: String,
-    // Raw code stored for submission history diffs
+    // Raw code stored for submission history diffs. Cleared (set to "")
+    // after SUBMISSION_CODE_RETENTION_DAYS by
+    // scripts/archiveOldSubmissionCode.js — the submission document itself
+    // is never deleted (status/passed/total/timestamps are kept forever,
+    // since the global acceptance-rate aggregation below depends on every
+    // submission ever made, not just recent ones). Frontend must handle
+    // an empty code value for old submissions.
     code: {
       type: String,
       maxlength: 50_000,
