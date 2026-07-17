@@ -66,45 +66,90 @@ export async function putProgress(req, res) {
     }
 
     const {
-      solvedSlugs,
-      topicStats,
-      activityDates,
-      solvedDifficulty,
-      recentActivity,
       leetcodeUsername,
       // totalXP is intentionally NOT destructured — it comes from the client
       // but is ignored. XP is always recomputed server-side below.
+      //
+      // solvedSlugs / topicStats / activityDates / solvedDifficulty /
+      // recentActivity are ALSO not trusted from the body anymore — see
+      // req.verifiedNewSlugs below. They used to be applied directly
+      // (`req.userDoc.solvedSlugs = solvedSlugs`), which meant any
+      // authenticated client could PUT an arbitrary solved-problem list
+      // and have it saved verbatim, without ever running code through the
+      // judge. docs/security-fixes/2026-07-solve-integrity.md has the full
+      // writeup; the short version is: this endpoint now only ever adds a
+      // slug to solvedSlugs if routes/progress.js's verifyAgainstSubmissions
+      // middleware found a matching `Submission` with status "Accepted" for
+      // this user — and that Submission can only have been created by
+      // routes/judge.js, from a real Judge0-graded run.
     } = req.body;
 
-    // ── Apply each field only if present in the request body ──────────────
+    // ── Apply verified solves only ──────────────────────────────────────────
+    // req.verifiedNewSlugs (set by verifyAgainstSubmissions in
+    // routes/progress.js) is the subset of the client's claimed solvedSlugs
+    // that this server independently confirmed via a real Accepted
+    // Submission. Anything the client claimed without one was already
+    // dropped (and logged) before we got here.
+    const newSlugs = (req.verifiedNewSlugs || []).filter(
+      (slug) => !req.userDoc.solvedSlugs.includes(slug)
+    );
 
-    if (Array.isArray(solvedSlugs)) {
-      req.userDoc.solvedSlugs = solvedSlugs;
-    }
+    if (newSlugs.length > 0) {
+      // Topic/difficulty/title come from the Problem catalog, not the
+      // client — closes the same trust gap for topicStats/solvedDifficulty/
+      // recentActivity that solvedSlugs had (a client could otherwise claim
+      // a Hard problem was Easy, or attribute it to a topic it isn't, to
+      // skew stats independently of the solvedSlugs check above).
+      const problems = await Problem.find({ slug: { $in: newSlugs } })
+        .select("slug topic difficulty title")
+        .lean();
+      const bySlug = new Map(problems.map((p) => [p.slug, p]));
 
-    if (Array.isArray(activityDates)) {
-      req.userDoc.activityDates = activityDates;
+      const today = new Date().toISOString().split("T")[0];
+      const nextTopicStats = topicStatsToObject(req.userDoc.topicStats);
+      const nextSolvedDifficulty = {
+        easy: req.userDoc.solvedDifficulty?.easy || 0,
+        medium: req.userDoc.solvedDifficulty?.medium || 0,
+        hard: req.userDoc.solvedDifficulty?.hard || 0,
+      };
+      const nextRecentActivity = [...(req.userDoc.recentActivity || [])];
 
-      const { currentStreak, longestStreak } = calculateStreak(activityDates);
+      for (const slug of newSlugs) {
+        const problem = bySlug.get(slug);
+        // Shouldn't happen (routes/progress.js's validateSlugs already
+        // confirmed the slug exists) — skip defensively rather than throw.
+        if (!problem) continue;
+
+        req.userDoc.solvedSlugs.push(slug);
+
+        if (problem.topic) {
+          nextTopicStats[problem.topic] = (nextTopicStats[problem.topic] || 0) + 1;
+        }
+
+        const diffKey = (problem.difficulty || "").toLowerCase();
+        if (diffKey in nextSolvedDifficulty) {
+          nextSolvedDifficulty[diffKey] += 1;
+        }
+
+        nextRecentActivity.unshift({ title: problem.title, time: today });
+      }
+
+      req.userDoc.topicStats = topicStatsFromObject(nextTopicStats);
+      req.userDoc.solvedDifficulty = nextSolvedDifficulty;
+      req.userDoc.recentActivity = nextRecentActivity.slice(0, 10);
+
+      // activityDates/streak: today is provably a solving day (we just
+      // verified at least one new Accepted submission), so — and only
+      // so — it's safe to add. A client can no longer backfill arbitrary
+      // past dates to inflate a streak.
+      const activityDates = new Set(req.userDoc.activityDates || []);
+      activityDates.add(today);
+      req.userDoc.activityDates = [...activityDates];
+
+      const { currentStreak, longestStreak } = calculateStreak(req.userDoc.activityDates);
       req.userDoc.currentStreak = currentStreak;
       req.userDoc.longestStreak = Math.max(req.userDoc.longestStreak || 0, longestStreak);
-      req.userDoc.lastActivityDate = activityDates[activityDates.length - 1] || null;
-    }
-
-    if (topicStats && typeof topicStats === "object") {
-      req.userDoc.topicStats = topicStatsFromObject(topicStats);
-    }
-
-    if (solvedDifficulty && typeof solvedDifficulty === "object") {
-      req.userDoc.solvedDifficulty = {
-        easy: solvedDifficulty.easy ?? 0,
-        medium: solvedDifficulty.medium ?? 0,
-        hard: solvedDifficulty.hard ?? 0,
-      };
-    }
-
-    if (Array.isArray(recentActivity)) {
-      req.userDoc.recentActivity = recentActivity.slice(0, 10);
+      req.userDoc.lastActivityDate = today;
     }
 
     if (leetcodeUsername !== undefined) {
@@ -112,7 +157,8 @@ export async function putProgress(req, res) {
     }
 
     // ── Server-side XP recomputation ──────────────────────────────────────
-    // Always recompute from the solved slugs — never trust client-supplied XP.
+    // Always recompute from the (now fully verified) solved slugs — never
+    // trust client-supplied XP.
     const freshXP = await recomputeXP(req.userDoc.solvedSlugs);
     if (freshXP !== null) {
       req.userDoc.totalXP = freshXP;

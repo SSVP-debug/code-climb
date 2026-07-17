@@ -1,0 +1,59 @@
+# Backend tests
+
+This is the first real test coverage the backend has had — see the July
+2026 engineering review, §10, for why that's worth calling out explicitly.
+
+## Approach
+
+Unit-style tests, not integration tests against a real MongoDB. Each test
+file mocks the Mongoose models and any external service it touches
+(`vi.mock("../models/Submission.js")`, `vi.mock("../controllers/compilerController.js")`
+for Judge0, etc.) and calls the exported handler/middleware functions
+directly with hand-built `req`/`res`/`next` — no `supertest`, no running
+HTTP server. This is intentional:
+
+- It avoids adding a new test-only HTTP dependency for something Express's
+  handler functions don't actually need to be invoked.
+- It's fast — no DB or network I/O anywhere in the suite.
+- It tests the actual decision logic (does this input get accepted or
+  rejected, does this middleware call `next()` or short-circuit) rather
+  than plumbing.
+
+The tradeoff: it doesn't catch a real Mongoose schema/query bug (a typo'd
+field name, a broken index, an actual query that doesn't do what the mock
+assumes it does). If/when that tradeoff stops being worth it — most likely
+once there's enough business logic that a false-positive from an
+over-permissive mock becomes a real risk — the next step is
+`mongodb-memory-server` for true integration tests against a real (in
+memory) Mongo instance, run as a separate `test:integration` script so the
+fast unit suite still runs on every commit.
+
+## Where to start if you're adding the next test
+
+Priority order, per the engineering review:
+
+1. `routes/judge.js` (`submitHandler`) — the grading logic, especially the
+   "empty testcases → would silently return Accepted" guard, and the
+   Submission-recording behavior (see `routes/judge.test.js`).
+2. `routes/progress.js` / `controllers/progressController.js` — the
+   solve-verification logic (see `routes/progress.test.js`).
+3. `middleware/roleGuard.js` — done, see `middleware/roleGuard.test.js`.
+4. `middleware/auth.js` — impersonation swap logic (`req.actingAdminDoc`)
+   is security-relevant and still untested.
+5. `utils/computeXP.js`, `utils/calculateStreak.js` — pure functions,
+   cheap to cover, currently untested.
+6. `routes/billing.js` / `routes/billingWebhook.js` — signature
+   verification, currently untested.
+
+## Running
+
+```
+cd backend
+npm install
+npm test
+```
+
+`npm test` runs `vitest run` (see `package.json`). CI runs this on every
+push/PR (see `.github/workflows/ci.yml`) and — as of this change — the
+job's `continue-on-error` was removed, so a failing backend test now fails
+the pipeline.

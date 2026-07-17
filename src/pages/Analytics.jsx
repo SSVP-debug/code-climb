@@ -30,7 +30,7 @@ function Analytics() {
     if (submissions.length === 0) return 0;
 
     const accepted = submissions.filter(
-      (s) => s.status === "Accepted 🎉"
+      (s) => s.status === "Accepted"
     ).length;
 
     return (
@@ -43,7 +43,7 @@ function Analytics() {
     const acceptedSubmissions =
       submissions.filter(
         (s) =>
-          s.status === "Accepted 🎉"
+          s.status === "Accepted"
       );
 
     if (

@@ -15,7 +15,7 @@ function AdvancedStatsSection() {
 
     const accepted = submissions.filter(
       (submission) =>
-        submission.status === "Accepted 🎉"
+        submission.status === "Accepted"
     ).length;
 
     return (
@@ -29,7 +29,7 @@ function AdvancedStatsSection() {
       submissions.filter(
         (submission) =>
           submission.status ===
-          "Accepted 🎉"
+          "Accepted"
       );
 
     if (

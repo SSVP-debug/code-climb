@@ -1,6 +1,7 @@
-import Submission from "../models/Submission.js";
+import Submission, { SUBMISSION_STATUSES } from "../models/Submission.js";
+import { logger } from "../config/logger.js";
 
-function toClientSubmission(doc) {
+export function toClientSubmission(doc) {
   return {
     id: doc._id.toString(),
     problemSlug: doc.problemSlug,
@@ -20,25 +21,77 @@ function toClientSubmission(doc) {
   };
 }
 
+// ── recordVerifiedSubmission ─────────────────────────────────────────────────
+// The ONLY place a Submission document is written. Not an HTTP handler —
+// called exclusively from backend/routes/judge.js, immediately after a real
+// Judge0-graded run, using values *this server just computed* (status,
+// passed/total counts, visible/hidden split, expected/actual output on a
+// visible-testcase failure). Nothing here is client-supplied.
+//
+// Security history: this function replaces what used to be a public
+// `POST /api/submissions` handler that did `Submission.create({ userId,
+// ...req.body })` — i.e. it trusted a client-sent `status`/`passed`/`total`
+// wholesale, with only Zod shape validation (types/lengths), not truthfulness.
+// Any authenticated user could POST `{ status: "Accepted", passed: total }`
+// directly and be recorded as having solved a problem without Judge0 ever
+// running their code — which then fed XP, achievements, certificates, and
+// the recruiter-facing public profile. See docs/security-fixes/2026-07-solve-integrity.md.
+//
+// `code` is capped defensively even though the caller (judge.js) already
+// validates it via Zod — this function has no HTTP-layer validation of its
+// own, so it re-enforces the model's own maxlength expectation rather than
+// relying on the caller never changing.
+export async function recordVerifiedSubmission({
+  userId,
+  problemSlug,
+  problemTitle,
+  language,
+  code,
+  status,
+  passed,
+  total,
+  visiblePassed,
+  hiddenPassed,
+  executionTime,
+  expectedOutput,
+  actualOutput,
+}) {
+  if (!SUBMISSION_STATUSES.includes(status)) {
+    throw new Error(`recordVerifiedSubmission: invalid status "${status}"`);
+  }
+
+  return Submission.create({
+    userId,
+    problemSlug,
+    problemTitle,
+    language,
+    code: typeof code === "string" ? code.slice(0, 50_000) : "",
+    status,
+    passed: passed ?? 0,
+    total: total ?? 0,
+    visiblePassed: visiblePassed ?? 0,
+    hiddenPassed: hiddenPassed ?? 0,
+    executionTime: executionTime ?? null,
+    expectedOutput,
+    actualOutput,
+  });
+}
+
+// ── POST /api/submissions ────────────────────────────────────────────────────
+// REMOVED as a client-writable endpoint (see recordVerifiedSubmission's
+// comment above for why). The route itself now returns 410 Gone — see
+// backend/routes/submissions.js — this handler is kept only so any stray
+// import doesn't break the build, and to give a clear error if something
+// still references it directly instead of through the route.
 export async function createSubmission(req, res) {
-  if (!req.userDoc) {
-    return res.status(503).json({ error: "Database unavailable. Try again shortly." });
-  }
-
-  try {
-    const submission = await Submission.create({
-      userId: req.userDoc._id,
-      ...req.body,
-      statusDescription: req.body.statusDescription || req.body.status,
-      judge0Time: req.body.judge0Time || req.body.executionTime,
-      memory: req.body.memory || null,
-    });
-
-    return res.status(201).json(toClientSubmission(submission));
-  } catch (err) {
-    req.log.error({ err }, "[Submissions] createSubmission failed");
-    return res.status(500).json({ error: "Failed to save submission. Try again." });
-  }
+  logger.warn(
+    { userId: req.userDoc?._id?.toString() },
+    "[Submissions] Deprecated direct createSubmission call — submissions are now recorded only by POST /api/judge/submit"
+  );
+  return res.status(410).json({
+    error:
+      "This endpoint no longer accepts client-submitted results. Submissions are recorded automatically when you submit code via /api/judge/submit.",
+  });
 }
 
 export async function listSubmissions(req, res) {

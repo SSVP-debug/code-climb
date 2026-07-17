@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validateBody } from "./compiler.js";
 import { callJudge0 } from "../controllers/compilerController.js";
 import Problem from "../models/Problem.js";
+import { recordVerifiedSubmission } from "../controllers/submissionController.js";
 
 const router = Router();
 
@@ -219,7 +220,17 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
   return { index, isVisible, kind: "passed" };
 }
 
-router.post("/submit", validateBody(submitSchema), async (req, res) => {
+// ── submitHandler ─────────────────────────────────────────────────────────────
+// Exported (not just registered inline) so it can be unit-tested directly
+// with constructed req/res objects, without needing a running HTTP server
+// or an extra test-only dependency like supertest.
+//
+// This is the ONLY code path that grades a submission AND the ONLY code
+// path that writes a Submission document (via recordVerifiedSubmission) —
+// see controllers/submissionController.js for why that consolidation
+// matters. Every `finish()` call below persists the actual, just-computed
+// grading result before responding; nothing here is client-supplied.
+export async function submitHandler(req, res) {
   const { problemSlug, code, language, functionName, visibletestcases } = req.body;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
@@ -267,6 +278,40 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
   let passedCount = 0;
   let visiblePassed = 0;
   let hiddenPassed = 0;
+
+  // ── finish(): the single exit point for this handler ───────────────────
+  // Persists the graded result (best-effort — a Mongo hiccup must not turn
+  // a successful/valid grading run into a 500 for the user) and THEN
+  // responds. Persistence is awaited before res.json() so that by the time
+  // the client receives this response, the Submission row already exists —
+  // the frontend's next call (PUT /api/progress, to update solved/XP state)
+  // depends on being able to find it immediately (see routes/progress.js's
+  // verifyAgainstSubmissions middleware).
+  async function finish(status, payload, submissionExtra = {}) {
+    if (req.userDoc) {
+      try {
+        await recordVerifiedSubmission({
+          userId: req.userDoc._id,
+          problemSlug,
+          problemTitle: problem.title,
+          language,
+          code,
+          status,
+          passed: payload.passed ?? passedCount,
+          total: payload.total ?? alltestcases.length,
+          visiblePassed: submissionExtra.visiblePassed ?? visiblePassed,
+          hiddenPassed: submissionExtra.hiddenPassed ?? hiddenPassed,
+          executionTime: payload.executionTime ?? null,
+          expectedOutput: submissionExtra.expectedOutput,
+          actualOutput: submissionExtra.actualOutput,
+        });
+      } catch (err) {
+        req.log.error({ err, problemSlug, status }, "[Judge] Failed to persist submission record");
+      }
+    }
+
+    return res.json({ status, ...payload });
+  }
 
   try {
     // Run the first testcase alone. This preserves the original cost
@@ -341,8 +386,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
           { err: failure.error, problemSlug, testcaseIndex: failure.index },
           "[Judge] callJudge0 threw"
         );
-        return res.json({
-          status: "Judge Error",
+        return finish("Judge Error", {
           passed: passedCount,
           total: alltestcases.length,
           error: failure.errorMessage,
@@ -350,8 +394,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       }
 
       if (failure.kind === "noResult") {
-        return res.json({
-          status: "Judge Error",
+        return finish("Judge Error", {
           passed: passedCount,
           total: alltestcases.length,
           error: failure.errorMessage,
@@ -359,8 +402,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       }
 
       if (failure.kind === "compileError") {
-        return res.json({
-          status: "Compilation Error",
+        return finish("Compilation Error", {
           passed: passedCount,
           total: alltestcases.length,
           error: failure.errorMessage,
@@ -368,8 +410,7 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       }
 
       if (failure.kind === "infraError" || failure.kind === "runtimeError") {
-        return res.json({
-          status: failure.kind === "infraError" ? "Judge Error" : "Runtime Error",
+        return finish(failure.kind === "infraError" ? "Judge Error" : "Runtime Error", {
           passed: passedCount,
           total: alltestcases.length,
           error: failure.errorMessage,
@@ -377,18 +418,30 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       }
 
       // failure.kind === "wrongAnswer"
-      return res.json({
-        status: "Wrong Answer",
-        passed: passedCount,
-        total: alltestcases.length,
-        visiblePassed,
-        hiddenPassed,
-        executionTime: String(Date.now() - startTime),
-        ...(failure.isVisible ? {
+      return finish(
+        "Wrong Answer",
+        {
+          passed: passedCount,
+          total: alltestcases.length,
+          visiblePassed,
+          hiddenPassed,
+          executionTime: String(Date.now() - startTime),
+          ...(failure.isVisible ? {
+            expectedOutput: failure.expectedOutput,
+            actualOutput: failure.actualOutput,
+          } : {}),
+        },
+        {
+          visiblePassed,
+          hiddenPassed,
+          // Submission history stores expected/actual regardless of
+          // visibility (it's the user's own past attempt, not a live
+          // hidden-testcase leak to other users) — only the *response*
+          // withholds it for hidden failures, per failure.isVisible above.
           expectedOutput: failure.expectedOutput,
           actualOutput: failure.actualOutput,
-        } : {}),
-      });
+        }
+      );
     }
 
     req.log.info(
@@ -396,24 +449,28 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
       "[Judge] Submission accepted"
     );
 
-    return res.json({
-      status: "Accepted",
-      passed: passedCount,
-      total: alltestcases.length,
-      visiblePassed,
-      hiddenPassed,
-      executionTime: String(Date.now() - startTime),
-    });
+    return finish(
+      "Accepted",
+      {
+        passed: passedCount,
+        total: alltestcases.length,
+        visiblePassed,
+        hiddenPassed,
+        executionTime: String(Date.now() - startTime),
+      },
+      { visiblePassed, hiddenPassed }
+    );
 
   } catch (err) {
     req.log.error({ err, problemSlug }, "[Judge] Unhandled error during grading");
-    return res.json({
-      status: "Judge Error",
+    return finish("Judge Error", {
       passed: passedCount,
       total: alltestcases.length,
       error: "An unexpected error occurred during judging.",
     });
   }
-});
+}
+
+router.post("/submit", validateBody(submitSchema), submitHandler);
 
 export default router;

@@ -12,10 +12,6 @@ import {
   markProblemSolved as persistSolvedToMongo,
 } from "../services/progressService";
 
-import {
-  createSubmission,
-} from "../services/submissionService";
-
 import { apiFetch } from "../services/api";
 
 import { getEarnedXP } from "../utils/xpUtils";
@@ -287,44 +283,26 @@ function AppContextProvider({ children }) {
   // SUBMISSIONS
   // --------------------------------------------------
 
-  async function addSubmission(submission) {
+  // NOTE: this used to also POST the submission to the backend
+  // (`createSubmission`) so it would persist to Mongo. That endpoint was a
+  // security hole — it accepted client-supplied `status`/`passed`/`total`
+  // and saved them as-is, meaning any authenticated user could fabricate an
+  // "Accepted" submission without ever running their code (see
+  // docs/security-fixes/2026-07-solve-integrity.md).
+  //
+  // The backend now records every submission itself, server-side, inside
+  // POST /api/judge/submit — from the actual Judge0-graded result, not
+  // from whatever the client claims afterward. By the time judgeSubmission()
+  // (src/services/judgeService.js) resolves, the Submission row already
+  // exists. So this function's only remaining job is the optimistic local
+  // UI update — there's nothing left to persist here. A full history
+  // (including this entry) is available via getSubmissions() / GET
+  // /api/submissions on next fetch.
+  function addSubmission(submission) {
     setSubmissions((prev) => [
       submission,
       ...prev,
     ]);
-
-    if (!user) return;
-
-    try {
-      await createSubmission({
-        problemSlug:
-          submission.problemSlug,
-        language:
-          submission.language,
-        code:
-          submission.code ||
-          "// code not stored",
-        status:
-          submission.status,
-        passed:
-          submission.passed || 0,
-        total:
-          submission.total || 0,
-        executionTime:
-          submission.executionTime ||
-          null,
-        output:
-          submission.actualOutput ||
-          "",
-      });
-
-
-    } catch (err) {
-      console.error(
-        "[AppContext] Submission save failed:",
-        err
-      );
-    }
   }
 
   // --------------------------------------------------

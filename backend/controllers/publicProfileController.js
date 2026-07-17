@@ -70,7 +70,7 @@ async function fetchProfile(username) {
   const acceptedSubmissions = await Submission
     .find({
       userId: user._id,
-      status: "Accepted 🎉",
+      status: "Accepted",
     })
     .select("language problemSlug")
     .lean();

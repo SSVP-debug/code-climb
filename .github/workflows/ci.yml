@@ -76,14 +76,17 @@ jobs:
         run: node scripts/importProblems.js --dry-run
 
       - name: Run backend tests
-        run: npx vitest run --reporter=verbose
+        run: npm test -- --reporter=verbose
         env:
           NODE_ENV: test
-          # Tests that need DB use mongodb-memory-server — no real Atlas needed
+          # No MongoDB/Firebase needed — tests mock Mongoose models and
+          # external calls directly (see backend/test/README.md) rather
+          # than hitting a real database or Firebase project.
           MONGODB_URI: ""
           FIREBASE_PROJECT_ID:  test
           FIREBASE_CLIENT_EMAIL: test@test.iam.gserviceaccount.com
           FIREBASE_PRIVATE_KEY:  "-----BEGIN RSA PRIVATE KEY-----\nMIItest\n-----END RSA PRIVATE KEY-----\n"
-        # Don't fail the whole pipeline if no backend tests exist yet —
-        # remove `continue-on-error` once backend tests are written (commit 020+)
-        continue-on-error: true
+        # `continue-on-error` removed — backend tests now exist (see
+        # backend/test/README.md and the *.test.js files alongside the
+        # modules they cover), so a failing one should fail the pipeline
+        # like any other CI check, not be silently ignored.

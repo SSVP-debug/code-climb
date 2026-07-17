@@ -292,7 +292,7 @@ function ProblemSolver({
         total: judgeResult.total ?? 0,
       });
 
-      if (judgeResult.status === "Accepted 🎉" && !wasAlreadySolved) {
+      if (judgeResult.status === "Accepted" && !wasAlreadySolved) {
 
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {

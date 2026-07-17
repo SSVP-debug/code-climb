@@ -7,6 +7,7 @@ import {
   putProgress,
 } from "../controllers/progressController.js";
 import Problem from "../models/Problem.js";
+import Submission from "../models/Submission.js";
 
 const router = Router();
 
@@ -83,7 +84,7 @@ const progressSchema = z.object({
 // ── Slug existence middleware ──────────────────────────────────────────────────
 // Runs after Zod validation. Verifies every submitted slug actually exists
 // in the problems collection — prevents marking fake problems as solved.
-async function validateSlugs(req, res, next) {
+export async function validateSlugs(req, res, next) {
   const { solvedSlugs } = req.body;
 
   if (!solvedSlugs || solvedSlugs.length === 0) return next();
@@ -115,6 +116,75 @@ async function validateSlugs(req, res, next) {
   }
 }
 
+// ── Ownership check ──────────────────────────────────────────────────────────
+//
+// validateSlugs above closes one gap (fake slugs that don't exist at all)
+// but NOT the actual exploit: `{ solvedSlugs: ["two-sum", ...every real
+// slug in the catalog] }` sailed straight through it, because every one of
+// those slugs *does* exist — the check never asked whether *this user*
+// actually solved any of them. That's the gap this middleware closes.
+//
+// A slug only counts if there's a matching `Submission` document with
+// status "Accepted" for this user — and Submission documents are only ever
+// created server-side, from a real Judge0-graded run (see
+// backend/routes/judge.js's submitHandler + recordVerifiedSubmission in
+// controllers/submissionController.js). Anything the client claims beyond
+// that is dropped here, not saved, and logged as a possible tampering
+// attempt — putProgress (below) only ever sees req.verifiedNewSlugs, never
+// the raw client-supplied solvedSlugs array.
+//
+// Already-solved slugs (already in req.userDoc.solvedSlugs) are excluded
+// from the lookup — they're historical/trusted, and re-checking them on
+// every save would be wasted work.
+export async function verifyAgainstSubmissions(req, res, next) {
+  if (!req.userDoc) {
+    // putProgress's own guard below will return 503 — nothing to verify.
+    req.verifiedNewSlugs = [];
+    return next();
+  }
+
+  const { solvedSlugs } = req.body;
+  const alreadyTrusted = new Set(req.userDoc?.solvedSlugs || []);
+  const claimed = [...new Set(solvedSlugs || [])].filter(
+    (slug) => !alreadyTrusted.has(slug)
+  );
+
+  if (claimed.length === 0) {
+    req.verifiedNewSlugs = [];
+    return next();
+  }
+
+  try {
+    const verified = await Submission.find({
+      userId: req.userDoc._id,
+      problemSlug: { $in: claimed },
+      status: "Accepted",
+    }).distinct("problemSlug");
+
+    const verifiedSet = new Set(verified);
+    const rejected = claimed.filter((slug) => !verifiedSet.has(slug));
+
+    if (rejected.length > 0) {
+      req.log.warn(
+        { userId: req.userDoc._id.toString(), rejected },
+        "[Progress] Rejected unverified solvedSlugs — no matching Accepted submission found for this user"
+      );
+    }
+
+    req.verifiedNewSlugs = verified;
+    next();
+  } catch (err) {
+    // Fail closed, not open: if we can't verify, treat nothing as verified
+    // rather than trusting the client's claim by default.
+    req.log.error(
+      { err },
+      "[Progress] Submission verification query failed — treating all claimed slugs as unverified"
+    );
+    req.verifiedNewSlugs = [];
+    next();
+  }
+}
+
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 router.get("/", requireAuth, getProgress);
@@ -124,6 +194,7 @@ router.put(
   requireAuth,
   validateBody(progressSchema),
   validateSlugs,
+  verifyAgainstSubmissions,
   putProgress
 );
 

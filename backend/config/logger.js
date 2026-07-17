@@ -1,29 +1,31 @@
-/**
- * Structured logging via Pino.
- *
- * Two exports:
- *  - `logger`: base logger for anything outside a request context
- *    (startup checks, DB/Redis connection state, background scripts).
- *  - `httpLogger`: pino-http middleware, wired into server.js. Attaches
- *    `req.log` — a child logger already carrying a per-request id — to
- *    every request, and auto-logs one line per request/response with
- *    method, path, status, and `responseTime` (ms) once it completes.
- *
- * This does NOT replace Sentry — Sentry still owns unhandled-exception
- * alerting. Pino is for the logs/aggregation side: "what happened and in
- * what order," searchable structured output, not "page someone right now."
- *
- * Dev: human-readable colorized output via pino-pretty.
- * Prod: plain JSON lines to stdout — what Railway's log viewer (and any
- * aggregator you point at it later) expects.
- */
 import pino from "pino";
 import pinoHttp from "pino-http";
 
 const isProduction = process.env.NODE_ENV === "production";
 
+// ── Redaction ──────────────────────────────────────────────────────────────
+// pino-http's default request serializer includes req.headers, which means
+// the Firebase ID token sent as `Authorization: Bearer <token>` on every
+// authenticated request would otherwise be written verbatim into logs (and
+// therefore into Railway's log aggregation / any downstream sink). Redact
+// it — and any cookies/set-cookie, in case those are ever introduced — at
+// the pino level so it's stripped from every logger, not just httpLogger.
+// `censor` uses "[REDACTED]" instead of pino's default "[Redacted]" purely
+// for grep-friendliness; the value itself is what matters.
+const REDACT_PATHS = [
+  "req.headers.authorization",
+  "req.headers.cookie",
+  "res.headers['set-cookie']",
+  "*.headers.authorization",
+  "*.headers.cookie",
+];
+
 export const logger = pino({
   level: process.env.LOG_LEVEL || (isProduction ? "info" : "debug"),
+  redact: {
+    paths: REDACT_PATHS,
+    censor: "[REDACTED]",
+  },
   transport: isProduction
     ? undefined
     : {

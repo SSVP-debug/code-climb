@@ -118,7 +118,7 @@ const UNKNOWN_META = {
  * Returns display metadata for a verdict string.
  * Always returns a valid object — never throws or returns undefined.
  *
- * @param {string} status - e.g. "Accepted 🎉" | "Wrong Answer ❌" | "Executed ✓"
+ * @param {string} status - e.g. "Accepted" | "Wrong Answer ❌" | "Executed ✓"
  * @returns {{ label, icon, color, border, bg, dot, kind }}
  */
 export function getStatusMeta(status) {
