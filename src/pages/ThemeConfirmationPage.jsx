@@ -1,6 +1,9 @@
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
+import { getTheme } from "../themes";
+import { THEME_ICONS, withAlpha } from "../themes/themeIcons";
+import ThemeFlowProgress from "../components/onboarding/ThemeFlowProgress";
 
 export default function ThemeConfirmationPage() {
   const navigate = useNavigate();
@@ -16,8 +19,15 @@ export default function ThemeConfirmationPage() {
     return <Navigate to="/theme-selection" replace />;
   }
 
+  const colors = getTheme(themeId).colors;
+  const Icon = THEME_ICONS[themeId];
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6 relative">
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 animate-[fadeIn_.4s_ease-out]">
+        <ThemeFlowProgress step={2} />
+      </div>
+
       <div
         className="
     max-w-2xl text-center
@@ -26,11 +36,15 @@ export default function ThemeConfirmationPage() {
       >
         <div
           className="
-    text-7xl mb-6
+    inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-6
     animate-[pulseGlow_1s_ease-out]
   "
+          style={{
+            backgroundColor: withAlpha(colors.primary, "1f"),
+            color: colors.primary,
+          }}
         >
-          {theme.icon}
+          <Icon size={48} strokeWidth={2} aria-hidden="true" />
         </div>
 
         <h1 className="text-5xl font-bold mb-6">
@@ -47,7 +61,8 @@ export default function ThemeConfirmationPage() {
 
         <button
           onClick={() => navigate(nextPath, { replace: true })}
-          className="px-8 py-4 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition"
+          style={{ backgroundColor: colors.primary, color: "#09090b" }}
+          className="px-8 py-4 rounded-xl font-semibold transition hover:brightness-110"
         >
           Begin Journey
         </button>

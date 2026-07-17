@@ -1,15 +1,46 @@
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
+import { DEFAULT_THEME, getTheme } from "../themes";
+import { THEME_ICONS, withAlpha } from "../themes/themeIcons";
+import ThemeFlowProgress from "../components/onboarding/ThemeFlowProgress";
 
 export default function ThemeSelectionPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setTheme, themeId: currentThemeId } = useTheme();
+    const scrollerRef = useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+
     // Destination after theme is picked — defaults to /dashboard
     const nextPath = searchParams.get("next")
       ? decodeURIComponent(searchParams.get("next"))
       : "/dashboard";
+
+    // Tracks scroll position so we know which edge fade / arrow to show.
+    // A 4px tolerance avoids flicker from sub-pixel rounding at the ends.
+    const updateScrollState = () => {
+        const el = scrollerRef.current;
+        if (!el) return;
+        setCanScrollLeft(el.scrollLeft > 4);
+        setCanScrollRight(
+            el.scrollLeft + el.clientWidth < el.scrollWidth - 4
+        );
+    };
+
+    useEffect(() => {
+        updateScrollState();
+        window.addEventListener("resize", updateScrollState);
+        return () => window.removeEventListener("resize", updateScrollState);
+    }, []);
+
+    const scrollByCard = (direction) => {
+        const el = scrollerRef.current;
+        if (!el) return;
+        el.scrollBy({ left: direction * 344, behavior: "smooth" }); // card width (320) + gap (24)
+    };
 
     const handleSelect = (themeId) => {
         setTheme(themeId);
@@ -23,9 +54,28 @@ export default function ThemeSelectionPage() {
         navigate(`/theme-confirmation?next=${confirmDest}`);
     };
 
+    // "Continue without theme" — sets the neutral/default theme so ThemeGate
+    // no longer blocks access, but skips the onboarding confirmation screen
+    // since there's no story universe to introduce.
+    const handleContinueWithoutTheme = () => {
+        setTheme(DEFAULT_THEME);
+        navigate(nextPath, { replace: true });
+    };
+
     return (
         <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center px-6 py-12">
-            <div className="max-w-4xl w-full text-center mb-12">
+            <div className="w-full max-w-6xl flex items-center justify-between mb-6 animate-[fadeIn_.4s_ease-out]">
+                <ThemeFlowProgress step={1} />
+
+                <button
+                    onClick={handleContinueWithoutTheme}
+                    className="text-xs text-zinc-500 hover:text-zinc-300 underline underline-offset-4 transition whitespace-nowrap"
+                >
+                    Continue without theme
+                </button>
+            </div>
+
+            <div className="max-w-4xl w-full text-center mb-8 animate-[fadeIn_.4s_ease-out]">
                 <h1 className="text-4xl font-bold mb-4">
                     Choose Your Code Club Universe
                 </h1>
@@ -36,54 +86,135 @@ export default function ThemeSelectionPage() {
                 </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 w-full max-w-5xl">
-                {THEME_OPTIONS.map((theme) => (
-                    <div
-                        key={theme.id}
-                        className="
-        bg-zinc-900 border border-zinc-800 rounded-2xl p-6
+            <div className="w-full max-w-6xl relative animate-[fadeIn_.4s_ease-out]">
+                {/* Left edge fade — only visible once the row has been scrolled */}
+                <div
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute left-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-r from-zinc-950 to-transparent transition-opacity duration-300 ${
+                        canScrollLeft ? "opacity-100" : "opacity-0"
+                    }`}
+                />
+                {/* Right edge fade — signals there are more universes to scroll to */}
+                <div
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute right-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-l from-zinc-950 to-transparent transition-opacity duration-300 ${
+                        canScrollRight ? "opacity-100" : "opacity-0"
+                    }`}
+                />
+
+                {/* Arrow nav — desktop only; hidden at either end of the row */}
+                {canScrollLeft && (
+                    <button
+                        onClick={() => scrollByCard(-1)}
+                        aria-label="Scroll to previous universe"
+                        className="hidden sm:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-green-500 hover:bg-zinc-800 transition"
+                    >
+                        ←
+                    </button>
+                )}
+                {canScrollRight && (
+                    <button
+                        onClick={() => scrollByCard(1)}
+                        aria-label="Scroll to next universe"
+                        className="hidden sm:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-green-500 hover:bg-zinc-800 transition"
+                    >
+                        →
+                    </button>
+                )}
+
+                <div
+                    ref={scrollerRef}
+                    onScroll={updateScrollState}
+                    className="custom-scrollbar flex gap-6 overflow-x-auto pb-6 px-1 snap-x snap-mandatory scroll-smooth"
+                >
+                    {THEME_OPTIONS.map((theme) => {
+                        const colors = getTheme(theme.id).colors;
+                        const Icon = THEME_ICONS[theme.id];
+
+                        return (
+                            <div
+                                key={theme.id}
+                                style={{
+                                    "--tp": colors.primary,
+                                    "--tb": colors.border,
+                                    "--tbg": colors.secondary,
+                                }}
+                                className="
+        relative overflow-hidden
+        bg-[var(--tbg)] border border-[var(--tb)] rounded-2xl p-6
         transition-all duration-300
         hover:-translate-y-2
         hover:scale-[1.02]
-        hover:border-green-500
-        hover:shadow-lg hover:shadow-green-500/10
+        hover:border-[var(--tp)]
+        hover:shadow-[0_0_30px_-10px_var(--tp)]
+        flex-none w-80 snap-start
     "
-                    >
-                        <div className="text-4xl mb-4">{theme.icon}</div>
+                            >
+                                {/* Top accent stripe — each universe's own gradient, not a shared default */}
+                                <div
+                                    aria-hidden="true"
+                                    className="absolute top-0 left-0 right-0 h-1"
+                                    style={{
+                                        background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent})`,
+                                    }}
+                                />
 
-                        <h2 className="text-2xl font-bold mb-3">
-                            {theme.name}
-                        </h2>
-                        {currentThemeId === theme.id && (
-                            <p className="text-green-400 text-sm font-medium mb-2">
-                                Current Universe
-                            </p>
-                        )}
+                                <div
+                                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                                    style={{
+                                        backgroundColor: withAlpha(colors.primary, "1f"),
+                                        color: colors.primary,
+                                    }}
+                                >
+                                    <Icon size={28} strokeWidth={2} aria-hidden="true" />
+                                </div>
 
-                        <p className="text-zinc-400 mb-6">
-                            {theme.description}
-                        </p>
+                                <h2 className="text-2xl font-bold mb-3">
+                                    {theme.name}
+                                </h2>
+                                {currentThemeId === theme.id && (
+                                    <p
+                                        className="text-sm font-medium mb-2"
+                                        style={{ color: colors.primary }}
+                                    >
+                                        Current Universe
+                                    </p>
+                                )}
 
-                        <div className="space-y-2 mb-6 text-sm">
-                            <p>
-                                <span className="text-zinc-500">Accepted → </span>
-                                {theme.acceptedPreview}
-                            </p>
+                                <p className="text-zinc-400 mb-6">
+                                    {theme.description}
+                                </p>
 
-                            <p>
-                                <span className="text-zinc-500">Runtime Error → </span>
-                                {theme.runtimePreview}
-                            </p>
-                        </div>
+                                <div className="space-y-2 mb-6 text-sm">
+                                    <p>
+                                        <span className="text-zinc-500">Accepted → </span>
+                                        <span
+                                            className="font-medium"
+                                            style={{ color: colors.primary }}
+                                        >
+                                            {theme.acceptedPreview}
+                                        </span>
+                                    </p>
 
-                        <button
-                            onClick={() => handleSelect(theme.id)}
-                            className="w-full py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 transition"
-                        >
-                            Enter Universe
-                        </button>
-                    </div>
-                ))}
+                                    <p>
+                                        <span className="text-zinc-500">Runtime Error → </span>
+                                        <span className="font-medium text-rose-400">
+                                            {theme.runtimePreview}
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <button
+                                    onClick={() => handleSelect(theme.id)}
+                                    style={{ backgroundColor: colors.primary, color: "#09090b" }}
+                                    className="w-full py-3 rounded-xl font-semibold transition hover:brightness-110"
+                                >
+                                    Enter Universe
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
