@@ -3,13 +3,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import Problem from "../models/Problem.js";
 import User from "../models/User.js";
 import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
+import { getOrSetCache } from "../utils/cache.js";
 
 const router = Router({ mergeParams: true });
 const claude = new Anthropic();
 
-// In-memory cache: key = `${slug}-${level}`, value = { hint, cachedAt }
-const HINT_CACHE = new Map();
-const HINT_TTL   = 30 * 24 * 60 * 60 * 1000; // 30 days
+const HINT_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 const LEVEL_PROMPTS = {
   1: (title, topic) =>
@@ -83,39 +82,55 @@ router.post("/", async (req, res) => {
       }
     }
 
-    // Cache check
-    const cacheKey = `${slug}-${validLevel}`;
-    const cached   = HINT_CACHE.get(cacheKey);
-    if (cached && Date.now() - cached.cachedAt < HINT_TTL) {
-      return res.json({ hint: cached.hint, level: validLevel, cached: true });
+    // Cache check + fetch — shared across all instances via Redis (falls
+    // back to per-instance in-memory when REDIS_URL isn't configured).
+    // Previously a bare module-level Map: cached hints didn't survive a
+    // restart, and weren't shared across horizontally-scaled instances —
+    // every instance independently re-paid for the same Claude call for
+    // the same (slug, level), instead of sharing one cached result.
+    const cacheKey = `hint:${slug}:${validLevel}`;
+    let notFound = false;
+    let hintPayload, cacheStatus;
+
+    try {
+      ({ value: hintPayload, cacheStatus } = await getOrSetCache(
+        cacheKey,
+        HINT_TTL_SECONDS,
+        async () => {
+          // Fetch problem title + topic
+          const problem = await Problem.findOne({ slug })
+            .select("title topic difficulty")
+            .lean();
+
+          if (!problem) {
+            notFound = true;
+            throw new Error("Problem not found.");
+          }
+
+          // Call Claude
+          const prompt = LEVEL_PROMPTS[validLevel](problem.title, problem.topic);
+
+          const message = await claude.messages.create({
+            model:      "claude-sonnet-4-6",
+            max_tokens: 200,
+            messages:   [{ role: "user", content: prompt }],
+          });
+
+          const hint = message.content?.[0]?.text?.trim() ?? "Think carefully about the constraints.";
+
+          return { hint, problemTitle: problem.title };
+        }
+      ));
+    } catch (fetchErr) {
+      if (notFound) return res.status(404).json({ error: "Problem not found." });
+      throw fetchErr; // genuine Claude/infra error — handled by the outer catch below
     }
 
-    // Fetch problem title + topic
-    const problem = await Problem.findOne({ slug })
-      .select("title topic difficulty")
-      .lean();
-
-    if (!problem) return res.status(404).json({ error: "Problem not found." });
-
-    // Call Claude
-    const prompt = LEVEL_PROMPTS[validLevel](problem.title, problem.topic);
-
-    const message = await claude.messages.create({
-      model:      "claude-sonnet-4-6",
-      max_tokens: 200,
-      messages:   [{ role: "user", content: prompt }],
-    });
-
-    const hint = message.content?.[0]?.text?.trim() ?? "Think carefully about the constraints.";
-
-    // Cache it
-    HINT_CACHE.set(cacheKey, { hint, cachedAt: Date.now() });
-
     return res.json({
-      hint,
+      hint:       hintPayload.hint,
       level:      validLevel,
-      cached:     false,
-      problem:    problem.title,
+      cached:     cacheStatus === "HIT",
+      problem:    hintPayload.problemTitle,
     });
 
   } catch (err) {

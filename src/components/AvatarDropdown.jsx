@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck } from "lucide-react";
 import { useAppContext } from "../hooks/useAppContext";
-import problems from "../data/problems";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { getLastVisitedProblem } from "../utils/recentProblem";
 
 function AvatarDropdown({ user, onLogout, mobile = false }) {
   const [open, setOpen] = useState(false);
+  const [dailyChallengeSlug, setDailyChallengeSlug] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { totalXP, currentStreak, solvedProblems, role } = useAppContext();
@@ -15,11 +15,29 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
 
   const lastVisitedSlug = getLastVisitedProblem();
 
-  function goToRandomProblem() {
+  // Dynamic import: AvatarDropdown renders on most authenticated pages
+  // (via Navbar → DashboardLayout), so a static import here would put the
+  // ~7000-line problems catalog in the bundle for pages that never need
+  // it (Settings, Pricing, etc.) just because they share a layout with
+  // pages that do. Deferring to the click means the catalog only loads
+  // when someone actually asks for a random problem.
+  async function goToRandomProblem() {
+    const { default: problems } = await import("../data/problems");
     const pick = problems[Math.floor(Math.random() * problems.length)];
     setOpen(false);
     navigate(`/problems/${pick.slug}`);
   }
+
+  // Same reasoning for the Daily Challenge link — only resolve it once the
+  // dropdown is actually opened, not on every page load.
+  useEffect(() => {
+    if (!open || dailyChallengeSlug) return;
+    let cancelled = false;
+    getDailyChallenge().then((dc) => {
+      if (!cancelled) setDailyChallengeSlug(dc.slug);
+    });
+    return () => { cancelled = true; };
+  }, [open, dailyChallengeSlug]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -124,14 +142,16 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
               Random Problem
             </button>
 
-            <Link
-              to={`/problems/${getDailyChallenge().slug}`}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
-            >
-              <CalendarCheck size={14} className="text-zinc-500" />
-              Daily Challenge
-            </Link>
+            {dailyChallengeSlug && (
+              <Link
+                to={`/problems/${dailyChallengeSlug}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
+              >
+                <CalendarCheck size={14} className="text-zinc-500" />
+                Daily Challenge
+              </Link>
+            )}
           </div>
           )}
 

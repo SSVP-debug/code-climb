@@ -297,7 +297,7 @@ function ProblemSolver({
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge =
-            getDailyChallenge();
+            await getDailyChallenge();
 
           if (
             todayChallenge?.slug ===

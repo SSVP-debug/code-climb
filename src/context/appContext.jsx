@@ -18,7 +18,6 @@ import {
 
 import { apiFetch } from "../services/api";
 
-import problems from "../data/problems";
 import { getEarnedXP } from "../utils/xpUtils";
 
 export const AppContext = createContext(null);

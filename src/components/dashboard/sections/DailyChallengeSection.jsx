@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useAppContext } from "../../../hooks/useAppContext";
 import {
   getDailyChallenge,
@@ -9,14 +10,27 @@ import Button from "../../ui/Button";
 
 function DailyChallengeSection() {
   const { theme } = useTheme();
+  const [challenge, setChallenge] = useState(null);
 
-  
-
-  const challenge =
-    getDailyChallenge();
   const {
     dailyChallengeHistory,
   } = useAppContext();
+
+  useEffect(() => {
+    let cancelled = false;
+    getDailyChallenge().then((dc) => {
+      if (!cancelled) setChallenge(dc);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!challenge) {
+    return (
+      <SectionCard>
+        <div className="text-zinc-500 text-sm">Loading today's challenge…</div>
+      </SectionCard>
+    );
+  }
 
   const today = new Date()
     .toISOString()

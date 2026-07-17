@@ -164,6 +164,61 @@ const languageIdMap = {
   python: 71, javascript: 63, java: 62, cpp: 54,
 };
 
+/**
+ * Runs a single testcase through Judge0 and normalizes the outcome into a
+ * uniform { index, isVisible, kind, ... } shape, regardless of whether
+ * this call happens sequentially or concurrently with others. `kind` is
+ * one of: "callError" | "noResult" | "compileError" | "infraError" |
+ * "runtimeError" | "wrongAnswer" | "passed".
+ */
+async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName }) {
+  let result;
+  try {
+    result = await callJudge0({
+      sourceCode: code,
+      language,
+      languageId,
+      testcaseInput: testcase.input,
+      functionName,
+    });
+  } catch (callErr) {
+    return { index, isVisible, kind: "callError", error: callErr, errorMessage: callErr.message };
+  }
+
+  if (!result) {
+    return { index, isVisible, kind: "noResult", errorMessage: "Judge0 returned no result" };
+  }
+
+  if (result.compile_output) {
+    return { index, isVisible, kind: "compileError", errorMessage: result.compile_output };
+  }
+
+  if (result.stderr) {
+    const isInfra = /code runner unavailable|ECONNREFUSED|502|fetch failed/i.test(result.stderr);
+    return {
+      index,
+      isVisible,
+      kind: isInfra ? "infraError" : "runtimeError",
+      errorMessage: sanitizeStderr(result.stderr),
+    };
+  }
+
+  const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
+  const actual = normalizeOutput(result.stdout || "");
+
+  if (!outputsMatch(expected, actual)) {
+    return {
+      index,
+      isVisible,
+      kind: "wrongAnswer",
+      expectedOutput: testcase.expectedOutput,
+      actualOutput: result.stdout || "",
+    };
+  }
+
+  return { index, isVisible, kind: "passed" };
+}
+
 router.post("/submit", validateBody(submitSchema), async (req, res) => {
   const { problemSlug, code, language, functionName, visibletestcases } = req.body;
 
@@ -214,99 +269,126 @@ router.post("/submit", validateBody(submitSchema), async (req, res) => {
   let hiddenPassed = 0;
 
   try {
-    for (const [index, testcase] of alltestcases.entries()) {
-      const isVisible = index < visibletestcases.length;
+    // Run the first testcase alone. This preserves the original cost
+    // profile for the most common failure modes (bad syntax, or a
+    // solution that's wrong on the very first case) — a single Judge0
+    // call, same as the old fully-sequential loop would have made,
+    // instead of firing every testcase at once and paying for N compile
+    // failures when the code doesn't even build.
+    const first = await runTestcase({
+      testcase: alltestcases[0],
+      index: 0,
+      isVisible: 0 < visibletestcases.length,
+      code, language, languageId, functionName,
+    });
 
-      // ── Run testcase through Judge0 ──────────────────────────────────
-      let result;
-      try {
-        result = await callJudge0({
-          sourceCode: code,
-          language,
-          languageId,
-          testcaseInput: testcase.input,
-          functionName,
-        });
-      } catch (callErr) {
+    let allResults;
+
+    if (first.kind !== "passed" || alltestcases.length === 1) {
+      allResults = [first];
+    } else {
+      // First testcase compiled and passed — the code builds. Run the
+      // rest concurrently (throttled system-wide by the fixed
+      // services/directExecutionQueue.js semaphore) since a compile
+      // failure is no longer the dominant risk; only a per-input runtime
+      // error or wrong answer can still occur independently on any one
+      // of them.
+      const rest = alltestcases.slice(1);
+      const restResults = await Promise.all(
+        rest.map((testcase, i) => {
+          const index = i + 1;
+          return runTestcase({
+            testcase,
+            index,
+            isVisible: index < visibletestcases.length,
+            code, language, languageId, functionName,
+          });
+        })
+      );
+      allResults = [first, ...restResults];
+    }
+
+    // Walk results in canonical index order (not completion order) to
+    // find the first failure — this matches the original "stop at first
+    // failure" semantics exactly, even though every testcase actually ran
+    // (see runTestcase's docstring for the callError/noResult/etc. kinds).
+    let failure = null;
+
+    for (const r of allResults) {
+      if (r.kind === "passed") {
+        passedCount++;
+        if (r.isVisible) visiblePassed++;
+        else hiddenPassed++;
+      } else {
+        failure = r;
+        break;
+      }
+    }
+
+    if (failure) {
+      req.log.debug(
+        {
+          problemSlug,
+          testcaseIndex: failure.index + 1,
+          totalCount: alltestcases.length,
+          kind: failure.kind,
+        },
+        "[Judge] Testcase result"
+      );
+
+      if (failure.kind === "callError") {
         req.log.error(
-          { err: callErr, problemSlug, testcaseIndex: index },
+          { err: failure.error, problemSlug, testcaseIndex: failure.index },
           "[Judge] callJudge0 threw"
         );
         return res.json({
           status: "Judge Error",
           passed: passedCount,
           total: alltestcases.length,
-          error: callErr.message,
+          error: failure.errorMessage,
         });
       }
 
-      if (!result) {
+      if (failure.kind === "noResult") {
         return res.json({
           status: "Judge Error",
           passed: passedCount,
           total: alltestcases.length,
-          error: "Judge0 returned no result",
+          error: failure.errorMessage,
         });
       }
 
-      // ── Compile error ────────────────────────────────────────────────
-      if (result.compile_output) {
+      if (failure.kind === "compileError") {
         return res.json({
           status: "Compilation Error",
           passed: passedCount,
           total: alltestcases.length,
-          error: result.compile_output,
+          error: failure.errorMessage,
         });
       }
 
-      // ── Runtime / infra error ─────────────────────────────────────────
-      if (result.stderr) {
-        const isInfra = /code runner unavailable|ECONNREFUSED|502|fetch failed/i.test(result.stderr);
+      if (failure.kind === "infraError" || failure.kind === "runtimeError") {
         return res.json({
-          status: isInfra ? "Judge Error" : "Runtime Error",
+          status: failure.kind === "infraError" ? "Judge Error" : "Runtime Error",
           passed: passedCount,
           total: alltestcases.length,
-          error: sanitizeStderr(result.stderr),
+          error: failure.errorMessage,
         });
       }
 
-      // ── Output comparison ─────────────────────────────────────────────
-      const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
-      const actual = normalizeOutput(result.stdout || "");
-
-      const matched = outputsMatch(expected, actual);
-
-      req.log.debug(
-        {
-          problemSlug,
-          testcaseIndex: index + 1,
-          totalCount: alltestcases.length,
-          visibility: isVisible ? "visible" : "hidden",
-          expected,
-          actual,
-          matched,
-        },
-        "[Judge] Testcase result"
-      );
-
-      if (!matched) {
-        return res.json({
-          status: "Wrong Answer",
-          passed: passedCount,
-          total: alltestcases.length,
-          visiblePassed,
-          hiddenPassed,
-          executionTime: String(Date.now() - startTime),
-          ...(isVisible ? {
-            expectedOutput: testcase.expectedOutput,
-            actualOutput: result.stdout || "",
-          } : {}),
-        });
-      }
-
-      passedCount++;
-      if (isVisible) visiblePassed++;
-      else hiddenPassed++;
+      // failure.kind === "wrongAnswer"
+      return res.json({
+        status: "Wrong Answer",
+        passed: passedCount,
+        total: alltestcases.length,
+        visiblePassed,
+        hiddenPassed,
+        executionTime: String(Date.now() - startTime),
+        ...(failure.isVisible ? {
+          expectedOutput: failure.expectedOutput,
+          actualOutput: failure.actualOutput,
+        } : {}),
+      });
     }
 
     req.log.info(

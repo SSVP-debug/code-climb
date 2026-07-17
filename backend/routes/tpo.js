@@ -8,7 +8,6 @@ import College from "../models/College.js";
 import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
-import { topicStatsToObject } from "../utils/topicStats.js";
 import { createNotificationBulk } from "../services/notificationService.js";
 import { isDomainAutoVerified } from "../utils/domainVerification.js";
 
@@ -210,38 +209,58 @@ router.get("/dashboard", requireRole("tpo", "admin"),
         `${TPO_CACHE_PREFIX}dashboard:${domain}`,
         TPO_CACHE_TTL_SECONDS,
         async () => {
-          const students = await User.find({
-            emailDomain: domain.toLowerCase(),
-            role: "student",
-          })
-            .select("solvedSlugs solvedDifficulty topicStats currentStreak totalXP")
-            .lean();
+          // Two facets in one round-trip against the same $match filter:
+          // "summary" sums the per-student numeric fields directly (no
+          // need to pull solvedSlugs/solvedDifficulty into Node just to
+          // add them up), and "topicCoverage" unwinds each student's
+          // topicStats array and sums counts per topic in Mongo. Both used
+          // to be a single forEach over every student document pulled
+          // into Node — fine at "hundreds of students," but transferring
+          // every student's full solvedSlugs/topicStats array over the
+          // wire just to add up numbers doesn't hold as a college's
+          // student count grows.
+          const [aggResult] = await User.aggregate([
+            { $match: { emailDomain: domain.toLowerCase(), role: "student" } },
+            {
+              $facet: {
+                summary: [
+                  {
+                    $group: {
+                      _id: null,
+                      totalStudents: { $sum: 1 },
+                      totalSolved: { $sum: { $size: { $ifNull: ["$solvedSlugs", []] } } },
+                      totalEasy: { $sum: { $ifNull: ["$solvedDifficulty.easy", 0] } },
+                      totalMedium: { $sum: { $ifNull: ["$solvedDifficulty.medium", 0] } },
+                      totalHard: { $sum: { $ifNull: ["$solvedDifficulty.hard", 0] } },
+                      activeThisWeek: {
+                        $sum: { $cond: [{ $gt: [{ $ifNull: ["$currentStreak", 0] }, 0] }, 1, 0] },
+                      },
+                    },
+                  },
+                ],
+                topicCoverage: [
+                  { $unwind: "$topicStats" },
+                  {
+                    $group: {
+                      _id: "$topicStats.topic",
+                      totalSolves: { $sum: "$topicStats.count" },
+                    },
+                  },
+                  { $sort: { totalSolves: -1 } },
+                  { $limit: 10 },
+                  { $project: { _id: 0, topic: "$_id", totalSolves: 1 } },
+                ],
+              },
+            },
+          ]);
 
-          const totalStudents = students.length;
+          const summary = aggResult?.summary?.[0];
 
-          if (totalStudents === 0) {
+          if (!summary || summary.totalStudents === 0) {
             return { totalStudents: 0, message: "No students from your college have joined Code Club yet." };
           }
 
-          // ── Aggregate stats ────────────────────────────────────────────────
-          let totalSolved = 0, totalEasy = 0, totalMedium = 0, totalHard = 0;
-          let activeThisWeek = 0; // streak > 0
-          const topicTotals = {};
-
-          students.forEach(s => {
-            const solved = s.solvedSlugs?.length ?? 0;
-            totalSolved += solved;
-            totalEasy += s.solvedDifficulty?.easy ?? 0;
-            totalMedium += s.solvedDifficulty?.medium ?? 0;
-            totalHard += s.solvedDifficulty?.hard ?? 0;
-            if ((s.currentStreak ?? 0) > 0) activeThisWeek++;
-
-            const topics = topicStatsToObject(s.topicStats);
-            Object.entries(topics).forEach(([topic, count]) => {
-              topicTotals[topic] = (topicTotals[topic] || 0) + count;
-            });
-          });
-
+          const { totalStudents, totalSolved, totalEasy, totalMedium, totalHard, activeThisWeek } = summary;
           const avgSolved = Math.round((totalSolved / totalStudents) * 10) / 10;
 
           // ── Placement Readiness Score (0-100) ────────────────────────────────
@@ -252,12 +271,6 @@ router.get("/dashboard", requireRole("tpo", "admin"),
           const engagementScore = Math.min(30, (activeThisWeek / totalStudents) * 30);  // up to 30 pts for active streaks
           const readinessScore = Math.round(solveScore + hardScore + engagementScore);
 
-          // Topic coverage — sorted by total solves across the class
-          const topicCoverage = Object.entries(topicTotals)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([topic, count]) => ({ topic, totalSolves: count }));
-
           return {
             totalStudents,
             avgSolved,
@@ -266,7 +279,7 @@ router.get("/dashboard", requireRole("tpo", "admin"),
             activeThisWeek,
             activePercent: Math.round((activeThisWeek / totalStudents) * 100),
             readinessScore,
-            topicCoverage,
+            topicCoverage: aggResult?.topicCoverage ?? [],
           };
         }
       );

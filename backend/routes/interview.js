@@ -1,25 +1,15 @@
-/**
- * Interview Mode — premium feature.
- *
- * POST /api/interview/start    — begin a 45-min timed session for a problem
- * POST /api/interview/ask      — AI interviewer asks a follow-up question
- * POST /api/interview/submit   — submit final solution within the session
- * GET  /api/interview/:sessionId — get session status (time remaining, etc.)
- *
- * Sessions are stored in-memory (Map) — acceptable for MVP since interview
- * mode is low-volume. Move to Redis/MongoDB if this becomes a high-traffic
- * feature later.
- */
 import { Router } from "express";
 import { createRequire } from "module";
 import Problem from "../models/Problem.js";
 import { requirePremium } from "../middleware/premiumGate.js";
+import { getSession, setSession, sweepExpiredMemorySessions } from "../services/interviewSessionStore.js";
 
 const require = createRequire(import.meta.url);
 const router  = Router();
 
 const SESSION_DURATION_MS = 45 * 60 * 1000; // 45 minutes
-const sessions = new Map(); // sessionId -> { userId, slug, startedAt, expiresAt, qaLog }
+const GRACE_MS            = 60 * 60 * 1000; // kept readable past expiry, same as the old cleanup sweep
+const SESSION_TTL_SECONDS = Math.ceil((SESSION_DURATION_MS + GRACE_MS) / 1000);
 
 function getClaude() {
   if (!process.env.ANTHROPIC_API_KEY) return null;
@@ -41,7 +31,7 @@ router.post("/start", requirePremium, async (req, res) => {
     const sessionId = `iv_${req.userDoc._id}_${Date.now()}`;
     const now = Date.now();
 
-    sessions.set(sessionId, {
+    await setSession(sessionId, {
       userId:    req.userDoc._id.toString(),
       slug,
       problemTitle: problem.title,
@@ -49,7 +39,7 @@ router.post("/start", requirePremium, async (req, res) => {
       expiresAt: now + SESSION_DURATION_MS,
       qaLog:     [],
       submitted: false,
-    });
+    }, SESSION_TTL_SECONDS);
 
     return res.json({
       sessionId,
@@ -68,7 +58,7 @@ router.post("/start", requirePremium, async (req, res) => {
 router.post("/ask", requirePremium, async (req, res) => {
   try {
     const { sessionId, userMessage, currentCode } = req.body;
-    const session = sessions.get(sessionId);
+    const session = await getSession(sessionId);
 
     if (!session) return res.status(404).json({ error: "Session not found or expired." });
     if (session.userId !== req.userDoc._id.toString()) {
@@ -105,6 +95,7 @@ Respond as a real interviewer would: ask ONE focused follow-up question. Common 
     const question = message.content?.[0]?.text?.trim() ?? "Can you walk me through your approach?";
 
     session.qaLog.push({ question, answer: userMessage, timestamp: Date.now() });
+    await setSession(sessionId, session, SESSION_TTL_SECONDS);
 
     return res.json({ question, timeRemainingMs: session.expiresAt - Date.now() });
 
@@ -118,7 +109,7 @@ Respond as a real interviewer would: ask ONE focused follow-up question. Common 
 router.post("/submit", requirePremium, async (req, res) => {
   try {
     const { sessionId } = req.body;
-    const session = sessions.get(sessionId);
+    const session = await getSession(sessionId);
 
     if (!session) return res.status(404).json({ error: "Session not found." });
     if (session.userId !== req.userDoc._id.toString()) {
@@ -126,6 +117,7 @@ router.post("/submit", requirePremium, async (req, res) => {
     }
 
     session.submitted = true;
+    await setSession(sessionId, session, SESSION_TTL_SECONDS);
     const durationUsedMs = Date.now() - session.startedAt;
 
     return res.json({
@@ -141,8 +133,8 @@ router.post("/submit", requirePremium, async (req, res) => {
 });
 
 // ── GET /api/interview/:sessionId ───────────────────────────────────────────
-router.get("/:sessionId", requirePremium, (req, res) => {
-  const session = sessions.get(req.params.sessionId);
+router.get("/:sessionId", requirePremium, async (req, res) => {
+  const session = await getSession(req.params.sessionId);
   if (!session) return res.status(404).json({ error: "Session not found." });
   if (session.userId !== req.userDoc._id.toString()) {
     return res.status(403).json({ error: "Not your session." });
@@ -159,12 +151,9 @@ router.get("/:sessionId", requirePremium, (req, res) => {
   });
 });
 
-// ── Periodic cleanup of expired sessions (every 10 min) ────────────────────
-setInterval(() => {
-  const now = Date.now();
-  for (const [id, s] of sessions.entries()) {
-    if (now > s.expiresAt + 60 * 60 * 1000) sessions.delete(id); // 1hr grace then purge
-  }
-}, 10 * 60 * 1000);
+// ── Periodic cleanup of the in-memory fallback store (every 10 min) ────────
+// No-op when Redis is configured — Redis's own key TTL (SESSION_TTL_SECONDS,
+// set on every write) already expires those entries on its own.
+setInterval(sweepExpiredMemorySessions, 10 * 60 * 1000);
 
 export default router;
