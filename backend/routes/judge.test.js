@@ -3,9 +3,14 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 vi.mock("../models/Problem.js", () => ({
   default: { findOne: vi.fn() },
 }));
-vi.mock("../controllers/compilerController.js", () => ({
-  callJudge0: vi.fn(),
-}));
+vi.mock("../controllers/compilerController.js", async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual,
+    callJudge0: vi.fn(),
+  };
+});
 vi.mock("../controllers/submissionController.js", () => ({
   recordVerifiedSubmission: vi.fn().mockResolvedValue({ _id: "sub1" }),
 }));
