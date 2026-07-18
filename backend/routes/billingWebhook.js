@@ -1,67 +1,232 @@
 import express from "express";
 import crypto from "crypto";
+import User from "../models/User.js";
+import { logger } from "../config/logger.js";
+import { createNotification } from "../services/notificationService.js";
 
 const router = express.Router();
 
+// ── Signature verification ───────────────────────────────────────────────
+// Extracted as a standalone function (rather than inline in the route) so
+// it can be unit-tested without constructing a real Express req/res.
+export function isValidSignature(rawBody, signature, secret) {
+  if (!signature || !secret) return false;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
+
+  // Constant-time comparison — a plain !== leaks timing information about
+  // how many leading bytes matched, which an attacker can use to forge a
+  // valid signature byte-by-byte. Buffers are compared by length first
+  // since crypto.timingSafeEqual throws on mismatched lengths rather than
+  // returning false.
+  const signatureBuffer = Buffer.from(signature, "hex");
+  const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+  return (
+    signatureBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
+  );
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+// routes/billing.js's create-order attaches `notes: { userId, planId }` to
+// every Razorpay order it creates. Razorpay copies an order's notes onto
+// the payment entity created against it, so every payment/refund/dispute
+// webhook for a payment we originated carries `userId`/`planId` straight
+// in the body — no extra Razorpay API round trip needed to resolve "who is
+// this about".
+function getPaymentEntity(payload) {
+  return payload?.payload?.payment?.entity || null;
+}
+
+function getNotes(entity) {
+  return entity?.notes || {};
+}
+
+async function activateSubscription(user, planId) {
+  const { PRICING } = await import("../config/featureFlags.js");
+  const plan = PRICING[planId];
+  if (!plan) {
+    logger.warn({ planId }, "[BillingWebhook] unknown planId in payment notes — skipping activation");
+    return;
+  }
+
+  const now = new Date();
+  const expiresAt = plan.durationDays
+    ? new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000)
+    : null;
+
+  user.subscription = {
+    ...user.subscription,
+    plan: planId,
+    status: "active",
+    startedAt: now,
+    expiresAt,
+  };
+  await user.save();
+}
+
+async function revokeSubscription(user, { reason }) {
+  user.subscription.status = "cancelled";
+  user.subscription.cancelledAt = new Date();
+  // Unlike POST /billing/cancel (which leaves expiresAt alone so access
+  // continues until the period the user already paid for naturally ends),
+  // a refund or dispute means that period is being clawed back — revoke
+  // access immediately rather than at the original expiry.
+  user.subscription.expiresAt = new Date();
+  await user.save();
+  logger.warn({ userId: user._id.toString(), reason }, "[BillingWebhook] revoked subscription");
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────
+// Each handler is intentionally tolerant of missing/unrecognized data
+// (unknown user, no notes, unknown plan) — a webhook handler must never
+// throw on a payload shape it doesn't fully recognize, since Razorpay
+// sends the same event types to every merchant and not every payment on
+// the account is guaranteed to have originated from our /create-order flow
+// (e.g. a manual payment link created from the Razorpay dashboard).
+
+/**
+ * payment.captured — backup activation path. The primary path is
+ * POST /api/billing/verify, called by the frontend immediately after
+ * checkout completes. This covers the case where that round trip never
+ * happens (tab closed, network drop right after payment) by activating
+ * from the webhook instead. Safe to run even if /verify already activated
+ * the same plan — it's a no-op in that case.
+ */
+async function handlePaymentCaptured(payload) {
+  const payment = getPaymentEntity(payload);
+  const { userId, planId } = getNotes(payment);
+  if (!userId || !planId) {
+    logger.debug(
+      { paymentId: payment?.id },
+      "[BillingWebhook] payment.captured with no userId/planId in notes — not one of our checkout orders, skipping"
+    );
+    return;
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    logger.warn({ userId }, "[BillingWebhook] payment.captured for unknown user — skipping");
+    return;
+  }
+
+  if (user.subscription?.status === "active" && user.subscription?.plan === planId) {
+    return; // already activated via /verify — nothing to do
+  }
+
+  await activateSubscription(user, planId);
+  logger.info({ userId, planId }, "[BillingWebhook] activated subscription via payment.captured backup path");
+}
+
+/**
+ * payment.failed — never activated a plan in the first place (activation
+ * only happens in /verify or handlePaymentCaptured above), so there's no
+ * subscription state to revert. Logged so failed-payment/renewal patterns
+ * are visible without digging through the Razorpay dashboard.
+ */
+function handlePaymentFailed(payload) {
+  const payment = getPaymentEntity(payload);
+  const { userId, planId } = getNotes(payment);
+  logger.info({ userId, planId, paymentId: payment?.id }, "[BillingWebhook] payment.failed");
+}
+
+/**
+ * refund.created / refund.processed — this is the concrete gap the staff
+ * review called out: a refund issued from the Razorpay dashboard or via a
+ * support ticket has no client round-trip at all, so subscription.status
+ * previously only ever changed via the user-initiated /billing/cancel
+ * route. A refund means access should end now, not "keep working until
+ * natural expiry" the way a self-serve cancellation does.
+ */
+async function handleRefund(payload) {
+  const payment = getPaymentEntity(payload);
+  const { userId } = getNotes(payment);
+  if (!userId) {
+    logger.warn({ paymentId: payment?.id }, "[BillingWebhook] refund event with no userId in notes — skipping");
+    return;
+  }
+
+  const user = await User.findById(userId);
+  if (!user) return;
+
+  await revokeSubscription(user, { reason: "refund" });
+
+  await createNotification({
+    userId,
+    type: "subscription_refunded",
+    title: "Your subscription was refunded",
+    message: "A refund was processed for your Code Club payment, so premium access has ended.",
+  }).catch((err) => logger.error({ err, userId }, "[BillingWebhook] notification failed after refund"));
+}
+
+/**
+ * payment.dispute.created — a chargeback is in progress. Revoke access
+ * immediately rather than waiting for the dispute to resolve; if it's
+ * later resolved in the merchant's favor there's no automated
+ * reinstatement — that's a manual support action, deliberately, since it
+ * involves a human judgment call.
+ */
+async function handleDisputeCreated(payload) {
+  const payment = getPaymentEntity(payload);
+  const { userId } = getNotes(payment);
+  if (!userId) return;
+
+  const user = await User.findById(userId);
+  if (!user) return;
+
+  await revokeSubscription(user, { reason: "dispute" });
+}
+
+const EVENT_HANDLERS = {
+  "payment.captured": handlePaymentCaptured,
+  "payment.failed": handlePaymentFailed,
+  "refund.created": handleRefund,
+  "refund.processed": handleRefund,
+  "payment.dispute.created": handleDisputeCreated,
+};
+
+/**
+ * Dispatches a verified, parsed webhook payload to the right handler.
+ * Exported separately from the route handler so it can be unit-tested
+ * directly, without needing to construct a real Express req/res carrying a
+ * raw Buffer body and a valid HMAC signature.
+ */
+export async function applyWebhookEvent(payload) {
+  const handler = EVENT_HANDLERS[payload?.event];
+  if (!handler) {
+    logger.debug({ event: payload?.event }, "[BillingWebhook] unhandled event type — no-op");
+    return;
+  }
+  await handler(payload);
+}
+
 router.post("/", async (req, res) => {
   try {
-    const signature =
-      req.headers["x-razorpay-signature"];
+    const signature = req.headers["x-razorpay-signature"];
 
-    const expectedSignature =
-      crypto
-        .createHmac(
-          "sha256",
-          process.env.RAZORPAY_WEBHOOK_SECRET
-        )
-        .update(req.body)
-        .digest("hex");
-
-    if (!signature) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid signature",
-        });
+    if (!isValidSignature(req.body, signature, process.env.RAZORPAY_WEBHOOK_SECRET)) {
+      return res.status(400).json({ success: false, message: "Invalid signature" });
     }
 
-    // Constant-time comparison — a plain !== leaks timing information about
-    // how many leading bytes matched, which an attacker can use to forge a
-    // valid signature byte-by-byte. Buffers are compared by length first
-    // since crypto.timingSafeEqual throws on mismatched lengths rather than
-    // returning false.
-    const signatureBuffer = Buffer.from(signature, "hex");
-    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+    const payload = JSON.parse(req.body.toString());
+    logger.info({ event: payload.event }, "[BillingWebhook] received");
 
-    const isValid =
-      signatureBuffer.length === expectedBuffer.length &&
-      crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
-
-    if (!isValid) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid signature",
-        });
-    }
-
-    const payload = JSON.parse(
-      req.body.toString()
-    );
-
-    console.log(
-      "Webhook event:",
-      payload.event
-    );
+    // Apply the event before responding (rather than responding first and
+    // processing in the background) so a handler failure surfaces as a
+    // non-2xx response — Razorpay retries webhooks on failure, and every
+    // handler above is written to be safely re-runnable, so relying on
+    // that retry is the correct way to get eventual delivery here.
+    await applyWebhookEvent(payload);
 
     return res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-    });
+    logger.error({ err }, "[BillingWebhook] error");
+    return res.status(500).json({ success: false });
   }
 });
 
