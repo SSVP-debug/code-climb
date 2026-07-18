@@ -1,27 +1,10 @@
-/**
- * Admin routes.
- *
- * Verification queue (Phase B):
- *   GET  /api/admin/pending
- *   POST /api/admin/recruiters/:id/approve | /reject
- *   POST /api/admin/tpo/:collegeId/approve | /reject
- *
- * Impersonation — "Login As" (this phase):
- *   GET  /api/admin/users                    — searchable/paginated user list
- *   POST /api/admin/impersonate/:userId       — start viewing as that user
- *   POST /api/admin/impersonate/stop          — return to your own admin session
- *
- * Every route here uses requireAdmin (not requireRole("admin")) — see
- * middleware/roleGuard.js for why: while impersonating, req.userDoc.role
- * reflects the *target's* role by design, so a plain requireRole("admin")
- * would lock you out of switching targets or exiting.
- */
 import { Router } from "express";
 import College from "../models/College.js";
 import User from "../models/User.js";
 import ImpersonationLog from "../models/ImpersonationLog.js";
 import { requireAdmin } from "../middleware/roleGuard.js";
 import { createNotification } from "../services/notificationService.js";
+import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
 
 const router = Router();
 
@@ -81,6 +64,11 @@ router.post("/recruiters/:id/approve", requireAdmin, async (req, res) => {
     user.recruiterProfile.verified = true;
     user.recruiterProfile.verifiedAt = new Date();
     await user.save();
+    // This user's own requireAuth cache entry (on whichever instance they
+    // next hit) would otherwise still show `verified: false` for up to
+    // AUTH_USER_CACHE_TTL_MS — drop it on this instance now so a request
+    // that happens to land here sees the fresh doc immediately.
+    invalidateCachedUserByFirebaseUid(user.firebaseUid);
 
     createNotification({
       userId: user._id,
@@ -116,6 +104,7 @@ router.post("/recruiters/:id/reject", requireAdmin, async (req, res) => {
       verifiedAt: null,
     };
     await user.save();
+    invalidateCachedUserByFirebaseUid(user.firebaseUid);
 
     createNotification({
       userId: user._id,
@@ -194,6 +183,7 @@ router.post("/tpo/:collegeId/reject", requireAdmin, async (req, res) => {
           verifiedAt: null,
         };
         await user.save();
+        invalidateCachedUserByFirebaseUid(user.firebaseUid);
       }
 
       createNotification({

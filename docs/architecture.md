@@ -40,7 +40,7 @@ Also called from the backend, not shown above for clarity:
 
 1. Browser loads the React SPA from Vercel (static build output of `vite build`).
 2. User signs in via Firebase Auth (Google provider). Firebase issues a short-lived ID token, refreshed client-side automatically.
-3. Every authenticated API call from the SPA attaches that ID token as a `Bearer` header. `backend/middleware/auth.js` (`requireAuth`) verifies it against Firebase Admin SDK, then loads/creates the matching MongoDB `User` document and attaches it to `req.userDoc` for the rest of the request.
+3. Every authenticated API call from the SPA attaches that ID token as a `Bearer` header. `backend/middleware/auth.js` (`requireAuth`) verifies it against Firebase Admin SDK, then loads/creates the matching MongoDB `User` document and attaches it to `req.userDoc` for the rest of the request. The user lookup itself is short-TTL cached in-process (`backend/utils/userAuthCache.js`, default 5s) rather than hitting Mongo on every call — a cache HIT hands back the live Mongoose document (safe for routes that mutate `req.userDoc` and `.save()` it), and staleness across Railway replicas is bounded by the TTL, same tradeoff as the Redis leaderboard/profile caches.
 4. The route handler runs, touching MongoDB (via Mongoose), Redis (if configured), Judge0 (for `/api/compiler` and `/api/judge`), or the Claude API (for `/api/hints`, `/api/insights`, `/api/interview`) as needed.
 5. Response returns as JSON. Every request/response is logged through Pino (`config/logger.js` + `httpLogger` middleware), tagged with `userId`, `route`, and `responseTime`.
 

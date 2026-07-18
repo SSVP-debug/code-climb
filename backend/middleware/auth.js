@@ -1,6 +1,12 @@
 import { getFirebaseAdmin } from "../config/firebaseAdmin.js";
 import { logger } from "../config/logger.js";
 import User from "../models/User.js";
+import {
+  getCachedUserByFirebaseUid,
+  setCachedUserByFirebaseUid,
+  getCachedUserById,
+  setCachedUserById,
+} from "../utils/userAuthCache.js";
 
 export async function requireAuth(req, res, next) {
   try {
@@ -27,16 +33,29 @@ export async function requireAuth(req, res, next) {
     };
 
     try {
-      let userDoc = await User.findOne({
-        firebaseUid: decoded.uid,
-      });
+      // ── User lookup, short-TTL cached (utils/userAuthCache.js) ────────
+      // This used to be a Mongo round trip on every single authenticated
+      // request. A cache HIT here returns the *live* Mongoose document
+      // reference (not a copy), so any route further down the chain that
+      // mutates req.userDoc and calls .save() is safe — see the cache
+      // module's header comment for why that matters and what it does
+      // and doesn't bound.
+      let userDoc = getCachedUserByFirebaseUid(decoded.uid);
 
       if (!userDoc) {
-        userDoc = await User.create({
+        userDoc = await User.findOne({
           firebaseUid: decoded.uid,
-          email: decoded.email || "",
-          displayName: decoded.name || "",
         });
+
+        if (!userDoc) {
+          userDoc = await User.create({
+            firebaseUid: decoded.uid,
+            email: decoded.email || "",
+            displayName: decoded.name || "",
+          });
+        }
+
+        setCachedUserByFirebaseUid(decoded.uid, userDoc);
       }
 
       req.userDoc = userDoc;
@@ -50,7 +69,13 @@ export async function requireAuth(req, res, next) {
       // real admin's identity so admin-only routes (switch target, exit)
       // stay reachable without needing to exit impersonation first.
       if (userDoc.role === "admin" && userDoc.impersonating?.targetUserId) {
-        const targetUser = await User.findById(userDoc.impersonating.targetUserId);
+        const targetUserId = userDoc.impersonating.targetUserId;
+        let targetUser = getCachedUserById(targetUserId);
+
+        if (!targetUser) {
+          targetUser = await User.findById(targetUserId);
+          if (targetUser) setCachedUserById(targetUserId, targetUser);
+        }
 
         if (targetUser) {
           req.actingAdminDoc = userDoc;
