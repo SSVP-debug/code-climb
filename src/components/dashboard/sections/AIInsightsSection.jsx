@@ -3,13 +3,18 @@ import { apiFetch } from "../../../services/api";
 import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
+import { Sparkles, Brain } from "lucide-react";
 
 // How long (ms) the Refresh button is disabled after a successful fetch
 const REFRESH_COOLDOWN = 2 * 60 * 1000; // 2 minutes
 
 function InsightCard({ label, value, accent = false }) {
+  const { theme } = useTheme();
   return (
-    <div className={`rounded-xl p-4 ${accent ? "bg-zinc-700/60" : "bg-zinc-800"}`}>
+    <div
+      className="rounded-xl p-4 bg-zinc-800"
+      style={accent ? { backgroundColor: `${theme.colors.primary}14` } : undefined}
+    >
       <p className="text-zinc-400 text-xs uppercase tracking-wider mb-2">{label}</p>
       <p className="text-sm leading-relaxed text-zinc-100">{value}</p>
     </div>
@@ -69,6 +74,8 @@ function AIInsightsSection() {
   return (
     <SectionCard
       title={theme.words.aiInsights}
+      icon={<Sparkles size={18} strokeWidth={2} />}
+      accented
       action={
         (status === "success" || status === "error") && (
           <button
@@ -111,7 +118,7 @@ function AIInsightsSection() {
       {/* Empty state — not enough data yet */}
       {status === "empty" && (
         <EmptyState
-          icon="🧠"
+          icon={<Brain size={28} strokeWidth={1.75} />}
           title="Not enough data yet"
           description="Solve a few problems first — your personalised insights will appear here."
           compact

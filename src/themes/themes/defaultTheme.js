@@ -14,10 +14,14 @@ export const defaultTheme = createTheme({
         "A clean, no-frills experience with standard labels — no story, no roleplay.",
 
     colors: {
-        primary: "#ffffff",
+        // Phase 11A: previously #ffffff/#71717a placeholders. Now matches the
+        // teal brand color applied app-wide in Button.jsx, so a student on
+        // "no theme" sees the same identity everywhere — not a mismatched
+        // white accent next to teal buttons elsewhere in the app.
+        primary: "#2dd4bf",   // teal-400 — bright tone, pairs with black text
         secondary: "#18181b",
-        border: "#3f3f46",
-        accent: "#71717a",
+        border: "#134e4a",    // teal-tinted dark border, not generic zinc
+        accent: "#0d9488",    // teal-600 — deeper tone for gradients/hover
     },
 
     words: {
@@ -34,6 +38,7 @@ export const defaultTheme = createTheme({
         debug: "Debug Console",
 
         dashboard: "Dashboard",
+        welcomeTagline: "Ready to solve today's problem?",
         problems: "Problems",
         analytics: "Analytics",
         profile: "Profile",

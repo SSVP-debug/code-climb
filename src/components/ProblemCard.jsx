@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { Clock, Star } from "lucide-react";
 
 function ProblemCard({ problem }) {
   const { theme } = useTheme();
@@ -20,6 +21,9 @@ function ProblemCard({ problem }) {
   } = problem;
 
 
+  // Difficulty stays in its own green/yellow/red family regardless of the
+  // selected universe — difficulty must read instantly, the same way in
+  // every theme (Phase 11D decision, documented in the tracker).
   const difficultyColors = {
     Easy: "bg-green-500/15 text-green-400 border-green-500/20",
     Medium: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20",
@@ -43,14 +47,15 @@ function ProblemCard({ problem }) {
         duration-200
         ${solved
           ? "bg-zinc-900/60 border-zinc-800 opacity-75"
-          : "bg-zinc-900 border-zinc-800 hover:border-green-500 hover:bg-zinc-800/70"
+          : "bg-zinc-900 border-zinc-800 hover:border-[var(--theme-primary,#2dd4bf)] hover:bg-zinc-800/70"
         }
       `}
     >
       {/* Left */}
       <div className="flex items-center gap-4 min-w-0 flex-1">
 
-        {/* Solved indicator */}
+        {/* Solved indicator — kept semantic green (same "success" meaning
+            as an Accepted verdict), not tied to the theme color */}
         <div
           className={`w-3 h-3 rounded-full flex-shrink-0 ${solved ? "bg-green-500" : "bg-zinc-600"
             }`}
@@ -107,8 +112,9 @@ function ProblemCard({ problem }) {
         )}
 
         {estimatedTime && (
-          <span className="text-xs text-zinc-400 whitespace-nowrap">
-            ⏱ {estimatedTime}
+          <span className="text-xs text-zinc-400 whitespace-nowrap inline-flex items-center gap-1">
+            <Clock size={12} strokeWidth={2} aria-hidden="true" />
+            {estimatedTime}
           </span>
         )}
 
@@ -123,13 +129,13 @@ function ProblemCard({ problem }) {
 
         <button
           onClick={(e) => e.preventDefault()}
-          className={`text-lg transition ${saved
+          className={`transition ${saved
             ? "text-yellow-400"
             : "text-zinc-500 hover:text-yellow-400"
             }`}
           title="Save problem"
         >
-          {saved ? "★" : "☆"}
+          <Star size={16} strokeWidth={2} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
         </button>
 
       </div>

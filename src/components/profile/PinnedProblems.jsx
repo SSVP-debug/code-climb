@@ -5,6 +5,8 @@ import SectionCard from "../ui/layout/SectionCard";
 import EmptyState from "../ui/feedback/EmptyState";
 import { useAppContext } from "../../hooks/useAppContext";
 import { useProblems } from "../../hooks/useProblems";
+import { useTheme } from "../../context/ThemeContext";
+import { Pin } from "lucide-react";
 
 const DIFFICULTY_COLOR = {
   Easy: "text-green-400 border-green-500/30 bg-green-500/10",
@@ -28,6 +30,7 @@ const MAX_PINNED = 6;
 function PinnedProblems() {
   const { pinnedProblems, pinProblem, unpinProblem, solvedProblems } = useAppContext();
   const { problems } = useProblems();
+  const { theme } = useTheme();
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -72,12 +75,13 @@ function PinnedProblems() {
   return (
     <SectionCard
       title="Pinned Problems"
-      icon="📌"
+      icon={<Pin size={18} strokeWidth={2} />}
       subtitle="Showcase your best solves — shown on your public profile."
+      accented
     >
       {pinnedProblems.length === 0 && !pickerOpen ? (
         <EmptyState
-          icon="📌"
+          icon={<Pin size={28} strokeWidth={1.75} />}
           title="Nothing pinned yet"
           description="Pin a few of your best solved problems to show recruiters what you can do."
           actionLabel="Pin a problem"
@@ -99,7 +103,7 @@ function PinnedProblems() {
                 </span>
                 <Link
                   to={`/problems/${p.slug}`}
-                  className="text-sm font-medium truncate hover:text-green-400 transition"
+                  className="text-sm font-medium truncate hover:text-[var(--theme-primary,#2dd4bf)] transition"
                 >
                   {p.title}
                 </Link>
@@ -121,7 +125,8 @@ function PinnedProblems() {
           !atCap && pinnedProblems.length > 0 && (
             <button
               onClick={() => setPickerOpen(true)}
-              className="text-sm text-green-400 hover:text-green-300 transition"
+              className="text-sm hover:brightness-110 transition"
+              style={{ color: theme.colors.primary }}
             >
               + Pin another problem
             </button>

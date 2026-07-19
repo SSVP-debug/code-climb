@@ -4,12 +4,13 @@ import {
   ListChecks,
   Bookmark,
 } from "lucide-react";
+import { useTheme } from "../../../context/ThemeContext";
 
 const navigationItems = [
   {
     id: "browse",
     label: "Browse",
-    description: "Explore all vaults",
+    description: "Explore all problems",
     icon: BookOpen,
   },
   {
@@ -27,7 +28,7 @@ const navigationItems = [
   {
     id: "saved",
     label: "Saved",
-    description: "Your bookmarked vaults",
+    description: "Your bookmarked problems",
     icon: Bookmark,
   },
 ];
@@ -42,6 +43,8 @@ const navigationItems = [
 // only — no room for the description line at pill size, and a touch
 // target of ~40px tall keeps it comfortably tappable).
 function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical" }) {
+  const { theme } = useTheme();
+
   if (orientation === "horizontal") {
     return (
       <nav className="flex items-center gap-2 px-3 py-2.5 overflow-x-auto no-scrollbar">
@@ -54,10 +57,17 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
               key={item.id}
               onClick={() => setActiveView(item.id)}
               className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all whitespace-nowrap ${
-                active
-                  ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
-                  : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                active ? "" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
+              style={
+                active
+                  ? {
+                      backgroundColor: theme.colors.primary,
+                      color: "#09090b",
+                      boxShadow: `0 10px 15px -3px ${theme.colors.primary}33`,
+                    }
+                  : undefined
+              }
             >
               <Icon size={14} />
               {item.label}
@@ -79,10 +89,17 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
             key={item.id}
             onClick={() => setActiveView(item.id)}
             className={`w-full text-left rounded-xl px-3 py-2.5 transition-all group ${
-              active
-                ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
-                : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
             }`}
+            style={
+              active
+                ? {
+                    backgroundColor: theme.colors.primary,
+                    color: "#09090b",
+                    boxShadow: `0 10px 15px -3px ${theme.colors.primary}33`,
+                  }
+                : undefined
+            }
           >
             <div className="flex items-center gap-3">
               <div className={`flex-shrink-0 p-1 rounded-lg ${

@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useProblems } from "../hooks/useProblems";
+import ThemeSkin from "../themes/ThemeSkin";
 
 import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
 import ProblemsNavigation from "../components/problem/navigation/ProblemsNavigation";
@@ -264,6 +265,7 @@ function ProblemsPage() {
   const activeViewProps = { ...browseProps, ...patternsProps };
 
   return (
+    <ThemeSkin>
     <div className="h-screen flex flex-col bg-black text-white overflow-hidden">
 
       {/* Slim topbar — replaces global Navbar */}
@@ -381,6 +383,7 @@ function ProblemsPage() {
       </div>
 
     </div>
+    </ThemeSkin>
   );
 }
 

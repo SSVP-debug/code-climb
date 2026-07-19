@@ -3,6 +3,7 @@ import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
+import { Trophy, CheckCircle2, Lock } from "lucide-react";
 
 function AchievementGallery() {
   const { theme } = useTheme();
@@ -16,7 +17,7 @@ function AchievementGallery() {
   );
 
   return (
-    <SectionCard title={theme.words.achievements} icon="🏆">
+    <SectionCard title={theme.words.achievements} icon={<Trophy size={18} strokeWidth={2} />} accented>
 
 
 
@@ -51,10 +52,18 @@ function AchievementGallery() {
                   {achievement.description}
                 </p>
 
-                <p className="mt-2 text-xs">
-                  {isUnlocked
-                    ? "✅ Unlocked"
-                    : "🔒 Locked"}
+                <p className="mt-2 text-xs flex items-center gap-1.5">
+                  {isUnlocked ? (
+                    <>
+                      <CheckCircle2 size={12} strokeWidth={2.5} className="text-green-400" aria-hidden="true" />
+                      Unlocked
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={12} strokeWidth={2.5} className="text-zinc-500" aria-hidden="true" />
+                      Locked
+                    </>
+                  )}
                 </p>
               </div>
             );

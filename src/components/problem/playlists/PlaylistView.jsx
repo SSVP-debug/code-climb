@@ -1,9 +1,16 @@
+import SectionCard from "../../ui/layout/SectionCard";
+import { ListChecks } from "lucide-react";
+
 function PlaylistView() {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-      <h2 className="text-3xl font-bold">Playlists</h2>
-      <p className="text-zinc-400 mt-2">Curated learning collections.</p>
-    </div>
+    <SectionCard
+      title="Playlists"
+      subtitle="Curated learning collections."
+      icon={<ListChecks size={18} strokeWidth={2} />}
+      accented
+    >
+      <p className="text-zinc-500 text-sm">Coming soon.</p>
+    </SectionCard>
   );
 }
 

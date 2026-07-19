@@ -29,6 +29,7 @@ export const survivalCodeTheme = createTheme({
     testcases:            "Games",
     debug:                "Guard Review",
     dashboard:            "Arena",
+    welcomeTagline:       "Ready to play today's game?",
     problems:             "Games",
     analytics:            "Survival Stats",
     profile:              "Player Card",

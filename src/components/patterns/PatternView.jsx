@@ -1,9 +1,11 @@
 import { useMemo } from "react";
 import { AlertTriangle, ChevronRight } from "lucide-react";
 import { rankTopicsByCompletion } from "../../utils/rankTopics";
+import { useTheme } from "../../context/ThemeContext";
 
 const FOCUS_COUNT = 3;
 function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) {
+  const { theme } = useTheme();
   const topicRows = useMemo(
     () => rankTopicsByCompletion(problems, topicStats),
     [problems, topicStats]
@@ -76,10 +78,10 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
             <button
               key={row.topic}
               onClick={() => goToTopic(row.topic)}
-              className="text-left rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 hover:border-zinc-600 transition group"
+              className="text-left rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 hover:border-[var(--theme-primary,#2dd4bf)] transition group"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-sm font-semibold text-white group-hover:text-green-400 transition">
+                <p className="text-sm font-semibold text-white group-hover:text-[var(--theme-primary,#2dd4bf)] transition">
                   {row.topic}
                 </p>
                 <span className="text-xs text-zinc-500 whitespace-nowrap">
@@ -88,10 +90,11 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
               </div>
               <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all ${
-                    row.pct === 100 ? "bg-green-500" : "bg-blue-500"
-                  }`}
-                  style={{ width: `${row.pct}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${row.pct}%`,
+                    backgroundColor: row.pct === 100 ? "#22c55e" : theme.colors.primary,
+                  }}
                 />
               </div>
             </button>

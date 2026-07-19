@@ -29,6 +29,7 @@ export const ghostProtocolTheme = createTheme({
     testcases:            "Payloads",
     debug:                "System Logs",
     dashboard:            "Command Center",
+    welcomeTagline:       "Ready to breach today's target?",
     problems:             "Targets",
     analytics:            "Recon",
     profile:              "Ghost Identity",

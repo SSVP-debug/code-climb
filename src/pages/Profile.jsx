@@ -4,6 +4,7 @@ import { useAppContext } from "../hooks/useAppContext";
 import { useTheme } from "../context/ThemeContext";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { getLevel, getLevelProgress } from "../utils/xpLevel";
+import { Flame, BarChart3, Award, Zap, Inbox, FileText } from "lucide-react";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
 import SectionCard from "../components/ui/layout/SectionCard";
@@ -70,7 +71,7 @@ function Profile() {
 
         {/* ── 1. Hero ──────────────────────────────────────────────────── */}
         <ContentSlot id="profile-identity">
-          <SectionCard>
+          <SectionCard accented>
             <div className="flex items-start gap-6">
               {user?.photoURL ? (
                 <img
@@ -79,7 +80,13 @@ function Profile() {
                   className="w-20 h-20 rounded-full flex-shrink-0"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                <div
+                  className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0"
+                  style={{
+                    backgroundColor: `${theme.colors.primary}1f`,
+                    color: theme.colors.primary,
+                  }}
+                >
                   {(user?.displayName || "U")[0]}
                 </div>
               )}
@@ -110,8 +117,11 @@ function Profile() {
                   </div>
                   <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-green-500 rounded-full transition-all"
-                      style={{ width: `${Math.min(percent, 100)}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.min(percent, 100)}%`,
+                        backgroundColor: theme.colors.primary,
+                      }}
                     />
                   </div>
                 </div>
@@ -129,7 +139,10 @@ function Profile() {
                 <p className="text-zinc-500 text-xs mt-0.5">Solved</p>
               </div>
               <div className="bg-zinc-800 rounded-xl p-3 text-center">
-                <p className="text-xl font-bold">🔥 {currentStreak}</p>
+                <p className="text-xl font-bold flex items-center justify-center gap-1.5">
+                  <Flame size={18} strokeWidth={2} className="text-orange-400" aria-hidden="true" />
+                  {currentStreak}
+                </p>
                 <p className="text-zinc-500 text-xs mt-0.5">Current Streak</p>
               </div>
               <div className="bg-zinc-800 rounded-xl p-3 text-center">
@@ -162,8 +175,8 @@ function Profile() {
             was mounted only on the public /u/:username page, never here. */}
         <ContentSlot id="profile-heatmap-radar">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ActivityHeatmap activityDates={activityDates} />
-            <SkillRadar topicStats={topicStats} />
+            <ActivityHeatmap activityDates={activityDates} accentColor={theme.colors.primary} />
+            <SkillRadar topicStats={topicStats} accentColor={theme.colors.primary} />
           </div>
         </ContentSlot>
 
@@ -190,30 +203,36 @@ function Profile() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link
               to="/analytics"
-              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-green-500/50 transition"
+              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
             >
-              <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center text-xl flex-shrink-0">
-                📊
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+              >
+                <BarChart3 size={20} strokeWidth={2} aria-hidden="true" />
               </div>
               <div className="min-w-0">
                 <p className="font-semibold">{theme.words.analytics}</p>
                 <p className="text-zinc-500 text-sm">Deep dive into your solving patterns.</p>
               </div>
-              <span className="ml-auto text-zinc-500 group-hover:text-green-400 transition flex-shrink-0">→</span>
+              <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
             </Link>
 
             <Link
               to="/certifications"
-              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-green-500/50 transition"
+              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
             >
-              <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center text-xl flex-shrink-0">
-                🎖️
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+              >
+                <Award size={20} strokeWidth={2} aria-hidden="true" />
               </div>
               <div className="min-w-0">
                 <p className="font-semibold">Certifications</p>
                 <p className="text-zinc-500 text-sm">View and share what you've earned.</p>
               </div>
-              <span className="ml-auto text-zinc-500 group-hover:text-green-400 transition flex-shrink-0">→</span>
+              <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
             </Link>
           </div>
         </ContentSlot>
@@ -230,10 +249,10 @@ function Profile() {
 
         {/* ── 10. Recent Activity ────────────────────────────────────────── */}
         <ContentSlot id="profile-activity">
-          <SectionCard title="Recent Activity" icon="⚡">
+          <SectionCard title="Recent Activity" icon={<Zap size={18} strokeWidth={2} />} accented>
             {recentActivity.length === 0 ? (
               <EmptyState
-                icon="📭"
+                icon={<Inbox size={28} strokeWidth={1.75} />}
                 title="No activity yet"
                 description="Solve a problem to start building your activity history."
                 actionLabel="Browse Problems"
@@ -268,10 +287,10 @@ function Profile() {
 
         {/* ── 11. Recent Submissions ─────────────────────────────────────── */}
         <ContentSlot id="profile-submissions">
-          <SectionCard title="Recent Submissions" icon="📝">
+          <SectionCard title="Recent Submissions" icon={<FileText size={18} strokeWidth={2} />} accented>
             {recentSubmissions.length === 0 ? (
               <EmptyState
-                icon="📝"
+                icon={<FileText size={28} strokeWidth={1.75} />}
                 title="No submissions yet"
                 description="Submit your first solution to see your history here."
                 actionLabel="Start solving"

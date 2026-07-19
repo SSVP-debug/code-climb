@@ -4,6 +4,7 @@ import {
 } from "recharts";
 import SectionCard from "../ui/layout/SectionCard";
 import EmptyState from "../ui/feedback/EmptyState";
+import { Radar as RadarIcon } from "lucide-react";
 
 /**
  * SkillRadar
@@ -12,8 +13,13 @@ import EmptyState from "../ui/feedback/EmptyState";
  * Analytics.jsx (kept in sync deliberately — this is the glance view,
  * Analytics is the deep-dive, both showing topicStats is intentional,
  * not duplication to fix).
+ *
+ * Shared with the public /u/:username page — same reasoning as
+ * ActivityHeatmap.jsx: doesn't call useTheme() itself, accepts an
+ * optional accentColor prop instead, so a viewer's own theme never
+ * bleeds into someone else's public profile.
  */
-function SkillRadar({ topicStats = {} }) {
+function SkillRadar({ topicStats = {}, accentColor = "#2dd4bf" }) {
   const radarData = useMemo(() => {
     const entries = Object.entries(topicStats || {})
       .sort((a, b) => b[1] - a[1])
@@ -25,10 +31,10 @@ function SkillRadar({ topicStats = {} }) {
   }, [topicStats]);
 
   return (
-    <SectionCard title="Skill Radar" icon="🕸️">
+    <SectionCard title="Skill Radar" icon={<RadarIcon size={18} strokeWidth={2} />}>
       {radarData.length < 3 ? (
         <EmptyState
-          icon="🕸️"
+          icon={<RadarIcon size={28} strokeWidth={1.75} />}
           title="Not enough data yet"
           description="Solve problems across at least 3 topics to unlock your radar."
           compact
@@ -41,8 +47,8 @@ function SkillRadar({ topicStats = {} }) {
             <Radar
               name="Solved"
               dataKey="count"
-              stroke="#22c55e"
-              fill="#22c55e"
+              stroke={accentColor}
+              fill={accentColor}
               fillOpacity={0.15}
               strokeWidth={2}
             />

@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
+import { Tags } from "lucide-react";
 
 // Same accent palette used by Analytics.jsx's charts, extended with a
 // neutral tone for the "Others" bucket so it reads as grouped overflow
@@ -43,9 +44,9 @@ function TopicProgressCard() {
 
   if (total === 0) {
     return (
-      <SectionCard title="Topic Progress">
+      <SectionCard title="Topic Progress" icon={<Tags size={18} strokeWidth={2} />} accented>
         <EmptyState
-          icon="🧩"
+          icon={<Tags size={28} strokeWidth={1.75} />}
           title="No topics yet"
           description="Solve a problem and its topic will show up here."
           compact
@@ -55,7 +56,7 @@ function TopicProgressCard() {
   }
 
   return (
-    <SectionCard title="Topic Progress">
+    <SectionCard title="Topic Progress" icon={<Tags size={18} strokeWidth={2} />} accented>
       <div className="flex items-center gap-4">
         <div className="w-28 h-28 flex-shrink-0 relative">
           <ResponsiveContainer width="100%" height="100%">

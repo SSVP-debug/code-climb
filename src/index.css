@@ -32,6 +32,25 @@
   }
 }
 
+@keyframes pulseGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+    box-shadow: 0 0 0 0 currentColor;
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 14px transparent;
+  }
+}
+
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.2s ease-out both;

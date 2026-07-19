@@ -29,6 +29,7 @@ export const debugDynastyTheme = createTheme({
     testcases:            "Test Suites",
     debug:                "Debug Console",
     dashboard:            "Founder Dashboard",
+    welcomeTagline:       "Ready to ship today?",
     problems:             "Engineering Tickets",
     analytics:            "KPI Dashboard",
     profile:              "LinkedIn",

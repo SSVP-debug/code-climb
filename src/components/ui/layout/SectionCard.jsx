@@ -1,34 +1,3 @@
-/**
- * SectionCard
- *
- * The single, canonical wrapper for every card-like section across Code Club.
- * Used on Profile, Dashboard, Analytics, Recruiter Portal, Company Portal,
- * and any future premium feature pages.
- *
- * Props
- * ─────
- * title       string          — section heading (required)
- * subtitle    string          — secondary line below the title (optional)
- * icon        ReactNode       — small icon/emoji shown left of the title (optional, Phase 9E)
- * action      ReactNode       — right-aligned slot: badge, button, link, etc. (optional)
- * children    ReactNode       — body content (required)
- * className   string          — extra Tailwind classes appended to the outer wrapper (optional)
- *
- * Design decisions
- * ────────────────
- * • bg-zinc-900 / border-zinc-800 / rounded-2xl / p-6 match every existing
- *   card in the codebase so refactoring is a pure search-and-replace.
- * • Header is only rendered when `title` is provided — some callers may want
- *   a card without a header (e.g. the User Info card).
- * • `icon` is purely visual rhythm — a page of ten identical unlabeled cards
- *   reads as a "storage room" even when each one is internally tidy; a small
- *   icon per section gives the eye something to scan against. Optional and
- *   additive, every existing call site keeps working unchanged.
- * • `action` sits in a flex row beside the title group; it can hold anything:
- *   a <span> badge, a <button>, or a full JSX subtree.
- * • `className` is appended last so callers can override spacing when needed.
- */
-
 function SectionCard({
   title,
   subtitle,
@@ -36,20 +5,35 @@ function SectionCard({
   action,
   children,
   className = "",
+  accented = false,
 }) {
   const hasHeader = title || action;
 
   return (
     <div
-      className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-6 ${className}`}
+      className={`relative overflow-hidden bg-zinc-900 rounded-2xl p-4 sm:p-6 border ${
+        accented ? "border-[var(--theme-border,#27272a)]" : "border-zinc-800"
+      } ${className}`}
     >
+      {/* Top accent stripe — only when this card opts into the theme */}
+      {accented && (
+        <div
+          aria-hidden="true"
+          className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--theme-primary,#2dd4bf)] to-[var(--theme-accent,#0d9488)]"
+        />
+      )}
+
       {/* ── Header ─────────────────────────────────────────────────────── */}
       {hasHeader && (
         <div className="flex items-start justify-between gap-3 mb-4">
           {/* Title group */}
           <div className="min-w-0 flex items-start gap-2.5">
             {icon && (
-              <span className="text-lg leading-tight flex-shrink-0" aria-hidden="true">
+              <span
+                className="text-lg leading-tight flex-shrink-0"
+                style={accented ? { color: "var(--theme-primary, #2dd4bf)" } : undefined}
+                aria-hidden="true"
+              >
                 {icon}
               </span>
             )}

@@ -61,6 +61,7 @@ export const THEME_WORD_KEYS = [
     "achievements",
     "noAchievements",
     "achievementIcon",
+    "welcomeTagline",
 
     "publicProfile",
     "totalSolved",

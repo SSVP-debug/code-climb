@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import SectionCard from "../ui/layout/SectionCard";
 import { useAppContext } from "../../hooks/useAppContext";
+import { useTheme } from "../../context/ThemeContext";
+import { Sparkles } from "lucide-react";
 
 /**
  * ProfileCompletion
@@ -16,6 +18,7 @@ import { useAppContext } from "../../hooks/useAppContext";
  */
 function ProfileCompletion() {
   const { username, leetcodeUsername, recruiterSnapshot, pinnedProblems } = useAppContext();
+  const { theme } = useTheme();
 
   const checklist = [
     { label: "Choose a username", done: Boolean(username), to: "/settings" },
@@ -38,15 +41,15 @@ function ProfileCompletion() {
   if (percent === 100) return null; // don't nag a fully-complete profile
 
   return (
-    <SectionCard title="Complete Your Profile" icon="✨">
+    <SectionCard title="Complete Your Profile" icon={<Sparkles size={18} strokeWidth={2} />} accented>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-sm font-semibold">{percent}% complete</span>
         <span className="text-xs text-zinc-500">{doneCount}/{checklist.length}</span>
       </div>
       <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
         <div
-          className="h-full bg-green-500 rounded-full transition-all"
-          style={{ width: `${percent}%` }}
+          className="h-full rounded-full transition-all"
+          style={{ width: `${percent}%`, backgroundColor: theme.colors.primary }}
         />
       </div>
 
@@ -57,9 +60,9 @@ function ProfileCompletion() {
             to={item.to}
             className="flex items-center gap-2.5 text-sm text-zinc-400 hover:text-white transition group"
           >
-            <span className="w-4 h-4 rounded-full border border-zinc-600 flex-shrink-0 group-hover:border-green-400 transition" />
+            <span className="w-4 h-4 rounded-full border border-zinc-600 flex-shrink-0 group-hover:border-[var(--theme-primary,#2dd4bf)] transition" />
             {item.label}
-            <span className="ml-auto text-zinc-600 group-hover:text-green-400 transition">→</span>
+            <span className="ml-auto text-zinc-600 group-hover:text-[var(--theme-primary,#2dd4bf)] transition">→</span>
           </Link>
         ))}
       </div>

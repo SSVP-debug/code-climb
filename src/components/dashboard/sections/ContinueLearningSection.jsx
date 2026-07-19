@@ -1,6 +1,7 @@
 import SectionCard from "../../ui/layout/SectionCard";
 import Button from "../../ui/Button";
 import { useAppContext } from "../../../hooks/useAppContext";
+import { PlayCircle } from "lucide-react";
 
 function ContinueLearningSection() {
   const { submissions } = useAppContext();
@@ -16,13 +17,15 @@ function ContinueLearningSection() {
       <SectionCard
         title="Continue Learning"
         subtitle="Start your journey"
+        icon={<PlayCircle size={18} strokeWidth={2} />}
+        accented
       >
         <p className="text-zinc-400 mb-6">
           You haven't solved any problems yet.
           Begin with your first challenge.
         </p>
 
-        <Button to="/problems">
+        <Button to="/problems" variant="theme">
           Explore Problems
         </Button>
       </SectionCard>
@@ -33,6 +36,8 @@ function ContinueLearningSection() {
     <SectionCard
       title="Continue Learning"
       subtitle="Pick up where you left off"
+      icon={<PlayCircle size={18} strokeWidth={2} />}
+      accented
     >
       <div className="flex items-center justify-between flex-wrap gap-6">
 
@@ -57,7 +62,7 @@ function ContinueLearningSection() {
           </p>
         </div>
 
-        <Button to={`/problems/${latestSubmission.problemSlug ?? latestSubmission.problemId}`}>
+        <Button to={`/problems/${latestSubmission.problemSlug ?? latestSubmission.problemId}`} variant="theme">
           Continue →
         </Button>
 

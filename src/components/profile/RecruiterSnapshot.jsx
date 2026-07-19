@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import SectionCard from "../ui/layout/SectionCard";
 import Button from "../ui/Button";
 import { useAppContext } from "../../hooks/useAppContext";
+import { Target } from "lucide-react";
 
 // Mirrors backend/controllers/userController.js PREFERRED_ROLES — keep in
 // sync if that list changes.
@@ -70,8 +71,9 @@ function RecruiterSnapshot() {
   return (
     <SectionCard
       title="Recruiter Snapshot"
-      icon="🎯"
+      icon={<Target size={18} strokeWidth={2} />}
       subtitle="Shown to recruiters and TPOs viewing your public profile."
+      accented
     >
       <div className="space-y-5">
         <div className="flex items-center justify-between bg-zinc-800 rounded-xl p-4">
@@ -130,6 +132,7 @@ function RecruiterSnapshot() {
 
         <Button
           size="sm"
+          variant="theme"
           disabled={!dirty || saving}
           onClick={handleSave}
         >

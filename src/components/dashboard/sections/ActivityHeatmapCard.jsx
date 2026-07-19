@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useAppContext } from "../../../hooks/useAppContext";
+import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
+import { Activity } from "lucide-react";
 
 const DAYS_TO_SHOW = 91; // ~13 weeks, matches the "last 90 days" framing
 
@@ -20,6 +22,7 @@ const DAYS_TO_SHOW = 91; // ~13 weeks, matches the "last 90 days" framing
  */
 function ActivityHeatmapCard() {
   const { activityDates } = useAppContext();
+  const { theme } = useTheme();
 
   const { weeks, activeCount } = useMemo(() => {
     const activeSet = new Set(activityDates || []);
@@ -60,6 +63,8 @@ function ActivityHeatmapCard() {
     <SectionCard
       title="Activity"
       subtitle={`${activeCount} active day${activeCount === 1 ? "" : "s"} in the last ${DAYS_TO_SHOW} days`}
+      icon={<Activity size={18} strokeWidth={2} />}
+      accented
       className="lg:col-span-2"
     >
       <div className="flex gap-1 overflow-x-auto pb-1">
@@ -70,9 +75,10 @@ function ActivityHeatmapCard() {
                 <div
                   key={day.date}
                   title={day.date}
-                  className={`w-3 h-3 rounded-sm ${
-                    day.active ? "bg-green-500" : "bg-zinc-800"
-                  }`}
+                  className="w-3 h-3 rounded-sm"
+                  style={{
+                    backgroundColor: day.active ? theme.colors.primary : "#27272a",
+                  }}
                 />
               ) : (
                 <div key={`blank-${dayIndex}`} className="w-3 h-3" />
@@ -85,7 +91,7 @@ function ActivityHeatmapCard() {
       <div className="flex items-center gap-2 mt-4 text-xs text-zinc-500">
         <span>Less</span>
         <div className="w-3 h-3 rounded-sm bg-zinc-800" />
-        <div className="w-3 h-3 rounded-sm bg-green-500" />
+        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: theme.colors.primary }} />
         <span>More</span>
       </div>
     </SectionCard>

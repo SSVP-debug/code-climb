@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../../../services/api";
+import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import { breakDownMs } from "../../../utils/countdown";
+import { CalendarClock } from "lucide-react";
 
 function formatCountdown(msRemaining) {
   if (msRemaining <= 0) return null;
@@ -11,6 +13,7 @@ function formatCountdown(msRemaining) {
 }
 
 function ContestCountdownCard() {
+  const { theme } = useTheme();
   const [status, setStatus] = useState("loading"); // loading | success | empty | error
   const [contest, setContest] = useState(null);
   const [now, setNow] = useState(Date.now());
@@ -47,8 +50,14 @@ function ContestCountdownCard() {
   return (
     <SectionCard
       title="Next Contest"
+      icon={<CalendarClock size={18} strokeWidth={2} />}
+      accented
       action={
-        <Link to="/club" className="text-xs text-green-400 hover:text-green-300">
+        <Link
+          to="/club"
+          className="text-xs hover:brightness-110 transition"
+          style={{ color: theme.colors.primary }}
+        >
           View Club →
         </Link>
       }
@@ -67,7 +76,11 @@ function ContestCountdownCard() {
       {status === "empty" && (
         <div className="text-center py-2">
           <p className="text-zinc-400 text-sm">No contests scheduled right now.</p>
-          <Link to="/club" className="text-green-400 hover:text-green-300 text-sm mt-1 inline-block">
+          <Link
+            to="/club"
+            className="text-sm mt-1 inline-block hover:brightness-110 transition"
+            style={{ color: theme.colors.primary }}
+          >
             Check the Club →
           </Link>
         </div>
@@ -95,7 +108,9 @@ function ContestCountdownCard() {
               </div>
             </div>
           ) : (
-            <p className="text-green-400 text-sm mt-2">Starting soon — join now!</p>
+            <p className="text-sm mt-2 font-medium" style={{ color: theme.colors.primary }}>
+              Starting soon — join now!
+            </p>
           )}
         </>
       )}

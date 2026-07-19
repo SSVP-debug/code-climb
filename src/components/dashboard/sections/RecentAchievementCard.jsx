@@ -4,6 +4,7 @@ import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
+import { Trophy } from "lucide-react";
 
 function RecentAchievementCard() {
   const { theme } = useTheme();
@@ -12,8 +13,10 @@ function RecentAchievementCard() {
   if (achievements.length === 0) {
     return (
       <SectionCard
-        title="🏆 Recent Achievement"
+        title="Recent Achievement"
         subtitle="Keep solving to unlock badges."
+        icon={<Trophy size={18} strokeWidth={2} />}
+        accented
       >
         <EmptyState
           icon={theme.words.achievementIcon}
@@ -33,12 +36,15 @@ function RecentAchievementCard() {
 
   return (
     <SectionCard
-      title="🏆 Recent Achievement"
+      title="Recent Achievement"
       subtitle="Unlocked recently"
+      icon={<Trophy size={18} strokeWidth={2} />}
+      accented
       action={
         <Link
           to="/profile"
-          className="text-green-400 hover:text-green-300 text-sm"
+          className="text-sm hover:brightness-110 transition"
+          style={{ color: theme.colors.primary }}
         >
           View All →
         </Link>

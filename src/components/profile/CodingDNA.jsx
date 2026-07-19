@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import SectionCard from "../ui/layout/SectionCard";
+import { Dna } from "lucide-react";
 
 const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", cpp: "C++" };
 
@@ -59,7 +60,7 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
   ];
 
   return (
-    <SectionCard title="Coding DNA" icon="🧬">
+    <SectionCard title="Coding DNA" icon={<Dna size={18} strokeWidth={2} />} accented>
       <div className="grid grid-cols-2 gap-4">
         {dnaItems.map((item) => (
           <div key={item.label} className="bg-zinc-800 rounded-xl p-4">

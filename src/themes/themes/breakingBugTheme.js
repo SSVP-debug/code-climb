@@ -28,6 +28,7 @@ export const breakingBugTheme = createTheme({
         testcases: "Experiments",
         debug: "Lab Report",
         dashboard: "Dashboard",
+        welcomeTagline: "Ready for today's experiment?",
         problems: "Experiments",
         analytics: "Research Lab",
         profile: "Scientist Profile",

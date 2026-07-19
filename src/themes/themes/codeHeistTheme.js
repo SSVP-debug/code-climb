@@ -29,6 +29,7 @@ export const codeHeistTheme = createTheme({
         debug: "Security Logs",
 
         dashboard: "Operations",
+        welcomeTagline: "Ready to crack today's vault?",
         problems: "Vaults",
         analytics: "Intel",
         profile: "Profile Alias",

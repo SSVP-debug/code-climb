@@ -55,7 +55,7 @@ function PublicProfileCard() {
   };
 
   return (
-    <SectionCard>
+    <SectionCard accented>
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-zinc-400 text-sm">
@@ -67,7 +67,10 @@ function PublicProfileCard() {
           </h2>
         </div>
 
-        <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-black text-2xl font-bold">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
+          style={{ backgroundColor: theme.colors.primary, color: "#09090b" }}
+        >
           C
         </div>
       </div>
@@ -143,11 +146,10 @@ function PublicProfileCard() {
           {heatmapCells.map((active, index) => (
             <div
               key={index}
-              className={`w-6 h-6 rounded-md ${
-                active
-                  ? "bg-green-500"
-                  : "bg-zinc-800"
-              }`}
+              className="w-6 h-6 rounded-md"
+              style={{
+                backgroundColor: active ? theme.colors.primary : "#27272a",
+              }}
             />
           ))}
         </div>

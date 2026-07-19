@@ -1,5 +1,19 @@
+/**
+ * ActivityHeatmap
+ *
+ * Shared by the private Profile page AND the public /u/:username page.
+ * Deliberately does NOT call useTheme() itself — on the public page, the
+ * person viewing it might not be the profile owner (could be a recruiter,
+ * or another student with a different universe selected), so reading
+ * "the current viewer's theme" would color someone else's profile with
+ * the wrong person's colors. Profile.jsx passes accentColor explicitly
+ * (the owner's own theme) since it's the profile owner viewing their own
+ * page; PublicProfile.jsx passes nothing and gets the same green it
+ * always has.
+ */
 function ActivityHeatmap({
   activityDates = [],
+  accentColor = "#2dd4bf",
 }) {
   const days = [];
 
@@ -26,7 +40,13 @@ function ActivityHeatmap({
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+    <div className="relative overflow-hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ backgroundColor: accentColor }}
+      />
 
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">
@@ -44,10 +64,8 @@ function ActivityHeatmap({
           <div
             key={day.date}
             title={day.date}
-            className={`w-4 h-4 rounded transition-colors ${day.active
-              ? "bg-green-500"
-              : "bg-zinc-800"
-              }`}
+            className="w-4 h-4 rounded transition-colors"
+            style={{ backgroundColor: day.active ? accentColor : "#27272a" }}
           />
         ))}
 
@@ -56,8 +74,8 @@ function ActivityHeatmap({
         <span>Less</span>
 
         <div className="w-3 h-3 rounded bg-zinc-800" />
-        <div className="w-3 h-3 rounded bg-green-500/40" />
-        <div className="w-3 h-3 rounded bg-green-500" />
+        <div className="w-3 h-3 rounded" style={{ backgroundColor: `${accentColor}66` }} />
+        <div className="w-3 h-3 rounded" style={{ backgroundColor: accentColor }} />
 
         <span>More</span>
       </div>

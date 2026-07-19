@@ -7,6 +7,7 @@ import {
 import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import Button from "../../ui/Button";
+import { CheckCircle2 } from "lucide-react";
 
 function DailyChallengeSection() {
   const { theme } = useTheme();
@@ -26,7 +27,7 @@ function DailyChallengeSection() {
 
   if (!challenge) {
     return (
-      <SectionCard>
+      <SectionCard accented>
         <div className="text-zinc-500 text-sm">Loading today's challenge…</div>
       </SectionCard>
     );
@@ -45,7 +46,7 @@ function DailyChallengeSection() {
 
   return (
 
-    <SectionCard>
+    <SectionCard accented>
 
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
 
@@ -90,11 +91,12 @@ function DailyChallengeSection() {
       </p>
 
       {completedToday ? (
-        <div className="inline-flex items-center bg-green-500 text-black px-6 py-3 rounded-xl font-semibold">
-          ✅ Completed Today
+        <div className="inline-flex items-center gap-2 bg-green-500 text-black px-6 py-3 rounded-xl font-semibold">
+          <CheckCircle2 size={18} strokeWidth={2.5} aria-hidden="true" />
+          Completed Today
         </div>
       ) : (
-        <Button to={`/problems/${challenge.slug}`}>
+        <Button to={`/problems/${challenge.slug}`} variant="theme">
           {theme.words.solveChallenge}
         </Button>
       )}

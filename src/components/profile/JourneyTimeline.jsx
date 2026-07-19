@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import SectionCard from "../ui/layout/SectionCard";
 import EmptyState from "../ui/feedback/EmptyState";
 import { ACHIEVEMENT_METADATA } from "../../config/achievementMetadata";
+import { Compass, Flag } from "lucide-react";
 
 /**
  * JourneyTimeline
@@ -22,7 +23,7 @@ function JourneyTimeline({ joinedDate, achievements = [] }) {
       list.push({
         key: "joined",
         date: new Date(joinedDate),
-        icon: "🚀",
+        icon: <Flag size={14} strokeWidth={2} aria-hidden="true" />,
         label: "Joined Code Club",
       });
     }
@@ -44,10 +45,10 @@ function JourneyTimeline({ joinedDate, achievements = [] }) {
   }, [joinedDate, achievements]);
 
   return (
-    <SectionCard title="Journey Timeline" icon="🧭">
+    <SectionCard title="Journey Timeline" icon={<Compass size={18} strokeWidth={2} />} accented>
       {events.length === 0 ? (
         <EmptyState
-          icon="🧭"
+          icon={<Compass size={28} strokeWidth={1.75} />}
           title="Your journey starts here"
           description="Milestones will appear as you solve and unlock achievements."
           compact
