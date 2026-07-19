@@ -102,19 +102,89 @@ router.post("/", requireRole("admin", "tpo"), async (req, res) => {
   }
 });
 
-// ── POST /api/contests/private — TPO creates private contest (090) ────────────
-router.post("/private", requireRole("tpo", "admin"), async (req, res) => {
+// ── Phase 12B guardrails for student-hosted private contests ──────────────────
+// TPO/Admin are exempt (unchanged behavior — they run official, larger-scale
+// college contests and are already trusted staff, not the abuse surface this
+// is guarding against).
+const STUDENT_CONTEST_LIMITS = {
+  MAX_PROBLEMS:      8,
+  MAX_PARTICIPANTS:  100,
+  MIN_DURATION_MS:   30 * 60 * 1000,       // 30 minutes
+  MAX_DURATION_MS:   4 * 60 * 60 * 1000,   // 4 hours
+};
+
+// ── POST /api/contests/private — create private contest (090, extended 12B) ───
+// TPO/Admin: unrestricted, as before. Student: guardrailed per Phase 12B.
+//
+// NOTE: "Verified account required" (Phase 12 guardrails, confirmed) is not
+// enforced yet — student college verification doesn't exist until Phase 12C
+// ships. Once User has a verified flag for students, add the check here
+// (see the marker below). Shipping now without it, rather than blocking
+// hosting until 12C, matches the phase order Bunny confirmed (12B before 12C).
+router.post("/private", requireRole("student", "tpo", "admin"), async (req, res) => {
   try {
     const { title, description, problemSlugs, startsAt, endsAt } = req.body;
+    const isStudent = req.userDoc.role === "student";
 
     if (!title || !problemSlugs?.length || !startsAt || !endsAt) {
       return res.status(400).json({ error: "title, problemSlugs, startsAt, endsAt required." });
     }
 
-    const inviteCode = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6-char e.g. "A3F9B2"
     const start = new Date(startsAt);
     const end   = new Date(endsAt);
     const now   = new Date();
+
+    if (end <= start) {
+      return res.status(400).json({ error: "endsAt must be after startsAt." });
+    }
+
+    let maxParticipants = null;
+    let allowLateJoin = true;
+
+    if (isStudent) {
+      // ── TODO(Phase 12C): once student college verification ships, gate
+      // this route with `if (!req.userDoc.verified) return res.status(403)...`
+      // right here, before any of the guardrail checks below.
+
+      const durationMs = end - start;
+      if (durationMs < STUDENT_CONTEST_LIMITS.MIN_DURATION_MS || durationMs > STUDENT_CONTEST_LIMITS.MAX_DURATION_MS) {
+        return res.status(400).json({
+          error: "Contest duration must be between 30 minutes and 4 hours.",
+        });
+      }
+
+      if (problemSlugs.length > STUDENT_CONTEST_LIMITS.MAX_PROBLEMS) {
+        return res.status(400).json({
+          error: `Hosted contests can have at most ${STUDENT_CONTEST_LIMITS.MAX_PROBLEMS} problems.`,
+        });
+      }
+
+      const requestedCap = Number(req.body.maxParticipants) || STUDENT_CONTEST_LIMITS.MAX_PARTICIPANTS;
+      maxParticipants = Math.min(Math.max(requestedCap, 2), STUDENT_CONTEST_LIMITS.MAX_PARTICIPANTS);
+
+      allowLateJoin = Boolean(req.body.allowLateJoin);
+
+      // One active hosted contest at a time.
+      const existingActive = await Contest.findOne({
+        createdBy: req.userDoc._id,
+        type: "private",
+        status: { $in: ["upcoming", "active"] },
+      }).lean();
+
+      if (existingActive) {
+        return res.status(409).json({
+          error: "You already have an active or upcoming hosted contest. It must end before you can host another.",
+        });
+      }
+    }
+
+    // Validate all slugs exist
+    const found = await Problem.countDocuments({ slug: { $in: problemSlugs } });
+    if (found !== problemSlugs.length) {
+      return res.status(400).json({ error: "One or more problem slugs are invalid." });
+    }
+
+    const inviteCode = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6-char e.g. "A3F9B2"
 
     const contest = await Contest.create({
       title, description: description || "",
@@ -122,10 +192,17 @@ router.post("/private", requireRole("tpo", "admin"), async (req, res) => {
       status: now < start ? "upcoming" : "active",
       createdBy:    req.userDoc._id,
       inviteCode,
-      collegeDomain: req.userDoc.collegeDomain || null,
+      // Bug fix: this previously read req.userDoc.collegeDomain, which
+      // doesn't exist at the top level — the real field is nested under
+      // tpoProfile, so this was always null regardless of the creator's
+      // college. Only meaningful for TPO-created contests; students don't
+      // have a verified college domain until Phase 12C.
+      collegeDomain: req.userDoc.tpoProfile?.collegeDomain || null,
       startsAt: start, endsAt: end,
       durationMs: end - start,
       problemSlugs,
+      maxParticipants,
+      allowLateJoin,
     });
 
     return res.status(201).json({ ...contest.toObject(), inviteCode });
@@ -150,6 +227,16 @@ router.post("/join-private", async (req, res) => {
     );
     if (alreadyJoined) {
       return res.json({ alreadyJoined: true, contestId: contest._id });
+    }
+
+    // Phase 12B guardrails — checked after alreadyJoined so a participant
+    // who already joined can always re-fetch their contestId, even if the
+    // contest has since filled up or moved past its start time.
+    if (contest.maxParticipants && contest.participants.length >= contest.maxParticipants) {
+      return res.status(409).json({ error: "This contest is full." });
+    }
+    if (contest.status === "active" && !contest.allowLateJoin) {
+      return res.status(403).json({ error: "This contest has already started and isn't accepting late joins." });
     }
 
     contest.participants.push({

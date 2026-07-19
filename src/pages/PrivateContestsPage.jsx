@@ -1,30 +1,37 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
 import SectionCard from "../components/ui/layout/SectionCard";
 import Button from "../components/ui/Button";
+import HostContestForm from "../components/club/HostContestForm";
 import { apiFetch } from "../services/api";
-import { Lock, Users, ShieldCheck } from "lucide-react";
+import { Lock, Users } from "lucide-react";
 
 /**
- * PrivateContestsPage (Phase 12A)
+ * PrivateContestsPage
  *
- * Join: fully functional today — POST /api/contests/join-private already
- * exists and works (this form replaces the modal that used to live inside
- * ContestsPage.jsx; moved here since Private Contests now has its own page).
+ * Join: fully functional since Phase 12A — POST /api/contests/join-private.
+ * Pre-fills the invite code from ?code= so a shared invite link (generated
+ * by HostContestForm's success screen) drops a friend straight into a
+ * ready-to-submit form instead of making them retype a 6-character code.
  *
- * Host: intentionally a guardrails preview, not a working form. Creating a
- * private contest is still `requireRole("tpo","admin")` on the backend —
- * opening it to verified students is Phase 12B's job. Shipping a form here
- * that calls an endpoint students get a 403 from would be a worse
- * experience than an honest "here's what's coming" card.
+ * Host: fully functional as of Phase 12B — POST /api/contests/private is
+ * now open to students (guardrailed: max 8 problems, max 100 participants,
+ * 30min–4hr duration, one active hosted contest at a time). See
+ * HostContestForm.jsx for the form itself.
  */
 function PrivateContestsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [code, setCode] = useState("");
   const [joining, setJoining] = useState(false);
+
+  useEffect(() => {
+    const fromLink = searchParams.get("code");
+    if (fromLink) setCode(fromLink.toUpperCase().slice(0, 6));
+  }, [searchParams]);
 
   async function handleJoin() {
     if (code.trim().length !== 6) return;
@@ -82,25 +89,14 @@ function PrivateContestsPage() {
             </div>
           </SectionCard>
 
-          {/* ── Host (preview, not functional yet) ──────────────────── */}
+          {/* ── Host ─────────────────────────────────────────────────── */}
           <SectionCard
             title="Host a Contest"
-            subtitle="Coming soon — set up your own contest for friends or classmates"
+            subtitle="Set up your own contest for friends or classmates"
             icon={<Users size={18} strokeWidth={2} />}
+            accented
           >
-            <div className="flex items-start gap-3 bg-zinc-800/60 rounded-xl p-4 mb-4">
-              <ShieldCheck size={18} className="text-zinc-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-sm text-zinc-400">
-                Hosting will require a verified account. Once live, contests
-                you host can have up to <strong className="text-zinc-300">100 participants</strong>,{" "}
-                <strong className="text-zinc-300">8 problems</strong>, and run for{" "}
-                <strong className="text-zinc-300">30 minutes to 4 hours</strong> — one active
-                hosted contest at a time.
-              </p>
-            </div>
-            <Button variant="secondary" disabled>
-              Host a Contest — Coming Soon
-            </Button>
+            <HostContestForm />
           </SectionCard>
         </div>
       </div>

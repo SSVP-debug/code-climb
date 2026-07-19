@@ -9,6 +9,13 @@ const contestSchema = new mongoose.Schema({
   // Private contests only
   inviteCode:   { type: String, default: null, sparse: true },
   collegeDomain:{ type: String, default: null },
+  // Phase 12B: guardrails for student-hosted private contests.
+  // null/true = unlimited/unrestricted, which preserves existing behavior
+  // for public contests and TPO/Admin-created private contests that
+  // predate these fields — only newly created student-hosted contests
+  // set these to real values.
+  maxParticipants: { type: Number, default: null },
+  allowLateJoin:    { type: Boolean, default: true },
   // Timing
   startsAt:     { type: Date, required: true },
   endsAt:       { type: Date, required: true },
