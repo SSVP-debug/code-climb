@@ -7,9 +7,13 @@ import { requireRole } from "../middleware/roleGuard.js";
 import College from "../models/College.js";
 import { SITE_URL, SUPPORT_EMAIL } from "../config/site.js";
 import { requireVerified } from "../middleware/requireVerified.js";
-import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
+import { getOrSetCache } from "../utils/cache.js";
+import { invalidateTpoCache } from "../controllers/tpoController.js";
 import { createNotificationBulk } from "../services/notificationService.js";
 import { isDomainAutoVerified } from "../utils/domainVerification.js";
+
+const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
+const TPO_CACHE_PREFIX = "tpo:";
 
 const require = createRequire(import.meta.url);
 
@@ -20,20 +24,7 @@ const router = Router();
 // in this file — every request re-reads every student row for the domain.
 // Cached per-domain via the shared Redis-backed helper so multiple Railway
 // instances agree, same pattern as leaderboard.js.
-const TPO_CACHE_PREFIX = "tpo:";
-const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
 
-/**
- * Invalidate a college's cached TPO views. Called from progressController
- * whenever a student's XP/solved/streak changes, keyed off their email
- * domain. Fire-and-forget by design — same as the leaderboard/profile
- * invalidation it sits alongside.
- */
-export async function invalidateTpoCache(domain) {
-  if (!domain) return;
-  await invalidateCachePrefix(`${TPO_CACHE_PREFIX}students:${domain}`);
-  await invalidateCachePrefix(`${TPO_CACHE_PREFIX}dashboard:${domain}`);
-}
 
 function b2bGate(req, res) {
   if (!B2B_ENABLED) {

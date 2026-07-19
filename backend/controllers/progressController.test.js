@@ -3,6 +3,12 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 vi.mock("../models/Problem.js", () => ({
   default: { find: vi.fn() },
 }));
+vi.mock("../models/User.js", () => ({
+  default: { updateOne: vi.fn().mockResolvedValue({ acknowledged: true }) },
+}));
+vi.mock("../services/userProgressService.js", () => ({
+  saveProgress: vi.fn().mockResolvedValue({ acknowledged: true }),
+}));
 vi.mock("../services/achievementService.js", () => ({
   evaluateAchievements: vi.fn().mockReturnValue([]),
 }));
@@ -12,7 +18,7 @@ vi.mock("../routes/leaderboard.js", () => ({
 vi.mock("./publicProfileController.js", () => ({
   invalidateProfileCache: vi.fn().mockResolvedValue(undefined),
 }));
-vi.mock("../routes/tpo.js", () => ({
+vi.mock("./tpoController.js", () => ({
   invalidateTpoCache: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("../services/notificationService.js", () => ({
@@ -20,6 +26,8 @@ vi.mock("../services/notificationService.js", () => ({
 }));
 
 import Problem from "../models/Problem.js";
+import User from "../models/User.js";
+import { saveProgress } from "../services/userProgressService.js";
 import { putProgress } from "./progressController.js";
 
 function mockRes() {
@@ -47,7 +55,6 @@ function makeUserDoc(overrides = {}) {
     currentStreak: 0,
     longestStreak: 0,
     totalXP: 0,
-    save: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -179,6 +186,62 @@ describe("putProgress — trusts req.verifiedNewSlugs, never the raw request bod
     await putProgress(req, res);
 
     expect(userDoc.leetcodeUsername).toBe("coder123");
+    // leetcodeUsername isn't part of the progress cluster (stays on User
+    // permanently), so it gets its own small write rather than riding
+    // along on saveProgress's patch.
+    expect(User.updateOne).toHaveBeenCalledWith(
+      { _id: "user1" },
+      { $set: { leetcodeUsername: "coder123" } }
+    );
+  });
+
+  it("does not touch User.updateOne when leetcodeUsername isn't in the request body", async () => {
+    mockProblemFind([]);
+    const userDoc = makeUserDoc();
+    const req = { body: {}, verifiedNewSlugs: [], userDoc, log: mockLog() };
+
+    await putProgress(req, res);
+
+    expect(User.updateOne).not.toHaveBeenCalled();
+  });
+
+  it("dual-writes the progress cluster via saveProgress on a verified solve", async () => {
+    mockProblemFind([
+      { slug: "two-sum", topic: "Arrays", difficulty: "Easy", title: "Two Sum" },
+    ]);
+    const userDoc = makeUserDoc();
+    const req = {
+      body: { solvedSlugs: ["two-sum"] },
+      verifiedNewSlugs: ["two-sum"],
+      userDoc,
+      log: mockLog(),
+    };
+
+    await putProgress(req, res);
+
+    expect(saveProgress).toHaveBeenCalledOnce();
+    const [userId, patch] = saveProgress.mock.calls[0];
+    expect(userId).toBe("user1");
+    expect(patch.solvedSlugs).toEqual(["two-sum"]);
+    expect(patch.topicStats).toEqual({ Arrays: 1 });
+    expect(patch.solvedDifficulty).toEqual({ easy: 1, medium: 0, hard: 0 });
+    // Fields this handler never touches (hint/PDF logs, dailyChallengeHistory,
+    // problemNotes) must not be in the patch — saveProgress's $set is a
+    // partial update, so an absent key means "don't touch", but including
+    // it here would still be a correctness smell worth catching.
+    expect(patch).not.toHaveProperty("problemNotes");
+    expect(patch).not.toHaveProperty("dailyChallengeHistory");
+  });
+
+  it("surfaces a 500 if the progress dual-write fails, same as the old save() would have", async () => {
+    mockProblemFind([]);
+    saveProgress.mockRejectedValueOnce(new Error("db down"));
+    const userDoc = makeUserDoc();
+    const req = { body: {}, verifiedNewSlugs: [], userDoc, log: mockLog() };
+
+    await putProgress(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   it("returns 503 when the database/user document is unavailable", async () => {

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import User from "../models/User.js";
 import { REFERRAL_REWARD_DAYS } from "../config/featureFlags.js";
 import { SITE_URL } from "../config/site.js";
+import { saveSubscription } from "../services/userSubscriptionService.js";
 
 const router = Router();
 
@@ -12,11 +13,6 @@ function generateCode(name) {
   return `${base || "cc"}${suffix}`;
 }
 
-/**
- * Shared by /my-code below and by routes/ambassador.js's dashboard — an
- * ambassador's referral tracking IS this referral system, not a parallel
- * one. Exported so ambassador.js doesn't reimplement code generation.
- */
 export async function getOrCreateReferralCode(userDoc) {
   if (!userDoc.referralCode) {
     let code;
@@ -26,8 +22,8 @@ export async function getOrCreateReferralCode(userDoc) {
       attempts++;
     } while (await User.exists({ referralCode: code }) && attempts < 5);
 
+    await saveSubscription(userDoc._id, { referralCode: code });
     userDoc.referralCode = code;
-    await userDoc.save();
   }
   return userDoc.referralCode;
 }
@@ -71,8 +67,8 @@ router.post("/apply", async (req, res) => {
     const referrer = await User.findOne({ referralCode: code });
     if (!referrer) return res.status(404).json({ error: "Invalid referral code." });
 
+    await saveSubscription(req.userDoc._id, { referredBy: code });
     req.userDoc.referredBy = code;
-    await req.userDoc.save();
 
     return res.json({
       success: true,

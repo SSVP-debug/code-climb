@@ -1,12 +1,6 @@
-/**
- * GET  /api/notes/:slug   — get user's note for a problem
- * PUT  /api/notes/:slug   — save/update note (body: { note: "..." })
- * DELETE /api/notes/:slug — delete note
- *
- * Notes are stored as User.problemNotes Map<slug → text>.
- * Max 5000 chars per note to prevent abuse.
- */
 import { Router } from "express";
+import { saveProgress } from "../services/userProgressService.js";
+import { logger } from "../config/logger.js";
 
 const router = Router({ mergeParams: true });
 
@@ -34,12 +28,20 @@ router.put("/:slug", async (req, res) => {
 
     if (!req.userDoc.problemNotes) req.userDoc.problemNotes = new Map();
     req.userDoc.problemNotes.set(slug, note);
-    req.userDoc.markModified("problemNotes");
-    await req.userDoc.save();
+
+    // Dual-writes to User (still authoritative — see userProgressService)
+    // and UserProgress. Sent as a plain object, not the live Map instance —
+    // that's what both models' Map-typed problemNotes path casts cleanly
+    // from in a $set update. (markModified()+userDoc.save() is no longer
+    // needed here since the write now goes through saveProgress's
+    // updateOne rather than saving this Mongoose document directly.)
+    await saveProgress(req.userDoc._id, {
+      problemNotes: Object.fromEntries(req.userDoc.problemNotes),
+    });
 
     return res.json({ slug, saved: true });
   } catch (err) {
-    console.error("[Notes] PUT error:", err.message);
+    logger.error({ err }, "[Notes] PUT error");
     return res.status(500).json({ error: "Failed to save note." });
   }
 });
@@ -48,10 +50,14 @@ router.delete("/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
     req.userDoc.problemNotes?.delete(slug);
-    req.userDoc.markModified("problemNotes");
-    await req.userDoc.save();
+
+    await saveProgress(req.userDoc._id, {
+      problemNotes: Object.fromEntries(req.userDoc.problemNotes ?? []),
+    });
+
     return res.json({ slug, deleted: true });
   } catch (err) {
+    logger.error({ err }, "[Notes] DELETE error");
     return res.status(500).json({ error: "Failed to delete note." });
   }
 });

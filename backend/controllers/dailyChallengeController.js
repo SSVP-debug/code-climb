@@ -1,3 +1,5 @@
+import { saveProgress } from "../services/userProgressService.js";
+
 export async function completeDailyChallenge(
   req,
   res
@@ -36,7 +38,12 @@ export async function completeDailyChallenge(
       completedAt: new Date(),
     });
 
-    await req.userDoc.save();
+    // Dual-writes to User (still authoritative — see userProgressService)
+    // and UserProgress (docs/migrations/user-model-split.md, Phase 1 step 3),
+    // instead of userDoc.save() directly.
+    await saveProgress(req.userDoc._id, {
+      dailyChallengeHistory: req.userDoc.dailyChallengeHistory,
+    });
 
     res.json({
       success: true,

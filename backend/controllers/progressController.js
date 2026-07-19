@@ -2,12 +2,14 @@ import { calculateStreak } from "../utils/calculateStreak.js";
 import { evaluateAchievements } from "../services/achievementService.js";
 import { computeXPFromSlugs, buildDifficultyMap, XP_BY_DIFFICULTY } from "../utils/computeXP.js";
 import Problem from "../models/Problem.js";
+import User from "../models/User.js";
 import { invalidateLeaderboardCaches } from "../routes/leaderboard.js";
 import { invalidateProfileCache } from "./publicProfileController.js";
-import { invalidateTpoCache } from "../routes/tpo.js";
+import { invalidateTpoCache } from "./tpoController.js";
 import { createNotification } from "../services/notificationService.js";
 import { logger } from "../config/logger.js";
 import { topicStatsToObject, topicStatsFromObject } from "../utils/topicStats.js";
+import { saveProgress } from "../services/userProgressService.js";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -81,7 +83,7 @@ export async function putProgress(req, res) {
       // slug to solvedSlugs if routes/progress.js's verifyAgainstSubmissions
       // middleware found a matching `Submission` with status "Accepted" for
       // this user — and that Submission can only have been created by
-      // routes/judge.js, from a real Judge0-graded run.
+      // controllers/judgeController.js, from a real Judge0-graded run.
     } = req.body;
 
     // ── Apply verified solves only ──────────────────────────────────────────
@@ -181,7 +183,51 @@ export async function putProgress(req, res) {
       }
     }
 
-    await req.userDoc.save();
+    // ── Persist ─────────────────────────────────────────────────────────────
+    // Dual-writes to User (still authoritative — see userProgressService)
+    // and UserProgress (docs/migrations/user-model-split.md, Phase 1 step 4
+    // — the last and highest-stakes call site, done last on purpose after
+    // proving the pattern on referral/billing/notes/dailyChallenge first).
+    //
+    // Only the fields this handler actually manages are included — hint/PDF
+    // logs, dailyChallengeHistory, and problemNotes belong to other
+    // consumers (hints.js, profilePdf.js, dailyChallengeController.js,
+    // notes.js respectively) and saveProgress's $set is a partial update,
+    // so omitting them here just means "don't touch", not "clear".
+    //
+    // leetcodeUsername is NOT part of the progress cluster (it stays on
+    // User permanently — see the split table in the migration doc) and so
+    // isn't in saveProgress's allowed field list; it gets its own small,
+    // separate update instead of riding along on the old single .save().
+    await saveProgress(req.userDoc._id, {
+      solvedSlugs: req.userDoc.solvedSlugs,
+      topicStats: topicStatsToObject(req.userDoc.topicStats),
+      activityDates: req.userDoc.activityDates,
+      solvedDifficulty: {
+        easy: req.userDoc.solvedDifficulty?.easy || 0,
+        medium: req.userDoc.solvedDifficulty?.medium || 0,
+        hard: req.userDoc.solvedDifficulty?.hard || 0,
+      },
+      recentActivity: (req.userDoc.recentActivity || []).map((a) => ({
+        title: a.title,
+        time: a.time,
+      })),
+      currentStreak: req.userDoc.currentStreak,
+      longestStreak: req.userDoc.longestStreak,
+      lastActivityDate: req.userDoc.lastActivityDate,
+      totalXP: req.userDoc.totalXP,
+      achievements: req.userDoc.achievements.map((a) => ({
+        key: a.key,
+        unlockedAt: a.unlockedAt,
+      })),
+    });
+
+    if (leetcodeUsername !== undefined) {
+      await User.updateOne(
+        { _id: req.userDoc._id },
+        { $set: { leetcodeUsername } }
+      );
+    }
 
     // One notification per newly-unlocked achievement (a single solve can
     // trigger more than one, e.g. crossing both a solve-count and a streak

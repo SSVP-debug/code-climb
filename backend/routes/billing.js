@@ -1,23 +1,9 @@
-/**
- * Billing routes — Razorpay integration.
- *
- * GET  /api/billing/plans            — public, returns pricing (only if MONETIZATION_ENABLED)
- * POST /api/billing/create-order     — auth required, creates a Razorpay order
- * POST /api/billing/verify           — auth required, verifies payment signature, activates plan
- * POST /api/billing/webhook          — Razorpay webhook (no auth — verified via signature)
- * GET  /api/billing/subscription     — auth required, returns current user's plan status
- * POST /api/billing/cancel           — auth required, cancels recurring subscription
- *
- * All routes are safe to call even when MONETIZATION_ENABLED=false — they return
- * a clear "monetization not yet live" response instead of erroring.
- *
- * Razorpay SDK is lazy-imported so the app doesn't crash if RAZORPAY keys
- * are missing in dev/pre-launch environments.
- */
 import { Router } from "express";
 import crypto from "crypto";
 import { createRequire } from "module";
 import { MONETIZATION_ENABLED, PRICING } from "../config/featureFlags.js";
+import { saveSubscription } from "../services/userSubscriptionService.js";
+import { logger } from "../config/logger.js";
 
 const require = createRequire(import.meta.url);
 const router = Router();
@@ -121,7 +107,7 @@ router.post("/create-order", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Billing] create-order error:", err.message);
+    logger.error({ err }, "[Billing] create-order error");
     return res.status(500).json({ error: "Failed to create order." });
   }
 });
@@ -172,21 +158,32 @@ router.post("/verify", async (req, res) => {
       );
     }
 
-    req.userDoc.subscription = {
+    const nextSubscription = {
       ...req.userDoc.subscription,
       plan: planId,
       status: "active",
       startedAt: now,
       expiresAt,
     };
-    await req.userDoc.save();
 
-    if (rewardDays > 0) {
-      req.userDoc.referralRewardDays = 0;
-      await req.userDoc.save();
-    }
+    // Dual-writes to User (still authoritative — see userSubscriptionService)
+    // and UserSubscription (docs/migrations/user-model-split.md, Phase 1).
+    // referralRewardDays rides along in the same write when it needs
+    // resetting, instead of a second round trip.
+    const patch = { subscription: nextSubscription };
+    if (rewardDays > 0) patch.referralRewardDays = 0;
+    await saveSubscription(req.userDoc._id, patch);
+
+    req.userDoc.subscription = nextSubscription;
+    if (rewardDays > 0) req.userDoc.referralRewardDays = 0;
 
     // ── Referral reward: if this user was referred, grant referrer bonus ────
+    // This increments a *different* user's counter via an atomic $inc, which
+    // doesn't fit saveSubscription's $set-only patch shape — left as a raw
+    // User update for now. This means UserSubscription can drift for
+    // referrers until the next scripts/backfillUserSubscription.js
+    // reconciliation pass; acceptable during Phase 1 since User remains the
+    // authoritative read and nothing reads UserSubscription yet.
     if (req.userDoc.referredBy) {
       const User = (await import("../models/User.js")).default;
       const { REFERRAL_REWARD_DAYS } = await import("../config/featureFlags.js");
@@ -199,7 +196,7 @@ router.post("/verify", async (req, res) => {
     return res.json({ success: true, plan: planId, expiresAt });
 
   } catch (err) {
-    console.error("[Billing] verify error:", err.message);
+    logger.error({ err }, "[Billing] verify error");
     return res.status(500).json({ error: "Payment verification failed." });
   }
 });
@@ -211,14 +208,19 @@ router.post("/cancel", async (req, res) => {
   try {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
-    req.userDoc.subscription.status = "cancelled";
-    req.userDoc.subscription.cancelledAt = new Date();
+    const nextSubscription = {
+      ...req.userDoc.subscription,
+      status: "cancelled",
+      cancelledAt: new Date(),
+    };
     // Note: we don't immediately revoke access — subscription.expiresAt still
     // governs access. Cancelling just stops renewal.
-    await req.userDoc.save();
+    await saveSubscription(req.userDoc._id, { subscription: nextSubscription });
+    req.userDoc.subscription = nextSubscription;
 
     return res.json({ success: true, message: "Subscription cancelled. Access continues until expiry." });
   } catch (err) {
+    logger.error({ err }, "[Billing] cancel error");
     return res.status(500).json({ error: "Failed to cancel subscription." });
   }
 });
