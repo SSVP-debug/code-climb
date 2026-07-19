@@ -4,6 +4,23 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { SITE_DOMAIN, SUPPORT_EMAIL } from "../config/site.js";
 import Button from "../components/ui/Button";
+import HeroTerminal from "../components/landing/HeroTerminal";
+import ConstellationBackground from "../components/landing/ConstellationBackground";
+import useScrollReveal from "../hooks/useScrollReveal";
+import { getTheme } from "../themes";
+import { THEME_ICONS, withAlpha } from "../themes/themeIcons";
+import {
+  Mic,
+  Layers,
+  Zap,
+  Brain,
+  Flame,
+  BarChart3,
+  Trophy,
+  GraduationCap,
+  Building2,
+  Briefcase,
+} from "lucide-react";
 
 const STATIC_STATS = [
   { key: "problems", value: "Growing", label: "Problem Library" },
@@ -45,56 +62,66 @@ function useLiveStats() {
   return stats;
 }
 
-// ── Feature cards ─────────────────────────────────────────────────────────────
+// ── Feature cards — sized for an asymmetric bento grid. `span` controls
+// how much room a tile takes on md+ screens; the differentiator (live AI
+// mock interviews) gets the largest tile instead of matching everything
+// else 1:1. ──────────────────────────────────────────────────────────────
 const FEATURES = [
   {
-    icon: "🎙️",
+    Icon: Mic,
     title: "Live AI Mock Interviews",
     description:
       "Practice with an AI interviewer that asks follow-ups, pushes on your approach, and gives real feedback not just a hint panel. The closest thing to a real interview before the real interview.",
     badge: "Live",
+    span: "md:col-span-2 md:row-span-2",
   },
   {
-    icon: "🧪",
+    Icon: Layers,
     title: "Themed Universes",
     description:
       "Practice as a lab scientist cracking experiments (Breaking Bug) or a hacker breaching digital vaults (Code Heist). DSA problems, reimagined.",
     badge: null,
+    span: "",
   },
   {
-    icon: "⚡",
+    Icon: Zap,
     title: "Multi-language Judge",
     description:
       "Submit in Python, JavaScript, Java, or C++. Your code runs against hidden test cases on our Judge0 backend same as production interviews.",
     badge: null,
+    span: "",
   },
   {
-    icon: "🤖",
+    Icon: Brain,
     title: "AI Coaching",
     description:
       "Stuck? Get topic-level insights powered by Claude. Understand your weak patterns and what to practice next not just \"try harder.\"",
     badge: null,
+    span: "md:col-span-2",
   },
   {
-    icon: "🔥",
+    Icon: Flame,
     title: "Streaks & XP",
     description:
       "Daily challenges, streak tracking, XP levels, and unlockable themes. Built to keep you coming back not just once a week before an interview.",
     badge: null,
+    span: "",
   },
   {
-    icon: "📊",
+    Icon: BarChart3,
     title: "Progress Analytics",
     description:
       "Topic-wise coverage heatmaps, difficulty breakdown, solve velocity, and submission history. Know exactly what you've covered and what's left.",
     badge: null,
+    span: "",
   },
   {
-    icon: "🏆",
+    Icon: Trophy,
     title: "Public Profile",
     description:
       `Share your solve history at ${SITE_DOMAIN}/u/yourname. Built to impress recruiters show your consistency, not just a resume line.`,
     badge: "Beta",
+    span: "",
   },
 ];
 
@@ -103,7 +130,7 @@ const FEATURES = [
 // dashboard, a recruiter portal, or live AI mock interviews. ────────────────
 const AUDIENCES = [
   {
-    icon: "🧑‍🎓",
+    Icon: GraduationCap,
     title: "Students",
     description:
       "Practice, build streaks, and get AI mock-interview reps before the real thing.",
@@ -111,7 +138,7 @@ const AUDIENCES = [
     to: "/login?role=student",
   },
   {
-    icon: "🏫",
+    Icon: Building2,
     title: "TPOs",
     description:
       "One dashboard for your entire batch's placement readiness solve counts, streaks, topic coverage, and a readiness score, not spreadsheets.",
@@ -119,7 +146,7 @@ const AUDIENCES = [
     to: "/login?role=tpo",
   },
   {
-    icon: "🧑‍💼",
+    Icon: Briefcase,
     title: "Recruiters",
     description:
       "Search verified candidates by solve history and topic strength, and send skills tests directly no resume guesswork.",
@@ -128,387 +155,388 @@ const AUDIENCES = [
   },
 ];
 
-// ── Code preview (what students see in the editor) ────────────────────────────
-const CODE_PREVIEW = `def twoSum(nums, target):
-    seen = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    return []
+// ── Theme preview cards — colors and icons come straight from the real
+// theme system (src/themes), not hand-picked here, so this can't drift
+// out of sync with what students actually see after picking a universe. ──
+const THEMES_PREVIEW = ["codeHeist", "breakingBug"].map((id) => {
+  const colors = getTheme(id).colors;
+  return {
+    id,
+    Icon: THEME_ICONS[id],
+    colors,
+    name: id === "codeHeist" ? "Code Heist" : "Breaking Bug",
+    accepted: id === "codeHeist" ? "Vault Breached ✅" : "Crystal Clear ✅",
+    error: id === "codeHeist" ? "Escape Failed 🚨" : "Lab Explosion 💥",
+    texture:
+      id === "codeHeist"
+        ? {
+            backgroundImage: `repeating-linear-gradient(45deg, ${withAlpha(colors.primary, "0f")} 0px, ${withAlpha(colors.primary, "0f")} 2px, transparent 2px, transparent 14px)`,
+          }
+        : {
+            backgroundImage: `repeating-linear-gradient(0deg, ${withAlpha(colors.primary, "12")} 0px, ${withAlpha(colors.primary, "12")} 1px, transparent 1px, transparent 24px), repeating-linear-gradient(90deg, ${withAlpha(colors.primary, "12")} 0px, ${withAlpha(colors.primary, "12")} 1px, transparent 1px, transparent 24px)`,
+          },
+  };
+});
 
-# Test: nums=[2,7,11,15], target=9
-# Output: [0, 1]  ✅ Yahoo`;
+// ── Small wrapper: attaches scroll-reveal to any section ───────────────────
+function Reveal({ as: Tag = "div", className = "", children, ...rest }) {
+  const ref = useScrollReveal();
+  return (
+    <Tag ref={ref} className={`lp-reveal ${className}`} {...rest}>
+      {children}
+    </Tag>
+  );
+}
 
-// ── Theme preview cards ───────────────────────────────────────────────────────
-const THEMES_PREVIEW = [
-  {
-    id: "breakingBug",
-    icon: "🧪",
-    name: "Breaking Bug",
-    accepted: "Crystal Clear ✅",
-    error: "Lab Explosion 💥",
-    accent: "from-yellow-500/10 to-transparent border-yellow-500/20",
-    tag: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  },
-  {
-    id: "codeHeist",
-    icon: "💰",
-    name: "Code Heist",
-    accepted: "Vault Breached ✅",
-    error: "Escape Failed 🚨",
-    accent: "from-green-500/10 to-transparent border-green-500/20",
-    tag: "bg-green-500/10 text-green-400 border-green-500/20",
-  },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
+const ARROW = (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 export default function LandingPage() {
   const { user } = useAuth();
   const STATS = useLiveStats();
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-hidden font-display [--theme-primary:#c6ff3d]">
       <PageMeta
         title="Code Club DSA Practice for Placement Season"
         description="Solve curated DSA problems, practice live AI mock interviews, and get discovered. Free for students, with a placement dashboard for TPOs and a candidate search portal for recruiters."
         path="/"
       />
 
-      {/* ── Nav ──────────────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-zinc-900">
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-black tracking-tight">Code Club</span>
-          <span className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full font-semibold tracking-widest uppercase">
-            Beta
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            to={user ? "/problems" : "/login?role=student"}
-            className="text-sm text-zinc-400 hover:text-white transition px-4 py-2"
-          >
-            Problems
-          </Link>
-          <Button to={user ? "/dashboard" : "/portal"} size="sm">
-            {user ? "Dashboard →" : "Get Started"}
-          </Button>
-        </div>
-      </nav>
+      <ConstellationBackground />
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 md:px-12 pt-20 pb-16">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-
-          {/* Left — copy */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-400 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              Built for placement season
-            </div>
-
-            <h1 className="text-4xl md:text-5xl font-black leading-tight mb-5">
-              DSA practice that
-              <span className="text-green-400"> actually keeps</span>
-              <br />you coming back.
-            </h1>
-
-            <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-              Solve real interview problems, practice live AI mock interviews,
-              and build a public solve history recruiters actually check.
-              No overwhelm, Just your
-              <strong className="text-white"> Code Club.</strong>
-            </p>
-
-            <div className="flex flex-wrap gap-3 mb-10">
-              <Button
-                to={user ? "/dashboard" : "/portal"}
-                size="lg"
-                className="shadow-lg shadow-green-900/30"
-              >
-                {user ? "Go to Dashboard →" : "Start for Free →"}
-              </Button>
-              <Button
-                to={user ? "/problems" : "/login?role=student"}
-                variant="secondary"
-                size="lg"
-              >
-                Browse Problems
-              </Button>
-            </div>
-
-            {/* Trust micro-signals */}
-            <div className="flex flex-wrap gap-4">
-              {["Free to use", "No credit card", "Google login in 10 sec"].map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-xs text-zinc-500">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <circle cx="6" cy="6" r="5.5" stroke="#22c55e" strokeWidth="1" />
-                    <path d="M3.5 6L5.5 8L8.5 4.5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {t}
-                </span>
-              ))}
-            </div>
+      <div className="relative">
+        {/* ── Nav ────────────────────────────────────────────────────── */}
+        <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-ink-700">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold tracking-tight">Code Club</span>
+            <span className="text-[10px] bg-verdict-accept/10 text-verdict-accept border border-verdict-accept/25 px-2 py-0.5 rounded-full font-mono-ui font-semibold tracking-widest uppercase">
+              Beta
+            </span>
           </div>
-
-          {/* Right — code preview */}
-          <div className="relative">
-            {/* Glow behind card */}
-            <div className="absolute inset-0 bg-green-500/5 rounded-3xl blur-3xl scale-110 pointer-events-none" />
-
-            <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-800 bg-zinc-950">
-                <span className="w-3 h-3 rounded-full bg-red-500/60" />
-                <span className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                <span className="w-3 h-3 rounded-full bg-green-500/60" />
-                <span className="ml-3 text-xs text-zinc-500 font-mono">two-sum.py</span>
-                <span className="ml-auto text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full font-semibold">
-                  Submitted
-                </span>
-              </div>
-
-              {/* Code */}
-              <pre className="p-5 text-sm font-mono text-zinc-300 leading-relaxed overflow-x-auto">
-                <code>{CODE_PREVIEW}</code>
-              </pre>
-
-              {/* Submit bar */}
-              <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-800 bg-zinc-950">
-                <span className="text-xs text-zinc-500 font-mono">
-                  Runtime: 48ms · Memory: 14.2 MB
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  +50 XP earned
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats bar ────────────────────────────────────────────────────── */}
-      <section className="border-y border-zinc-900 bg-zinc-950/50">
-        <div className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="text-3xl font-black text-white mb-1">{s.value}</p>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Themes showcase ───────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
-        <div className="text-center mb-12">
-          <p className="text-xs text-green-500 uppercase tracking-widest font-semibold mb-3">
-            What makes us different
-          </p>
-          <h2 className="text-3xl md:text-4xl font-black mb-4">
-            Pick your universe. Own your grind.
-          </h2>
-          <p className="text-zinc-400 max-w-xl mx-auto">
-            Note just problems. Code Club has <em>worlds</em>. Same DSA
-            completely different experience.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-10">
-          {THEMES_PREVIEW.map((t) => (
-            <div
-              key={t.id}
-              className={`relative bg-gradient-to-br ${t.accent} border rounded-2xl p-7 overflow-hidden`}
+          <div className="flex items-center gap-3">
+            <Link
+              to={user ? "/problems" : "/login?role=student"}
+              className="text-sm text-zinc-400 hover:text-white transition px-4 py-2"
             >
-              <div className="text-4xl mb-4">{t.icon}</div>
-              <h3 className="text-xl font-bold mb-1">{t.name}</h3>
-              <div className="space-y-2 mt-4 text-sm">
-                <div className="flex items-center gap-3">
-                  <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Accepted</span>
-                  <span className={`border px-2.5 py-1 rounded-lg text-xs font-semibold ${t.tag}`}>
-                    {t.accepted}
+              Problems
+            </Link>
+            <Button to={user ? "/dashboard" : "/portal"} variant="theme" size="sm">
+              {user ? "Dashboard →" : "Get Started"}
+            </Button>
+          </div>
+        </nav>
+
+        {/* ── Hero ───────────────────────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-6 md:px-12 pt-16 md:pt-20 pb-16">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="lp-reveal lp-in-view">
+              <div className="inline-flex items-center gap-2 bg-ink-800 border border-ink-700 rounded-full px-4 py-1.5 text-xs font-mono-ui text-zinc-400 mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-verdict-accept animate-pulse" />
+                Built for placement season
+              </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold leading-[1.1] mb-5 tracking-tight">
+                DSA practice that
+                <span className="text-verdict-accept"> actually keeps</span>
+                <br />you coming back.
+              </h1>
+
+              <p className="text-zinc-400 text-lg leading-relaxed mb-8">
+                Solve real interview problems, practice live AI mock interviews,
+                and build a public solve history recruiters actually check.
+                No overwhelm, Just your
+                <strong className="text-white"> Code Club.</strong>
+              </p>
+
+              <div className="flex flex-wrap gap-3 mb-10">
+                <Button
+                  to={user ? "/dashboard" : "/portal"}
+                  variant="theme"
+                  size="lg"
+                  className="shadow-lg shadow-verdict-accept/10"
+                >
+                  {user ? "Go to Dashboard →" : "Start for Free →"}
+                </Button>
+                <Button
+                  to={user ? "/problems" : "/login?role=student"}
+                  variant="secondary"
+                  size="lg"
+                >
+                  Browse Problems
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-4 font-mono-ui">
+                {["Free to use", "No credit card", "Google login in 10 sec"].map((t) => (
+                  <span key={t} className="flex items-center gap-1.5 text-xs text-zinc-500">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <circle cx="6" cy="6" r="5.5" stroke="#c6ff3d" strokeWidth="1" />
+                      <path d="M3.5 6L5.5 8L8.5 4.5" stroke="#c6ff3d" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {t}
                   </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Error</span>
-                  <span className="border border-red-500/20 bg-red-500/10 text-red-400 px-2.5 py-1 rounded-lg text-xs font-semibold">
-                    {t.error}
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
 
-        <div className="text-center">
-          <Link
-            to={user ? "/theme-selection" : "/login?role=student"}
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition"
-          >
-            More universes coming soon
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Feature grid ─────────────────────────────────────────────────── */}
-      <section className="bg-zinc-950/50 border-y border-zinc-900">
-        <div className="max-w-6xl mx-auto px-6 md:px-12 py-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
-              Everything you need. Nothing you don't.
-            </h2>
-            <p className="text-zinc-400 max-w-xl mx-auto">
-              Built from scratch for placement-focused engineering students.
-            </p>
+            {/* Right — the signature moment: a live-running judge */}
+            <div className="lp-reveal lp-in-view">
+              <HeroTerminal />
+            </div>
           </div>
+        </section>
 
-          <div className="grid md:grid-cols-3 gap-5">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-6 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <span className="text-3xl">{f.icon}</span>
-                  {f.badge && (
-                    <span className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
-                      {f.badge}
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-bold text-white mb-2">{f.title}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{f.description}</p>
+        {/* ── Stats bar ──────────────────────────────────────────────── */}
+        <Reveal as="section" className="border-y border-ink-700 bg-ink-900/60 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {STATS.map((s) => (
+              <div key={s.label} className="text-center">
+                <p className="text-3xl font-bold text-white mb-1">{s.value}</p>
+                <p className="text-xs text-zinc-500 font-mono-ui uppercase tracking-widest">{s.label}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Reveal>
 
-      {/* ── Built for the whole pipeline ─────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
-        <div className="text-center mb-12">
-          <p className="text-xs text-green-500 uppercase tracking-widest font-semibold mb-3">
-            Beyond individual practice
-          </p>
-          <h2 className="text-3xl md:text-4xl font-black mb-4">
-            Built for the whole placement pipeline.
-          </h2>
-          <p className="text-zinc-400 max-w-xl mx-auto">
-            LeetCode and GeeksForGeeks stop at the student. Code Club connects
-            practice to placement TPOs get a readiness dashboard, recruiters
-            get a candidate search, students get seen.
-          </p>
-        </div>
+        {/* ── Themes showcase ────────────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+          <Reveal className="text-center mb-12">
+            <p className="text-xs text-verdict-accept font-mono-ui uppercase tracking-widest font-semibold mb-3">
+              What makes us different
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Pick your universe. Own your grind.
+            </h2>
+            <p className="text-zinc-400 max-w-xl mx-auto">
+              Not just problems. Code Club has <em>worlds</em>. Same DSA
+              completely different experience.
+            </p>
+          </Reveal>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {AUDIENCES.map((a) => (
-            <div
-              key={a.title}
-              className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col"
-            >
-              <span className="text-3xl mb-4">{a.icon}</span>
-              <h3 className="font-bold text-white mb-2">{a.title}</h3>
-              <p className="text-zinc-400 text-sm leading-relaxed flex-1">
-                {a.description}
-              </p>
-              <Link
-                to={a.to}
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-green-400 hover:text-green-300 transition"
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {THEMES_PREVIEW.map((t) => (
+              <Reveal
+                key={t.id}
+                className="relative bg-ink-800 border rounded-2xl p-7 overflow-hidden"
+                style={{ borderColor: withAlpha(t.colors.primary, "40") }}
               >
-                {a.cta}
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+                <div style={t.texture} className="absolute inset-0 pointer-events-none" />
+                <div
+                  aria-hidden="true"
+                  className="absolute top-0 left-0 right-0 h-1"
+                  style={{
+                    background: `linear-gradient(90deg, ${t.colors.primary}, ${t.colors.accent})`,
+                  }}
+                />
+                <div className="relative">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                    style={{
+                      backgroundColor: withAlpha(t.colors.primary, "1f"),
+                      color: t.colors.primary,
+                    }}
+                  >
+                    <t.Icon size={26} strokeWidth={2} aria-hidden="true" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-1">{t.name}</h3>
+                  <div className="space-y-2 mt-4 text-sm font-mono-ui">
+                    <div className="flex items-center gap-3">
+                      <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Accepted</span>
+                      <span
+                        className="border px-2.5 py-1 rounded-lg text-xs font-semibold"
+                        style={{
+                          color: t.colors.primary,
+                          borderColor: withAlpha(t.colors.primary, "40"),
+                          backgroundColor: withAlpha(t.colors.primary, "1a"),
+                        }}
+                      >
+                        {t.accepted}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Error</span>
+                      <span className="border border-verdict-reject/25 bg-verdict-reject/10 text-verdict-reject px-2.5 py-1 rounded-lg text-xs font-semibold">
+                        {t.error}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
 
-      {/* ── Competitor callout ────────────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 md:p-10">
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">LeetCode Premium</p>
-              <ul className="space-y-2 text-zinc-400">
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> ₹8,500 / year</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No TPO dashboard</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No recruiter portal</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No live AI mock interviews</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No India-specific features</li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">GeeksForGeeks</p>
-              <ul className="space-y-2 text-zinc-400">
-                <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> Free but ad-heavy</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No TPO dashboard</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No recruiter portal</li>
-                <li className="flex items-center gap-2"><span className="text-red-500">✗</span> No live AI mock interviews</li>
-                <li className="flex items-center gap-2"><span className="text-yellow-500">~</span> India-focused content</li>
-              </ul>
-            </div>
-            <div className="border border-green-500/30 bg-green-500/5 rounded-xl p-5">
-              <p className="text-xs text-green-400 uppercase tracking-widest mb-3 font-semibold">Code Club</p>
-              <ul className="space-y-2 text-zinc-300">
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Free to start</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> TPO readiness dashboard</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Recruiter candidate search</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Live AI mock interviews</li>
-                <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Built for Indian placements</li>
-              </ul>
+          <Reveal className="text-center">
+            <Link
+              to={user ? "/theme-selection" : "/login?role=student"}
+              className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition"
+            >
+              More universes coming soon
+              {ARROW}
+            </Link>
+          </Reveal>
+        </section>
+
+        {/* ── Feature bento grid ─────────────────────────────────────── */}
+        <section className="bg-ink-900/60 backdrop-blur-sm border-y border-ink-700">
+          <div className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+            <Reveal className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+                Everything you need. Nothing you don't.
+              </h2>
+              <p className="text-zinc-400 max-w-xl mx-auto">
+                Built from scratch for placement-focused engineering students.
+              </p>
+            </Reveal>
+
+            <div className="grid md:grid-cols-3 md:auto-rows-[minmax(0,1fr)] gap-5">
+              {FEATURES.map((f) => (
+                <Reveal
+                  key={f.title}
+                  className={`bg-ink-800 border border-ink-700 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col ${f.span}`}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-verdict-accept/10 text-verdict-accept">
+                      <f.Icon size={22} strokeWidth={2} aria-hidden="true" />
+                    </div>
+                    {f.badge && (
+                      <span className="text-[10px] font-mono-ui bg-verdict-accept/10 text-verdict-accept border border-verdict-accept/25 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+                        {f.badge}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-bold text-white mb-2">{f.title}</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">{f.description}</p>
+                </Reveal>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────── */}
-      <section className="border-t border-zinc-900 bg-zinc-950/50">
-        <div className="max-w-2xl mx-auto px-6 py-20 text-center">
-          <h2 className="text-3xl md:text-4xl font-black mb-4">
-            Your placement prep starts today.
-          </h2>
-          <p className="text-zinc-400 mb-8">
-            Join students building consistency, not just solving problems once and forgetting.
-          </p>
-          <Button
-            to={user ? "/dashboard" : "/portal"}
-            size="xl"
-            className="shadow-xl shadow-green-900/30"
-          >
-            {user ? "Go to Dashboard →" : "Start Free — No Card Needed →"}
-          </Button>
-          <p className="text-xs text-zinc-600 mt-4">
-            Google sign-in · Ready in 10 seconds
-          </p>
-        </div>
-      </section>
+        {/* ── Built for the whole pipeline ───────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+          <Reveal className="text-center mb-12">
+            <p className="text-xs text-verdict-accept font-mono-ui uppercase tracking-widest font-semibold mb-3">
+              Beyond individual practice
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Built for the whole placement pipeline.
+            </h2>
+            <p className="text-zinc-400 max-w-xl mx-auto">
+              LeetCode and GeeksForGeeks stop at the student. Code Club connects
+              practice to placement TPOs get a readiness dashboard, recruiters
+              get a candidate search, students get seen.
+            </p>
+          </Reveal>
 
-      {/* ── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="border-t border-zinc-900 px-6 md:px-12 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="text-sm font-bold text-zinc-500">Code Club</span>
-          <p className="text-xs text-zinc-700">
-            Built for engineering students. Not affiliated with Code Club UK.
-          </p>
-          <div className="flex gap-5 text-xs text-zinc-600">
-            <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
-            <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">Dashboard</Link>
-            <Link to="/login?role=tpo" className="hover:text-zinc-400 transition">For TPOs</Link>
-            <Link to="/login?role=recruiter" className="hover:text-zinc-400 transition">For Recruiters</Link>
-            <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
-            <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>
+          <div className="grid md:grid-cols-3 gap-5">
+            {AUDIENCES.map((a) => (
+              <Reveal
+                key={a.title}
+                className="bg-ink-800 border border-ink-700 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col"
+              >
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-verdict-accept/10 text-verdict-accept mb-4">
+                  <a.Icon size={22} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <h3 className="font-bold text-white mb-2">{a.title}</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed flex-1">
+                  {a.description}
+                </p>
+                <Link
+                  to={a.to}
+                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-verdict-accept hover:brightness-110 transition"
+                >
+                  {a.cta}
+                  {ARROW}
+                </Link>
+              </Reveal>
+            ))}
           </div>
-        </div>
-      </footer>
+        </section>
 
+        {/* ── Competitor callout ──────────────────────────────────────── */}
+        <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
+          <Reveal className="bg-ink-800 border border-ink-700 rounded-2xl p-8 md:p-10">
+            <div className="grid md:grid-cols-3 gap-6 text-sm font-mono-ui">
+              <div>
+                <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">LeetCode Premium</p>
+                <ul className="space-y-2 text-zinc-400">
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> ₹8,500 / year</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No TPO dashboard</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No recruiter portal</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No live AI mock interviews</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No India-specific features</li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">GeeksForGeeks</p>
+                <ul className="space-y-2 text-zinc-400">
+                  <li className="flex items-center gap-2"><span className="text-verdict-pending">~</span> Free but ad-heavy</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No TPO dashboard</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No recruiter portal</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No live AI mock interviews</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-pending">~</span> India-focused content</li>
+                </ul>
+              </div>
+              <div className="border border-verdict-accept/30 bg-verdict-accept/5 rounded-xl p-5">
+                <p className="text-xs text-verdict-accept uppercase tracking-widest mb-3 font-semibold">Code Club</p>
+                <ul className="space-y-2 text-zinc-300">
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Free to start</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> TPO readiness dashboard</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Recruiter candidate search</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Live AI mock interviews</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Built for Indian placements</li>
+                </ul>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ── CTA ────────────────────────────────────────────────────── */}
+        <section className="border-t border-ink-700 bg-ink-900/60 backdrop-blur-sm">
+          <Reveal as="div" className="max-w-2xl mx-auto px-6 py-20 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Your placement prep starts today.
+            </h2>
+            <p className="text-zinc-400 mb-8">
+              Join students building consistency, not just solving problems once and forgetting.
+            </p>
+            <Button
+              to={user ? "/dashboard" : "/portal"}
+              variant="theme"
+              size="xl"
+              className="shadow-xl shadow-verdict-accept/10"
+            >
+              {user ? "Go to Dashboard →" : "Start Free — No Card Needed →"}
+            </Button>
+            <p className="text-xs text-zinc-600 mt-4 font-mono-ui">
+              Google sign-in · Ready in 10 seconds
+            </p>
+          </Reveal>
+        </section>
+
+        {/* ── Footer ─────────────────────────────────────────────────── */}
+        <footer className="border-t border-ink-700 px-6 md:px-12 py-8">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <span className="text-sm font-bold text-zinc-500">Code Club</span>
+            <p className="text-xs text-zinc-700">
+              Built for engineering students. Not affiliated with Code Club UK.
+            </p>
+            <div className="flex gap-5 text-xs text-zinc-600 font-mono-ui">
+              <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
+              <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">Dashboard</Link>
+              <Link to="/login?role=tpo" className="hover:text-zinc-400 transition">For TPOs</Link>
+              <Link to="/login?role=recruiter" className="hover:text-zinc-400 transition">For Recruiters</Link>
+              <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
+              <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
+              <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

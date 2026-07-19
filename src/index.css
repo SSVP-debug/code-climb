@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* ── Landing page design tokens ──────────────────────────────────────────
+   Typography pairing: Space Grotesk (display) + JetBrains Mono (chrome/data).
+   Palette borrows the compiler's own verdict vocabulary instead of a single
+   generic brand accent. Scoped as theme tokens so they're available as
+   utilities (font-display, font-mono-ui, bg-verdict-accept, etc.) anywhere,
+   but only the landing page consumes them for now. ────────────────────────*/
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono-ui: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-ink-950: #0b0d10;
+  --color-ink-900: #10131a;
+  --color-ink-800: #141820;
+  --color-ink-700: #1b212c;
+
+  --color-verdict-accept: #c6ff3d;
+  --color-verdict-pending: #ffb454;
+  --color-verdict-reject: #ff5d5d;
+}
+
 @layer base {
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -65,5 +85,68 @@
 
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ── Landing page: scroll-reveal + ambient motion ────────────────────────*/
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lp-blink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes lp-drift {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes lp-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.lp-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.lp-reveal.lp-in-view {
+  animation: lp-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.lp-cursor {
+  animation: lp-blink 1s step-end infinite;
+}
+
+.lp-drift {
+  animation: lp-drift 6s ease-in-out infinite;
+}
+
+.lp-ticker-track {
+  animation: lp-ticker 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .lp-cursor,
+  .lp-drift,
+  .lp-ticker-track {
+    animation: none;
   }
 }
