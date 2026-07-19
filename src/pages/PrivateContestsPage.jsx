@@ -36,17 +36,16 @@ function PrivateContestsPage() {
   async function handleJoin() {
     if (code.trim().length !== 6) return;
     setJoining(true);
-    const data = await apiFetch("/api/contests/join-private", {
-      method: "POST",
-      body: JSON.stringify({ inviteCode: code.trim().toUpperCase() }),
-    });
-    setJoining(false);
-
-    if (data.error) {
-      toast.error(data.error);
-      return;
+    try {
+      const data = await apiFetch("/api/contests/join-private", {
+        method: "POST",
+        body: JSON.stringify({ inviteCode: code.trim().toUpperCase() }),
+      });
+      navigate(`/club/public-contests/${data.contestId}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to join contest.");
     }
-    navigate(`/club/public-contests/${data.contestId}`);
+    setJoining(false);
   }
 
   return (

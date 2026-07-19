@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
+import CollegeVerifyModal from "../components/profile/CollegeVerifyModal";
 import { withAlpha } from "../themes/themeIcons";
 import { Globe, GraduationCap, Flame } from "lucide-react";
 
@@ -40,7 +42,7 @@ function RankRow({ user, highlight = false, theme }) {
         {(user.displayName || "?").charAt(0).toUpperCase()}
       </div>
 
-      {/* Name + college */}
+      {/* Name */}
       <div className="flex-1 min-w-0">
         <Link
           to={`/u/${user.username}`}
@@ -48,9 +50,6 @@ function RankRow({ user, highlight = false, theme }) {
         >
           {user.displayName}
         </Link>
-        {user.college && (
-          <p className="text-[10px] text-zinc-500 truncate">{user.college}</p>
-        )}
       </div>
 
       {/* Stats — difficulty badges stay semantic green/yellow/red regardless
@@ -76,19 +75,14 @@ export default function LeaderboardPage() {
   const [tab, setTab]           = useState("global");
   const [users, setUsers]       = useState([]);
   const [loading, setLoading]   = useState(true);
-  const [domain, setDomain]     = useState("");
-  const [domains, setDomains]   = useState([]);
   const [myRank, setMyRank]     = useState(null);
   const [page, setPage]         = useState(1);
   const [total, setTotal]       = useState(0);
+  const [domain, setDomain]     = useState("");
 
-  // Fetch available college domains for dropdown
-  useEffect(() => {
-    fetch(`${API_URL}/api/leaderboard/domains`)
-      .then(r => r.json())
-      .then(d => setDomains(d.domains || []))
-      .catch(() => {});
-  }, []);
+  // Phase 12C: college verification gate state
+  const [collegeVerified, setCollegeVerified] = useState(undefined); // undefined = not checked yet
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const fetchLeaderboard = useCallback(async () => {
     setLoading(true);
@@ -98,15 +92,26 @@ export default function LeaderboardPage() {
         const d = await r.json();
         setUsers(d.users || []);
         setTotal(d.total || 0);
-      } else if (tab === "college" && domain) {
-        const r = await fetch(`${API_URL}/api/leaderboard/college?domain=${encodeURIComponent(domain)}`);
-        const d = await r.json();
+      } else if (tab === "college") {
+        // Requires auth + a verified college — derives domain server-side
+        // from the caller's own record, so no domain param here at all.
+        // apiFetch *throws* on non-2xx (it doesn't resolve to {error}) —
+        // the 403 "not verified" gate response lands in the catch below.
+        const d = await apiFetch("/api/leaderboard/college");
+        setCollegeVerified(true);
+        setDomain(d.domain || "");
         setUsers(d.users || []);
         setTotal(d.total || 0);
       }
-    } catch {}
+    } catch {
+      if (tab === "college") {
+        setCollegeVerified(false);
+        setUsers([]);
+        setTotal(0);
+      }
+    }
     setLoading(false);
-  }, [tab, page, domain]);
+  }, [tab, page]);
 
   useEffect(() => { fetchLeaderboard(); }, [fetchLeaderboard]);
 
@@ -128,7 +133,9 @@ export default function LeaderboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white mb-1">Leaderboard</h1>
           <p className="text-zinc-400 text-sm">
-            {total > 0 ? `${total} students ranked` : "Rankings loading…"}
+            {tab === "college" && domain
+              ? `${total} students at ${domain}`
+              : total > 0 ? `${total} students ranked` : "Rankings loading…"}
           </p>
         </div>
 
@@ -153,82 +160,92 @@ export default function LeaderboardPage() {
               </button>
             );
           })}
-
-          {/* College domain selector */}
-          {tab === "college" && (
-            <select
-              value={domain}
-              onChange={e => { setDomain(e.target.value); setPage(1); }}
-              className="ml-2 bg-zinc-900 border border-zinc-700 text-zinc-300 text-sm rounded-xl px-3 py-2 outline-none flex-1"
-            >
-              <option value="">Select your college…</option>
-              {domains.map(d => (
-                <option key={d.domain} value={d.domain}>
-                  {d.domain} ({d.count} students)
-                </option>
-              ))}
-            </select>
-          )}
         </div>
 
-        {/* List */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-          {/* Column headers */}
-          <div className="flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
-            <span className="w-8">Rank</span>
-            <span className="w-8" />
-            <span className="flex-1">Student</span>
-            <span className="text-right">Easy · Med · Hard · Streak · XP</span>
-          </div>
-
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div
-                className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
-                style={{ borderColor: theme.colors.primary, borderTopColor: "transparent" }}
-              />
-            </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-16 text-zinc-500">
-              {tab === "college" && !domain
-                ? "Select a college above to see its leaderboard."
-                : "No students found yet. Be the first!"}
-            </div>
-          ) : (
-            <div className="divide-y divide-zinc-800/50">
-              {users.map(u => (
-                <RankRow
-                  key={u.username}
-                  user={u}
-                  highlight={myRank === u.rank}
-                  theme={theme}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && tab === "global" && (
-          <div className="flex items-center justify-center gap-3 mt-6">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+        {/* College tab, not verified — gate card (PRD's "clicking without
+            verification shows a prompt" flow, as an inline card rather than
+            an immediate popup so it isn't jarring on every tab click) */}
+        {tab === "college" && collegeVerified === false ? (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ backgroundColor: withAlpha(theme.colors.primary, "1f"), color: theme.colors.primary }}
             >
-              ← Prev
-            </button>
-            <span className="text-sm text-zinc-500">
-              Page {page} of {totalPages}
-            </span>
+              <GraduationCap size={26} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h2 className="text-lg font-bold mb-2">Verify Your College Email</h2>
+            <p className="text-zinc-400 text-sm max-w-sm mx-auto mb-6">
+              Connect your official college email address to access your
+              college leaderboard, participate in college-exclusive
+              contests, and compete with your classmates.
+            </p>
             <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+              onClick={() => setShowVerifyModal(true)}
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition hover:brightness-110"
+              style={{ backgroundColor: theme.colors.primary, color: "#09090b" }}
             >
-              Next →
+              Verify College Email
             </button>
           </div>
+        ) : (
+          <>
+            {/* List */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+              <div className="flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+                <span className="w-8">Rank</span>
+                <span className="w-8" />
+                <span className="flex-1">Student</span>
+                <span className="text-right">Easy · Med · Hard · Streak · XP</span>
+              </div>
+
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div
+                    className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+                    style={{ borderColor: theme.colors.primary, borderTopColor: "transparent" }}
+                  />
+                </div>
+              ) : users.length === 0 ? (
+                <div className="text-center py-16 text-zinc-500">
+                  No students found yet. Be the first!
+                </div>
+              ) : (
+                <div className="divide-y divide-zinc-800/50">
+                  {users.map(u => (
+                    <RankRow key={u.username} user={u} highlight={myRank === u.rank} theme={theme} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && tab === "global" && (
+              <div className="flex items-center justify-center gap-3 mt-6">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+                >
+                  ← Prev
+                </button>
+                <span className="text-sm text-zinc-500">Page {page} of {totalPages}</span>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {showVerifyModal && (
+          <CollegeVerifyModal
+            onClose={() => setShowVerifyModal(false)}
+            onSent={() => setShowVerifyModal(false)}
+          />
         )}
       </div>
     </DashboardLayout>

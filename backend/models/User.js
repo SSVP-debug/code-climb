@@ -210,6 +210,27 @@ const userSchema = new mongoose.Schema(
       verifiedAt: { type: Date, default: null },
     },
 
+    // ── Student college verification (Phase 12C) ────────────────────────
+    // Distinct from tpoProfile — this is any student proving their own
+    // college affiliation, not a TPO representing one. collegeEmail is
+    // deliberately separate from the account's login email: a student may
+    // have signed up with a personal address and only later add/verify
+    // their official college one.
+    education: {
+      collegeName:    { type: String, default: null, trim: true, maxlength: 120 },
+      degree:         { type: String, default: null, trim: true, maxlength: 60 },
+      branch:         { type: String, default: null, trim: true, maxlength: 60 },
+      graduationYear: { type: Number, default: null },
+      collegeEmail:   { type: String, default: null, trim: true, lowercase: true },
+      verified:       { type: Boolean, default: false },
+      verifiedAt:     { type: Date, default: null },
+      // Verification link token — cleared once used or replaced by a new
+      // request. Not select()-ed by default so a stray `res.json(user)`
+      // elsewhere in the app can't leak it.
+      verifyToken:          { type: String, default: null, select: false },
+      verifyTokenExpiresAt: { type: Date, default: null, select: false },
+    },
+
     // ── Profile verification hash (commit 085) ────────────────────────────
     // HMAC-SHA256 of (userId + solvedCount + timestamp) — proves data wasn't
     // tampered. Recruiters can verify at /verify/:username.

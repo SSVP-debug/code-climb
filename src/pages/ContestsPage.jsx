@@ -44,14 +44,14 @@ function ContestCard({ contest, onJoin }) {
 
   async function handleJoin() {
     setJoining(true);
-    const data = await apiFetch(`/api/contests/${contest._id}/join`, { method: "POST" });
-    setJoining(false);
-    if (data.error) {
-      toast.error(data.error);
-      return;
+    try {
+      await apiFetch(`/api/contests/${contest._id}/join`, { method: "POST" });
+      onJoin();
+      navigate(`/club/public-contests/${contest._id}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to join contest.");
     }
-    onJoin();
-    navigate(`/club/public-contests/${contest._id}`);
+    setJoining(false);
   }
 
   return (

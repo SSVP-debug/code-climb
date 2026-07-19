@@ -113,14 +113,9 @@ const STUDENT_CONTEST_LIMITS = {
   MAX_DURATION_MS:   4 * 60 * 60 * 1000,   // 4 hours
 };
 
-// ── POST /api/contests/private — create private contest (090, extended 12B) ───
-// TPO/Admin: unrestricted, as before. Student: guardrailed per Phase 12B.
-//
-// NOTE: "Verified account required" (Phase 12 guardrails, confirmed) is not
-// enforced yet — student college verification doesn't exist until Phase 12C
-// ships. Once User has a verified flag for students, add the check here
-// (see the marker below). Shipping now without it, rather than blocking
-// hosting until 12C, matches the phase order Bunny confirmed (12B before 12C).
+// ── POST /api/contests/private — create private contest (090, extended 12B/12C) ─
+// TPO/Admin: unrestricted, as before. Student: guardrailed per Phase 12B,
+// plus the "verified account required" gate as of Phase 12C (education.verified).
 router.post("/private", requireRole("student", "tpo", "admin"), async (req, res) => {
   try {
     const { title, description, problemSlugs, startsAt, endsAt } = req.body;
@@ -142,9 +137,18 @@ router.post("/private", requireRole("student", "tpo", "admin"), async (req, res)
     let allowLateJoin = true;
 
     if (isStudent) {
-      // ── TODO(Phase 12C): once student college verification ships, gate
-      // this route with `if (!req.userDoc.verified) return res.status(403)...`
-      // right here, before any of the guardrail checks below.
+      // Phase 12C shipped student college verification — enforcing the
+      // "verified account required" guardrail now that it's actually
+      // possible to. "Verified" here means education.verified (college
+      // email confirmed) since that's the only verification concept
+      // students have; there's no separate generic account-verification
+      // flag in this codebase to check instead.
+      if (!req.userDoc.education?.verified) {
+        return res.status(403).json({
+          error: "Verify your college email before hosting a contest.",
+          code: "HOST_NOT_VERIFIED",
+        });
+      }
 
       const durationMs = end - start;
       if (durationMs < STUDENT_CONTEST_LIMITS.MIN_DURATION_MS || durationMs > STUDENT_CONTEST_LIMITS.MAX_DURATION_MS) {

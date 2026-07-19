@@ -1,15 +1,6 @@
-/**
- * GET /api/leaderboard/global   — top 50 users by XP (paginated)
- * GET /api/leaderboard/college  — top users grouped by email domain
- *
- * Public endpoints — no auth required (profiles are already public).
- * Heavy caching: leaderboard recomputed max once every 5 minutes, via the
- * shared Redis-backed cache helper (backend/utils/cache.js) so multiple
- * Railway instances agree on the same ranking instead of each keeping its
- * own in-memory snapshot.
- */
 import { Router } from "express";
 import User from "../models/User.js";
+import { requireAuth } from "../middleware/auth.js";
 import { getOrSetCache, invalidateCachePrefix } from "../utils/cache.js";
 import { getLevel } from "../utils/xpLevel.js";
 
@@ -63,14 +54,17 @@ router.get("/global", async (req, res) => {
   }
 });
 
-// ── GET /api/leaderboard/college?domain=marwadiuniversity.ac.in ─────────────
-router.get("/college", async (req, res) => {
+// ── GET /api/leaderboard/college — requires a verified college (Phase 12C) ──
+router.get("/college", requireAuth, async (req, res) => {
   try {
-    const domain = (req.query.domain || "").toLowerCase().trim();
-
-    if (!domain) {
-      return res.status(400).json({ error: "domain query param required." });
+    if (!req.userDoc.education?.verified) {
+      return res.status(403).json({
+        error: "Verify your college email to unlock your College Leaderboard.",
+        code: "COLLEGE_NOT_VERIFIED",
+      });
     }
+
+    const domain = req.userDoc.education.collegeEmail.split("@")[1].toLowerCase();
 
     const { value: result } = await getOrSetCache(
       `${COLLEGE_CACHE_PREFIX}${domain}`,

@@ -73,26 +73,24 @@ export default function HostContestForm() {
     const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
 
     setSubmitting(true);
-    const data = await apiFetch("/api/contests/private", {
-      method: "POST",
-      body: JSON.stringify({
-        title: title.trim(),
-        description: description.trim(),
-        problemSlugs: selectedSlugs,
-        startsAt: start.toISOString(),
-        endsAt: end.toISOString(),
-        maxParticipants,
-        allowLateJoin,
-      }),
-    });
-    setSubmitting(false);
-
-    if (data.error) {
-      toast.error(data.error);
-      return;
+    try {
+      const data = await apiFetch("/api/contests/private", {
+        method: "POST",
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          problemSlugs: selectedSlugs,
+          startsAt: start.toISOString(),
+          endsAt: end.toISOString(),
+          maxParticipants,
+          allowLateJoin,
+        }),
+      });
+      setCreated(data);
+    } catch (err) {
+      toast.error(err.message || "Failed to create contest.");
     }
-
-    setCreated(data);
+    setSubmitting(false);
   }
 
   function copy(text, label) {
