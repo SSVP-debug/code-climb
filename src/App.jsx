@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
 import ThemeGate from "./routes/ThemeGate";
@@ -41,6 +41,8 @@ const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const ContestsPage = lazy(() => import("./pages/ContestsPage"));
 const ContestDetailPage = lazy(() => import("./pages/ContestDetailPage"));
+const PrivateContestsPage = lazy(() => import("./pages/PrivateContestsPage"));
+const BattleRoomsPage = lazy(() => import("./pages/BattleRoomsPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
@@ -59,6 +61,14 @@ function PageLoader() {
       </div>
     </div>
   );
+}
+
+// Phase 12A: /contests/:id moved to /club/public-contests/:id. useParams()
+// only works inside a rendered route element, so a plain <Navigate> can't
+// interpolate :id on its own — this tiny wrapper reads it and redirects.
+function RedirectToContestDetail() {
+  const { id } = useParams();
+  return <Navigate to={`/club/public-contests/${id}`} replace />;
 }
 
 function App() {
@@ -114,15 +124,17 @@ function App() {
         />
 
         <Route
-          path="/leaderboard"
+          path="/club/leaderboard"
           element={
             <ProtectedRoute>
               <ThemeGate><LeaderboardPage /></ThemeGate>
             </ProtectedRoute>
           }
         />
+        {/* Phase 12A: moved under /club/*. Redirect keeps old links working. */}
+        <Route path="/leaderboard" element={<Navigate to="/club/leaderboard" replace />} />
 
-        {/* ── Club hub — consolidates Leaderboard, Contests, Ambassador ──── */}
+        {/* ── Club hub — Leaderboard, Public/Private Contests, Battle Rooms, Ambassador ── */}
         <Route
           path="/club"
           element={
@@ -196,8 +208,15 @@ function App() {
         <Route path="/terms" element={<TermsPage />} />
 
         {/* ── Phase 7: Contests ───────────────────────────────────────── */}
-        <Route path="/contests" element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
-        <Route path="/contests/:id" element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/club/public-contests" element={<ProtectedRoute><ThemeGate><ContestsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/club/public-contests/:id" element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/club/private-contests" element={<ProtectedRoute><ThemeGate><PrivateContestsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/club/battle-rooms" element={<ProtectedRoute><ThemeGate><BattleRoomsPage /></ThemeGate></ProtectedRoute>} />
+
+        {/* Phase 12A: contests moved under /club/*. Redirects so any
+            existing bookmarks/links to the old paths keep working. */}
+        <Route path="/contests" element={<Navigate to="/club/public-contests" replace />} />
+        <Route path="/contests/:id" element={<RedirectToContestDetail />} />
 
         {/* ── Phase 8: Campus Ambassador Portal ──────────────────────── */}
         <Route path="/ambassador" element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />

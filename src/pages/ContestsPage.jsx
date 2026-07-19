@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
+import DashboardLayout from "../layouts/DashboardLayout";
+import ClubSubNav from "../components/club/ClubSubNav";
+import { useTheme } from "../context/ThemeContext";
 import { getTimeRemaining } from "../utils/countdown";
+import { Puzzle, Users, Clock, Trophy, Lock } from "lucide-react";
 
 function countdown(endsAt) {
   const { isEnded, days, hours, minutes, seconds } = getTimeRemaining(endsAt);
@@ -13,6 +17,8 @@ function countdown(endsAt) {
 }
 
 function StatusBadge({ status }) {
+  // "active"/"upcoming"/"ended" are status semantics, not brand decoration
+  // — same rule as difficulty badges elsewhere, kept fixed across themes.
   const styles = {
     upcoming: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
     active:   "bg-green-500/10  text-green-400  border-green-500/20",
@@ -45,11 +51,11 @@ function ContestCard({ contest, onJoin }) {
       return;
     }
     onJoin();
-    navigate(`/contests/${contest._id}`);
+    navigate(`/club/public-contests/${contest._id}`);
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-2xl p-5 transition">
+    <div className="bg-zinc-900 border border-zinc-800 hover:border-[var(--theme-primary,#2dd4bf)] rounded-2xl p-5 transition">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-white truncate">{contest.title}</h3>
@@ -63,10 +69,16 @@ function ContestCard({ contest, onJoin }) {
       </div>
 
       <div className="flex items-center gap-4 text-xs text-zinc-500 mb-4">
-        <span>🧩 {contest.problemCount} problems</span>
-        <span>👥 {contest.participantCount} joined</span>
+        <span className="flex items-center gap-1">
+          <Puzzle size={12} aria-hidden="true" />{contest.problemCount} problems
+        </span>
+        <span className="flex items-center gap-1">
+          <Users size={12} aria-hidden="true" />{contest.participantCount} joined
+        </span>
         {contest.status === "active" && (
-          <span className="text-orange-400 font-semibold">⏱ {time}</span>
+          <span className="text-orange-400 font-semibold flex items-center gap-1">
+            <Clock size={12} aria-hidden="true" />{time}
+          </span>
         )}
         {contest.status === "upcoming" && (
           <span>Starts {new Date(contest.startsAt).toLocaleDateString()}</span>
@@ -75,10 +87,10 @@ function ContestCard({ contest, onJoin }) {
 
       {contest.status === "active" && (
         <div className="flex gap-2">
-          <Button onClick={handleJoin} disabled={joining} loading={joining} className="flex-1">
+          <Button onClick={handleJoin} disabled={joining} loading={joining} variant="theme" className="flex-1">
             {joining ? "Joining…" : "Join & Compete"}
           </Button>
-          <button onClick={() => navigate(`/contests/${contest._id}`)}
+          <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
             className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition">
             Leaderboard
           </button>
@@ -90,7 +102,7 @@ function ContestCard({ contest, onJoin }) {
         </p>
       )}
       {contest.status === "ended" && (
-        <button onClick={() => navigate(`/contests/${contest._id}`)}
+        <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
           className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition">
           View Results
         </button>
@@ -99,56 +111,11 @@ function ContestCard({ contest, onJoin }) {
   );
 }
 
-function JoinPrivateModal({ onClose, onJoined }) {
-  const [code, setCode]       = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  async function handleJoin() {
-    if (!code.trim()) return;
-    setLoading(true);
-    const data = await apiFetch("/api/contests/join-private", {
-      method: "POST",
-      body: JSON.stringify({ inviteCode: code.trim().toUpperCase() }),
-    });
-    setLoading(false);
-    if (data.error) {
-      toast.error(data.error);
-      return;
-    }
-    onJoined();
-    onClose();
-    navigate(`/contests/${data.contestId}`);
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4" onClick={onClose}>
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-bold text-white mb-1">Join Private Contest</h3>
-        <p className="text-zinc-500 text-sm mb-4">Enter the invite code shared by your college.</p>
-        <input
-          value={code}
-          onChange={e => setCode(e.target.value.toUpperCase())}
-          placeholder="e.g. A3F9B2"
-          maxLength={6}
-          className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white font-mono text-lg tracking-widest outline-none focus:border-green-500/50 text-center mb-4"
-        />
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
-          <Button onClick={handleJoin} disabled={loading || code.length !== 6} loading={loading} className="flex-1">
-            {loading ? "Joining…" : "Join"}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function ContestsPage() {
+  const { theme } = useTheme();
   const [contests, setContests] = useState([]);
   const [tab, setTab]           = useState("active,upcoming");
   const [loading, setLoading]   = useState(true);
-  const [showPrivate, setShowPrivate] = useState(false);
 
   function fetchContests() {
     setLoading(true);
@@ -159,18 +126,19 @@ export default function ContestsPage() {
   useEffect(() => { fetchContests(); }, [tab]);
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
-      <div className="max-w-5xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-5xl">
+        <ClubSubNav />
+
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-black text-white">Contests</h1>
+            <h1 className="text-2xl font-black text-white">Public Contests</h1>
             <p className="text-zinc-500 text-sm">Compete, rank, win.</p>
           </div>
-          <button onClick={() => setShowPrivate(true)}
-            className="px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 rounded-xl text-sm font-medium transition">
-            🔐 Join Private Contest
-          </button>
+          <Button to="/club/private-contests" variant="secondary" size="sm">
+            <Lock size={14} aria-hidden="true" /> Join Private Contest
+          </Button>
         </div>
 
         {/* Tabs */}
@@ -178,24 +146,32 @@ export default function ContestsPage() {
           {[
             { label: "Live & Upcoming", value: "active,upcoming" },
             { label: "Past",            value: "ended" },
-          ].map(t => (
-            <button key={t.value} onClick={() => setTab(t.value)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
-                tab === t.value ? "bg-green-600 text-white" : "bg-zinc-900 border border-zinc-800 text-zinc-400"
-              }`}>
-              {t.label}
-            </button>
-          ))}
+          ].map(t => {
+            const active = tab === t.value;
+            return (
+              <button key={t.value} onClick={() => setTab(t.value)}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                  active ? "text-white" : "bg-zinc-900 border border-zinc-800 text-zinc-400"
+                }`}
+                style={active ? { backgroundColor: theme.colors.primary, color: "#09090b" } : undefined}
+              >
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* List */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+            <div
+              className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+              style={{ borderColor: theme.colors.primary, borderTopColor: "transparent" }}
+            />
           </div>
         ) : contests.length === 0 ? (
           <div className="text-center py-20 text-zinc-600">
-            <p className="text-4xl mb-3">🏆</p>
+            <Trophy size={40} className="mx-auto mb-3 opacity-50" aria-hidden="true" />
             <p>No contests {tab.includes("ended") ? "past" : "live or upcoming"} right now.</p>
             <p className="text-sm mt-1">Check back soon or ask your TPO to create one.</p>
           </div>
@@ -207,10 +183,6 @@ export default function ContestsPage() {
           </div>
         )}
       </div>
-
-      {showPrivate && (
-        <JoinPrivateModal onClose={() => setShowPrivate(false)} onJoined={fetchContests} />
-      )}
-    </div>
+    </DashboardLayout>
   );
 }
