@@ -23,11 +23,16 @@ import {
 } from "lucide-react";
 
 const STATIC_STATS = [
-  { key: "problems", value: "Growing", label: "Problem Library" },
-  { key: "languages", value: "Multiple", label: "Languages" },
-  { key: "themes", value: "Themed", label: "Universes" },
-  { key: "ai", value: "AI", label: "Coaching Built In" },
+  { key: "problems", value: "50+", label: "DSA Problems" },
+  { key: "languages", value: "4", label: "Languages" },
+  { key: "themes", value: "5", label: "Themed Universes" },
+  { key: "ai", value: "Claude", label: "Coaching Built In" },
 ];
+
+// The "ai" stat has no backend equivalent — it's a static descriptor, not a
+// count — so it's preserved as-is even once live numbers come in for the
+// other three, instead of silently dropping to a 3-stat bar.
+const AI_STAT = STATIC_STATS[3];
 
 function useLiveStats() {
   const [stats, setStats] = useState(STATIC_STATS);
@@ -54,6 +59,7 @@ function useLiveStats() {
             value: data.themes > 0 ? String(data.themes) : "—",
             label: "Themed Universes",
           },
+          AI_STAT,
         ]);
       })
       .catch(() => { }); // fail silently — static fallback stays
@@ -119,15 +125,15 @@ const FEATURES = [
     Icon: Trophy,
     title: "Public Profile",
     description:
-      `Share your solve history at ${SITE_DOMAIN}/u/yourname. Built to impress recruiters show your consistency, not just a resume line.`,
+      `Share your solve history at ${SITE_DOMAIN}/u/yourname — built to impress recruiters, so consistency speaks louder than a resume line.`,
     badge: "Beta",
     span: "",
   },
 ];
 
 // ── Who Code Club is built for — the actual moat vs. individual-practice
-// tools like LeetCode/GeeksForGeeks/NeetCode, none of which have a TPO
-// dashboard, a recruiter portal, or live AI mock interviews. ────────────────
+// tools, none of which have a TPO dashboard, a recruiter portal, or live
+// AI mock interviews. ────────────────────────────────────────────────────
 const AUDIENCES = [
   {
     Icon: GraduationCap,
@@ -247,9 +253,9 @@ export default function LandingPage() {
 
               <p className="text-zinc-400 text-lg leading-relaxed mb-8">
                 Solve real interview problems, practice live AI mock interviews,
-                and build a public solve history recruiters actually check.
-                No overwhelm, Just your
-                <strong className="text-white"> Code Club.</strong>
+                and build a public solve history recruiters actually check —
+                no overwhelm, just
+                <strong className="text-white"> your Code Club.</strong>
               </p>
 
               <div className="flex flex-wrap gap-3 mb-10">
@@ -312,8 +318,8 @@ export default function LandingPage() {
               Pick your universe. Own your grind.
             </h2>
             <p className="text-zinc-400 max-w-xl mx-auto">
-              Not just problems. Code Club has <em>worlds</em>. Same DSA
-              completely different experience.
+              Not just problems — Code Club has <em>worlds</em>. Same DSA,
+              a completely different experience.
             </p>
           </Reveal>
 
@@ -426,9 +432,9 @@ export default function LandingPage() {
               Built for the whole placement pipeline.
             </h2>
             <p className="text-zinc-400 max-w-xl mx-auto">
-              LeetCode and GeeksForGeeks stop at the student. Code Club connects
-              practice to placement TPOs get a readiness dashboard, recruiters
-              get a candidate search, students get seen.
+              Most DSA practice tools stop at the student. Code Club connects
+              practice to placement: TPOs get a readiness dashboard, recruiters
+              get a candidate search, and students get seen.
             </p>
           </Reveal>
 
@@ -457,38 +463,43 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Competitor callout ──────────────────────────────────────── */}
+        {/* ── Category comparison ─────────────────────────────────────
+             Deliberately no named competitors and no third-party price
+             claims here — both are a liability for a small team (stale
+             or wrong numbers read as false advertising) and read as less
+             premium than simply stating Code Club's own value clearly. */}
         <section className="max-w-4xl mx-auto px-6 md:px-12 py-20">
+          <Reveal className="text-center mb-10">
+            <p className="text-xs text-verdict-accept font-mono-ui uppercase tracking-widest font-semibold mb-3">
+              Where practice tools stop
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Practice gets you reps. This gets you placed.
+            </h2>
+          </Reveal>
+
           <Reveal className="bg-ink-800 border border-ink-700 rounded-2xl p-8 md:p-10">
-            <div className="grid md:grid-cols-3 gap-6 text-sm font-mono-ui">
+            <div className="grid md:grid-cols-2 gap-6 text-sm font-mono-ui">
               <div>
-                <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">LeetCode Premium</p>
+                <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">
+                  Individual practice tools
+                </p>
                 <ul className="space-y-2 text-zinc-400">
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> ₹8,500 / year</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No TPO dashboard</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No recruiter portal</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No TPO readiness dashboard</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No recruiter candidate search</li>
                   <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No live AI mock interviews</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No India-specific features</li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3 font-semibold">GeeksForGeeks</p>
-                <ul className="space-y-2 text-zinc-400">
-                  <li className="flex items-center gap-2"><span className="text-verdict-pending">~</span> Free but ad-heavy</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No TPO dashboard</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No recruiter portal</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> No live AI mock interviews</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-pending">~</span> India-focused content</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-reject">✗</span> Practice ends at the student</li>
                 </ul>
               </div>
               <div className="border border-verdict-accept/30 bg-verdict-accept/5 rounded-xl p-5">
-                <p className="text-xs text-verdict-accept uppercase tracking-widest mb-3 font-semibold">Code Club</p>
+                <p className="text-xs text-verdict-accept uppercase tracking-widest mb-3 font-semibold">
+                  Code Club
+                </p>
                 <ul className="space-y-2 text-zinc-300">
-                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Free to start</li>
                   <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> TPO readiness dashboard</li>
                   <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Recruiter candidate search</li>
                   <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Live AI mock interviews</li>
-                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Built for Indian placements</li>
+                  <li className="flex items-center gap-2"><span className="text-verdict-accept">✓</span> Practice connects to placement</li>
                 </ul>
               </div>
             </div>
