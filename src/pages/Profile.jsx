@@ -19,6 +19,7 @@ import RecruiterSnapshot from "../components/profile/RecruiterSnapshot";
 import PinnedProblems from "../components/profile/PinnedProblems";
 import ProfileCompletion from "../components/profile/ProfileCompletion";
 import EducationSection from "../components/profile/EducationSection";
+import ContestHistorySection from "../components/profile/ContestHistorySection";
 
 // ── Profile ────────────────────────────────────────────────────────────────────
 // Phase 9B: Coding Identity build-out. Hero now shows the real XP-derived
@@ -177,6 +178,13 @@ function Profile() {
         {role === "student" && (
           <ContentSlot id="profile-education">
             <EducationSection />
+          </ContentSlot>
+        )}
+
+        {/* ── Contest History (Phase 12D) ──────────────────────────────── */}
+        {role === "student" && (
+          <ContentSlot id="profile-contest-history">
+            <ContestHistorySection />
           </ContentSlot>
         )}
 

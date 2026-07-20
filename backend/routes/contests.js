@@ -3,6 +3,7 @@ import crypto from "crypto";
 import Contest from "../models/Contest.js";
 import Problem from "../models/Problem.js";
 import { requireRole } from "../middleware/roleGuard.js";
+import { requireAuth } from "../middleware/auth.js";
 import { getOrSetCache } from "../utils/cache.js";
 
 const router = Router();
@@ -257,6 +258,46 @@ router.post("/join-private", async (req, res) => {
   }
 });
 
+// ── GET /api/contests/mine — contests the caller has participated in (12D) ────
+// Must stay registered BEFORE GET /:id below — otherwise Express would try
+// to match "mine" as the :id param instead of hitting this route.
+//
+// Fills the gap flagged back in 12A: there was no "contests I've joined"
+// query at all, which is why ClubPage's private-contest preview had to be
+// an honest empty-state instead of real data. This is that endpoint —
+// powers Profile's contest history, and could later back that preview too.
+router.get("/mine", requireAuth, async (req, res) => {
+  try {
+    const contests = await Contest.find({ "participants.userId": req.userDoc._id })
+      .sort({ endsAt: -1 })
+      .limit(50)
+      .select("title type status startsAt endsAt problemSlugs participants")
+      .lean();
+
+    const history = contests.map((c) => {
+      const ranked = computeRankings(c.participants || []);
+      const mine = ranked.find((p) => p.userId?.toString() === req.userDoc._id.toString());
+      return {
+        _id: c._id,
+        title: c.title,
+        type: c.type,
+        status: c.status,
+        endsAt: c.endsAt,
+        problemCount: c.problemSlugs.length,
+        participantCount: ranked.length,
+        myRank: mine?.rank ?? null,
+        myScore: mine?.score ?? 0,
+        mySolvedCount: mine?.solvedSlugs?.length ?? 0,
+      };
+    });
+
+    return res.json({ contests: history });
+  } catch (err) {
+    console.error("[Contest] mine:", err.message);
+    return res.status(500).json({ error: "Failed to load your contest history." });
+  }
+});
+
 // ── GET /api/contests/:id — contest detail + ranked leaderboard ───────────────
 router.get("/:id", async (req, res) => {
   try {
@@ -278,9 +319,10 @@ router.get("/:id", async (req, res) => {
       ...contest,
       status,
       leaderboard: ranked.slice(0, 100),
-      myRank:      myEntry?.rank ?? null,
-      myScore:     myEntry?.score ?? 0,
-      isJoined:    !!myEntry,
+      myRank:        myEntry?.rank ?? null,
+      myScore:       myEntry?.score ?? 0,
+      mySolvedSlugs: myEntry?.solvedSlugs ?? [],
+      isJoined:      !!myEntry,
     });
   } catch (err) {
     return res.status(500).json({ error: "Failed to load contest." });
