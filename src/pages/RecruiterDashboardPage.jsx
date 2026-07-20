@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
+import { CheckCircle2 } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const VALID_TABS = ["candidates", "tests"];
@@ -291,7 +292,9 @@ export default function RecruiterDashboardPage() {
                     </div>
                     <span className="text-center text-sm text-green-400 font-semibold">{c.solvedCount}</span>
                     <span className="text-center text-sm text-red-400">{c.hard}</span>
-                    <span className="text-center">{c.isVerified ? "✅" : "—"}</span>
+                    <span className="text-center flex justify-center">
+                      {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : "—"}
+                    </span>
                     <div className="text-right flex gap-2 justify-end">
                       <Button
                         href={`/u/${c.username}`}

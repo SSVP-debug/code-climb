@@ -1,18 +1,22 @@
 import { Link } from "react-router-dom";
 import PageMeta from "../components/seo/PageMeta";
 import { SITE_DOMAIN } from "../config/site.js";
+import { GraduationCap, Briefcase, Building2 } from "lucide-react";
 
 // ── Role cards ───────────────────────────────────────────────────────────
 // `accessId` is shown as a terminal-style path tag on each card — a small
 // nod to the themed-universe / hacker vernacular already used across the
 // product (Code Heist, Ghost Protocol, etc.) instead of a generic
 // "select your role" chooser.
+// Icons intentionally match the same Student/Recruiter/TPO icon mapping
+// used on the landing page's audience section, so the persona identity
+// stays consistent across the marketing site and the product.
 const ROLES = [
   {
     id: "student",
     label: "Student",
     accent: "green",
-    icon: "🧑‍💻",
+    Icon: GraduationCap,
     tagline: "Solve, climb, get interview-ready.",
     description:
       "Practice DSA across themed universes, track XP and streaks, and run live AI mock interviews before the real one.",
@@ -22,7 +26,7 @@ const ROLES = [
     id: "recruiter",
     label: "Recruiter",
     accent: "sky",
-    icon: "🎯",
+    Icon: Briefcase,
     tagline: "Find signal, not just resumes.",
     description:
       "Search verified candidates by real solve history, send skills tests, and check profile signatures before you reach out.",
@@ -32,7 +36,7 @@ const ROLES = [
     id: "tpo",
     label: "TPO",
     accent: "violet",
-    icon: "🏫",
+    Icon: Building2,
     tagline: "See placement readiness at a glance.",
     description:
       "Track every student on your campus domain — solve velocity, streaks, and who's actually interview-ready this season.",
@@ -69,12 +73,12 @@ export default function PortalPage() {
         description="Enter Code Club as a Student, Recruiter, or TPO."
         path="/portal"
       />
-      <div className="min-h-screen bg-black text-white flex flex-col">
+      <div className="min-h-screen bg-ink-950 text-white font-display flex flex-col">
         <header className="px-6 py-6 max-w-6xl mx-auto w-full flex items-center justify-between">
           <Link to="/" className="text-lg font-black tracking-tight">
-            Code<span className="text-green-500">Club</span>
+            Code<span className="text-verdict-accept">Club</span>
           </Link>
-          <span className="hidden sm:inline text-xs text-zinc-600 font-mono">
+          <span className="hidden sm:inline text-xs text-zinc-600 font-mono-ui">
             {SITE_DOMAIN}/portal
           </span>
         </header>
@@ -100,15 +104,18 @@ export default function PortalPage() {
                 <Link
                   key={role.id}
                   to={`/login?role=${role.id}`}
-                  className={`group relative flex flex-col justify-between bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${accent.border} ${accent.shadow}`}
+                  className={`group relative flex flex-col justify-between bg-ink-900/80 border border-ink-700 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${accent.border} ${accent.shadow}`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-3xl" aria-hidden="true">
-                        {role.icon}
+                      <span
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center border ${accent.badge}`}
+                        aria-hidden="true"
+                      >
+                        <role.Icon size={22} strokeWidth={2} />
                       </span>
                       <span
-                        className={`text-[10px] font-mono px-2 py-1 rounded-md border ${accent.badge}`}
+                        className={`text-[10px] font-mono-ui px-2 py-1 rounded-md border ${accent.badge}`}
                       >
                         {role.accessId}
                       </span>

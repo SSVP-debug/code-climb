@@ -23,13 +23,13 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
   };
 
   return (
-    <header className="h-10 flex-shrink-0 flex items-center justify-between px-3 bg-zinc-900 border-b border-zinc-800 z-50">
+    <header className="h-10 flex-shrink-0 flex items-center justify-between px-3 bg-ink-900 border-b border-ink-700 z-50">
 
       {/* Left: back */}
       <div className="flex items-center gap-2 min-w-0">
         <Link
           to="/problems"
-          className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition text-xs font-mono shrink-0"
+          className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition text-xs font-mono-ui shrink-0"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M9 2L4 7L9 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -51,7 +51,7 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           aria-disabled={!prevSlug}
           className={`p-1.5 rounded-lg transition ${
             prevSlug
-              ? "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "text-zinc-400 hover:text-white hover:bg-ink-800"
               : "text-zinc-700 pointer-events-none"
           }`}
           title="Previous problem"
@@ -65,7 +65,7 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           aria-disabled={!nextSlug}
           className={`p-1.5 rounded-lg transition ${
             nextSlug
-              ? "text-zinc-400 hover:text-white hover:bg-zinc-800"
+              ? "text-zinc-400 hover:text-white hover:bg-ink-800"
               : "text-zinc-700 pointer-events-none"
           }`}
           title="Next problem"
@@ -82,16 +82,16 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           <img
             src={user.photoURL}
             alt="avatar"
-            className="w-6 h-6 rounded-full border border-zinc-700"
+            className="w-6 h-6 rounded-full border border-ink-700"
           />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-[10px] font-bold">
+          <div className="w-6 h-6 rounded-full bg-ink-700 flex items-center justify-center text-[10px] font-bold">
             {user?.displayName?.charAt(0)}
           </div>
         )}
         <button
           onClick={handleLogout}
-          className="text-xs text-zinc-400 hover:text-white transition font-mono"
+          className="text-xs text-zinc-400 hover:text-white transition font-mono-ui"
         >
           Logout
         </button>
@@ -107,7 +107,7 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
  */
 function ProblemLayout({ children, title, prevSlug, nextSlug }) {
   return (
-    <div className="h-screen flex flex-col bg-zinc-950 text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-ink-950 text-white font-display overflow-hidden">
       <ProblemTopbar title={title} prevSlug={prevSlug} nextSlug={nextSlug} />
       <div className="flex-1 min-h-0 overflow-hidden">
         {children}

@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
+import { isAccepted } from "../../../utils/statusMessages";
 
 function AdvancedStatsSection() {
   const { theme } = useTheme();
@@ -16,7 +17,7 @@ function AdvancedStatsSection() {
 
     const accepted = submissions.filter(
       (submission) =>
-        submission.status === "Accepted 🎉"
+        isAccepted(submission.status)
     ).length;
 
     return (
@@ -29,8 +30,7 @@ function AdvancedStatsSection() {
     const acceptedSubmissions =
       submissions.filter(
         (submission) =>
-          submission.status ===
-          "Accepted 🎉"
+          isAccepted(submission.status)
       );
 
     if (

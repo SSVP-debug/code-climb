@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SITE_DOMAIN } from "../config/site.js";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -26,7 +27,15 @@ export default function CertVerifyPage() {
       <div className={`max-w-md w-full bg-zinc-900 border rounded-2xl p-8 text-center ${
         result?.valid ? "border-green-500/40" : "border-red-500/40"
       }`}>
-        <div className="text-5xl mb-4">{result?.valid ? "✅" : "❌"}</div>
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+          result?.valid ? "bg-verdict-accept/10 text-verdict-accept" : "bg-verdict-reject/10 text-verdict-reject"
+        }`}>
+          {result?.valid ? (
+            <CheckCircle2 size={30} strokeWidth={2} aria-hidden="true" />
+          ) : (
+            <XCircle size={30} strokeWidth={2} aria-hidden="true" />
+          )}
+        </div>
         <h1 className="text-xl font-black text-white mb-2">
           {result?.valid ? "Certificate Verified" : "Invalid Certificate"}
         </h1>

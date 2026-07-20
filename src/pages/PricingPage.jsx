@@ -5,6 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
+import { Gift, Check } from "lucide-react";
 
 const PLAN_DETAILS = {
   free: {
@@ -97,7 +98,7 @@ export default function PricingPage() {
         order_id: order.orderId,
         name: "Code Club",
         description: PLAN_DETAILS[planId]?.name,
-        theme: { color: "#22c55e" },
+        theme: { color: "#c6ff3d" },
         handler: async (response) => {
           const verify = await apiFetch("/api/billing/verify", {
             method: "POST",
@@ -124,7 +125,9 @@ export default function PricingPage() {
       <DashboardLayout>
         <PageMeta title="Pricing · Code Club" path="/pricing" />
         <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-          <div className="text-5xl mb-4">🎁</div>
+          <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-6">
+            <Gift size={30} strokeWidth={2} aria-hidden="true" />
+          </div>
           <h1 className="text-3xl font-black text-white mb-3">Code Club is free for everyone right now</h1>
           <p className="text-zinc-400 mb-8">
             We're in early access. Every feature — AI hints, all themes, editorials,
@@ -143,7 +146,7 @@ export default function PricingPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[60vh]">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-verdict-accept border-t-transparent rounded-full animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -164,13 +167,13 @@ export default function PricingPage() {
               key={id}
               className={`relative rounded-2xl p-6 border ${
                 plan.highlight
-                  ? "border-green-500/50 bg-green-500/5"
-                  : "border-zinc-800 bg-zinc-900"
+                  ? "border-verdict-accept/50 bg-verdict-accept/5"
+                  : "border-ink-700 bg-ink-900"
               }`}
             >
               {plan.badge && (
                 <span className={`absolute -top-3 left-6 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  plan.urgent ? "bg-red-500 text-white" : "bg-green-500 text-black"
+                  plan.urgent ? "bg-verdict-reject text-white" : "bg-verdict-accept text-ink-950"
                 }`}>
                   {plan.badge}
                 </span>
@@ -183,7 +186,7 @@ export default function PricingPage() {
               <ul className="space-y-2 mb-6">
                 {plan.features.map(f => (
                   <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
-                    <span className="text-green-500 mt-0.5">✓</span>
+                    <Check size={16} strokeWidth={2.5} className="text-verdict-accept mt-0.5 flex-shrink-0" aria-hidden="true" />
                     {f}
                   </li>
                 ))}

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import problems from "../../data/problems";
 import { getLastVisitedProblem } from "../../utils/recentProblem";
 import { useAppContext } from "../../hooks/useAppContext";
+import { CheckCircle2, Hexagon } from "lucide-react";
 
 function ContinueLearningCard() {
   const { solvedProblems } = useAppContext();
@@ -13,7 +14,7 @@ function ContinueLearningCard() {
   const alreadySolved = lastProblem && solvedProblems.includes(lastProblem.slug);
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+    <div className="bg-ink-900 border border-ink-700 rounded-xl p-4">
 
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -21,7 +22,7 @@ function ContinueLearningCard() {
         </p>
         <Link
           to="/problems"
-          className="text-xs text-green-400 hover:text-green-300 transition"
+          className="text-xs text-verdict-accept hover:brightness-110 transition"
         >
           View all
         </Link>
@@ -32,8 +33,12 @@ function ContinueLearningCard() {
           to={`/problems/${lastProblem.slug}`}
           className="flex items-center gap-3 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">{alreadySolved ? "✓" : "⬡"}</span>
+          <div className="w-9 h-9 rounded-lg bg-ink-800 flex items-center justify-center flex-shrink-0">
+            {alreadySolved ? (
+              <CheckCircle2 size={18} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" />
+            ) : (
+              <Hexagon size={18} strokeWidth={2} className="text-zinc-500" aria-hidden="true" />
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-zinc-300 group-hover:text-white truncate transition-colors">
@@ -46,8 +51,8 @@ function ContinueLearningCard() {
         </Link>
       ) : (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">⬡</span>
+          <div className="w-9 h-9 rounded-lg bg-ink-800 flex items-center justify-center flex-shrink-0">
+            <Hexagon size={18} strokeWidth={2} className="text-zinc-500" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-zinc-300 truncate">

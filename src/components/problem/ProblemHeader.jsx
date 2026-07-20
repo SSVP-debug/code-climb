@@ -1,4 +1,5 @@
 import React from "react";
+import { Check } from "lucide-react";
 
 const COMPANY_COLORS = {
   Amazon:    "bg-orange-500/10 text-orange-400 border-orange-500/20",
@@ -34,8 +35,8 @@ function ProblemHeader({ problem, isSolved }) {
           {problem.title}
         </h1>
         {isSolved && (
-          <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-bold rounded-md border border-green-500/30 uppercase tracking-wider">
-            ✓ Solved
+          <span className="px-2 py-1 bg-verdict-accept/20 text-verdict-accept text-xs font-bold rounded-md border border-verdict-accept/30 uppercase tracking-wider inline-flex items-center gap-1">
+            <Check size={12} strokeWidth={3} aria-hidden="true" /> Solved
           </span>
         )}
       </div>

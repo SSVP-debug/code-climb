@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAppContext } from "../../hooks/useAppContext";
 import { apiFetch } from "../../services/api";
+import { AlertTriangle, Shield } from "lucide-react";
 
 const VIEW_TARGETS = [
   { label: "Student", path: "/dashboard" },
@@ -45,8 +46,9 @@ export default function AdminPreviewBanner() {
     return (
       <div className="sticky top-0 z-[70] bg-amber-950 border-b border-amber-700/60 text-amber-200">
         <div className="max-w-6xl mx-auto px-4 py-1.5 flex items-center justify-between gap-3 flex-wrap text-xs">
-          <span className="font-semibold tracking-wide whitespace-nowrap">
-            ⚠ Impersonating {impersonation.targetDisplayName || impersonation.targetEmail}{" "}
+          <span className="font-semibold tracking-wide whitespace-nowrap inline-flex items-center gap-1.5">
+            <AlertTriangle size={13} strokeWidth={2} aria-hidden="true" />
+            Impersonating {impersonation.targetDisplayName || impersonation.targetEmail}{" "}
             <span className="font-normal text-amber-400">({impersonation.targetRole})</span>
           </span>
           <button
@@ -66,8 +68,9 @@ export default function AdminPreviewBanner() {
   return (
     <div className="sticky top-0 z-[70] bg-violet-950 border-b border-violet-800/60 text-violet-200">
       <div className="max-w-6xl mx-auto px-4 py-1.5 flex items-center justify-between gap-3 flex-wrap text-xs">
-        <span className="font-semibold tracking-wide whitespace-nowrap">
-          🛡️ Admin Preview
+        <span className="font-semibold tracking-wide whitespace-nowrap inline-flex items-center gap-1.5">
+          <Shield size={13} strokeWidth={2} aria-hidden="true" />
+          Admin Preview
         </span>
         <div className="flex items-center gap-1 flex-wrap">
           {VIEW_TARGETS.map((t) => (

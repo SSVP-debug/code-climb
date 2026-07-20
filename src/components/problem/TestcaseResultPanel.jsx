@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTheme } from "../../context/ThemeContext";
+import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 // ── Runtime error normalisation ───────────────────────────────────────────────
 //
@@ -51,18 +52,18 @@ function formatActual(actual) {
 function DataRow({ label, value, highlight }) {
   return (
     <div className="space-y-1.5">
-      <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+      <span className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-500">
         {label}
       </span>
       <div
         className={`
-          rounded-lg px-3 py-2.5 text-sm font-mono leading-relaxed
+          rounded-lg px-3 py-2.5 text-sm font-mono-ui leading-relaxed
           whitespace-pre-wrap break-all border
           ${highlight === "pass"
-            ? "bg-green-500/5 border-green-500/20 text-green-300"
+            ? "bg-verdict-accept/5 border-verdict-accept/20 text-verdict-accept"
             : highlight === "fail"
-              ? "bg-red-500/5 border-red-500/20 text-red-300"
-              : "bg-zinc-950 border-zinc-800 text-zinc-200"
+              ? "bg-verdict-reject/5 border-verdict-reject/20 text-verdict-reject"
+              : "bg-ink-950 border-ink-700 text-zinc-200"
           }
         `}
       >
@@ -75,7 +76,7 @@ function DataRow({ label, value, highlight }) {
 function MetaChip({ label, value }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] font-mono">
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-mono-ui">
       <span className="text-zinc-700">{label}</span>
       <span className="text-zinc-400">{value}</span>
     </span>
@@ -87,16 +88,16 @@ function LoadingSkeleton() {
     <div className="space-y-4 animate-pulse">
       <div className="flex gap-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-7 w-24 rounded-lg bg-zinc-800" />
+          <div key={i} className="h-7 w-24 rounded-lg bg-ink-800" />
         ))}
       </div>
       <div className="space-y-3 pt-1">
-        <div className="h-4 w-16 rounded bg-zinc-800" />
-        <div className="h-10 rounded-lg bg-zinc-800" />
-        <div className="h-4 w-20 rounded bg-zinc-800" />
-        <div className="h-10 rounded-lg bg-zinc-800" />
-        <div className="h-4 w-20 rounded bg-zinc-800" />
-        <div className="h-10 rounded-lg bg-zinc-800" />
+        <div className="h-4 w-16 rounded bg-ink-800" />
+        <div className="h-10 rounded-lg bg-ink-800" />
+        <div className="h-4 w-20 rounded bg-ink-800" />
+        <div className="h-10 rounded-lg bg-ink-800" />
+        <div className="h-4 w-20 rounded bg-ink-800" />
+        <div className="h-10 rounded-lg bg-ink-800" />
       </div>
     </div>
   );
@@ -134,7 +135,7 @@ export default function TestcaseResultPanel({
     if (examples.length === 0) {
       return (
         <div className="flex items-center justify-center min-h-[160px]">
-          <p className="text-zinc-600 text-sm font-mono">
+          <p className="text-zinc-600 text-sm font-mono-ui">
             Click {theme.words.run} to test against examples
           </p>
         </div>
@@ -143,24 +144,24 @@ export default function TestcaseResultPanel({
     return (
       <div className="space-y-3">
         {examples.map((ex, i) => (
-          <div key={i} className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 space-y-2">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+          <div key={i} className="rounded-xl border border-ink-700 bg-ink-950 p-3 space-y-2">
+            <span className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-500">
               Example {i + 1}
             </span>
             <div className="space-y-1.5">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-600">Input</span>
-              <div className="rounded-lg px-3 py-2 text-sm font-mono bg-zinc-900 border border-zinc-800 text-zinc-300 whitespace-pre-wrap break-all">
+              <span className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-600">Input</span>
+              <div className="rounded-lg px-3 py-2 text-sm font-mono-ui bg-ink-900 border border-ink-700 text-zinc-300 whitespace-pre-wrap break-all">
                 {ex.input}
               </div>
             </div>
             <div className="space-y-1.5">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-600">Expected</span>
-              <div className="rounded-lg px-3 py-2 text-sm font-mono bg-zinc-900 border border-zinc-800 text-zinc-300">
+              <span className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-600">Expected</span>
+              <div className="rounded-lg px-3 py-2 text-sm font-mono-ui bg-ink-900 border border-ink-700 text-zinc-300">
                 {ex.output}
               </div>
             </div>
             {ex.explanation && (
-              <p className="text-xs text-zinc-500 font-mono pt-0.5">{ex.explanation}</p>
+              <p className="text-xs text-zinc-500 font-mono-ui pt-0.5">{ex.explanation}</p>
             )}
           </div>
         ))}
@@ -171,10 +172,11 @@ export default function TestcaseResultPanel({
   if (compileFailed) {
     return (
       <div className="space-y-3">
-        <span className="text-yellow-400 text-sm font-semibold font-mono">
-          ⚠ {theme.words.compileError}
+        <span className="text-verdict-pending text-sm font-semibold font-mono-ui flex items-center gap-1.5">
+          <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />
+          {theme.words.compileError}
         </span>
-        <div className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2.5 font-mono text-xs text-yellow-200 whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
+        <div className="bg-ink-950 border border-ink-700 rounded-lg px-3 py-2.5 font-mono-ui text-xs text-verdict-pending whitespace-pre-wrap break-all max-h-48 overflow-y-auto">
           {compileError || "Unknown compilation error."}
         </div>
       </div>
@@ -184,7 +186,7 @@ export default function TestcaseResultPanel({
   if (!results || results.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[160px]">
-        <p className="text-zinc-600 text-sm font-mono">No results returned.</p>
+        <p className="text-zinc-600 text-sm font-mono-ui">No results returned.</p>
       </div>
     );
   }
@@ -200,12 +202,17 @@ export default function TestcaseResultPanel({
       {/* ── Summary + meta ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <span
-          className={`text-sm font-semibold font-mono ${allPassed ? "text-green-400" : "text-red-400"
+          className={`text-sm font-semibold font-mono-ui flex items-center gap-1.5 ${allPassed ? "text-verdict-accept" : "text-verdict-reject"
             }`}
         >
+          {allPassed ? (
+            <CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" />
+          ) : (
+            <XCircle size={16} strokeWidth={2} aria-hidden="true" />
+          )}
           {allPassed
-            ? `✓ ${results.length}/${results.length} passed`
-            : `✗ ${passCount}/${results.length} passed`}
+            ? `${results.length}/${results.length} passed`
+            : `${passCount}/${results.length} passed`}
         </span>
         <div className="flex items-center gap-3">
           <MetaChip label="time" value={active.time ? `${active.time}s` : null} />
@@ -230,20 +237,20 @@ export default function TestcaseResultPanel({
                 setActiveTab(i);
               }}
               className={`
-                px-3 py-1.5 rounded-lg text-xs font-mono font-medium
+                px-3 py-1.5 rounded-lg text-xs font-mono-ui font-medium
                 flex items-center gap-1.5 transition-all duration-150
                 ${isActive
                   ? isPassing
-                    ? "bg-green-500/15 border border-green-500/40 text-green-300"
-                    : "bg-red-500/15 border border-red-500/40 text-red-300"
+                    ? "bg-verdict-accept/15 border border-verdict-accept/40 text-verdict-accept"
+                    : "bg-verdict-reject/15 border border-verdict-reject/40 text-verdict-reject"
                   : isPassing
-                    ? "bg-zinc-800 border border-zinc-700 text-zinc-400 hover:border-green-500/30 hover:text-green-400"
-                    : "bg-zinc-800 border border-zinc-700 text-zinc-400 hover:border-red-500/30 hover:text-red-400"
+                    ? "bg-ink-800 border border-ink-700 text-zinc-400 hover:border-verdict-accept/30 hover:text-verdict-accept"
+                    : "bg-ink-800 border border-ink-700 text-zinc-400 hover:border-verdict-reject/30 hover:text-verdict-reject"
                 }
               `}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isPassing ? "bg-green-400" : "bg-red-400"
+                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isPassing ? "bg-verdict-accept" : "bg-verdict-reject"
                   }`}
               />
               Example {i + 1}
@@ -262,19 +269,31 @@ export default function TestcaseResultPanel({
       rounded-xl
       px-4 py-3
       font-medium
+      flex items-center gap-2
       ${active.error
-              ? "bg-red-500/10 border border-red-500/30 text-red-400"
+              ? "bg-verdict-reject/10 border border-verdict-reject/30 text-verdict-reject"
               : active.passed
-                ? "bg-green-500/10 border border-green-500/30 text-green-400"
-                : "bg-red-500/10 border border-red-500/30 text-red-400"
+                ? "bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept"
+                : "bg-verdict-reject/10 border border-verdict-reject/30 text-verdict-reject"
             }
     `}
         >
-          {active.error
-            ? "⚠ Runtime Error"
-            : active.passed
-              ? "✓ Passed"
-              : "✗ Wrong Answer"}
+          {active.error ? (
+            <>
+              <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />
+              Runtime Error
+            </>
+          ) : active.passed ? (
+            <>
+              <CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" />
+              Passed
+            </>
+          ) : (
+            <>
+              <XCircle size={16} strokeWidth={2} aria-hidden="true" />
+              Wrong Answer
+            </>
+          )}
         </div>
 
         {active.error ? (
@@ -284,8 +303,8 @@ export default function TestcaseResultPanel({
               value={formatInput(active.input)}
             />
 
-            <div className="rounded-lg border border-red-500/25 bg-red-500/5 p-4">
-              <p className="text-red-400 font-medium">
+            <div className="rounded-lg border border-verdict-reject/25 bg-verdict-reject/5 p-4">
+              <p className="text-verdict-reject font-medium">
                 {theme.words.runtimeError}
               </p>
 

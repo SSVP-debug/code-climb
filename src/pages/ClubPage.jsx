@@ -7,8 +7,7 @@ import { apiFetch } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { withAlpha } from "../themes/themeIcons";
 import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap } from "lucide-react";
-
-const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
+import RankBadge from "../components/common/RankBadge";
 
 /**
  * ClubPage — the community hub (Phase 12A).
@@ -88,8 +87,8 @@ function ClubPage() {
                   to={`/u/${user.username}`}
                   className="flex items-center gap-3 bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-2.5 transition"
                 >
-                  <span className="text-lg w-6 text-center flex-shrink-0">
-                    {MEDAL[user.rank]}
+                  <span className="w-6 flex justify-center flex-shrink-0">
+                    <RankBadge rank={user.rank} size={22} />
                   </span>
                   <span className="font-medium text-sm truncate flex-1">
                     {user.displayName}

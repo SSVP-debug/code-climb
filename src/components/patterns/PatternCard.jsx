@@ -1,3 +1,5 @@
+import { Check } from "lucide-react";
+
 // Static lookup — Tailwind's JIT scanner needs literal class strings in
 // source, so this can't be built with a template literal like
 // `bg-${color}-500` (that string would never appear anywhere for Tailwind
@@ -32,8 +34,8 @@ function PatternCard({ pattern, solved, total, onClick }) {
       className={`text-left rounded-2xl border ${colors.border} ${colors.bg} p-5 hover:brightness-125 transition group relative overflow-hidden`}
     >
       {complete && (
-        <span className="absolute top-3 right-3 text-xs font-semibold text-green-400">
-          ✓ Mastered
+        <span className="absolute top-3 right-3 text-xs font-semibold text-verdict-accept flex items-center gap-1">
+          <Check size={13} strokeWidth={3} aria-hidden="true" /> Mastered
         </span>
       )}
 

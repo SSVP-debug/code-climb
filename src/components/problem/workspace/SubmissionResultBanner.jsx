@@ -1,110 +1,301 @@
+import { useState, useEffect } from "react";
+import TestcaseResultPanel from "./TestcaseResultPanel";
 import { useTheme } from "../../context/ThemeContext";
+import { FileWarning, Bomb, Settings, Bug } from "lucide-react";
 
-export default function SubmissionResultBanner({
+// ── DebugPanel ────────────────────────────────────────────────────────────────
+
+function DebugPanel({
+    runResults,
     submitInfo,
+    isRunning,
+    isSubmitting,
+    theme
 }) {
-    const { theme } = useTheme();
-
-    if (!submitInfo?.status) {
-        return null;
+    if (isRunning || isSubmitting) {
+        return (
+            <div className="p-5 space-y-3 animate-pulse">
+                <div className="h-4 w-32 rounded bg-ink-950" />
+                <div className="h-24 rounded-lg bg-ink-950" />
+            </div>
+        );
     }
 
-    const isAccepted =
-        submitInfo.status.includes("Accepted");
+    if (runResults?.compileFailed) {
+        return (
+            <div className="p-5 space-y-3">
+                <ErrorHeader
+                    kind="compile"
+                    theme={theme}
+                />
+                <ErrorBlock text={runResults.error} color="pending" />
+            </div>
+        );
+    }
 
-    const isWrongAnswer =
-        submitInfo.status.includes("Wrong Answer");
-
-    const isRuntime =
-        submitInfo.status.includes("Runtime");
-
-    const isCompile =
-        submitInfo.status.includes("Compilation");
-
-    const isError =
-        submitInfo.status.includes("Error");
-
-    const meta = isAccepted
-        ? {
-            icon: theme.id === "breakingBug" ? "🧪" : "💰",
-            title: theme.words.accepted,
-            message:
-                theme.id === "breakingBug"
-                    ? "Batch purity confirmed."
-                    : "The Professor approves. Target secured.",
-            classes:
-                "border-green-500/30 bg-green-500/10 text-green-300",
+    if (runResults?.results?.length > 0) {
+        const erroredCase = runResults.results.find(
+            (r) =>
+                r.error ||
+                String(r.actual ?? "").trim().startsWith("RUNTIME_ERROR:")
+        );
+        if (erroredCase) {
+            return (
+                <div className="p-5 space-y-3">
+                    <ErrorHeader kind="runtime" theme={theme} />
+                    <div className="space-y-1.5">
+                        <span className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-500">
+                            Example {erroredCase.index + 1}
+                        </span>
+                        <ErrorBlock text={erroredCase.error} color="reject" />
+                    </div>
+                    {runResults.results.filter((r) => r.error).length > 1 && (
+                        <p className="text-xs text-zinc-500 font-mono-ui">
+                            + {runResults.results.filter((r) => r.error).length - 1} more
+                            runtime error{runResults.results.filter((r) => r.error).length > 2 ? "s" : ""}
+                        </p>
+                    )}
+                </div>
+            );
         }
-        : isWrongAnswer
-            ? {
-                icon: theme.id === "breakingBug" ? "⚗️" : "🚨",
-                title: theme.words.wrongAnswer,
-                message:
-                    theme.id === "breakingBug"
-                        ? "Impurities detected in the batch."
-                        : "The alarm system detected a flaw in the plan.",
-                classes:
-                    "border-red-500/30 bg-red-500/10 text-red-300",
-            }
-            : isRuntime
-                ? {
-                    icon: theme.id === "breakingBug" ? "💥" : "🏃",
-                    title: theme.words.runtimeError,
-                    message:
-                        theme.id === "breakingBug"
-                            ? "The cook exploded unexpectedly."
-                            : "The escape route failed.",
-                    classes:
-                        "border-red-500/30 bg-red-500/10 text-red-300",
-                }
-                : isCompile
-                    ? {
-                        icon: theme.id === "breakingBug" ? "📖" : "📋",
-                        title: theme.words.compileError,
-                        message:
-                            theme.id === "breakingBug"
-                                ? "The recipe is incomplete."
-                                : "The Professor rejected the plan.",
-                        classes:
-                            "border-yellow-500/30 bg-yellow-500/10 text-yellow-300",
-                    }
-                    : {
-                        title: theme.words.judgeError,
-                        message:
-                            "The evaluation system encountered an issue.",
-                        classes:
-                            "border-zinc-700 bg-zinc-800 text-zinc-300",
-                    };
+    }
+
+    if (runResults?.error && !runResults?.compileFailed) {
+        return (
+            <div className="p-5 space-y-3">
+                <ErrorHeader kind="infra" theme={theme} />
+                <ErrorBlock text={runResults.error} color="neutral" />
+            </div>
+        );
+    }
+
+    if (submitInfo?.status) {
+        const isSubmitError =
+            submitInfo.status.includes("Error") ||
+            submitInfo.status.includes("Compilation") ||
+            submitInfo.status.includes("Runtime");
+
+        if (isSubmitError) {
+            const kind = submitInfo.status.includes("Compilation")
+                ? "compile"
+                : submitInfo.status.includes("Runtime")
+                    ? "runtime"
+                    : "judge";
+
+            return (
+                <div className="p-5 space-y-3">
+                    <ErrorHeader kind={kind} label={submitInfo.status.replace(" ❌", "")} theme={theme} />
+                    {submitInfo.error && <ErrorBlock text={submitInfo.error} color="reject" />}
+                    {submitInfo.passed !== undefined && (
+                        <p className="text-xs text-zinc-500 font-mono-ui">
+                            {submitInfo.passed}/{submitInfo.total} testcases passed before error
+                        </p>
+                    )}
+                </div>
+            );
+        }
+    }
 
     return (
+        <div className="flex items-center justify-center h-full min-h-[160px]">
+            <div className="text-center space-y-2">
+                <Bug className="mx-auto text-zinc-700" size={26} strokeWidth={1.75} aria-hidden="true" />
+                <p className="text-zinc-600 text-sm font-mono-ui">No errors to show</p>
+                <p className="text-zinc-700 text-xs font-mono-ui">
+                    Runtime errors and compile errors appear here
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function getKindMeta(theme) {
+    return {
+        compile: {
+            label: theme.words.compileError,
+            color: "text-verdict-pending",
+            Icon: FileWarning,
+        },
+
+        runtime: {
+            label: theme.words.runtimeError,
+            color: "text-verdict-reject",
+            Icon: Bomb,
+        },
+
+        judge: {
+            label: theme.words.judgeError,
+            color: "text-zinc-400",
+            Icon: Settings,
+        },
+
+        infra: {
+            label: "Runner Unavailable",
+            color: "text-zinc-400",
+            Icon: Settings,
+        },
+    };
+}
+
+function ErrorHeader({ kind, label, theme }) {
+    const KIND_META = getKindMeta(theme);
+    const meta = KIND_META[kind] ?? KIND_META.judge;
+    return (
+        <div className="flex items-center gap-2">
+            <meta.Icon size={16} strokeWidth={2} className={meta.color} aria-hidden="true" />
+            <span className={`text-sm font-semibold font-mono-ui ${meta.color}`}>
+                {label ?? meta.label}
+            </span>
+        </div>
+    );
+}
+
+const COLOR_CLASSES = {
+    pending: "border-verdict-pending/25 text-verdict-pending",
+    reject: "border-verdict-reject/25  text-verdict-reject",
+    neutral: "border-ink-700           text-zinc-400",
+};
+
+function ErrorBlock({ text, color = "reject" }) {
+    if (!text) return null;
+    return (
         <div
-            data-testid="submission-result-banner"
-            data-accepted={isAccepted}
             className={`
-    mb-4 rounded-2xl border p-4
-    animate-[fadeIn_.25s_ease-out]
-    ${isAccepted
-                    ? "animate-[pulseGlow_1s_ease-out]"
-                    : ""
-                }
-    ${meta.classes}
-`}
+        bg-ink-950 border rounded-lg px-3 py-2.5
+        font-mono-ui text-xs whitespace-pre-wrap break-all
+        max-h-56 overflow-y-auto
+        ${COLOR_CLASSES[color] ?? COLOR_CLASSES.reject}
+      `}
         >
-            <h3 className="font-bold text-lg flex items-center gap-2">
-                <span>{meta.icon}</span>
-                <span>{meta.title}</span>
-            </h3>
+            {text}
+        </div>
+    );
+}
 
-            <p className="text-sm mt-1 opacity-90">
-                {meta.message}
-            </p>
+// ── WorkspacePanel ────────────────────────────────────────────────────────────
 
-            {submitInfo.passed !== undefined &&
-                submitInfo.total !== undefined && (
-                    <p className="text-xs mt-2 opacity-70">
-                        {submitInfo.passed}/{submitInfo.total} testcases passed
-                    </p>
+const TABS = ["testcases", "debug"];
+export default function WorkspacePanel({
+    runResults,
+    submitInfo,
+    isRunning,
+    isSubmitting,
+    forceTab,
+    problem,
+}) {
+    const [activeTab, setActiveTab] = useState("testcases");
+    const { theme } = useTheme();
+
+
+
+    const errorCount = (() => {
+        if (runResults?.compileFailed) return 1;
+        if (runResults?.results) return runResults.results.filter((r) => r.error).length;
+        if (
+            submitInfo?.status?.includes("Error") ||
+            submitInfo?.status?.includes("Compilation") ||
+            submitInfo?.status?.includes("Runtime")
+        ) return 1;
+        return 0;
+    })();
+
+    const passCount = runResults?.results?.filter((r) => r.passed && !r.error).length ?? 0;
+    const totalCount = runResults?.results?.length ?? 0;
+
+    return (
+        /* h-full fills the flex-1 wrapper. flex flex-col: tab bar fixed, content flex-1. */
+        <div className="
+h-full
+flex
+flex-col
+overflow-hidden
+">
+
+            {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
+            <div
+                className="flex items-center border-b border-ink-700 px-1 pt-1 flex-shrink-0"
+            >
+
+                {TABS.map((tab) => {
+                    const isActive = activeTab === tab;
+
+                    const badge =
+                        tab === "testcases" && totalCount > 0
+                            ? `${passCount}/${totalCount}`
+                            : tab === "debug" && errorCount > 0
+                                ? String(errorCount)
+                                : null;
+
+                    const badgeColor =
+                        tab === "testcases"
+                            ? passCount === totalCount && totalCount > 0
+                                ? "bg-verdict-accept/20 text-verdict-accept"
+                                : "bg-verdict-reject/20 text-verdict-reject"
+                            : "bg-verdict-reject/20 text-verdict-reject";
+
+                    return (
+                        <button
+                            key={tab}
+                            onClick={() => {
+                                setActiveTab(tab);
+                            }}
+                            className={`
+                relative px-5 py-3 text-sm font-mono-ui font-medium
+                flex items-center gap-2 transition-colors duration-150
+                ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
+              `}
+                        >
+                            {tab === "testcases"
+                                ? theme.words.testcases
+                                : theme.words.debug}
+
+                            {badge && (
+                                <span className={`px-2 py-0.5 rounded text-xs font-mono-ui font-semibold ${badgeColor}`}>
+                                    {badge}
+                                </span>
+                            )}
+
+                            {isActive && (
+                                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/*
+        ── Tab content ───────────────────────────────────────────────────────
+        flex-1:             takes all remaining height inside the flex-col panel.
+        min-h-0:            CSS flex fix — without this, flex children won't
+                            shrink below their content size, defeating overflow-y-auto.
+        overflow-y-auto:    THIS is the scroll owner for workspace content.
+                            Long testcase lists or error output scroll here only.
+        custom-scrollbar:   project's existing thin scrollbar style.
+      */}
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                {activeTab === "testcases" ? (
+                    <div className="p-4">
+                        <TestcaseResultPanel
+                            results={runResults?.results ?? null}
+                            compileFailed={runResults?.compileFailed ?? false}
+                            compileError={runResults?.error ?? null}
+                            isRunning={isRunning}
+                            examples={problem?.examples ?? []}
+                        />
+                    </div>
+                ) : (
+                    <DebugPanel
+                        runResults={runResults}
+                        submitInfo={submitInfo}
+                        isRunning={isRunning}
+                        isSubmitting={isSubmitting}
+                        theme={theme}
+                    />
                 )}
+            </div>
+
         </div>
     );
 }

@@ -1,4 +1,32 @@
 import { useTheme } from "../../context/ThemeContext";
+import { CheckCircle2, XCircle, Bomb, FileWarning, AlertTriangle } from "lucide-react";
+
+// Per-theme flavor copy for each verdict. Only breakingBug/codeHeist have
+// bespoke lines today — every other theme (and any future one) falls back
+// to a neutral, still-on-brand message instead of silently inheriting
+// codeHeist's "The Professor approves" text, which is what the previous
+// binary ternary did.
+const FLAVOR_MESSAGES = {
+    breakingBug: {
+        accepted: "Batch purity confirmed.",
+        wrongAnswer: "Impurities detected in the batch.",
+        runtimeError: "The cook exploded unexpectedly.",
+        compileError: "The recipe is incomplete.",
+    },
+    codeHeist: {
+        accepted: "The Professor approves. Target secured.",
+        wrongAnswer: "The alarm system detected a flaw in the plan.",
+        runtimeError: "The escape route failed.",
+        compileError: "The Professor rejected the plan.",
+    },
+};
+
+const DEFAULT_FLAVOR = {
+    accepted: "All test cases passed.",
+    wrongAnswer: "Output didn't match on at least one test case.",
+    runtimeError: "The program crashed during execution.",
+    compileError: "The code didn't compile.",
+};
 
 export default function SubmissionResultBanner({
     submitInfo,
@@ -8,6 +36,8 @@ export default function SubmissionResultBanner({
     if (!submitInfo?.status) {
         return null;
     }
+
+    const flavor = FLAVOR_MESSAGES[theme.id] || DEFAULT_FLAVOR;
 
     const isAccepted =
         submitInfo.status.includes("Accepted");
@@ -21,59 +51,45 @@ export default function SubmissionResultBanner({
     const isCompile =
         submitInfo.status.includes("Compilation");
 
-    const isError =
-        submitInfo.status.includes("Error");
-
     const meta = isAccepted
         ? {
-            icon: theme.id === "breakingBug" ? "🧪" : "💰",
+            Icon: CheckCircle2,
             title: theme.words.accepted,
-            message:
-                theme.id === "breakingBug"
-                    ? "Batch purity confirmed."
-                    : "The Professor approves. Target secured.",
+            message: flavor.accepted,
             classes:
-                "border-green-500/30 bg-green-500/10 text-green-300",
+                "border-verdict-accept/30 bg-verdict-accept/10 text-verdict-accept",
         }
         : isWrongAnswer
             ? {
-                icon: theme.id === "breakingBug" ? "⚗️" : "🚨",
+                Icon: XCircle,
                 title: theme.words.wrongAnswer,
-                message:
-                    theme.id === "breakingBug"
-                        ? "Impurities detected in the batch."
-                        : "The alarm system detected a flaw in the plan.",
+                message: flavor.wrongAnswer,
                 classes:
-                    "border-red-500/30 bg-red-500/10 text-red-300",
+                    "border-verdict-reject/30 bg-verdict-reject/10 text-verdict-reject",
             }
             : isRuntime
                 ? {
-                    icon: theme.id === "breakingBug" ? "💥" : "🏃",
+                    Icon: Bomb,
                     title: theme.words.runtimeError,
-                    message:
-                        theme.id === "breakingBug"
-                            ? "The cook exploded unexpectedly."
-                            : "The escape route failed.",
+                    message: flavor.runtimeError,
                     classes:
-                        "border-red-500/30 bg-red-500/10 text-red-300",
+                        "border-verdict-reject/30 bg-verdict-reject/10 text-verdict-reject",
                 }
                 : isCompile
                     ? {
-                        icon: theme.id === "breakingBug" ? "📖" : "📋",
+                        Icon: FileWarning,
                         title: theme.words.compileError,
-                        message:
-                            theme.id === "breakingBug"
-                                ? "The recipe is incomplete."
-                                : "The Professor rejected the plan.",
+                        message: flavor.compileError,
                         classes:
-                            "border-yellow-500/30 bg-yellow-500/10 text-yellow-300",
+                            "border-verdict-pending/30 bg-verdict-pending/10 text-verdict-pending",
                     }
                     : {
+                        Icon: AlertTriangle,
                         title: theme.words.judgeError,
                         message:
                             "The evaluation system encountered an issue.",
                         classes:
-                            "border-zinc-700 bg-zinc-800 text-zinc-300",
+                            "border-ink-700 bg-ink-800 text-zinc-300",
                     };
 
     return (
@@ -89,7 +105,7 @@ export default function SubmissionResultBanner({
 `}
         >
             <h3 className="font-bold text-lg flex items-center gap-2">
-                <span>{meta.icon}</span>
+                <meta.Icon size={20} strokeWidth={2} aria-hidden="true" />
                 <span>{meta.title}</span>
             </h3>
 

@@ -5,6 +5,7 @@ import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import { SUPPORT_EMAIL } from "../config/site.js";
 import Button from "../components/ui/Button";
+import { GraduationCap, Users, Flame } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -223,7 +224,9 @@ export default function TpoDashboardPage() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="text-5xl mb-4">🎓</div>
+          <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-4">
+            <GraduationCap size={30} strokeWidth={2} aria-hidden="true" />
+          </div>
           <h1 className="text-2xl font-bold text-white mb-3">College Dashboard Coming Soon</h1>
           <p className="text-zinc-400 text-sm">
             We're rolling out the College Admin dashboard gradually. Reach out to
@@ -238,7 +241,9 @@ export default function TpoDashboardPage() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="text-5xl mb-4">👋</div>
+          <div className="w-16 h-16 rounded-2xl bg-ink-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+            <Users size={30} strokeWidth={2} aria-hidden="true" />
+          </div>
           <h1 className="text-2xl font-bold text-white mb-3">No students yet</h1>
           <p className="text-zinc-400 text-sm">
             Once students from {dashboard?.domain || "your college"} sign up with their
@@ -325,7 +330,14 @@ export default function TpoDashboardPage() {
                   <div key={s.email} className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/30">
                     <span className="flex-1 text-sm text-white truncate">{s.name}</span>
                     <span className="w-20 text-right text-sm text-zinc-400">{s.solvedCount}</span>
-                    <span className="w-20 text-right text-sm text-orange-400">{s.currentStreak > 0 ? `🔥${s.currentStreak}` : "—"}</span>
+                    <span className="w-20 text-right text-sm text-orange-400">
+                      {s.currentStreak > 0 ? (
+                        <span className="inline-flex items-center justify-end gap-1">
+                          <Flame size={13} strokeWidth={2} aria-hidden="true" />
+                          {s.currentStreak}
+                        </span>
+                      ) : "—"}
+                    </span>
                     <span className="w-20 text-right text-sm text-green-400 font-semibold">{s.totalXP}</span>
                   </div>
                 ))}

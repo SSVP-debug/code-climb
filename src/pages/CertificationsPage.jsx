@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
+import { CheckCircle2, Trophy } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -40,7 +41,7 @@ function TrackCard({ track, onClaim }) {
           <h3 className="font-bold text-white">{track.name}</h3>
           <p className="text-zinc-500 text-xs mt-0.5">{track.topic} · {track.minSolve} problems required</p>
         </div>
-        {track.certified && <span className="text-xs bg-green-500/10 border border-green-500/30 text-green-400 px-2.5 py-1 rounded-full font-semibold">✓ Certified</span>}
+        {track.certified && <span className="text-xs bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept px-2.5 py-1 rounded-full font-semibold inline-flex items-center gap-1"><CheckCircle2 size={12} strokeWidth={2.5} aria-hidden="true" /> Certified</span>}
       </div>
 
       <div className="mb-3">
@@ -61,8 +62,8 @@ function TrackCard({ track, onClaim }) {
         </button>
       ) : track.complete ? (
         <button onClick={handleClaim} disabled={claiming}
-          className="w-full py-2 rounded-xl text-sm bg-yellow-500 hover:bg-yellow-400 text-black font-semibold disabled:opacity-50 transition">
-          {claiming ? "Claiming…" : "🏆 Claim Certificate"}
+          className="w-full py-2 rounded-xl text-sm bg-yellow-500 hover:bg-yellow-400 text-black font-semibold disabled:opacity-50 transition inline-flex items-center justify-center gap-1.5">
+          {claiming ? "Claiming…" : <><Trophy size={15} strokeWidth={2.5} aria-hidden="true" /> Claim Certificate</>}
         </button>
       ) : (
         <p className="text-center text-zinc-600 text-xs py-1">

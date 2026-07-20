@@ -8,10 +8,10 @@ import ClubSubNav from "../components/club/ClubSubNav";
 import CollegeVerifyModal from "../components/profile/CollegeVerifyModal";
 import { withAlpha } from "../themes/themeIcons";
 import { Globe, GraduationCap, Flame } from "lucide-react";
+import RankBadge from "../components/common/RankBadge";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
 const DIFF_BADGE = "text-[10px] font-bold px-1.5 py-0.5 rounded-full";
 
 function RankRow({ user, highlight = false, theme }) {
@@ -28,10 +28,8 @@ function RankRow({ user, highlight = false, theme }) {
       }
     >
       {/* Rank */}
-      <span className={`w-8 text-center text-sm font-black ${
-        user.rank <= 3 ? "text-lg" : "text-zinc-500"
-      }`}>
-        {MEDAL[user.rank] || `#${user.rank}`}
+      <span className="w-8 flex justify-center">
+        <RankBadge rank={user.rank} />
       </span>
 
       {/* Avatar */}

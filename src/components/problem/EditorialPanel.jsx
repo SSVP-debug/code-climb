@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../../services/api";
+import { Lock } from "lucide-react";
 
 /**
  * EditorialPanel
@@ -91,14 +92,14 @@ function EditorialPanel({ slug }) {
       <section>
         <h3 className="text-lg font-semibold text-white mb-3">Editorial</h3>
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 flex items-start gap-3">
-          <span className="text-lg leading-none mt-0.5">🔒</span>
+          <Lock size={18} strokeWidth={2} className="text-amber-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
           <div>
             <p className="text-sm text-amber-400">
               Solve this problem to unlock the editorial.
             </p>
             <Link
               to="/pricing"
-              className="inline-block mt-2 text-xs font-semibold text-green-400 hover:text-green-300"
+              className="inline-block mt-2 text-xs font-semibold text-verdict-accept hover:brightness-110"
             >
               Or unlock all editorials with Pro →
             </Link>

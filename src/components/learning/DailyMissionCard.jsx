@@ -7,7 +7,7 @@ function DailyMissionCard() {
   ];
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+    <div className="bg-ink-900 border border-ink-700 rounded-xl p-4">
 
       <div className="flex items-center justify-between mb-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -24,7 +24,7 @@ function DailyMissionCard() {
                 <div
                   className={`w-3.5 h-3.5 rounded-full border flex-shrink-0 ${
                     mission.done
-                      ? "bg-green-500 border-green-500"
+                      ? "bg-verdict-accept border-verdict-accept"
                       : "border-zinc-600"
                   }`}
                 />
@@ -34,9 +34,9 @@ function DailyMissionCard() {
                 +{mission.xp} XP
               </span>
             </div>
-            <div className="h-1 bg-zinc-800 rounded-full overflow-hidden ml-5">
+            <div className="h-1 bg-ink-800 rounded-full overflow-hidden ml-5">
               <div
-                className="h-full bg-green-500 rounded-full transition-all"
+                className="h-full bg-verdict-accept rounded-full transition-all"
                 style={{
                   width: `${
                     mission.total > 0
@@ -50,9 +50,9 @@ function DailyMissionCard() {
         ))}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between">
+      <div className="mt-4 pt-3 border-t border-ink-700 flex items-center justify-between">
         <p className="text-xs text-zinc-500">Total Reward</p>
-        <p className="text-sm font-bold text-green-400">+100 XP 🍀</p>
+        <p className="text-sm font-bold text-verdict-accept">+100 XP</p>
       </div>
 
     </div>

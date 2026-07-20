@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
+import { ClipboardList } from "lucide-react";
 
 const STATUS_STYLES = {
   pending:     "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -55,7 +56,7 @@ export default function CandidateTestsPage() {
 
         {tests.length === 0 ? (
           <div className="text-center py-20 text-zinc-600">
-            <p className="text-4xl mb-3">📋</p>
+            <ClipboardList size={36} strokeWidth={1.75} className="mx-auto mb-3" aria-hidden="true" />
             <p>No tests yet. Keep your profile public to get noticed by recruiters.</p>
           </div>
         ) : (
