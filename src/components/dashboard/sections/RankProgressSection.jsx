@@ -48,7 +48,7 @@ function RankProgressSection() {
 
 
   return (
-    <SectionCard accented>
+    <SectionCard>
 
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
 
@@ -71,13 +71,10 @@ function RankProgressSection() {
             {level}
           </h2>
 
-          <p className="text-zinc-400 text-sm mt-1">
+          <p className="text-zinc-400 text-sm mt-1" data-testid="dashboard-xp">
             {totalXP} XP
           </p>
-          <p
-            className="text-xs mt-1 font-medium"
-            style={{ color: theme.colors.primary }}
-          >
+          <p className="text-xs text-green-400 mt-1">
             {progress.percent}% to Level {level + 1}
           </p>
         </div>
@@ -86,10 +83,9 @@ function RankProgressSection() {
 
       <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-700"
+          className="bg-green-500 h-full rounded-full transition-all duration-700"
           style={{
             width: `${progress.percent}%`,
-            backgroundColor: theme.colors.primary,
           }}
         />
       </div>

@@ -206,6 +206,7 @@ function ProblemEditor({
           </button>
 
           <button
+            data-testid="submit-code-button"
             onClick={onSubmit}
             disabled={running || submitting}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${submitting
