@@ -18,7 +18,7 @@ vi.mock("../controllers/submissionController.js", () => ({
 import Problem from "../models/Problem.js";
 import { callJudge0 } from "../controllers/compilerController.js";
 import { recordVerifiedSubmission } from "../controllers/submissionController.js";
-import { submitHandler } from "./judge.js";
+import { submitHandler } from "../controllers/judgeController.js";
 
 function mockRes() {
   const res = {};

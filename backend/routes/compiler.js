@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { runCode } from "../controllers/compilerController.js";
 import { compilerRateLimiter } from "../middleware/compilerRateLimiter.js";
-
+import { validateBody } from "../middleware/validateBody.js";
 
 const router = Router();
 
@@ -27,27 +27,6 @@ const runCodeSchema = z.object({
     .optional()
     .default(""),
 });
-
-// ── Reusable validation middleware ────────────────────────────────────────────
-// Uses Zod's safeParse so it never throws — always returns a clean 400.
-// Replaces req.body with the parsed + coerced data (e.g. default values applied).
-export function validateBody(schema) {
-  return (req, res, next) => {
-    const result = schema.safeParse(req.body);
-
-    if (!result.success) {
-      const firstError = result.error.issues?.[0];
-      return res.status(400).json({
-        error: firstError?.message || "Invalid request body",
-        field: firstError?.path?.join(".") || undefined,
-      });
-    }
-
-    // Replace req.body with the validated + coerced value
-    req.body = result.data;
-    next();
-  };
-}
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 // Note: requireAuth is applied at the server.js level via app.use("/api/compiler", ...)

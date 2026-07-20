@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { z } from "zod";
 import { createRequire } from "module";
 import Problem from "../models/Problem.js";
 import { requirePremium } from "../middleware/premiumGate.js";
+import { validateBody } from "../middleware/validateBody.js";
 import { getSession, setSession, sweepExpiredMemorySessions } from "../services/interviewSessionStore.js";
 
 const require = createRequire(import.meta.url);
@@ -10,6 +12,25 @@ const router  = Router();
 const SESSION_DURATION_MS = 45 * 60 * 1000; // 45 minutes
 const GRACE_MS            = 60 * 60 * 1000; // kept readable past expiry, same as the old cleanup sweep
 const SESSION_TTL_SECONDS = Math.ceil((SESSION_DURATION_MS + GRACE_MS) / 1000);
+
+// ── Validation schemas ──────────────────────────────────────────────────────
+// (Staff review §3/§9/#11: this file had no validation at all. userMessage/
+// currentCode in particular feed directly into an Anthropic prompt — an
+// unbounded body here isn't just a robustness gap, it's an uncapped AI-cost
+// and payload-size surface, on top of the existing per-user rate limit.)
+const startSchema = z.object({
+  slug: z.string().trim().min(1, "slug is required").max(200),
+});
+
+const askSchema = z.object({
+  sessionId: z.string().trim().min(1, "sessionId is required"),
+  userMessage: z.string().trim().min(1, "userMessage is required").max(4000),
+  currentCode: z.string().max(20_000).optional().default(""),
+});
+
+const submitSchema = z.object({
+  sessionId: z.string().trim().min(1, "sessionId is required"),
+});
 
 function getClaude() {
   if (!process.env.ANTHROPIC_API_KEY) return null;
@@ -22,7 +43,7 @@ function getClaude() {
 }
 
 // ── POST /api/interview/start ───────────────────────────────────────────────
-router.post("/start", requirePremium, async (req, res) => {
+router.post("/start", requirePremium, validateBody(startSchema), async (req, res) => {
   try {
     const { slug } = req.body;
     const problem = await Problem.findOne({ slug }).select("title difficulty topic description").lean();
@@ -48,14 +69,14 @@ router.post("/start", requirePremium, async (req, res) => {
       expiresAt:  now + SESSION_DURATION_MS,
     });
   } catch (err) {
-    console.error("[Interview] start error:", err.message);
+    req.log.error({ err }, "[Interview] start error");
     return res.status(500).json({ error: "Failed to start interview session." });
   }
 });
 
 // ── POST /api/interview/ask ──────────────────────────────────────────────────
 // AI interviewer asks a contextual follow-up based on the user's current code/approach.
-router.post("/ask", requirePremium, async (req, res) => {
+router.post("/ask", requirePremium, validateBody(askSchema), async (req, res) => {
   try {
     const { sessionId, userMessage, currentCode } = req.body;
     const session = await getSession(sessionId);
@@ -100,13 +121,13 @@ Respond as a real interviewer would: ask ONE focused follow-up question. Common 
     return res.json({ question, timeRemainingMs: session.expiresAt - Date.now() });
 
   } catch (err) {
-    console.error("[Interview] ask error:", err.message);
+    req.log.error({ err }, "[Interview] ask error");
     return res.status(500).json({ error: "Failed to get interviewer response." });
   }
 });
 
 // ── POST /api/interview/submit ──────────────────────────────────────────────
-router.post("/submit", requirePremium, async (req, res) => {
+router.post("/submit", requirePremium, validateBody(submitSchema), async (req, res) => {
   try {
     const { sessionId } = req.body;
     const session = await getSession(sessionId);
@@ -128,6 +149,7 @@ router.post("/submit", requirePremium, async (req, res) => {
     });
 
   } catch (err) {
+    req.log.error({ err }, "[Interview] submit error");
     return res.status(500).json({ error: "Failed to submit interview." });
   }
 });

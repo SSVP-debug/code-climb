@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth.js";
-import { validateBody } from "./compiler.js";
+import { validateBody } from "../middleware/validateBody.js";
 import {
   getProgress,
   putProgress,
@@ -127,7 +127,7 @@ export async function validateSlugs(req, res, next) {
 // A slug only counts if there's a matching `Submission` document with
 // status "Accepted" for this user — and Submission documents are only ever
 // created server-side, from a real Judge0-graded run (see
-// backend/routes/judge.js's submitHandler + recordVerifiedSubmission in
+// backend/controllers/judgeController.js's submitHandler + recordVerifiedSubmission in
 // controllers/submissionController.js). Anything the client claims beyond
 // that is dropped here, not saved, and logged as a possible tampering
 // attempt — putProgress (below) only ever sees req.verifiedNewSlugs, never

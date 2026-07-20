@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 
-import { validateBody } from "./compiler.js";
+import { validateBody } from "../middleware/validateBody.js";
 import {
   completeDailyChallenge,
 } from "../controllers/dailyChallengeController.js";

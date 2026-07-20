@@ -1,23 +1,41 @@
 import { Router } from "express";
+import { z } from "zod";
 import Ambassador from "../models/Ambassador.js";
 import User from "../models/User.js";
 import { requireRole } from "../middleware/roleGuard.js";
+import { validateBody } from "../middleware/validateBody.js";
 import { getOrCreateReferralCode } from "./referral.js";
 import { AMBASSADOR_MILESTONES } from "../config/ambassadorMilestones.js";
 import { SITE_URL } from "../config/site.js";
 
 const router = Router();
 
+// ── Validation schemas ──────────────────────────────────────────────────────
+// (Staff review §3/§9/#11: this file had no Zod validation at all — free-text
+// fields like motivation/rejectionReason were unbounded, and the manual
+// `!collegeName?.trim()` checks didn't cap length either.)
+const applySchema = z.object({
+  collegeName: z.string().trim().min(1, "collegeName is required").max(200),
+  collegeDomain: z
+    .string()
+    .trim()
+    .min(1, "collegeDomain is required")
+    .max(253)
+    .toLowerCase(),
+  motivation: z.string().trim().max(2000).optional().default(""),
+});
+
+const reviewSchema = z.object({
+  approve: z.boolean({ required_error: "approve must be true or false" }),
+  rejectionReason: z.string().trim().max(500).optional(),
+});
+
 // ── POST /api/ambassador/apply ──────────────────────────────────────────────
-router.post("/apply", async (req, res) => {
+router.post("/apply", validateBody(applySchema), async (req, res) => {
   try {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
     const { collegeName, collegeDomain, motivation } = req.body;
-
-    if (!collegeName?.trim() || !collegeDomain?.trim()) {
-      return res.status(400).json({ error: "collegeName and collegeDomain are required." });
-    }
 
     const existing = await Ambassador.findOne({ userId: req.userDoc._id });
     if (existing) {
@@ -29,9 +47,9 @@ router.post("/apply", async (req, res) => {
 
     const application = await Ambassador.create({
       userId: req.userDoc._id,
-      collegeName: collegeName.trim(),
-      collegeDomain: collegeDomain.trim().toLowerCase(),
-      motivation: motivation?.trim() || "",
+      collegeName,
+      collegeDomain,
+      motivation,
     });
 
     req.log.info(
@@ -191,7 +209,7 @@ router.get("/pending", requireRole("admin"), async (req, res) => {
 });
 
 // ── POST /api/ambassador/:id/review (admin) ─────────────────────────────────
-router.post("/:id/review", requireRole("admin"), async (req, res) => {
+router.post("/:id/review", requireRole("admin"), validateBody(reviewSchema), async (req, res) => {
   try {
     const { approve, rejectionReason } = req.body;
     const application = await Ambassador.findById(req.params.id);
