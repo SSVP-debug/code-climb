@@ -128,10 +128,28 @@ export async function invalidateCachePrefix(prefix) {
   const redis = await getRedisClient();
   if (redis) {
     try {
-      const keys = await redis.keys(`${prefix}*`);
-      if (keys.length > 0) await redis.del(...keys);
+      await scanAndDelete(redis, `${prefix}*`);
     } catch (err) {
       logger.warn({ err, prefix }, "[Cache] Redis prefix DEL failed");
     }
   }
+}
+
+/**
+ * Walks the keyspace with SCAN instead of KEYS. KEYS is O(N) over the
+ * *entire* keyspace and blocks Redis's single-threaded event loop for the
+ * whole call — fine when there are a few hundred keys, a real production
+ * incident once the keyspace grows (every other client's commands queue up
+ * behind it). SCAN does the same job in small, cheap, non-blocking batches
+ * via a cursor, at the cost of needing a loop instead of one call.
+ */
+async function scanAndDelete(redis, pattern) {
+  let cursor = "0";
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, "MATCH", pattern, "COUNT", 100);
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  } while (cursor !== "0");
 }
