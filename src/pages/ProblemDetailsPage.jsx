@@ -8,7 +8,7 @@
  *   - useProblemSolver       → all editor/run/submit state and handlers
  *   - ProblemSolverMobileView / ProblemSolverDesktopView → presentation
  */
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import PageMeta from "../components/seo/PageMeta";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProblemLayout from "../layouts/ProblemLayout";
@@ -19,6 +19,11 @@ import ProblemSolverDesktopView from "../components/problem/ProblemSolverDesktop
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
+  // Contest problem links pass ?contest=<id> so this page can report the
+  // solve back to the contest's score/solvedSlugs (backend endpoint:
+  // POST /api/contests/:id/solve). See ContestDetailPage.jsx.
+  const [searchParams] = useSearchParams();
+  const contestId = searchParams.get("contest");
   const { problem, loading, error, prevSlug, nextSlug } = useProblem(slug);
 
   if (loading) {
@@ -56,12 +61,19 @@ function ProblemDetailsPage() {
   }
 
   return (
-    <ProblemSolver key={slug} problem={problem} slug={slug} prevSlug={prevSlug} nextSlug={nextSlug} />
+    <ProblemSolver
+      key={slug}
+      problem={problem}
+      slug={slug}
+      prevSlug={prevSlug}
+      nextSlug={nextSlug}
+      contestId={contestId}
+    />
   );
 }
 
-function ProblemSolver({ problem, slug, prevSlug, nextSlug }) {
-  const solver = useProblemSolver({ problem, slug });
+function ProblemSolver({ problem, slug, prevSlug, nextSlug, contestId }) {
+  const solver = useProblemSolver({ problem, slug, contestId });
 
   return (
     <>

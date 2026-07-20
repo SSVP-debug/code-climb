@@ -7,7 +7,8 @@ import { apiFetch } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { withAlpha } from "../themes/themeIcons";
 import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap } from "lucide-react";
-import RankBadge from "../components/common/RankBadge";
+
+const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
 /**
  * ClubPage — the community hub (Phase 12A).
@@ -87,8 +88,8 @@ function ClubPage() {
                   to={`/u/${user.username}`}
                   className="flex items-center gap-3 bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-2.5 transition"
                 >
-                  <span className="w-6 flex justify-center flex-shrink-0">
-                    <RankBadge rank={user.rank} size={22} />
+                  <span className="text-lg w-6 text-center flex-shrink-0">
+                    {MEDAL[user.rank]}
                   </span>
                   <span className="font-medium text-sm truncate flex-1">
                     {user.displayName}
@@ -164,23 +165,21 @@ function ClubPage() {
           </SectionCard>
         </div>
 
-        {/* ── Battle Rooms teaser ──────────────────────────────────────── */}
+        {/* ── Battle Rooms ─────────────────────────────────────────────── */}
         <SectionCard
           title="Battle Rooms"
           subtitle="Team vs. team, live"
           icon={<Users size={18} strokeWidth={2} />}
+          accented
         >
-          <p className="text-zinc-500 text-sm mb-1">
-            Real-time team competitions are coming to Code Club — assign
-            problems to teammates and race another team to the finish.
+          <p className="text-zinc-500 text-sm mb-4">
+            Form a team, share an invite code, and race another team to
+            solve the problem set first. Scores update every few seconds
+            while the match is live.
           </p>
-          <Link
-            to="/club/battle-rooms"
-            className="text-sm hover:brightness-110 transition inline-flex items-center gap-1 mt-2"
-            style={{ color: theme.colors.primary }}
-          >
-            Learn more <ArrowRight size={14} aria-hidden="true" />
-          </Link>
+          <Button to="/club/battle-rooms" variant="theme" size="sm">
+            Create or Join a Room
+          </Button>
         </SectionCard>
 
         {/* ── Ambassador ───────────────────────────────────────────────── */}

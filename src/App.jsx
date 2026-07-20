@@ -43,6 +43,7 @@ const ContestsPage = lazy(() => import("./pages/ContestsPage"));
 const ContestDetailPage = lazy(() => import("./pages/ContestDetailPage"));
 const PrivateContestsPage = lazy(() => import("./pages/PrivateContestsPage"));
 const BattleRoomsPage = lazy(() => import("./pages/BattleRoomsPage"));
+const BattleRoomDetailPage = lazy(() => import("./pages/BattleRoomDetailPage"));
 const CollegeVerifyConfirmPage = lazy(() => import("./pages/CollegeVerifyConfirmPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
@@ -213,6 +214,7 @@ function App() {
         <Route path="/club/public-contests/:id" element={<ProtectedRoute><ThemeGate><ContestDetailPage /></ThemeGate></ProtectedRoute>} />
         <Route path="/club/private-contests" element={<ProtectedRoute><ThemeGate><PrivateContestsPage /></ThemeGate></ProtectedRoute>} />
         <Route path="/club/battle-rooms" element={<ProtectedRoute><ThemeGate><BattleRoomsPage /></ThemeGate></ProtectedRoute>} />
+        <Route path="/club/battle-rooms/:id" element={<ProtectedRoute><ThemeGate><BattleRoomDetailPage /></ThemeGate></ProtectedRoute>} />
         <Route path="/verify-college" element={<ProtectedRoute><ThemeGate><CollegeVerifyConfirmPage /></ThemeGate></ProtectedRoute>} />
 
         {/* Phase 12A: contests moved under /club/*. Redirects so any

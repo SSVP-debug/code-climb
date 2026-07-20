@@ -51,6 +51,7 @@ import ambassadorRoutes from "./routes/ambassador.js";
 import leetcodeRoutes from "./routes/leetcode.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import collegeVerificationRoutes from "./routes/collegeVerification.js";
+import battleRoomRoutes from "./routes/battleRooms.js";
 import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
 import hintsRoutes from "./routes/hints.js";
 import notesRoutes from "./routes/notes.js";
@@ -141,6 +142,7 @@ app.use("/api/stats", statsRoutes);
 // Leaderboard — public (no auth required, cached 5 min)
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/college-verification", collegeVerificationRoutes);
+app.use("/api/battle-rooms", battleRoomRoutes);
 app.use("/api/weekly", weeklyChallengeRoutes);
 // AI hints — auth + AI rate limiter (shares quota with insights)
 app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);

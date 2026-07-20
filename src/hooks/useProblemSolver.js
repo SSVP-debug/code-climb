@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import confetti from "canvas-confetti";
+import toast from "react-hot-toast";
 import { formatDate } from "../utils/formatters";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import { completeDailyChallenge } from "../services/dailyChallengeService";
+import { apiFetch } from "../services/api";
 import { useAppContext } from "./useAppContext";
 import { usePanelResize } from "./usePanelResize";
 import { useVerticalResize } from "./useVerticalResize";
@@ -34,7 +36,7 @@ function deriveForceTab(runResults, submitInfo) {
  * code state (with persistence), run/submit handlers, timer/confetti on
  * first solve, and the panel-resize/mobile-tab UI state the views need.
  */
-export function useProblemSolver({ problem, slug }) {
+export function useProblemSolver({ problem, slug, contestId }) {
   const { solvedProblems, addSubmission, markProblemSolved } = useAppContext();
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
@@ -149,6 +151,29 @@ export function useProblemSolver({ problem, slug }) {
           confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
           confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.65 }, colors: ["#22c55e", "#4ade80", "#ffffff"] });
         }, 200);
+      }
+
+      // Contest solve reporting — deliberately its own check, not folded into
+      // the `!wasAlreadySolved` branch above: a problem already solved
+      // outside this contest can still be the student's first solve *within*
+      // it. The backend endpoint is idempotent per-contest (only matches
+      // participants who haven't solved this slug yet in that contest), so
+      // calling it on every Accepted submission while contestId is set is
+      // safe even on repeat submissions.
+      if (judgeResult.status === "Accepted" && contestId) {
+        try {
+          await apiFetch(`/api/contests/${contestId}/solve`, {
+            method: "POST",
+            body: JSON.stringify({ slug: problem.slug }),
+          });
+          toast.success("Contest score updated!");
+        } catch (err) {
+          // Don't let a contest-scoring hiccup block the rest of the
+          // submission flow (XP, daily challenge, submission history all
+          // already succeeded above) — surface it, don't throw.
+          console.error("Contest solve reporting failed:", err.message);
+          toast.error("Solved! Couldn't update your contest score — " + err.message);
+        }
       }
 
       await addSubmission({

@@ -1,57 +1,96 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
 import SectionCard from "../components/ui/layout/SectionCard";
-import { Users, RadioTower, Timer, BarChart3 } from "lucide-react";
-
-const V1_FEATURES = [
-  { icon: Users, label: "Team vs. team", desc: "Assign problems to teammates and race another team to the finish." },
-  { icon: Timer, label: "Live-ish scoreboard", desc: "Scores, timer, and submissions refresh automatically while the room is open." },
-  { icon: BarChart3, label: "Room analytics", desc: "Full team and individual breakdown once the match ends." },
-];
+import Button from "../components/ui/Button";
+import HostBattleRoomForm from "../components/club/HostBattleRoomForm";
+import { apiFetch } from "../services/api";
+import { Users, RadioTower } from "lucide-react";
 
 /**
- * BattleRoomsPage — coming-soon placeholder (Phase 12E, not yet built).
- * Exists as a real route (not a dead nav-tab link) and describes the
- * *confirmed* v1 scope from the Phase 12 plan rather than vague marketing
- * copy, so it doesn't over-promise features (WebSockets, spectator mode,
- * team chat) that are explicitly later upgrades, not v1.
+ * BattleRoomsPage (Phase 12E) — hub for creating/joining Battle Rooms,
+ * same shape as PrivateContestsPage. Join is fully functional (POST
+ * /api/battle-rooms/join); host lands in the room's lobby afterward to
+ * assign teams and start the match — see BattleRoomDetailPage.jsx.
  */
 function BattleRoomsPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [code, setCode] = useState("");
+  const [joining, setJoining] = useState(false);
+
+  useEffect(() => {
+    const fromLink = searchParams.get("code");
+    if (fromLink) setCode(fromLink.toUpperCase().slice(0, 6));
+  }, [searchParams]);
+
+  async function handleJoin() {
+    if (code.trim().length !== 6) return;
+    setJoining(true);
+    try {
+      const data = await apiFetch("/api/battle-rooms/join", {
+        method: "POST",
+        body: JSON.stringify({ inviteCode: code.trim().toUpperCase() }),
+      });
+      navigate(`/club/battle-rooms/${data.roomId}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to join Battle Room.");
+    }
+    setJoining(false);
+  }
+
   return (
     <DashboardLayout>
       <div className="max-w-3xl">
         <ClubSubNav />
 
-        <SectionCard
-          title="Battle Rooms"
-          subtitle="Real-time team competitions — coming to Code Club"
-          icon={<RadioTower size={18} strokeWidth={2} />}
-          accented
-        >
-          <p className="text-zinc-400 mb-6">
-            Battle Rooms will let you form a team, split up problems, and go
-            head-to-head with another team in a live match. Here's what the
-            first version will include:
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Battle Rooms</h1>
+          <p className="text-zinc-400 mt-2">
+            Team up, split the problem set, and race another team to the finish.
           </p>
+        </div>
 
-          <div className="space-y-3">
-            {V1_FEATURES.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="flex items-start gap-3 bg-zinc-800/60 rounded-xl p-4">
-                <Icon size={18} className="text-zinc-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <div>
-                  <p className="text-sm font-medium text-white">{label}</p>
-                  <p className="text-sm text-zinc-500 mt-0.5">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-6">
+          {/* ── Join ─────────────────────────────────────────────────── */}
+          <SectionCard
+            title="Join a Room"
+            subtitle="Enter the invite code shared with you"
+            icon={<RadioTower size={18} strokeWidth={2} />}
+            accented
+          >
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === "Enter" && handleJoin()}
+                placeholder="e.g. A3F9B2"
+                maxLength={6}
+                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white font-mono text-lg tracking-widest outline-none focus:border-[var(--theme-primary,#2dd4bf)] text-center sm:text-left"
+              />
+              <Button
+                onClick={handleJoin}
+                disabled={joining || code.length !== 6}
+                loading={joining}
+                variant="theme"
+              >
+                {joining ? "Joining…" : "Join Room"}
+              </Button>
+            </div>
+          </SectionCard>
 
-          <p className="text-zinc-600 text-xs mt-6">
-            Battle Rooms build directly on the existing contest engine — same
-            problem library, submission pipeline, and leaderboard logic you
-            already use in Public and Private Contests.
-          </p>
-        </SectionCard>
+          {/* ── Host ─────────────────────────────────────────────────── */}
+          <SectionCard
+            title="Host a Battle Room"
+            subtitle="Set up a team match — you'll assign teams once people join"
+            icon={<Users size={18} strokeWidth={2} />}
+            accented
+          >
+            <HostBattleRoomForm />
+          </SectionCard>
+        </div>
       </div>
     </DashboardLayout>
   );
