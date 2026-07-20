@@ -71,7 +71,7 @@ router.get("/current", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Weekly] error:", err.message);
+    req.log.error({ err }, "[Weekly] error");
     return res.status(500).json({ error: "Failed to load weekly challenge." });
   }
 });

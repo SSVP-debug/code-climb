@@ -51,7 +51,7 @@ router.get("/", async (req, res) => {
     return res.json(stats);
 
   } catch (err) {
-    req.log?.error?.({ err }, "[/api/stats] Error") ?? console.error("[/api/stats] Error:", err.message);
+    req.log.error({ err }, "[/api/stats] Error");
     // Fallback to hardcoded minimums rather than a 500
     return res.json({
       users: 0,

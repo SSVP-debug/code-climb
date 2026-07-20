@@ -159,7 +159,7 @@ router.get("/", async (req, res) => {
     doc.end();
 
   } catch (err) {
-    console.error("[ProfilePDF] error:", err.message);
+    req.log.error({ err }, "[ProfilePDF] error");
     if (!res.headersSent) {
       res.status(500).json({ error: "Failed to generate PDF." });
     }

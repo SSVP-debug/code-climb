@@ -109,7 +109,7 @@ router.get("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[/api/init] Error:", err.message);
+    req.log.error({ err }, "[/api/init] Error");
     return res.status(500).json({ error: "Failed to load initial data." });
   }
 });

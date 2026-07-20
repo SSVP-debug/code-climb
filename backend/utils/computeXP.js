@@ -5,6 +5,7 @@
  * Used by the backfill migration and can be imported anywhere
  * that needs to recompute a user's total from their solvedSlugs.
  */
+import { logger } from "../config/logger.js";
 
 export const XP_BY_DIFFICULTY = {
   Easy:   10,
@@ -45,7 +46,7 @@ export function computeXPFromSlugs(solvedSlugs, difficultyMap, { warnUnknown = f
 
     if (!difficulty) {
       if (warnUnknown) {
-        console.warn(`[computeXP] Unknown slug "${slug}" — contributing 0 XP`);
+        logger.warn(`[computeXP] Unknown slug "${slug}" — contributing 0 XP`);
       }
       continue;
     }

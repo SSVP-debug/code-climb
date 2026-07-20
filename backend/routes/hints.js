@@ -134,7 +134,7 @@ router.post("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Hints] error:", err.message);
+    req.log.error({ err }, "[Hints] error");
     return res.status(500).json({ error: "Failed to generate hint. Try again shortly." });
   }
 });

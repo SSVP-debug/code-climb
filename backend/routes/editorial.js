@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Editorial] GET error:", err.message);
+    req.log.error({ err }, "[Editorial] GET error");
     return res.status(500).json({ error: "Failed to load editorial." });
   }
 });
@@ -62,7 +62,7 @@ router.post("/", requireRole("admin"), async (req, res) => {
 
     return res.json({ slug, saved: true });
   } catch (err) {
-    console.error("[Editorial] POST error:", err.message);
+    req.log.error({ err }, "[Editorial] POST error");
     return res.status(500).json({ error: "Failed to save editorial." });
   }
 });

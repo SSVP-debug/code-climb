@@ -1,4 +1,5 @@
 import VerifiedDomain from "../models/VerifiedDomain.js";
+import { logger } from "../config/logger.js";
 
 /**
  * isDomainAutoVerified — checks a domain against the VerifiedDomain
@@ -19,7 +20,7 @@ export async function isDomainAutoVerified(domain, type) {
 
     return Boolean(match);
   } catch (err) {
-    console.error("[domainVerification] lookup failed:", err.message);
+    logger.error({ err }, "[domainVerification] lookup failed");
     return false;
   }
 }

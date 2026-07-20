@@ -78,7 +78,7 @@ router.post("/claim/:trackId", async (req, res) => {
 
     return res.json({ success: true, trackName: track.name, verifyCode });
   } catch (err) {
-    console.error("[Cert] claim:", err.message);
+    req.log.error({ err }, "[Cert] claim");
     return res.status(500).json({ error: "Failed to claim certificate." });
   }
 });
@@ -176,7 +176,7 @@ router.get("/:code/pdf", async (req, res) => {
 
     doc.end();
   } catch (err) {
-    console.error("[Cert] PDF:", err.message);
+    req.log.error({ err }, "[Cert] PDF");
     if (!res.headersSent) res.status(500).json({ error: "Failed to generate certificate PDF." });
   }
 });
