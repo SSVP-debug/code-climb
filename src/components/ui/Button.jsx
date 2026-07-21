@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 const VARIANT_CLASSES = {
   primary:
-    "bg-verdict-accept hover:brightness-110 text-ink-950 disabled:hover:brightness-100",
+    "bg-[var(--theme-primary,#2dd4bf)] hover:brightness-110 text-[#09090b] disabled:hover:brightness-100",
   secondary:
     "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 disabled:hover:bg-zinc-800",
   danger:
@@ -9,7 +9,7 @@ const VARIANT_CLASSES = {
   ghost:
     "bg-transparent hover:bg-zinc-900 text-zinc-300 hover:text-white disabled:hover:bg-transparent",
   theme:
-    "bg-[var(--theme-primary,#c6ff3d)] hover:brightness-110 text-[#09090b] disabled:hover:brightness-100",
+    "bg-[var(--theme-primary,#2dd4bf)] hover:brightness-110 text-[#09090b] disabled:hover:brightness-100",
 };
 
 const SIZE_CLASSES = {

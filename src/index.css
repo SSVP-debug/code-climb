@@ -3,9 +3,9 @@
 /* ── Landing page design tokens ──────────────────────────────────────────
    Typography pairing: Space Grotesk (display) + JetBrains Mono (chrome/data).
    Palette borrows the compiler's own verdict vocabulary instead of a single
-   generic brand accent. Scoped as theme tokens so they're available as
-   utilities (font-display, font-mono-ui, bg-verdict-accept, etc.) anywhere,
-   but only the landing page consumes them for now. ────────────────────────*/
+   generic brand accent. --color-verdict-accept intentionally matches the
+   app-wide teal brand color (see Button.jsx); pending/reject remain
+   landing-specific. ────────────────────────────────────────────────────*/
 @theme {
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-mono-ui: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
@@ -15,7 +15,7 @@
   --color-ink-800: #141820;
   --color-ink-700: #1b212c;
 
-  --color-verdict-accept: #c6ff3d;
+  --color-verdict-accept: #2dd4bf;
   --color-verdict-pending: #ffb454;
   --color-verdict-reject: #ff5d5d;
 }

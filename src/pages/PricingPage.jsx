@@ -98,7 +98,7 @@ export default function PricingPage() {
         order_id: order.orderId,
         name: "Code Club",
         description: PLAN_DETAILS[planId]?.name,
-        theme: { color: "#c6ff3d" },
+        theme: { color: "#2dd4bf" },
         handler: async (response) => {
           const verify = await apiFetch("/api/billing/verify", {
             method: "POST",
