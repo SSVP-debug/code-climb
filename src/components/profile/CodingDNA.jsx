@@ -12,8 +12,20 @@ const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", 
  * Mirrors the favoriteLanguage/strongestTopic/averageRuntime derivations
  * already used on Analytics.jsx so the two pages never disagree.
  */
-function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, longestStreak = 0 }) {
+function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, longestStreak = 0, languageBreakdown = null }) {
   const { favoriteLanguage, averageRuntime } = useMemo(() => {
+    // Public-profile callers don't have raw submissions (executionTime isn't
+    // exposed by the public API) — when a precomputed languageBreakdown is
+    // passed instead, use it for favoriteLanguage and leave averageRuntime
+    // as "—" rather than fabricating a number. See plans/003-public-profile-parity.md.
+    if (languageBreakdown && languageBreakdown.length > 0) {
+      const topLang = languageBreakdown[0].language;
+      return {
+        favoriteLanguage: LANG_LABELS[topLang] ?? topLang,
+        averageRuntime: "—",
+      };
+    }
+
     const acceptedSubs = submissions.filter((s) => s.status?.includes("Accepted"));
 
     const languageCounts = {};
@@ -36,7 +48,7 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
       favoriteLanguage: topLang ? (LANG_LABELS[topLang] ?? topLang) : "—",
       averageRuntime: avgRuntime ? `${avgRuntime}ms` : "—",
     };
-  }, [submissions]);
+  }, [submissions, languageBreakdown]);
 
   const favoriteTopic = useMemo(() => {
     const entries = Object.entries(topicStats || {});

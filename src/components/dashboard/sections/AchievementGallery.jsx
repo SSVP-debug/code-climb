@@ -5,16 +5,25 @@ import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
 import { Trophy, CheckCircle2, Lock } from "lucide-react";
 
-function AchievementGallery() {
+function AchievementGallery({ achievements: achievementsProp, showLocked = true } = {}) {
   const { theme } = useTheme();
 
-  const {
-    achievements,
-  } = useAppContext();
+  const { achievements: contextAchievements } = useAppContext();
+
+  // Public-profile callers pass their own fetched achievements list instead
+  // of relying on the viewer's own context — see plans/003-public-profile-parity.md.
+  const achievements = achievementsProp ?? contextAchievements;
 
   const unlocked = new Set(
     achievements.map((a) => a.key)
   );
+
+  // showLocked=false (used on public profiles) hides dimmed "Locked" badges
+  // — those read as gamification motivation on the private page, but as
+  // clutter on a page a recruiter is evaluating.
+  const displayList = showLocked
+    ? ACHIEVEMENTS_LIST
+    : ACHIEVEMENTS_LIST.filter((a) => unlocked.has(a.key));
 
   return (
     <SectionCard title={theme.words.achievements} icon={<Trophy size={18} strokeWidth={2} />} accented>
@@ -31,7 +40,7 @@ function AchievementGallery() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {ACHIEVEMENTS_LIST.map((achievement) => {
+          {displayList.map((achievement) => {
             const isUnlocked =
               unlocked.has(achievement.key);
 
@@ -52,19 +61,21 @@ function AchievementGallery() {
                   {achievement.description}
                 </p>
 
-                <p className="mt-2 text-xs flex items-center gap-1.5">
-                  {isUnlocked ? (
-                    <>
-                      <CheckCircle2 size={12} strokeWidth={2.5} className="text-green-400" aria-hidden="true" />
-                      Unlocked
-                    </>
-                  ) : (
-                    <>
-                      <Lock size={12} strokeWidth={2.5} className="text-zinc-500" aria-hidden="true" />
-                      Locked
-                    </>
-                  )}
-                </p>
+                {showLocked && (
+                  <p className="mt-2 text-xs flex items-center gap-1.5">
+                    {isUnlocked ? (
+                      <>
+                        <CheckCircle2 size={12} strokeWidth={2.5} className="text-green-400" aria-hidden="true" />
+                        Unlocked
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={12} strokeWidth={2.5} className="text-zinc-500" aria-hidden="true" />
+                        Locked
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
             );
           })}

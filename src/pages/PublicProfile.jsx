@@ -5,12 +5,16 @@ import ActivityHeatmap
     from "../components/profile/ActivityHeatmap";
 import SkillRadar
     from "../components/profile/SkillRadar";
-import {
-    ACHIEVEMENT_METADATA,
-} from "../config/achievementMetadata";
+import CodingDNA
+    from "../components/profile/CodingDNA";
+import AchievementGallery
+    from "../components/dashboard/sections/AchievementGallery";
+import SectionCard
+    from "../components/ui/layout/SectionCard";
+import { getLevelProgress } from "../utils/xpLevel";
 import { SITE_URL } from "../config/site.js";
 import LinkedInShareButton from "../components/common/LinkedInShareButton";
-import { Trophy } from "lucide-react";
+import { Pin } from "lucide-react";
 
 function PublicProfile() {
     const { username } = useParams();
@@ -113,48 +117,69 @@ function PublicProfile() {
                     />
                 </div>
 
-                {/* Stats */}
+                {/* Hero — Level / rank / XP progress, matching Profile.jsx's treatment */}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                <div className="mt-8">
+                    {(() => {
+                        const rank =
+                            profile.level < 5 ? "Beginner" :
+                                profile.level < 15 ? "Learner" :
+                                    profile.level < 30 ? "Intermediate" :
+                                        profile.level < 60 ? "Advanced" : "Expert";
+                        const { current, needed, percent } = getLevelProgress(profile.totalXP);
 
-                    <div className="bg-zinc-800 rounded-xl p-4">
-                        <p className="text-zinc-400">
-                            Level
-                        </p>
+                        return (
+                            <>
+                                <div className="flex items-baseline justify-between mb-1.5">
+                                    <span className="text-lg font-semibold text-white">
+                                        Level {profile.level} · {rank}
+                                    </span>
+                                    <span className="text-xs text-zinc-500">
+                                        {current.toLocaleString()} / {needed.toLocaleString()} XP to next level
+                                    </span>
+                                </div>
+                                <div className="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full transition-all"
+                                        style={{
+                                            width: `${Math.min(percent, 100)}%`,
+                                            backgroundColor: "var(--theme-primary, #2dd4bf)",
+                                        }}
+                                    />
+                                </div>
+                            </>
+                        );
+                    })()}
 
-                        <p className="text-3xl font-bold">
-                            {profile.level}
-                        </p>
-                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-6">
 
-                    <div className="bg-zinc-800 rounded-xl p-4">
-                        <p className="text-zinc-400">
-                            XP
-                        </p>
+                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">
+                                {profile.totalXP}
+                            </p>
+                            <p className="text-zinc-400 text-xs mt-0.5">
+                                Total XP
+                            </p>
+                        </div>
 
-                        <p className="text-3xl font-bold">
-                            {profile.totalXP}
-                        </p>
-                    </div>
+                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">
+                                {profile.solvedCount}
+                            </p>
+                            <p className="text-zinc-400 text-xs mt-0.5">
+                                Solved
+                            </p>
+                        </div>
 
-                    <div className="bg-zinc-800 rounded-xl p-4">
-                        <p className="text-zinc-400">
-                            Solved
-                        </p>
+                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-bold">
+                                {profile.currentStreak}
+                            </p>
+                            <p className="text-zinc-400 text-xs mt-0.5">
+                                Current Streak
+                            </p>
+                        </div>
 
-                        <p className="text-3xl font-bold">
-                            {profile.solvedCount}
-                        </p>
-                    </div>
-
-                    <div className="bg-zinc-800 rounded-xl p-4">
-                        <p className="text-zinc-400">
-                            Current Streak
-                        </p>
-
-                        <p className="text-3xl font-bold">
-                            {profile.currentStreak}
-                        </p>
                     </div>
 
                 </div>
@@ -186,42 +211,7 @@ function PublicProfile() {
                 {/* Achievements */}
 
                 <div className="mt-10">
-
-                    <h2 className="text-2xl font-bold mb-4">
-                        Achievements
-                    </h2>
-
-                    <div className="grid gap-3">
-
-                        {profile.achievements?.map(
-                            (achievement) => {
-                                const meta =
-                                    ACHIEVEMENT_METADATA[
-                                    achievement.key
-                                    ];
-
-                                if (!meta) return null;
-
-                                return (
-                                    <div
-                                        key={achievement.key}
-                                        className="bg-ink-800 rounded-xl p-4"
-                                    >
-                                        <h3 className="font-semibold flex items-center gap-2">
-                                            <Trophy size={16} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" />
-                                            {meta.publicTitle}
-                                        </h3>
-
-                                        <p className="text-zinc-400 text-sm mt-1">
-                                            {meta.description}
-                                        </p>
-                                    </div>
-                                );
-                            }
-                        )}
-
-                    </div>
-
+                    <AchievementGallery achievements={profile.achievements || []} showLocked={false} />
                 </div>
 
                 {/* Difficulty Breakdown */}
@@ -268,6 +258,18 @@ function PublicProfile() {
 
                 </div>
 
+                {/* Coding DNA */}
+
+                <div className="mt-10">
+                    <CodingDNA
+                        submissions={[]}
+                        topicStats={profile.topicStats || {}}
+                        solvedDifficulty={profile.solvedDifficulty || {}}
+                        longestStreak={profile.longestStreak || 0}
+                        languageBreakdown={profile.languageBreakdown || []}
+                    />
+                </div>
+
                 {/* Topic Coverage */}
 
                 <div className="mt-10">
@@ -309,10 +311,7 @@ function PublicProfile() {
 
                     {/* ── Pinned Problems ───────────────────────────────────────── */}
                     {profile.pinnedProblems && profile.pinnedProblems.length > 0 && (
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
-                                Pinned Problems
-                            </h3>
+                        <SectionCard title="Pinned Problems" icon={<Pin size={18} strokeWidth={2} />} accented className="mb-6">
                             <div className="space-y-2">
                                 {profile.pinnedProblems.map((p) => (
                                     <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
@@ -326,7 +325,7 @@ function PublicProfile() {
                                     </div>
                                 ))}
                             </div>
-                        </div>
+                        </SectionCard>
                     )}
 
                     {/* ── Recent Solves ─────────────────────────────────────────── */}
