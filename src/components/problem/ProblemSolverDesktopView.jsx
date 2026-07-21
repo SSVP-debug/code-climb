@@ -53,7 +53,7 @@ function ProblemSolverDesktopView({ problem, slug, solver }) {
 
           {/* Resize handle (horizontal — problem/editor split) */}
           <div
-            className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-green-500 transition-colors"
+            className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors"
             onMouseDown={(e) => {
               e.preventDefault();
               const startX = e.clientX;
@@ -106,7 +106,7 @@ function ProblemSolverDesktopView({ problem, slug, solver }) {
 
             {/* Resize handle (vertical — editor/results split) */}
             <div
-              className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-green-500 transition-colors mb-2"
+              className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors mb-2"
               onMouseDown={(e) => {
                 e.preventDefault();
                 const startY = e.clientY;

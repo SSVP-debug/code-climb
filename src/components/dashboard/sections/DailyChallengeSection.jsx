@@ -91,7 +91,7 @@ function DailyChallengeSection() {
       </p>
 
       {completedToday ? (
-        <div className="inline-flex items-center gap-2 bg-green-500 text-black px-6 py-3 rounded-xl font-semibold">
+        <div className="inline-flex items-center gap-2 bg-[var(--theme-primary,#2dd4bf)] text-black px-6 py-3 rounded-xl font-semibold">
           <CheckCircle2 size={18} strokeWidth={2.5} aria-hidden="true" />
           Completed Today
         </div>

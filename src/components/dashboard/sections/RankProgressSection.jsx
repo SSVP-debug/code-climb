@@ -83,7 +83,7 @@ function RankProgressSection() {
 
       <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
         <div
-          className="bg-green-500 h-full rounded-full transition-all duration-700"
+          className="bg-[var(--theme-primary,#2dd4bf)] h-full rounded-full transition-all duration-700"
           style={{
             width: `${progress.percent}%`,
           }}
