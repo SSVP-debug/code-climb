@@ -21,11 +21,25 @@ router.get("/global", async (req, res) => {
       GLOBAL_CACHE_KEY,
       CACHE_TTL_SECONDS,
       async () => {
-        const users = await User.find({ isProfilePublic: true })
-          .sort({ totalXP: -1, solvedSlugs: -1 })
-          .limit(500)            // cap at top 500 — enough for any college leaderboard
-          .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty email joinedDate")
-          .lean();
+        const users = await User.aggregate([
+          { $match: { isProfilePublic: true } },
+          { $addFields: { solvedCount: { $size: { $ifNull: ["$solvedSlugs", []] } } } },
+          { $sort: { totalXP: -1, solvedCount: -1 } },
+          { $limit: 500 },            // cap at top 500 — enough for any college leaderboard
+          {
+            $project: {
+              username: 1,
+              displayName: 1,
+              totalXP: 1,
+              solvedSlugs: 1,
+              solvedCount: 1,
+              currentStreak: 1,
+              solvedDifficulty: 1,
+              email: 1,
+              joinedDate: 1,
+            },
+          },
+        ]);
 
         // Compute level + medal server-side
         return users.map((u, i) => ({
@@ -70,14 +84,29 @@ router.get("/college", requireAuth, async (req, res) => {
       `${COLLEGE_CACHE_PREFIX}${domain}`,
       CACHE_TTL_SECONDS,
       async () => {
-        const users = await User.find({
-          email:            { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
-          isProfilePublic:  true,
-        })
-          .sort({ totalXP: -1 })
-          .limit(100)
-          .select("username displayName totalXP solvedSlugs currentStreak solvedDifficulty joinedDate")
-          .lean();
+        const users = await User.aggregate([
+          {
+            $match: {
+              email: { $regex: `@${domain.replace(".", "\\.")}$`, $options: "i" },
+              isProfilePublic: true,
+            },
+          },
+          { $addFields: { solvedCount: { $size: { $ifNull: ["$solvedSlugs", []] } } } },
+          { $sort: { totalXP: -1, solvedCount: -1 } },
+          { $limit: 100 },
+          {
+            $project: {
+              username: 1,
+              displayName: 1,
+              totalXP: 1,
+              solvedSlugs: 1,
+              solvedCount: 1,
+              currentStreak: 1,
+              solvedDifficulty: 1,
+              joinedDate: 1,
+            },
+          },
+        ]);
 
         const ranked = users.map((u, i) => ({
           rank:          i + 1,
