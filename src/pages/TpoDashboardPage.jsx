@@ -142,6 +142,9 @@ export default function TpoDashboardPage() {
 
   const [showModal, setShowModal] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
+  const [studentSearch, setStudentSearch] = useState("");
+  const [studentSort, setStudentSort] = useState("xp"); // "xp" | "solved" | "streak" | "name"
+  const [remindingId, setRemindingId] = useState(null);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -190,6 +193,36 @@ export default function TpoDashboardPage() {
           });
       });
     });
+  }
+
+  const SORTERS = {
+    xp: (a, b) => b.totalXP - a.totalXP,
+    solved: (a, b) => b.solvedCount - a.solvedCount,
+    streak: (a, b) => b.currentStreak - a.currentStreak,
+    name: (a, b) => a.name.localeCompare(b.name),
+  };
+
+  const visibleStudents = students
+    .filter(s => {
+      const q = studentSearch.trim().toLowerCase();
+      if (!q) return true;
+      return s.name?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q);
+    })
+    .sort(SORTERS[studentSort] || SORTERS.xp);
+
+  async function remindIncomplete(assignmentId) {
+    setRemindingId(assignmentId);
+    try {
+      const data = await apiFetch(`/api/tpo/assignments/${assignmentId}/remind`, { method: "POST" });
+      toast.success(
+        data.remindedCount > 0
+          ? `Reminded ${data.remindedCount} student${data.remindedCount === 1 ? "" : "s"}.`
+          : data.message
+      );
+    } catch (err) {
+      toast.error(err.message || "Failed to send reminder.");
+    }
+    setRemindingId(null);
   }
 
   if (pendingVerification) {
@@ -317,6 +350,24 @@ export default function TpoDashboardPage() {
 
         {tab === "students" && (
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+            <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-zinc-800">
+              <input
+                value={studentSearch}
+                onChange={e => setStudentSearch(e.target.value)}
+                placeholder="Search by name or email…"
+                className="flex-1 min-w-[200px] bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+              />
+              <select
+                value={studentSort}
+                onChange={e => setStudentSort(e.target.value)}
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none"
+              >
+                <option value="xp">Sort: XP</option>
+                <option value="solved">Sort: Solved</option>
+                <option value="streak">Sort: Streak</option>
+                <option value="name">Sort: Name</option>
+              </select>
+            </div>
             <div className="flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
               <span className="flex-1">Student</span>
               <span className="w-20 text-right">Solved</span>
@@ -324,10 +375,10 @@ export default function TpoDashboardPage() {
               <span className="w-20 text-right">XP</span>
             </div>
             <div className="divide-y divide-zinc-800/50 max-h-[600px] overflow-y-auto">
-              {students
-                .sort((a, b) => b.totalXP - a.totalXP)
-                .map(s => (
-                  <div key={s.email} className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-800/30">
+              {visibleStudents.length === 0 ? (
+                <p className="text-center text-zinc-600 py-12 text-sm">No students match "{studentSearch}".</p>
+              ) : visibleStudents.map(s => (
+                  <div key={s.email} className="flex items-center gap-3 px-4 py-3">
                     <span className="flex-1 text-sm text-white truncate">{s.name}</span>
                     <span className="w-20 text-right text-sm text-zinc-400">{s.solvedCount}</span>
                     <span className="w-20 text-right text-sm text-orange-400">
@@ -372,6 +423,14 @@ export default function TpoDashboardPage() {
                         <div className="h-full bg-green-500" style={{ width: `${a.completionPercent}%` }} />
                       </div>
                       <span className="text-xs text-zinc-500">{a.completedCount}/{a.totalStudents} done</span>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => remindIncomplete(a._id)}
+                        disabled={remindingId === a._id}
+                      >
+                        {remindingId === a._id ? "Sending…" : "Remind incomplete"}
+                      </Button>
                     </div>
                   </div>
                 ))

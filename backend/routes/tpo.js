@@ -393,6 +393,58 @@ router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
   }
 });
 
+// ── POST /api/tpo/assignments/:id/remind ────────────────────────────────────
+// Nudges every student on this college's roster who hasn't completed the
+// assignment yet. Reuses the same createNotificationBulk fan-out the
+// assignment-creation flow already uses for consistency. Extracted as a
+// named function (rather than inline, like handleCreateInterest in
+// recruiter.js) so it can be unit-tested directly.
+export async function handleRemindAssignment(req, res) {
+  if (b2bGate(req, res)) return;
+
+  try {
+    const domain = req.userDoc.tpoProfile?.collegeDomain;
+    if (!domain) return res.status(400).json({ error: "No college domain set on this TPO account." });
+
+    const assignment = await Assignment.findOne({
+      _id: req.params.id,
+      collegeDomain: domain,
+    }).lean();
+    if (!assignment) return res.status(404).json({ error: "Assignment not found." });
+
+    const students = await User.find({
+      emailDomain: domain.toLowerCase(),
+      role: "student",
+    }).select("_id solvedSlugs").lean();
+
+    const incomplete = students.filter(s =>
+      !assignment.problemSlugs.every(slug => (s.solvedSlugs || []).includes(slug))
+    );
+
+    if (incomplete.length === 0) {
+      return res.json({ remindedCount: 0, message: "Everyone has already completed this assignment." });
+    }
+
+    await createNotificationBulk(
+      incomplete.map(s => s._id),
+      {
+        type: "assignment_reminder",
+        title: "Reminder: assignment due soon",
+        message: `${assignment.title} — due ${new Date(assignment.dueDate).toLocaleDateString()}. You haven't finished it yet.`,
+        link: "/problems",
+        meta: { assignmentId: assignment._id },
+      }
+    );
+
+    return res.json({ remindedCount: incomplete.length });
+  } catch (err) {
+    console.error("[TPO] assignment remind:", err.message);
+    return res.status(500).json({ error: "Failed to send reminder." });
+  }
+}
+
+router.post("/assignments/:id/remind", requireRole("tpo", "admin"), handleRemindAssignment);
+
 // ── GET /api/assignments/student ────────────────────────────────────────────
 // Student view: assignments relevant to their college, with their own progress.
 // Mounted separately (not /api/tpo/* — students aren't TPOs).
