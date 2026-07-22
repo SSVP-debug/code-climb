@@ -64,3 +64,71 @@ describe("RecruiterDashboardPage filters", () => {
     });
   });
 });
+
+describe("RecruiterDashboardPage verified badge explanation", () => {
+  const verifiedCandidate = {
+    username: "vcandidate",
+    displayName: "Verified Candidate",
+    college: "Example University",
+    topTopics: [],
+    solvedCount: 42,
+    hard: 5,
+    isVerified: true,
+  };
+  const unverifiedCandidate = {
+    username: "ucandidate",
+    displayName: "Unverified Candidate",
+    college: "Example University",
+    topTopics: [],
+    solvedCount: 10,
+    hard: 1,
+    isVerified: false,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    apiFetch.mockResolvedValue({ candidates: [verifiedCandidate, unverifiedCandidate], total: 2 });
+  });
+
+  it("shows the header info button and reveals an explanation on hover", async () => {
+    renderPage();
+    await waitFor(() => screen.getByText("Verified Candidate"));
+
+    const infoButton = screen.getByLabelText("What does verified mean?");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+
+    fireEvent.mouseEnter(infoButton.closest("span"));
+
+    expect(screen.getByRole("tooltip")).toHaveTextContent(/cryptographically signed/i);
+  });
+
+  it("hides the tooltip again on mouse leave", async () => {
+    renderPage();
+    await waitFor(() => screen.getByText("Verified Candidate"));
+
+    const wrapper = screen.getByLabelText("What does verified mean?").closest("span");
+    fireEvent.mouseEnter(wrapper);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+
+    fireEvent.mouseLeave(wrapper);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("gives a verified candidate row a title explaining the cryptographic signature", async () => {
+    renderPage();
+    await waitFor(() => screen.getByText("Verified Candidate"));
+
+    const verifiedRow = screen.getByText("Verified Candidate").closest("div.grid");
+    const badgeCell = verifiedRow.querySelector("[title]");
+    expect(badgeCell.getAttribute("title")).toMatch(/cryptographically signed/i);
+  });
+
+  it("gives an unverified candidate row a title explaining the profile hasn't been signed", async () => {
+    renderPage();
+    await waitFor(() => screen.getByText("Unverified Candidate"));
+
+    const unverifiedRow = screen.getByText("Unverified Candidate").closest("div.grid");
+    const badgeCell = unverifiedRow.querySelector("[title]");
+    expect(badgeCell.getAttribute("title")).toBe("Profile has not been signed yet.");
+  });
+});

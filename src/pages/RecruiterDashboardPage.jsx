@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Info } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const VALID_TABS = ["candidates", "tests"];
@@ -23,6 +23,38 @@ const PREFERRED_ROLES = [
   "QA",
   "Other",
 ];
+
+const VERIFIED_EXPLANATION =
+  "This candidate's solve count is cryptographically signed. If it were edited after signing, the signature would no longer match — so a checkmark means the number you see is provably the number that was signed, not a self-reported figure.";
+
+function VerifiedInfoTooltip() {
+  const [open, setOpen] = useState(false);
+  return (
+    <span
+      className="relative inline-flex"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        className="text-zinc-600 hover:text-zinc-400 transition"
+        aria-label="What does verified mean?"
+      >
+        <Info size={12} strokeWidth={2} />
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          className="absolute z-10 top-full mt-2 right-0 w-56 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-[11px] leading-relaxed text-zinc-300 shadow-lg"
+        >
+          {VERIFIED_EXPLANATION}
+        </span>
+      )}
+    </span>
+  );
+}
 
 function FilterBar({ filters, onChange }) {
   return (
@@ -343,7 +375,9 @@ export default function RecruiterDashboardPage() {
                   <span className="col-span-2">Candidate</span>
                   <span className="text-center">Solved</span>
                   <span className="text-center">Hard</span>
-                  <span className="text-center">Verified</span>
+                  <span className="text-center inline-flex items-center justify-center gap-1">
+                    Verified <VerifiedInfoTooltip />
+                  </span>
                   <span className="text-right">Action</span>
                 </div>
                 {candidates.length === 0 ? (
@@ -361,7 +395,7 @@ export default function RecruiterDashboardPage() {
                     </div>
                     <span className="text-center text-sm text-green-400 font-semibold">{c.solvedCount}</span>
                     <span className="text-center text-sm text-red-400">{c.hard}</span>
-                    <span className="text-center flex justify-center">
+                    <span className="text-center flex justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
                       {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : "—"}
                     </span>
                     <div className="text-right flex gap-2 justify-end">
