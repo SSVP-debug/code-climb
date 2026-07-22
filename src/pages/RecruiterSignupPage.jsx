@@ -11,13 +11,18 @@ export default function RecruiterSignupPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true); setError(null);
-    const data = await apiFetch("/api/recruiter/register", {
-      method: "POST", body: JSON.stringify(form),
-    });
+    setLoading(true);
+    setError(null);
+    try {
+      await apiFetch("/api/recruiter/register", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
+      navigate("/recruiter/dashboard");
+    } catch (err) {
+      setError(err.message || "Something went wrong. Try again.");
+    }
     setLoading(false);
-    if (data.error) return setError(data.error);
-    navigate("/recruiter/dashboard");
   }
 
   return (

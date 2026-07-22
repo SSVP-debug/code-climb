@@ -24,7 +24,7 @@ function FilterBar({ filters, onChange }) {
   );
 }
 
-function SendTestModal({ candidate, onClose, onSent }) {
+export function SendTestModal({ candidate, onClose, onSent }) {
   const [slugs, setSlugs] = useState("");
   const [duration, setDuration] = useState(90);
   const [note, setNote] = useState("");
@@ -33,17 +33,17 @@ function SendTestModal({ candidate, onClose, onSent }) {
   async function send() {
     setLoading(true);
     const problemSlugs = slugs.split(",").map(s => s.trim()).filter(Boolean);
-    const data = await apiFetch("/api/recruiter/skills-test", {
-      method: "POST",
-      body: JSON.stringify({ candidateUsername: candidate.username, problemSlugs, durationMinutes: duration, note }),
-    });
-    setLoading(false);
-    if (data.error) {
-      toast.error(data.error);
-      return;
+    try {
+      await apiFetch("/api/recruiter/skills-test", {
+        method: "POST",
+        body: JSON.stringify({ candidateUsername: candidate.username, problemSlugs, durationMinutes: duration, note }),
+      });
+      onSent();
+      onClose();
+    } catch (err) {
+      toast.error(err.message || "Failed to send test. Try again.");
     }
-    onSent();
-    onClose();
+    setLoading(false);
   }
 
   return (

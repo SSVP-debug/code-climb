@@ -25,21 +25,24 @@ export default function CandidateTestsPage() {
   const [tests, setTests]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(null);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
     apiFetch("/api/candidate/tests")
-      .then(d => { setTests(d.tests || []); setLoading(false); });
+      .then(d => setTests(d.tests || []))
+      .catch(err => setLoadError(err.message || "Failed to load your tests."))
+      .finally(() => setLoading(false));
   }, []);
 
   async function startTest(testId) {
     setStarting(testId);
-    const data = await apiFetch(`/api/candidate/tests/${testId}/start`, { method: "POST" });
-    setStarting(null);
-    if (data.error) {
-      toast.error(data.error);
-      return;
+    try {
+      await apiFetch(`/api/candidate/tests/${testId}/start`, { method: "POST" });
+      navigate(`/candidate/tests/${testId}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to start test. Try again.");
     }
-    navigate(`/candidate/tests/${testId}`);
+    setStarting(null);
   }
 
   if (loading) return (
@@ -47,6 +50,14 @@ export default function CandidateTestsPage() {
       <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center px-6">
+        <p className="text-red-400 text-sm">{loadError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black px-4 py-8">
