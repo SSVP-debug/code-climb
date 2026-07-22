@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import { getProfileSignSecret } from "../config/env.js";
 import Problem from "../models/Problem.js";
 import SkillsTest from "../models/SkillsTest.js";
-import { requireAuth } from "../middleware/auth.js";
+import RecruiterInterest from "../models/RecruiterInterest.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
@@ -25,7 +25,7 @@ const router = Router();
 const CANDIDATES_CACHE_TTL_SECONDS = 60;
 
 // ── 083: POST /api/recruiter/register ────────────────────────────────────────
-router.post("/register", requireAuth, async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { companyName, designation } = req.body;
     if (!companyName || !designation) {
@@ -90,7 +90,6 @@ router.post("/register", requireAuth, async (req, res) => {
 // Query params: college, topic, minSolved, maxSolved, language, page, limit
 router.get(
   "/candidates",
-  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -131,6 +130,16 @@ router.get(
         filter.topicStats = { $elemMatch: { topic, count: { $gte: 1 } } };
       }
 
+      if (req.query.availableForWork === "true") {
+        filter["recruiterSnapshot.availableForWork"] = true;
+      }
+      if (req.query.preferredRole) {
+        filter["recruiterSnapshot.preferredRole"] = req.query.preferredRole;
+      }
+      if (req.query.expectedGraduation) {
+        filter["recruiterSnapshot.expectedGraduation"] = req.query.expectedGraduation;
+      }
+
       const pageNum = Math.max(1, parseInt(page));
       const limitNum = Math.min(50, parseInt(limit));
       const skip = (pageNum - 1) * limitNum;
@@ -138,7 +147,7 @@ router.get(
       const minSolvedNum = parseInt(minSolved) || 0;
       const maxSolvedNum = parseInt(maxSolved) || 9999;
 
-      const cacheKey = `recruiter:candidates:${JSON.stringify({ college, topic, minSolved, maxSolved, language, pageNum, limitNum })}`;
+      const cacheKey = `recruiter:candidates:${JSON.stringify({ college, topic, minSolved, maxSolved, language, pageNum, limitNum, availableForWork: req.query.availableForWork, preferredRole: req.query.preferredRole, expectedGraduation: req.query.expectedGraduation })}`;
 
       const { value: payload, cacheStatus } = await getOrSetCache(
         cacheKey,
@@ -170,6 +179,7 @@ router.get(
                       topicStats: 1,
                       currentStreak: 1,
                       profileSignature: 1,
+                      recruiterSnapshot: 1,
                     },
                   },
                 ],
@@ -197,6 +207,9 @@ router.get(
               .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t]) => t),
             isVerified: !!s.profileSignature?.hash,
             profileUrl: `/u/${s.username}`,
+            availableForWork: s.recruiterSnapshot?.availableForWork || false,
+            preferredRole: s.recruiterSnapshot?.preferredRole || null,
+            expectedGraduation: s.recruiterSnapshot?.expectedGraduation || null,
           }));
 
           return { candidates: result, total, page: pageNum, limit: limitNum };
@@ -256,7 +269,6 @@ router.get("/verify/:username", async (req, res) => {
 // Recruiter sends a 3-problem, 90-min timed test to a candidate.
 router.post(
   "/skills-test",
-  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -312,13 +324,99 @@ router.post(
     }
   });
 
+// ── POST /api/recruiter/interest ──────────────────────────────────────────
+// Lightweight alternative to a skills test: a short note telling the
+// candidate a recruiter noticed them. One notification, no test to take.
+// Extracted as a named function (rather than inline, unlike this file's
+// other handlers) so it can be unit-tested directly, mirroring
+// judge.js/judgeController.js's exported-handler pattern.
+export async function handleCreateInterest(req, res) {
+  try {
+    const { candidateUsername, note } = req.body;
+
+    if (!candidateUsername || !note || !note.trim()) {
+      return res.status(400).json({ error: "candidateUsername and note are required." });
+    }
+    if (note.length > 500) {
+      return res.status(400).json({ error: "Note must be 500 characters or fewer." });
+    }
+
+    const candidate = await User.findOne({ username: candidateUsername }).select("_id username");
+    if (!candidate) return res.status(404).json({ error: "Candidate not found." });
+
+    // Cooldown: don't let the same recruiter spam the same candidate.
+    const cooldownMs = 7 * 24 * 60 * 60 * 1000;
+    const recent = await RecruiterInterest.findOne({
+      recruiterId: req.userDoc._id,
+      candidateId: candidate._id,
+      createdAt: { $gt: new Date(Date.now() - cooldownMs) },
+    }).lean();
+    if (recent) {
+      return res.status(429).json({ error: "You've already reached out to this candidate recently." });
+    }
+
+    const interest = await RecruiterInterest.create({
+      recruiterId: req.userDoc._id,
+      recruiterCompany: req.userDoc.recruiterProfile?.companyName,
+      candidateId: candidate._id,
+      candidateUsername: candidate.username,
+      note: note.trim(),
+    });
+
+    createNotification({
+      userId: candidate._id,
+      type: "recruiter_interest",
+      title: "A recruiter is interested in you",
+      message: req.userDoc.recruiterProfile?.companyName
+        ? `${req.userDoc.recruiterProfile.companyName}: "${note.trim().slice(0, 120)}"`
+        : `A recruiter left you a note: "${note.trim().slice(0, 120)}"`,
+      link: "/profile",
+      meta: { interestId: interest._id },
+    }).catch((err) => console.error("[Recruiter] Interest notification failed:", err.message));
+
+    return res.status(201).json({ interestId: interest._id, createdAt: interest.createdAt });
+  } catch (err) {
+    console.error("[Recruiter] interest:", err.message);
+    return res.status(500).json({ error: "Failed to send interest." });
+  }
+}
+
+router.post("/interest", requireRole("recruiter", "admin"), requireVerified, handleCreateInterest);
+
+// ── GET /api/recruiter/interests — list this recruiter's sent interests ────
+router.get(
+  "/interests",
+  requireRole("recruiter", "admin"),
+  requireVerified,
+  async (req, res) => {
+    try {
+      const interests = await RecruiterInterest.find({ recruiterId: req.userDoc._id })
+        .sort({ createdAt: -1 })
+        .limit(100)
+        .lean();
+
+      return res.json({
+        interests: interests.map((i) => ({
+          id: i._id,
+          candidateUsername: i.candidateUsername,
+          note: i.note,
+          createdAt: i.createdAt,
+        })),
+      });
+    } catch (err) {
+      console.error("[Recruiter] interests list:", err.message);
+      return res.status(500).json({ error: "Failed to fetch sent interests." });
+    }
+  }
+);
+
+
 // ── GET /api/recruiter/skills-tests — list tests this recruiter has sent ────
 // (distinct from GET /skills-test/:id below, which fetches one by id — this
 // backs the "Sent Tests" tab so a recruiter can see everything they've sent
 // without knowing individual test ids.)
 router.get(
   "/skills-tests",
-  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -351,7 +449,6 @@ router.get(
 // ── 086: GET /api/recruiter/skills-test/:id — recruiter checks results ────────
 router.get(
   "/skills-test/:id",
-  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {

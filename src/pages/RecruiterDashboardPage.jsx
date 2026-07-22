@@ -8,6 +8,22 @@ import { CheckCircle2 } from "lucide-react";
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const VALID_TABS = ["candidates", "tests"];
 
+// Mirrors PREFERRED_ROLES in src/components/profile/RecruiterSnapshot.jsx
+// (itself mirroring backend/controllers/userController.js) — kept as a
+// separate literal here rather than an import because RecruiterSnapshot.jsx
+// only exports a component (react-refresh/only-export-components forbids
+// mixing in a constant export). Keep in sync if the source list changes.
+const PREFERRED_ROLES = [
+  "Backend",
+  "Frontend",
+  "Full Stack",
+  "Mobile",
+  "Data / ML",
+  "DevOps",
+  "QA",
+  "Other",
+];
+
 function FilterBar({ filters, onChange }) {
   return (
     <div className="flex flex-wrap gap-3 mb-6">
@@ -20,6 +36,18 @@ function FilterBar({ filters, onChange }) {
       <input type="number" placeholder="Min solved" value={filters.minSolved}
         onChange={e => onChange("minSolved", e.target.value)}
         className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
+      <select value={filters.preferredRole} onChange={e => onChange("preferredRole", e.target.value)}
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-44">
+        <option value="">Any role</option>
+        {PREFERRED_ROLES.map(r => (
+          <option key={r} value={r}>{r}</option>
+        ))}
+      </select>
+      <label className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-300">
+        <input type="checkbox" checked={filters.availableForWork}
+          onChange={e => onChange("availableForWork", e.target.checked)} />
+        Available now
+      </label>
     </div>
   );
 }
@@ -79,6 +107,44 @@ const STATUS_STYLES = {
   submitted: "bg-green-500/10 text-green-400",
   expired: "bg-red-500/10 text-red-400",
 };
+
+export function ExpressInterestModal({ candidate, onClose, onSent }) {
+  const [note, setNote] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function send() {
+    setLoading(true);
+    try {
+      await apiFetch("/api/recruiter/interest", {
+        method: "POST",
+        body: JSON.stringify({ candidateUsername: candidate.username, note }),
+      });
+      onSent();
+      onClose();
+    } catch (err) {
+      toast.error(err.message || "Failed to send. Try again.");
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4" onClick={onClose}>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-white mb-1">Express Interest</h3>
+        <p className="text-zinc-500 text-sm mb-4">To: {candidate.displayName} ({candidate.username})</p>
+        <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} maxLength={500}
+          placeholder="A short note — what caught your eye, what role you have in mind…"
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none" />
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
+          <Button size="sm" onClick={send} disabled={loading || !note.trim()} loading={loading}>
+            {loading ? "Sending…" : "Send"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function SentTestsTab() {
   const [tests, setTests] = useState([]);
@@ -171,8 +237,9 @@ export default function RecruiterDashboardPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "" });
+  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "", preferredRole: "", availableForWork: false });
   const [selected, setSelected] = useState(null);
+  const [interestTarget, setInterestTarget] = useState(null);
   const [pendingVerification, setPendingVerification] = useState(false);
 
   async function fetchCandidates(p = 1) {
@@ -187,6 +254,8 @@ export default function RecruiterDashboardPage() {
       if (filters.college) params.set("college", filters.college);
       if (filters.topic) params.set("topic", filters.topic);
       if (filters.minSolved) params.set("minSolved", filters.minSolved);
+      if (filters.preferredRole) params.set("preferredRole", filters.preferredRole);
+      if (filters.availableForWork) params.set("availableForWork", "true");
 
       const data = await apiFetch(`/api/recruiter/candidates?${params}`);
 
@@ -305,6 +374,13 @@ export default function RecruiterDashboardPage() {
                       >
                         View
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setInterestTarget(c)}
+                      >
+                        Interested
+                      </Button>
                       <Button size="sm" onClick={() => setSelected(c)}>
                         Test
                       </Button>
@@ -329,6 +405,13 @@ export default function RecruiterDashboardPage() {
         {tab === "tests" && <SentTestsTab />}
       </div>
       {selected && <SendTestModal candidate={selected} onClose={() => setSelected(null)} onSent={() => { }} />}
+      {interestTarget && (
+        <ExpressInterestModal
+          candidate={interestTarget}
+          onClose={() => setInterestTarget(null)}
+          onSent={() => toast.success("Interest sent.")}
+        />
+      )}
     </div>
   );
 }
