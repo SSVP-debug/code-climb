@@ -51,7 +51,6 @@ import ambassadorRoutes from "./routes/ambassador.js";
 import leetcodeRoutes from "./routes/leetcode.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
 import collegeVerificationRoutes from "./routes/collegeVerification.js";
-import battleRoomRoutes from "./routes/battleRooms.js";
 import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
 import hintsRoutes from "./routes/hints.js";
 import notesRoutes from "./routes/notes.js";
@@ -142,7 +141,6 @@ app.use("/api/stats", statsRoutes);
 // Leaderboard — public (no auth required, cached 5 min)
 app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/college-verification", collegeVerificationRoutes);
-app.use("/api/battle-rooms", battleRoomRoutes);
 app.use("/api/weekly", weeklyChallengeRoutes);
 // AI hints — auth + AI rate limiter (shares quota with insights)
 app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);
@@ -168,9 +166,9 @@ app.use(
 // ─── 404 handler ────────────────────────────────────────────────────────────
 logger.info(`[Server] 404 handler initialized`);
 // ── Phase 7 mounts ───────────────────────────────────────────────────────────
-app.use("/api/recruiter", requireAuth, apiLimiter, recruiterRoutes);
+app.use("/api/recruiter", apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
-app.use("/api/cert", requireAuth, apiLimiter, certificationRoutes);
+app.use("/api/cert", apiLimiter, certificationRoutes);
 app.use("/api/contests", requireAuth, apiLimiter, contestRoutes);
 app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 
@@ -186,7 +184,7 @@ app.use("/api/assignments/student", requireAuth, apiLimiter, studentAssignmentsR
 // routes). Splitting the webhook out with express.raw() ahead of the global
 // express.json() middleware is a real prerequisite before Razorpay webhooks
 // go live — tracked in docs/phase8-progress.md, not done in this pass.
-app.use("/api/billing", requireAuth, apiLimiter, billingRoutes);
+app.use("/api/billing", apiLimiter, billingRoutes);
 // Interview Mode — premium AI feature, shares the AI rate limiter with hints/insights.
 app.use("/api/interview", requireAuth, aiLimiter, interviewRoutes);
 

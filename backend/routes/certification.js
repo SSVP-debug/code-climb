@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Problem from "../models/Problem.js";
 import { SITE_URL } from "../config/site.js";
 import { topicStatsToObject } from "../utils/topicStats.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router  = Router();
 const require = createRequire(import.meta.url);
@@ -24,7 +25,7 @@ export const TRACKS = [
 ];
 
 // ── GET /api/cert/tracks ────────────────────────────────────────────────────
-router.get("/tracks", async (req, res) => {
+router.get("/tracks", requireAuth, async (req, res) => {
   try {
     const topicStats = topicStatsToObject(req.userDoc?.topicStats);
     const earned = new Set((req.userDoc?.certificates || []).map(c => c.trackId));
@@ -44,7 +45,7 @@ router.get("/tracks", async (req, res) => {
 });
 
 // ── POST /api/cert/claim/:trackId ───────────────────────────────────────────
-router.post("/claim/:trackId", async (req, res) => {
+router.post("/claim/:trackId", requireAuth, async (req, res) => {
   try {
     const track = TRACKS.find(t => t.id === req.params.trackId);
     if (!track) return res.status(404).json({ error: "Track not found." });
@@ -107,7 +108,7 @@ router.get("/verify/:code", async (req, res) => {
 });
 
 // ── GET /api/cert/:code/pdf — download certificate PDF (commit 088) ──────────
-router.get("/:code/pdf", async (req, res) => {
+router.get("/:code/pdf", requireAuth, async (req, res) => {
   let PDFDocument, QRCode;
   try { PDFDocument = require("pdfkit"); } catch {
     return res.status(503).json({ error: "pdfkit not installed. Run: cd backend && npm install pdfkit" });

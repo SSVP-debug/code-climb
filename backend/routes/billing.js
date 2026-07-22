@@ -4,6 +4,7 @@ import { createRequire } from "module";
 import { MONETIZATION_ENABLED, PRICING } from "../config/featureFlags.js";
 import { saveSubscription } from "../services/userSubscriptionService.js";
 import { logger } from "../config/logger.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const require = createRequire(import.meta.url);
 const router = Router();
@@ -49,7 +50,7 @@ router.get("/plans", (req, res) => {
 });
 
 // ── GET /api/billing/subscription (auth) ────────────────────────────────────
-router.get("/subscription", async (req, res) => {
+router.get("/subscription", requireAuth, async (req, res) => {
   if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
 
   const sub = req.userDoc.subscription || { plan: "free", status: "none" };
@@ -64,7 +65,7 @@ router.get("/subscription", async (req, res) => {
 });
 
 // ── POST /api/billing/create-order (auth) ───────────────────────────────────
-router.post("/create-order", async (req, res) => {
+router.post("/create-order", requireAuth, async (req, res) => {
   if (monetizationGate(req, res)) return;
 
   try {
@@ -116,7 +117,7 @@ router.post("/create-order", async (req, res) => {
 // Called from frontend after Razorpay checkout completes — verifies the
 // payment signature before activating the plan. This is the source of truth;
 // never trust the frontend's "payment succeeded" claim without this check.
-router.post("/verify", async (req, res) => {
+router.post("/verify", requireAuth, async (req, res) => {
   if (monetizationGate(req, res)) return;
 
   try {
@@ -202,7 +203,7 @@ router.post("/verify", async (req, res) => {
 });
 
 // ── POST /api/billing/cancel (auth) ─────────────────────────────────────────
-router.post("/cancel", async (req, res) => {
+router.post("/cancel", requireAuth, async (req, res) => {
   if (monetizationGate(req, res)) return;
 
   try {

@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import { getProfileSignSecret } from "../config/env.js";
 import Problem from "../models/Problem.js";
 import SkillsTest from "../models/SkillsTest.js";
+import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
@@ -24,7 +25,7 @@ const router = Router();
 const CANDIDATES_CACHE_TTL_SECONDS = 60;
 
 // ── 083: POST /api/recruiter/register ────────────────────────────────────────
-router.post("/register", async (req, res) => {
+router.post("/register", requireAuth, async (req, res) => {
   try {
     const { companyName, designation } = req.body;
     if (!companyName || !designation) {
@@ -89,6 +90,7 @@ router.post("/register", async (req, res) => {
 // Query params: college, topic, minSolved, maxSolved, language, page, limit
 router.get(
   "/candidates",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -254,6 +256,7 @@ router.get("/verify/:username", async (req, res) => {
 // Recruiter sends a 3-problem, 90-min timed test to a candidate.
 router.post(
   "/skills-test",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -315,6 +318,7 @@ router.post(
 // without knowing individual test ids.)
 router.get(
   "/skills-tests",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -347,6 +351,7 @@ router.get(
 // ── 086: GET /api/recruiter/skills-test/:id — recruiter checks results ────────
 router.get(
   "/skills-test/:id",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {

@@ -133,7 +133,12 @@ export async function putProgress(req, res) {
           nextSolvedDifficulty[diffKey] += 1;
         }
 
-        nextRecentActivity.unshift({ title: problem.title, time: today });
+        nextRecentActivity.unshift({
+          title: problem.title,
+          slug: problem.slug,
+          difficulty: problem.difficulty,
+          time: today,
+        });
       }
 
       req.userDoc.topicStats = topicStatsFromObject(nextTopicStats);

@@ -78,6 +78,8 @@ const userSchema = new mongoose.Schema(
       type: [
         {
           title: String,
+          slug: String,
+          difficulty: String,
           time: String,
         },
       ],
