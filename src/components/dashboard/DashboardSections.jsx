@@ -6,7 +6,7 @@ import WeeklyGoalSection from "./sections/WeeklyGoalSection";
 import RecentAchievementCard from "./sections/RecentAchievementCard";
 import AdvancedStatsSection from "./sections/AdvancedStatsSection";
 import AIInsightsSection from "./sections/AIInsightsSection";
-import PublicProfileCard from "./sections/PublicProfileCard";
+import ProfileShareCard from "./sections/ProfileShareCard";
 import ActivityHeatmapCard from "./sections/ActivityHeatmapCard";
 import TopicProgressCard from "./sections/TopicProgressCard";
 import ContestCountdownCard from "./sections/ContestCountdownCard";
@@ -28,12 +28,12 @@ import ContestCountdownCard from "./sections/ContestCountdownCard";
 // Row 3 — Status & goals: Rank | Weekly Goal | Daily Challenge | Next Contest
 // Row 4 — Patterns: Activity Heatmap (wide) | Topic Progress
 // Row 5 — Momentum: Continue | AI Insights | Recent Achievement
-// Row 6 — Profile snapshot                (full width)
+// Row 6 — Profile-share CTA               (full width, compact)
 //
-// NOTE: Row 6 (PublicProfileCard) duplicates a fair amount of what's on
-// the actual Profile page (rank, solved breakdown, topics, a 35-day
-// activity grid). Flagged in PROJECT_STATE.md as an out-of-scope finding
-// for a future pass — not touched here.
+// Row 6 (PublicProfileCard, which duplicated stats already shown in Row 2 and
+// on /profile) was removed — see plans/004-dashboard-row6-deduplication.md.
+// Replaced with a compact profile-share CTA (ProfileShareCard) instead of a
+// second full stats block.
 
 function DashboardSections() {
   return (
@@ -60,7 +60,7 @@ function DashboardSections() {
         <RecentAchievementCard />
       </div>
 
-      <PublicProfileCard />
+      <ProfileShareCard />
     </div>
   );
 }

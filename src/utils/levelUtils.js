@@ -11,5 +11,12 @@ export function getXPForNextLevel(
 export function getLevelProgress(
   totalXP = 0
 ) {
-  return totalXP % 100;
+  const xp = Math.max(0, totalXP || 0);
+  const current = xp % 100;
+  const needed = 100;
+  return {
+    current,
+    needed,
+    percent: Math.round((current / needed) * 100),
+  };
 }

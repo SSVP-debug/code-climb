@@ -13,10 +13,10 @@ import CtaSection from "../components/landing/CtaSection";
 import LandingFooter from "../components/landing/LandingFooter";
 
 const STATIC_STATS = [
-  { key: "problems", value: "50+", label: "DSA Problems" },
-  { key: "languages", value: "4", label: "Languages" },
-  { key: "themes", value: "5", label: "Themed Universes" },
-  { key: "ai", value: "Claude", label: "Coaching Built In" },
+  { key: "problems", value: "Smart", label: "DSA Problems" },
+  { key: "languages", value: "Multi-Language", label: "Languages" },
+  { key: "themes", value: "Universes", label: "Themed Universes" },
+  { key: "ai", value: "AI", label: "Coaching Built In" },
 ];
 
 // The "ai" stat has no backend equivalent — it's a static descriptor, not a
