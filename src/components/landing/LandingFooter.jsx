@@ -12,8 +12,8 @@ function LandingFooter({ user }) {
         <div className="flex gap-5 text-xs text-zinc-600 font-mono-ui">
           <Link to="/problems" className="hover:text-zinc-400 transition">Problems</Link>
           <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">Dashboard</Link>
-          <Link to="/login?role=tpo" className="hover:text-zinc-400 transition">For TPOs</Link>
-          <Link to="/login?role=recruiter" className="hover:text-zinc-400 transition">For Recruiters</Link>
+          <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">For TPOs</Link>
+          <Link to={user ? "/dashboard" : "/portal"} className="hover:text-zinc-400 transition">For Recruiters</Link>
           <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy</Link>
           <Link to="/terms" className="hover:text-zinc-400 transition">Terms</Link>
           <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-zinc-400 transition">Contact</a>

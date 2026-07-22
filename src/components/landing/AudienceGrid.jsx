@@ -18,7 +18,6 @@ const AUDIENCES = [
     description:
       "Practice, build streaks, and get AI mock-interview reps before the real thing.",
     cta: "Start solving",
-    to: "/login?role=student",
   },
   {
     Icon: Building2,
@@ -26,7 +25,6 @@ const AUDIENCES = [
     description:
       "One dashboard for your entire batch's placement readiness solve counts, streaks, topic coverage, and a readiness score, not spreadsheets.",
     cta: "TPO dashboard",
-    to: "/login?role=tpo",
   },
   {
     Icon: Briefcase,
@@ -34,11 +32,12 @@ const AUDIENCES = [
     description:
       "Search verified candidates by solve history and topic strength, and send skills tests directly no resume guesswork.",
     cta: "Recruiter access",
-    to: "/login?role=recruiter",
   },
 ];
 
-function AudienceGrid() {
+function AudienceGrid({ user }) {
+  const destination = user ? "/dashboard" : "/portal";
+
   return (
     <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
       <Reveal className="text-center mb-12">
@@ -69,7 +68,7 @@ function AudienceGrid() {
               {a.description}
             </p>
             <Link
-              to={a.to}
+              to={destination}
               className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-verdict-accept hover:brightness-110 transition"
             >
               {a.cta}

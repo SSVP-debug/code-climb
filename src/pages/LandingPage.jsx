@@ -13,10 +13,10 @@ import CtaSection from "../components/landing/CtaSection";
 import LandingFooter from "../components/landing/LandingFooter";
 
 const STATIC_STATS = [
-  { key: "problems", value: "Smart", label: "DSA Problems" },
-  { key: "languages", value: "Multi-Language", label: "Languages" },
-  { key: "themes", value: "Universes", label: "Themed Universes" },
-  { key: "ai", value: "AI", label: "Coaching Built In" },
+  { key: "problems", value: "High-Quality Problems", label: "DSA Problems" },
+  { key: "languages", value: "Multi-Language Support", label: "Languages" },
+  { key: "themes", value: "Themed Universes", label: "Themed Universes" },
+  { key: "ai", value: "AI Coaching", label: "Coaching Built In" },
 ];
 
 // The "ai" stat has no backend equivalent — it's a static descriptor, not a
@@ -63,7 +63,7 @@ export default function LandingPage() {
   const stats = useLiveStats();
 
   return (
-    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-hidden font-display [--theme-primary:#2dd4bf]">
+    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-hidden font-display [--theme-primary:#c6ff3d]">
       <PageMeta
         title="Code Club DSA Practice for Placement Season"
         description="Solve curated DSA problems, practice live AI mock interviews, and get discovered. Free for students, with a placement dashboard for TPOs and a candidate search portal for recruiters."
@@ -78,7 +78,7 @@ export default function LandingPage() {
         <StatsBar stats={stats} />
         <ThemesShowcase user={user} />
         <FeatureGrid />
-        <AudienceGrid />
+        <AudienceGrid user={user} />
         <CompetitorComparison />
         <CtaSection user={user} />
         <LandingFooter user={user} />
