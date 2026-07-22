@@ -9,6 +9,7 @@
  *   - ProblemSolverMobileView / ProblemSolverDesktopView → presentation
  */
 import { useParams, useSearchParams } from "react-router-dom";
+import { FileQuestion } from "lucide-react";
 import PageMeta from "../components/seo/PageMeta";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProblemLayout from "../layouts/ProblemLayout";
@@ -16,6 +17,8 @@ import { useProblem } from "../hooks/useProblem";
 import { useProblemSolver } from "../hooks/useProblemSolver";
 import ProblemSolverMobileView from "../components/problem/ProblemSolverMobileView";
 import ProblemSolverDesktopView from "../components/problem/ProblemSolverDesktopView";
+import ProblemDetailsSkeleton from "../components/problem/ProblemDetailsSkeleton";
+import EmptyState from "../components/ui/feedback/EmptyState";
 
 function ProblemDetailsPage() {
   const { slug } = useParams();
@@ -29,12 +32,7 @@ function ProblemDetailsPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-[70vh]">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-            <p className="text-zinc-500 text-sm">Loading problem…</p>
-          </div>
-        </div>
+        <ProblemDetailsSkeleton />
       </DashboardLayout>
     );
   }
@@ -43,18 +41,13 @@ function ProblemDetailsPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
-          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Problem Not Found</h2>
-            <p className="text-zinc-500 mb-6">
-              {error || "The problem you're looking for doesn't exist or has been moved."}
-            </p>
-            <button
-              onClick={() => window.history.back()}
-              className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors"
-            >
-              Go Back
-            </button>
-          </div>
+          <EmptyState
+            icon={<FileQuestion size={28} strokeWidth={1.75} />}
+            title="Problem Not Found"
+            description={error || "The problem you're looking for doesn't exist or has been moved."}
+            actionLabel="Go Back"
+            onAction={() => window.history.back()}
+          />
         </div>
       </DashboardLayout>
     );
