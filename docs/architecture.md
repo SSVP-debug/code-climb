@@ -21,7 +21,7 @@
                     ▼                       ▼                           ▼                        ▼
           ┌──────────────────┐   ┌──────────────────────┐   ┌──────────────────────┐   ┌──────────────────┐
           │ Firebase Admin    │   │ MongoDB Atlas          │   │ Judge0                 │   │ Redis (optional)  │
-          │ SDK — verifies    │   │ via Mongoose — sole    │   │ self-hosted (Docker)   │   │ Railway add-on or │
+          │ SDK — verifies    │   │ via Mongoose — sole    │   │ self-hosted (Docker)   │   │ Render add-on or │
           │ ID tokens on      │   │ datastore (Firestore   │   │ or RapidAPI — sandboxed │   │ Upstash — shared  │
           │ every protected   │   │ was fully migrated     │   │ code execution          │   │ cache across       │
           │ request           │   │ away from)             │   └──────────────────────┘   │ instances; falls  │
@@ -73,8 +73,11 @@ XP is always computed server-side from `solvedSlugs.length × difficulty weight`
 
 ## Known architectural gaps (as of Phase 8 / Batch E)
 
-These are flagged here for visibility, not fixed as part of this docs pass — see `docs/phase8-progress.md` for status:
+Two items previously listed here are resolved — see `docs/phase8-progress.md` for the full log:
 
-- **Razorpay webhook body parsing:** `backend/routes/billing.js`'s `/webhook` handler expects the raw request body (needed for HMAC signature verification), but `server.js` applies `express.json()` globally before any route is reached, so `req.body` is already parsed JSON by the time it would hit that handler. This needs the webhook route split out with `express.raw()` registered ahead of the global JSON parser before Razorpay webhooks can be wired up live. Currently dormant — `MONETIZATION_ENABLED` is `false` and no webhook secret is configured.
-- **`User` model has no `subscription` field:** `backend/routes/billing.js` reads and writes `req.userDoc.subscription` (plan, status, expiresAt) in several places, but `backend/models/User.js` doesn't define a `subscription` path in its schema. Under Mongoose's default strict mode, assigning to a path that isn't in the schema is not persisted on `.save()` — so today, a successful payment verification would report success to the user but silently fail to persist the subscription state to MongoDB. This needs a `subscription` subdocument added to the `User` schema before billing goes live. See `docs/database-schema.md`.
+- ~~Razorpay webhook body parsing~~ — resolved. `backend/routes/billingWebhook.js` handles this separately, mounted ahead of the global `express.json()` with `express.raw()` (`backend/server.js:103-107`).
+- ~~`User` model has no `subscription` field~~ — resolved. `backend/models/User.js` now defines a `subscription` subdocument. See `docs/database-schema.md`.
+
+Still open:
+
 - **RapidAPI headers for Judge0** aren't wired up yet — see `docs/judge0-setup.md`.

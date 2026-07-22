@@ -11,7 +11,7 @@ Rate limiters, from `backend/middleware/rateLimiter.js`, all key by `userId` (no
 - **aiLimiter** — stricter shared quota for Claude-backed routes (hints, insights, interview)
 - **compilerLimiter** — separate limit for the `/api/compiler` run endpoint
 
-This file only documents routes actually mounted in `backend/server.js`. Three route files (`editorial.js`, `premiumFeatures.js`, `health.js`) exist in `backend/routes/` but are not mounted and have no frontend caller — they're dead code, not part of the live API surface, and are excluded here. See `docs/phase8-progress.md` for status.
+This file documents routes mounted in `backend/server.js`, directly or via a nested router. `health.js` (mounted at `/api/health`) and `editorial.js` (mounted at `/api/problems/:slug/editorial`, nested inside `problemRoutes.js` rather than mounted directly in `server.js`) are both live and documented below. No `premiumFeatures.js` route file exists in `backend/routes/` today — see `plans/000-full-audit-findings.md` finding #6 for the related `/api/premium/features` gap (a documented, never-built endpoint, not a dead file).
 
 ---
 
@@ -20,6 +20,7 @@ This file only documents routes actually mounted in `backend/server.js`. Three r
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/api/health` | Liveness check (inline in `server.js`, excluded from request logging). |
+| GET | `/api/health/compiler` | Judge0 circuit-breaker/request stats (`health.js`). Currently always reports zeroed counters — see `docs/phase8-progress.md`. |
 | GET | `/api/problems` | List all problems. |
 | GET | `/api/problems/:slug` | Single problem by slug. |
 | GET | `/api/stats` | Landing-page social-proof numbers (total users, problems solved, etc). |
@@ -62,6 +63,8 @@ This file only documents routes actually mounted in `backend/server.js`. Three r
 | POST | `/api/daily-challenge` | Submit/claim the daily challenge. |
 | GET | `/api/cert/tracks` | List certification tracks and the caller's progress toward each. |
 | POST | `/api/cert/claim/:trackId` | Claim a completed certification track. |
+| GET | `/api/problems/:slug/editorial` | Editorial for a problem, unlocked after a solve (`editorial.js`, mounted inside `problemRoutes.js`). |
+| POST | `/api/problems/:slug/editorial` *(role: admin)* | Create/update a problem's editorial. |
 | GET | `/api/contests` | List contests visible to the caller. |
 | POST | `/api/contests` *(role: admin, tpo)* | Create a public contest. |
 | POST | `/api/contests/private` *(role: tpo, admin)* | Create a private/invite-only contest. |
@@ -93,9 +96,9 @@ Mounted at `/api/billing`. All routes except `/plans` (public, listed above) and
 |---|---|---|
 | GET | `/api/billing/subscription` | Caller's current plan/status (works regardless of the flag — reports "free"/premium correctly either way). |
 | POST | `/api/billing/create-order` | Create a Razorpay order for a plan. |
-| POST | `/api/billing/verify` | Verify Razorpay payment signature, activate the plan. **See known gap in `docs/database-schema.md` — the `User` model has no `subscription` field, so this does not currently persist.** |
+| POST | `/api/billing/verify` | Verify Razorpay payment signature, activate the plan. Persists to `req.userDoc.subscription` (see `docs/database-schema.md`). |
 | POST | `/api/billing/cancel` | Cancel recurring subscription (access continues until expiry). |
-| POST | `/api/billing/webhook` | Razorpay webhook receiver. **See known gap in `docs/architecture.md` — needs raw-body middleware split out before this works correctly.** |
+| POST | `/api/billing/webhook` | Razorpay webhook receiver. Handled by a separate `billingWebhook.js` router, mounted ahead of the global JSON parser with `express.raw()` so HMAC signature verification sees the untouched body. |
 
 ## Auth (Premium AI feature)
 
@@ -140,5 +143,5 @@ Mounted at `/api/ambassador`.
 ## Known gaps affecting this contract
 
 - **`/api/tpo`, `/api/billing`, `/api/interview`** were fully built but not mounted in `server.js` until this pass (Phase 8, Batch E) — previously every request to them 404'd despite live frontend pages calling them.
-- **`/api/billing/verify`** doesn't persist the subscription it reports activating — see `docs/database-schema.md`.
-- **`/api/billing/webhook`** needs raw-body middleware — see `docs/architecture.md`.
+- **`/api/billing/verify`'s persistence gap and `/api/billing/webhook`'s raw-body requirement** (previously listed here) are both resolved — see `docs/database-schema.md` and `docs/architecture.md` respectively, and `docs/phase8-progress.md` for the full resolved-items log.
+- **`GET /api/health/compiler`** always reports zeroed counters today — see `docs/phase8-progress.md`.

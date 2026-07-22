@@ -30,7 +30,7 @@ The largest and most central model — one document per person, regardless of ro
 | `solvedDifficulty` | `{ easy, medium, hard }` (Numbers) | |
 | `currentStreak`, `longestStreak` | Number | |
 | `totalXP` | Number | **Computed server-side, never trusted from the client.** |
-| `recentActivity` | `[{ title, time }]` | |
+| `recentActivity` | `[{ title, slug, difficulty, time }]` | |
 | `role` | String enum: `student`, `recruiter`, `tpo`, `admin`; indexed | Default `student`. |
 | `recruiterProfile` | `{ companyName, designation, companyDomain, verified, verifiedAt }` | Only meaningful when `role === "recruiter"`. |
 | `collegeDomain`, `collegeName` | String | Only meaningful when `role === "tpo"` — set via `/api/tpo/register`, matched against student emails for `/api/tpo/students` and `/api/tpo/dashboard`. |
@@ -43,25 +43,21 @@ The largest and most central model — one document per person, regardless of ro
 | `emailPreferences.weeklyReview` | Boolean, default `true` | Opt-out (not opt-in) — existing users who predate this field are treated as opted-in. Read/write via `GET`/`PATCH /api/users/me`. |
 | `lastWeeklyReviewSentAt` | Date | Set by `scripts/sendWeeklyReviewEmails.js` after a successful send — a double-send guard, not a scheduler. |
 
-### ⚠ Known gap: no `subscription` field
+### `subscription` field
 
-`backend/routes/billing.js` reads and writes `req.userDoc.subscription` (a `{ plan, status, startedAt, expiresAt, cancelledAt }` shape) in `/subscription`, `/verify`, and `/cancel` — but **`subscription` is not defined anywhere in the `User` schema above.**
-
-Under Mongoose's default strict-schema behavior, assigning to a path that isn't declared in the schema is not persisted on `.save()`. Concretely: `POST /api/billing/verify` currently reports `{ success: true, plan, expiresAt }` back to the browser, the in-memory document briefly holds that value for the rest of the request, but the write is silently dropped on save — nothing is actually stored in MongoDB. A user who "successfully" upgrades would appear to lose premium access on their next request, or `POST /api/billing/cancel` would throw outright (`req.userDoc.subscription.status = ...` on `undefined`) for anyone who's never had a subscription object initialized.
-
-This is dormant today only because `MONETIZATION_ENABLED` defaults to `false`. **Before turning monetization on, `User` needs a `subscription` subdocument added**, e.g.:
+`backend/models/User.js` defines a `subscription` subdocument, read and written by `backend/routes/billing.js` in `/subscription`, `/verify`, and `/cancel`:
 
 ```js
 subscription: {
-  plan:        { type: String, enum: ["free", "pro_monthly", "pro_yearly", "founding_lifetime", "lifetime"], default: "free" },
-  status:      { type: String, enum: ["none", "active", "cancelled"], default: "none" },
+  plan:        { type: String, default: "free" },
+  status:      { type: String, enum: ["none", "active", "cancelled", "expired"], default: "none" },
   startedAt:   { type: Date, default: null },
   expiresAt:   { type: Date, default: null },
   cancelledAt: { type: Date, default: null },
 },
 ```
 
-Flagged here per the project's "silent failures are high-priority" principle — not fixed as part of this docs pass. See `docs/phase8-progress.md`.
+This previously didn't exist (a payment verification would report success but silently fail to persist) — see `docs/phase8-progress.md` for when it was resolved. A separate, intentional `UserSubscription`-model sync step remains in progress per `docs/migrations/user-model-split.md`; that's a planned migration step, not a data-loss bug.
 
 ---
 
