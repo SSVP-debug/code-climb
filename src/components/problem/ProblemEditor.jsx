@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { Maximize2, Minimize2, RotateCcw, Copy, Check, Minus, Plus } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import EditorMoreMenu from "./EditorMoreMenu";
 import {
   saveCode,
   loadFontSize,
@@ -124,78 +124,20 @@ function ProblemEditor({
             <option value="cpp">C++</option>
           </select>
 
-          {/* Font size — a reading preference, not a per-problem setting,
-              so it persists globally (utils/editorStorage.js) rather than
-              per-slug like code/language. */}
-          <div className="hidden sm:flex items-center gap-0.5 ml-1 bg-zinc-800/60 rounded-md px-0.5">
-            <button
-              type="button"
-              onClick={() => adjustFontSize(-1)}
-              disabled={fontSize <= EDITOR_FONT_SIZE_MIN}
-              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
-              title="Decrease font size"
-            >
-              <Minus size={13} />
-            </button>
-            <span className="text-xs text-zinc-400 w-5 text-center tabular-nums select-none">
-              {fontSize}
-            </span>
-            <button
-              type="button"
-              onClick={() => adjustFontSize(1)}
-              disabled={fontSize >= EDITOR_FONT_SIZE_MAX}
-              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
-              title="Increase font size"
-            >
-              <Plus size={13} />
-            </button>
-          </div>
-
-          {onReset && (
-            <button
-              type="button"
-              onClick={onReset}
-              className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
-              title="Reset to starter code"
-            >
-              <RotateCcw size={14} />
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
-            title="Copy code"
-          >
-            {justCopied ? (
-              <Check size={14} className="text-green-400" />
-            ) : (
-              <Copy size={14} />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsFullscreen((prev) => !prev)}
-            className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
-            title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen / Zen mode"}
-          >
-            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
+          <EditorMoreMenu
+            fontSize={fontSize}
+            onFontSizeChange={adjustFontSize}
+            fontSizeMin={EDITOR_FONT_SIZE_MIN}
+            fontSizeMax={EDITOR_FONT_SIZE_MAX}
+            onReset={onReset}
+            onCopy={handleCopy}
+            justCopied={justCopied}
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={() => setIsFullscreen((prev) => !prev)}
+          />
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Keyboard shortcut hints — visible to power users, unobtrusive */}
-          <span className="text-xs text-zinc-600 hidden sm:block select-none">
-            <kbd className="font-mono">{navigator.platform.includes("Mac")
-              ? "⌘+↵"
-              : "Ctrl+↵"}</kbd> Run &nbsp;·&nbsp;
-            <kbd className="font-mono">{navigator.platform.includes("Mac")
-              ? "⌘+⇧+↵"
-              : "Ctrl+⇧+↵"}</kbd> Submit
-          </span>
-
           <button
             onClick={onRun}
             disabled={running || submitting}
