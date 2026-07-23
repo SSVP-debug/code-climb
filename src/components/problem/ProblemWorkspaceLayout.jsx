@@ -150,7 +150,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
         <div
           className={
             isDesktop
-              ? "flex h-full w-full overflow-hidden relative gap-3"
+              ? "flex h-full w-full overflow-hidden relative"
               : "flex-1 min-h-0 overflow-y-auto bg-zinc-950"
           }
         >
@@ -187,18 +187,23 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
             </div>
           </div>
 
-          {/* Resize handle (horizontal — problem/editor split). Stateless UI,
-              safe to actually unmount when not on desktop. */}
+          {/* Resize handle (horizontal — problem/editor split). A thin 1px
+              line is the only thing visible; the surrounding w-2 (8px) box
+              is just a generous invisible hit-area so it's still easy to
+              grab — same idea VS Code/most split-pane editors use. Panel
+              and handle sit flush against each other now (no flex `gap` +
+              handle-margin stacking, which is what made the old gap huge).
+              Stateless UI, safe to actually unmount when not on desktop. */}
           {isDesktop && (
             <div
-              className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors"
+              className="relative w-2 flex-shrink-0 cursor-col-resize group"
               onMouseDown={(e) => {
                 e.preventDefault();
                 const startX = e.clientX;
                 const startWidth = problemWidth;
                 const handleMove = (moveEvent) => {
                   const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
-                  setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
+                  setProblemWidth(Math.min(75, Math.max(20, startWidth + delta)));
                 };
                 const handleUp = () => {
                   window.removeEventListener("mousemove", handleMove);
@@ -207,7 +212,9 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
                 window.addEventListener("mousemove", handleMove);
                 window.addEventListener("mouseup", handleUp);
               }}
-            />
+            >
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-zinc-800 group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
+            </div>
           )}
 
           {/* ── Editor + Workspace column ───────────────────────────────────
@@ -241,7 +248,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
               className={
                 isDesktop
                   ? showValidation
-                    ? "flex-shrink-0 pb-2"
+                    ? "flex-shrink-0"
                     : "flex-1 min-h-0 pb-2"
                   : panelVisible.editor
                     ? "flex flex-col h-full min-h-[calc(100vh-108px)]"
@@ -273,12 +280,13 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
               </ErrorBoundary>
             </div>
 
-            {/* Resize handle (vertical — editor/results split). Only meaningful
-                once there IS a split — before validation, unmounting this is
-                safe (stateless UI). */}
+            {/* Resize handle (editor/results split). Same thin-line-in-a-
+                generous-hit-area style as the horizontal handle above. Only
+                meaningful once there IS a split — before validation,
+                unmounting this is safe (stateless UI). */}
             {isDesktop && showValidation && (
               <div
-                className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors mb-2"
+                className="relative h-2 flex-shrink-0 cursor-row-resize group"
                 onMouseDown={(e) => {
                   e.preventDefault();
                   const startY = e.clientY;
@@ -294,7 +302,9 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
                   window.addEventListener("mousemove", handleMove);
                   window.addEventListener("mouseup", handleUp);
                 }}
-              />
+              >
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-zinc-800 group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
+              </div>
             )}
 
             {/* Workspace/results — pretend it doesn't exist until the student
