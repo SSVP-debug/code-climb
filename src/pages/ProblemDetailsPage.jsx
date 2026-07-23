@@ -6,7 +6,7 @@
  * now just wiring:
  *   - useProblem            → fetch + loading/error state
  *   - useProblemSolver       → all editor/run/submit state and handlers
- *   - ProblemSolverMobileView / ProblemSolverDesktopView → presentation
+ *   - ProblemWorkspaceLayout  → presentation (single tree, desktop+mobile)
  */
 import { useParams, useSearchParams } from "react-router-dom";
 import { FileQuestion } from "lucide-react";
@@ -15,8 +15,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import ProblemLayout from "../layouts/ProblemLayout";
 import { useProblem } from "../hooks/useProblem";
 import { useProblemSolver } from "../hooks/useProblemSolver";
-import ProblemSolverMobileView from "../components/problem/ProblemSolverMobileView";
-import ProblemSolverDesktopView from "../components/problem/ProblemSolverDesktopView";
+import ProblemWorkspaceLayout from "../components/problem/ProblemWorkspaceLayout";
 import ProblemDetailsSkeleton from "../components/problem/ProblemDetailsSkeleton";
 import EmptyState from "../components/ui/feedback/EmptyState";
 
@@ -77,8 +76,7 @@ function ProblemSolver({ problem, slug, prevSlug, nextSlug, contestId }) {
         type="article"
       />
       <ProblemLayout title={problem.title} prevSlug={prevSlug} nextSlug={nextSlug}>
-        <ProblemSolverMobileView problem={problem} slug={slug} solver={solver} />
-        <ProblemSolverDesktopView problem={problem} slug={slug} solver={solver} />
+        <ProblemWorkspaceLayout problem={problem} slug={slug} solver={solver} />
       </ProblemLayout>
     </>
   );

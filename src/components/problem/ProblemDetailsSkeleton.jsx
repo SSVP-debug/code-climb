@@ -1,9 +1,9 @@
 /**
  * ProblemDetailsSkeleton — content-shaped loading placeholder for
  * ProblemDetailsPage, replacing a generic spinner. Proportions mirror the
- * real layout: ProblemSolverDesktopView.jsx's 30/70 problem/editor split
+ * real layout: ProblemWorkspaceLayout.jsx's 30/70 problem/editor split
  * (usePanelResize.js's default problemWidth) on `lg`+, single-pane below
- * that (matching ProblemSolverMobileView.jsx). See
+ * that. See
  * plans/006-loading-empty-state-standardization.md.
  */
 function ProblemDetailsSkeleton() {
