@@ -39,9 +39,11 @@ import ProblemHeader from "./ProblemHeader";
 import ProblemInfo from "./ProblemInfo";
 import ProblemEditor from "./ProblemEditor";
 import WorkspacePanel from "./WorkspacePanel";
+import ProblemUnderstandOverlay from "./ProblemUnderstandOverlay";
 import Button from "../ui/Button";
 import MobileTabBar from "./MobileTabBar";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { useWorkspaceStage } from "../../hooks/useWorkspaceStage";
 
 // Tailwind's default `lg` breakpoint — kept as one constant so the JS
 // breakpoint and the (few) remaining Tailwind `lg:` classes below can never
@@ -78,6 +80,8 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
     handleSubmitCode,
   } = solver;
 
+  const { stage, enterBuild } = useWorkspaceStage({ isSolved, hasResults });
+
   // The single visibility rule for all three panels. Desktop always shows
   // all three (split view); mobile shows exactly the one matching the
   // active tab. This is the ONLY thing that changes between breakpoints —
@@ -88,151 +92,87 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
     workspace: isDesktop || mobileTab === "results",
   };
 
-  return (
-    <div
-      className={
-        isDesktop
-          ? "h-full flex overflow-hidden bg-zinc-950 px-3 py-2 gap-3"
-          : "flex flex-col h-full overflow-hidden"
-      }
-    >
-      {!isDesktop && (
-        <MobileTabBar active={mobileTab} onChange={setMobileTab} hasResults={hasResults} />
-      )}
+  // Panel-reveal timing is keyed directly to `hasResults`, not `stage` —
+  // `stage` flips to "validate" one render tick later (its useEffect runs
+  // after the render where hasResults first becomes true), which would
+  // cost a one-frame flash of "still build" right when the student's
+  // eyes are on the screen waiting for their result. `stage` still exists
+  // and is exposed below for the overlay/blur and any future stage-keyed
+  // behavior — this is just the one spot that can't afford the lag.
+  const showValidation = hasResults;
 
+  return (
+    <div className="relative h-full w-full">
       <div
+        // `inert` (native attribute) removes the whole subtree from the
+        // tab order and from find-in-page/AT focus while the overlay is
+        // open — cheaper and more correct than hand-rolling pointer-events
+        // + aria-hidden, and it can't drift out of sync the way two
+        // separate props could.
+        inert={stage === "understand"}
         className={
-          isDesktop
-            ? "flex h-full w-full overflow-hidden relative gap-3"
-            : "flex-1 min-h-0 overflow-y-auto bg-zinc-950"
+          (isDesktop
+            ? "h-full flex overflow-hidden bg-zinc-950 px-3 py-2 gap-3"
+            : "flex flex-col h-full overflow-hidden") +
+          (stage === "understand" ? " blur-sm brightness-75 scale-[0.99] transition-all duration-300" : " transition-all duration-300")
         }
       >
-        {/* ── Info panel (Problem tab on mobile) ─────────────────────────── */}
+        {!isDesktop && (
+          <MobileTabBar active={mobileTab} onChange={setMobileTab} hasResults={hasResults} resultsEnabled={hasResults} />
+        )}
+
         <div
           className={
             isDesktop
-              ? "h-full overflow-hidden"
-              : panelVisible.info
-                ? "p-4 bg-zinc-900 min-h-full"
-                : "hidden"
+              ? "flex h-full w-full overflow-hidden relative gap-3"
+              : "flex-1 min-h-0 overflow-y-auto bg-zinc-950"
           }
-          style={isDesktop ? { width: `${problemWidth}%` } : undefined}
         >
+          {/* ── Info panel (Problem tab on mobile) ─────────────────────────── */}
           <div
             className={
               isDesktop
-                ? "h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-xl"
-                : undefined
+                ? "h-full overflow-hidden"
+                : panelVisible.info
+                  ? "p-4 bg-zinc-900 min-h-full"
+                  : "hidden"
             }
+            style={isDesktop ? { width: `${problemWidth}%` } : undefined}
           >
-            {!isDesktop && !isSolved && (
-              <div className="mb-4">
-                <span className="text-xs font-mono text-zinc-500">⏱ {timerFormatted}</span>
-              </div>
-            )}
-            <ProblemHeader problem={problem} isSolved={isSolved} />
-            <ProblemInfo problem={problem} />
-            {!isDesktop && (
-              <Button onClick={() => setMobileTab("code")} className="mt-6 w-full">
-                Start Coding →
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Resize handle (horizontal — problem/editor split). Stateless UI,
-            safe to actually unmount when not on desktop. */}
-        {isDesktop && (
-          <div
-            className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              const startX = e.clientX;
-              const startWidth = problemWidth;
-              const handleMove = (moveEvent) => {
-                const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
-                setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
-              };
-              const handleUp = () => {
-                window.removeEventListener("mousemove", handleMove);
-                window.removeEventListener("mouseup", handleUp);
-              };
-              window.addEventListener("mousemove", handleMove);
-              window.addEventListener("mouseup", handleUp);
-            }}
-          />
-        )}
-
-        {/* ── Editor + Workspace column ───────────────────────────────────
-            `display: contents` on mobile removes this wrapper from layout
-            (children stack directly in the scroll container above) without
-            removing it — or them — from the DOM/React tree. */}
-        <div
-          className={isDesktop ? "h-full flex flex-col overflow-hidden" : "contents"}
-          style={isDesktop ? { width: `${100 - problemWidth}%` } : undefined}
-        >
-          {error && (
             <div
               className={
                 isDesktop
-                  ? "flex-shrink-0 pb-2"
-                  : panelVisible.editor
-                    ? "px-4 pt-3 flex-shrink-0"
-                    : "hidden"
+                  ? "h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-xl"
+                  : undefined
               }
             >
-              <ErrorBanner message={error} />
-            </div>
-          )}
-
-          {/* Editor — always mounted, never remounted, regardless of
-              breakpoint or active mobile tab. This is the fix. */}
-          <div
-            className={
-              isDesktop
-                ? "flex-shrink-0 pb-2"
-                : panelVisible.editor
-                  ? "flex flex-col h-full min-h-[calc(100vh-108px)]"
-                  : "hidden"
-            }
-            style={isDesktop ? { height: `${editorHeight}px` } : undefined}
-          >
-            <ErrorBoundary
-              fallback={
-                <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
-                  Editor failed to load.
+              {!isDesktop && !isSolved && (
+                <div className="mb-4">
+                  <span className="text-xs font-mono text-zinc-500">⏱ {timerFormatted}</span>
                 </div>
-              }
-            >
-              <ProblemEditor
-                slug={slug}
-                language={language}
-                setLanguage={handleLanguageChange}
-                code={code}
-                setCode={setCode}
-                customInput={customInput}
-                setCustomInput={setCustomInput}
-                onRun={handleRunCode}
-                onSubmit={handleSubmitCode}
-                onReset={handleResetCode}
-                running={running}
-                submitting={submitting}
-              />
-            </ErrorBoundary>
+              )}
+              <ProblemHeader problem={problem} isSolved={isSolved} />
+              <ProblemInfo problem={problem} />
+              {!isDesktop && (
+                <Button onClick={() => setMobileTab("code")} className="mt-6 w-full">
+                  Start Coding →
+                </Button>
+              )}
+            </div>
           </div>
 
-          {/* Resize handle (vertical — editor/results split). Stateless UI,
+          {/* Resize handle (horizontal — problem/editor split). Stateless UI,
               safe to actually unmount when not on desktop. */}
           {isDesktop && (
             <div
-              className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors mb-2"
+              className="w-1 mx-2 cursor-col-resize bg-zinc-800/40 rounded-full hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors"
               onMouseDown={(e) => {
                 e.preventDefault();
-                const startY = e.clientY;
-                const startHeight = editorHeight;
+                const startX = e.clientX;
+                const startWidth = problemWidth;
                 const handleMove = (moveEvent) => {
-                  const delta = moveEvent.clientY - startY;
-                  setEditorHeight(Math.min(600, Math.max(200, startHeight + delta)));
+                  const delta = ((moveEvent.clientX - startX) / window.innerWidth) * 100;
+                  setProblemWidth(Math.min(45, Math.max(20, startWidth + delta)));
                 };
                 const handleUp = () => {
                   window.removeEventListener("mousemove", handleMove);
@@ -244,36 +184,136 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
             />
           )}
 
-          {/* Workspace/results — always mounted, never remounted. */}
+          {/* ── Editor + Workspace column ───────────────────────────────────
+              `display: contents` on mobile removes this wrapper from layout
+              (children stack directly in the scroll container above) without
+              removing it — or them — from the DOM/React tree. */}
           <div
-            className={
-              isDesktop
-                ? "flex-1 min-h-0 flex flex-col"
-                : panelVisible.workspace
-                  ? "p-4"
-                  : "hidden"
-            }
+            className={isDesktop ? "h-full flex flex-col overflow-hidden" : "contents"}
+            style={isDesktop ? { width: `${100 - problemWidth}%` } : undefined}
           >
-            <SubmissionResultBanner submitInfo={submitInfo} />
+            {error && (
+              <div
+                className={
+                  isDesktop
+                    ? "flex-shrink-0 pb-2"
+                    : panelVisible.editor
+                      ? "px-4 pt-3 flex-shrink-0"
+                      : "hidden"
+                }
+              >
+                <ErrorBanner message={error} />
+              </div>
+            )}
+
+            {/* Editor — always mounted, never remounted, regardless of
+                breakpoint, active mobile tab, or stage. Before validation is
+                earned, it fills the whole column on desktop (no split
+                reserved) — the fixed height + resize handle only appear
+                once there's something to split it with. */}
             <div
               className={
                 isDesktop
-                  ? "flex-1 min-h-0 overflow-hidden bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl"
-                  : undefined
+                  ? showValidation
+                    ? "flex-shrink-0 pb-2"
+                    : "flex-1 min-h-0 pb-2"
+                  : panelVisible.editor
+                    ? "flex flex-col h-full min-h-[calc(100vh-108px)]"
+                    : "hidden"
               }
+              style={isDesktop && showValidation ? { height: `${editorHeight}px` } : undefined}
             >
-              <WorkspacePanel
-                runResults={runResults}
-                submitInfo={submitInfo}
-                isRunning={running}
-                isSubmitting={submitting}
-                forceTab={forceTab}
-                problem={problem}
-              />
+              <ErrorBoundary
+                fallback={
+                  <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                    Editor failed to load.
+                  </div>
+                }
+              >
+                <ProblemEditor
+                  slug={slug}
+                  language={language}
+                  setLanguage={handleLanguageChange}
+                  code={code}
+                  setCode={setCode}
+                  customInput={customInput}
+                  setCustomInput={setCustomInput}
+                  onRun={handleRunCode}
+                  onSubmit={handleSubmitCode}
+                  onReset={handleResetCode}
+                  running={running}
+                  submitting={submitting}
+                />
+              </ErrorBoundary>
             </div>
+
+            {/* Resize handle (vertical — editor/results split). Only meaningful
+                once there IS a split — before validation, unmounting this is
+                safe (stateless UI). */}
+            {isDesktop && showValidation && (
+              <div
+                className="w-full h-2 cursor-row-resize rounded-full bg-zinc-800/40 hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors mb-2"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  const startY = e.clientY;
+                  const startHeight = editorHeight;
+                  const handleMove = (moveEvent) => {
+                    const delta = moveEvent.clientY - startY;
+                    setEditorHeight(Math.min(600, Math.max(200, startHeight + delta)));
+                  };
+                  const handleUp = () => {
+                    window.removeEventListener("mousemove", handleMove);
+                    window.removeEventListener("mouseup", handleUp);
+                  };
+                  window.addEventListener("mousemove", handleMove);
+                  window.addEventListener("mouseup", handleUp);
+                }}
+              />
+            )}
+
+            {/* Workspace/results — pretend it doesn't exist until the student
+                has actually run or submitted something (per the original
+                spec: "do NOT reserve empty space"). Genuinely unmounted, not
+                just hidden — it holds no state worth preserving (its own
+                tab selection resets harmlessly), unlike the editor above. */}
+            {isDesktop ? (
+              showValidation && (
+                <div className="flex-1 min-h-0 flex flex-col animate-validate-panel-in">
+                  <SubmissionResultBanner submitInfo={submitInfo} />
+                  <div className="flex-1 min-h-0 overflow-hidden bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl">
+                    <WorkspacePanel
+                      runResults={runResults}
+                      submitInfo={submitInfo}
+                      isRunning={running}
+                      isSubmitting={submitting}
+                      forceTab={forceTab}
+                      problem={problem}
+                    />
+                  </div>
+                </div>
+              )
+            ) : (
+              panelVisible.workspace && (
+                <div className="p-4 animate-validate-panel-in">
+                  <SubmissionResultBanner submitInfo={submitInfo} />
+                  <WorkspacePanel
+                    runResults={runResults}
+                    submitInfo={submitInfo}
+                    isRunning={running}
+                    isSubmitting={submitting}
+                    forceTab={forceTab}
+                    problem={problem}
+                  />
+                </div>
+              )
+            )}
           </div>
         </div>
       </div>
+
+      {stage === "understand" && (
+        <ProblemUnderstandOverlay problem={problem} isSolved={isSolved} onProceed={enterBuild} />
+      )}
     </div>
   );
 }

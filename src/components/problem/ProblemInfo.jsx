@@ -3,7 +3,7 @@ import HintSystem from "./HintSystem.jsx";
 import EditorialPanel from "./EditorialPanel.jsx";
 import RelatedProblems from "./RelatedProblems.jsx";
 
-function ProblemInfo({ problem }) {
+function ProblemInfo({ problem, variant = "full" }) {
   if (!problem) return null;
 
   return (
@@ -79,17 +79,21 @@ function ProblemInfo({ problem }) {
         </section>
       )}
 
-      {/* Progressive hints */}
-      <HintSystem hints={problem.hints} />
+      {variant === "full" && (
+        <>
+          {/* Progressive hints */}
+          <HintSystem hints={problem.hints} />
 
-      {/* Editorial — full write-up, gated behind solve-to-unlock/premium */}
-      <EditorialPanel slug={problem.slug} />
+          {/* Editorial — full write-up, gated behind solve-to-unlock/premium */}
+          <EditorialPanel slug={problem.slug} />
 
-      {/* Related problems */}
-      <RelatedProblems
-        relatedSlugs={problem.relatedProblems}
-        currentSlug={problem.slug}
-      />
+          {/* Related problems */}
+          <RelatedProblems
+            relatedSlugs={problem.relatedProblems}
+            currentSlug={problem.slug}
+          />
+        </>
+      )}
     </div>
   );
 }
