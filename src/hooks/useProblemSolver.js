@@ -37,9 +37,16 @@ function deriveForceTab(runResults, submitInfo) {
  * first solve, and the panel-resize/mobile-tab UI state the views need.
  */
 export function useProblemSolver({ problem, slug, contestId }) {
-  const { solvedProblems, addSubmission, markProblemSolved } = useAppContext();
+  const { solvedProblems, addSubmission, markProblemSolved, preferences } = useAppContext();
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
+
+  // When the "start with blank editor" preference is on, the starter-code
+  // template is simply never used as a fallback — loadSavedCode still takes
+  // priority in all three spots below, so an in-progress attempt is never
+  // discarded just because this preference is on.
+  const starterFor = (lang) =>
+    preferences.blankEditorByDefault ? "" : (problem.starterCode?.[lang] ?? "");
 
   const { editorHeight, setEditorHeight } = useVerticalResize();
   const [language, setLanguage] = useState(() => loadLanguage(slug));
@@ -48,7 +55,7 @@ export function useProblemSolver({ problem, slug, contestId }) {
     return loadSavedCode(
       slug,
       savedLanguage,
-      problem.starterCode?.[savedLanguage] ?? ""
+      starterFor(savedLanguage)
     );
   });
   const [customInput, setCustomInput] = useState("");
@@ -81,16 +88,17 @@ export function useProblemSolver({ problem, slug, contestId }) {
       loadSavedCode(
         slug,
         nextLanguage,
-        problem.starterCode?.[nextLanguage] ?? ""
+        starterFor(nextLanguage)
       )
     );
   };
 
   // Resets the buffer back to the problem's starter template for the
-  // current language — and persists that reset immediately, so refreshing
-  // the page right after doesn't bring back the discarded attempt.
+  // current language (or blank, if that preference is on) — and persists
+  // that reset immediately, so refreshing the page right after doesn't
+  // bring back the discarded attempt.
   const handleResetCode = () => {
-    const starter = problem.starterCode?.[language] ?? "";
+    const starter = starterFor(language);
     setCode(starter);
     saveCode(slug, language, starter);
   };

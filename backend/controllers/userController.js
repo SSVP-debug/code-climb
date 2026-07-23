@@ -45,21 +45,30 @@ function serializeUser(userDoc) {
       expectedGraduation: userDoc.recruiterSnapshot?.expectedGraduation ?? null,
     },
 
+    preferences: {
+      blankEditorByDefault: userDoc.preferences?.blankEditorByDefault ?? false,
+      hideDifficultyLabels: userDoc.preferences?.hideDifficultyLabels ?? false,
+    },
+
     pinnedProblems: userDoc.pinnedProblems || [],
   };
 }
 
 export async function getMe(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
   res.json(serializeUser(req.userDoc));
 }
 
 export async function updateMe(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
   const {
     leetcodeUsername,
     displayName,
     username,
     emailPreferences,
     recruiterSnapshot,
+    preferences,
   } = req.body;
 
   if (leetcodeUsername !== undefined) {
@@ -150,6 +159,28 @@ export async function updateMe(req, res) {
     req.userDoc.recruiterSnapshot = next;
   }
 
+  // ── Editor + display preferences ────────────────────────────────────
+  if (preferences !== undefined) {
+    const { blankEditorByDefault, hideDifficultyLabels } = preferences;
+    const next = { ...(req.userDoc.preferences?.toObject?.() ?? req.userDoc.preferences ?? {}) };
+
+    if (blankEditorByDefault !== undefined) {
+      if (typeof blankEditorByDefault !== "boolean") {
+        return res.status(400).json({ error: "blankEditorByDefault must be a boolean" });
+      }
+      next.blankEditorByDefault = blankEditorByDefault;
+    }
+
+    if (hideDifficultyLabels !== undefined) {
+      if (typeof hideDifficultyLabels !== "boolean") {
+        return res.status(400).json({ error: "hideDifficultyLabels must be a boolean" });
+      }
+      next.hideDifficultyLabels = hideDifficultyLabels;
+    }
+
+    req.userDoc.preferences = next;
+  }
+
   await req.userDoc.save();
 
   // Public profile is cached for 2 minutes (see publicProfileController).
@@ -165,6 +196,8 @@ export async function updateMe(req, res) {
 const MAX_PINNED_PROBLEMS = 6;
 
 export async function pinProblem(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
   const { slug } = req.body;
 
   if (!slug || typeof slug !== "string") {
@@ -211,6 +244,8 @@ export async function pinProblem(req, res) {
 }
 
 export async function unpinProblem(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
   const { slug } = req.params;
 
   req.userDoc.pinnedProblems = req.userDoc.pinnedProblems.filter((p) => p.slug !== slug);

@@ -139,6 +139,13 @@ function AppContextProvider({ children }) {
     expectedGraduation: null,
   });
 
+  // Editor + display preferences (Settings page) — same hydration source
+  // and update pattern as recruiterSnapshot above.
+  const [preferences, setPreferences] = useState({
+    blankEditorByDefault: false,
+    hideDifficultyLabels: false,
+  });
+
   // Phase 9E — consolidated here instead of SettingsPage's own fetch
   // (single source of truth; also needed by ProfileCompletion).
   const [username, setUsername] = useState("");
@@ -258,6 +265,13 @@ function AppContextProvider({ children }) {
             availableForWork: bootUser.recruiterSnapshot.availableForWork ?? false,
             preferredRole: bootUser.recruiterSnapshot.preferredRole ?? null,
             expectedGraduation: bootUser.recruiterSnapshot.expectedGraduation ?? null,
+          });
+        }
+
+        if (bootUser?.preferences) {
+          setPreferences({
+            blankEditorByDefault: bootUser.preferences.blankEditorByDefault ?? false,
+            hideDifficultyLabels: bootUser.preferences.hideDifficultyLabels ?? false,
           });
         }
 
@@ -507,6 +521,22 @@ function AppContextProvider({ children }) {
   }
 
   // --------------------------------------------------
+  // PREFERENCES (Settings page — editor + display)
+  // --------------------------------------------------
+
+  async function updatePreferences(patch) {
+    const result = await apiFetch("/api/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ preferences: patch }),
+    });
+    setPreferences({
+      blankEditorByDefault: result.preferences?.blankEditorByDefault ?? false,
+      hideDifficultyLabels: result.preferences?.hideDifficultyLabels ?? false,
+    });
+    return result.preferences;
+  }
+
+  // --------------------------------------------------
   // PINNED PROBLEMS (Phase 9D)
   // --------------------------------------------------
 
@@ -552,6 +582,8 @@ function AppContextProvider({ children }) {
     joinedDate,
     recruiterSnapshot,
     updateRecruiterSnapshot,
+    preferences,
+    updatePreferences,
     pinnedProblems,
     pinProblem,
     unpinProblem,

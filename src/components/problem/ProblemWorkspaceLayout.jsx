@@ -55,6 +55,7 @@ import Button from "../ui/Button";
 import MobileTabBar from "./MobileTabBar";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useWorkspaceStage } from "../../hooks/useWorkspaceStage";
+import { useAppContext } from "../../hooks/useAppContext";
 import { WORKSPACE_V2_ENABLED } from "../../config/featureFlags";
 
 // Tailwind's default `lg` breakpoint — kept as one constant so the JS
@@ -64,6 +65,7 @@ const DESKTOP_QUERY = "(min-width: 1024px)";
 
 function ProblemWorkspaceLayout({ problem, slug, solver }) {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const { preferences } = useAppContext();
 
   const {
     isSolved,
@@ -177,7 +179,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
                   <span className="text-xs font-mono text-zinc-500">⏱ {timerFormatted}</span>
                 </div>
               )}
-              <ProblemHeader problem={problem} isSolved={isSolved} />
+              <ProblemHeader problem={problem} isSolved={isSolved} hideDifficulty={preferences.hideDifficultyLabels} />
               <ProblemInfo problem={problem} />
               {!isDesktop && (
                 <Button onClick={() => setMobileTab("code")} className="mt-6 w-full">
@@ -348,7 +350,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
       </div>
 
       {stage === "understand" && (
-        <ProblemUnderstandOverlay problem={problem} isSolved={isSolved} onProceed={enterBuild} />
+        <ProblemUnderstandOverlay problem={problem} isSolved={isSolved} hideDifficulty={preferences.hideDifficultyLabels} onProceed={enterBuild} />
       )}
     </div>
   );

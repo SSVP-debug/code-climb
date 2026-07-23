@@ -88,6 +88,35 @@ function IntegrationRow({ integration }) {
   );
 }
 
+// Same switch markup as RecruiterSnapshot.jsx's toggle — kept visually
+// consistent across the app rather than inventing a second toggle style.
+function ToggleRow({ label, description, checked, saving, onToggle }) {
+  return (
+    <div className="flex items-center justify-between bg-zinc-800 rounded-xl p-4">
+      <div className="pr-4">
+        <p className="font-medium text-sm">{label}</p>
+        <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={saving}
+        onClick={onToggle}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${
+          checked ? "bg-green-500" : "bg-zinc-700"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
 function SettingsPage() {
     const { theme, themeId, setTheme } = useTheme();
     const isDefaultTheme = themeId === DEFAULT_THEME;
@@ -101,10 +130,14 @@ function SettingsPage() {
         setUsername: setCurrentUsername,
         leetcodeUsername,
         leetcodeStats,
+        preferences,
+        updatePreferences,
     } = useAppContext();
 
     const [username, setUsernameDraft] = useState(currentUsername);
     const [savingUsername, setSavingUsername] = useState(false);
+    const [savingBlankEditor, setSavingBlankEditor] = useState(false);
+    const [savingHideDifficulty, setSavingHideDifficulty] = useState(false);
 
     useEffect(() => {
         setUsernameDraft(currentUsername);
@@ -133,6 +166,32 @@ function SettingsPage() {
     function handleCopyProfileLink() {
         navigator.clipboard.writeText(`${window.location.origin}/u/${currentUsername}`);
         toast.success("Profile link copied!");
+    }
+
+    async function handleToggleBlankEditor() {
+        const next = !preferences.blankEditorByDefault;
+        setSavingBlankEditor(true);
+        try {
+            await updatePreferences({ blankEditorByDefault: next });
+            toast.success(next ? "Editor will start blank" : "Editor will start with starter code");
+        } catch (err) {
+            toast.error(err.message || "Failed to save preference");
+        } finally {
+            setSavingBlankEditor(false);
+        }
+    }
+
+    async function handleToggleHideDifficulty() {
+        const next = !preferences.hideDifficultyLabels;
+        setSavingHideDifficulty(true);
+        try {
+            await updatePreferences({ hideDifficultyLabels: next });
+            toast.success(next ? "Difficulty labels hidden" : "Difficulty labels shown");
+        } catch (err) {
+            toast.error(err.message || "Failed to save preference");
+        } finally {
+            setSavingHideDifficulty(false);
+        }
     }
 
     function downloadProfilePDF() {
@@ -272,18 +331,26 @@ function SettingsPage() {
                     <h2 className="text-xl font-semibold mb-2">
                         Editor
                     </h2>
-
-                    <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={false}
-                            readOnly
-                        />
-                        <span>Start with blank editor without starter code</span>
-                    </label>
-                    <p className="mt-2 text-sm text-zinc-500">
-                        Preference will be available after backend support.
+                    <p className="text-zinc-400 text-sm mb-4">
+                        Preferences for how problems and the code editor behave.
                     </p>
+
+                    <div className="space-y-3">
+                        <ToggleRow
+                            label="Start with blank editor"
+                            description="Skip the starter code template and begin from an empty file on every new problem. Any code you've already saved for a problem is never discarded by this."
+                            checked={preferences.blankEditorByDefault}
+                            saving={savingBlankEditor}
+                            onToggle={handleToggleBlankEditor}
+                        />
+                        <ToggleRow
+                            label="Disable difficulty labels"
+                            description="Hides the Easy / Medium / Hard badge in the question panel — useful if the label biases how you approach a problem."
+                            checked={preferences.hideDifficultyLabels}
+                            saving={savingHideDifficulty}
+                            onToggle={handleToggleHideDifficulty}
+                        />
+                    </div>
                 </section>
 
                 <section className="bg-red-950/30 border border-red-800 rounded-2xl p-6">

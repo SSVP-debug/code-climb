@@ -261,6 +261,12 @@ const userSchema = new mongoose.Schema(
     },
     lastWeeklyReviewSentAt: { type: Date, default: null },
 
+    // ── Editor + display preferences (Settings page) ─────────────────────
+    preferences: {
+      blankEditorByDefault: { type: Boolean, default: false }, // skip starter code on new problems
+      hideDifficultyLabels: { type: Boolean, default: false }, // hide Easy/Medium/Hard badge on problem pages
+    },
+
     dailyChallengeHistory: {
       type: [
         {

@@ -22,7 +22,7 @@ function CompanyChip({ name }) {
   );
 }
 
-function ProblemHeader({ problem, isSolved }) {
+function ProblemHeader({ problem, isSolved, hideDifficulty = false }) {
   if (!problem) return null;
 
   const companies = problem.companies ?? [];
@@ -43,15 +43,17 @@ function ProblemHeader({ problem, isSolved }) {
 
       {/* Meta row: difficulty + topic + time */}
       <div className="flex items-center gap-3 mt-3 flex-wrap">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-          problem.difficulty === "Easy"
-            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-            : problem.difficulty === "Medium"
-            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-            : "bg-rose-500/10 text-rose-400 border-rose-500/20"
-        }`}>
-          {problem.difficulty}
-        </span>
+        {!hideDifficulty && (
+          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+            problem.difficulty === "Easy"
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+              : problem.difficulty === "Medium"
+              ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+              : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+          }`}>
+            {problem.difficulty}
+          </span>
+        )}
 
         <span className="px-3 py-1 bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 rounded-full text-xs font-medium">
           {problem.topic}

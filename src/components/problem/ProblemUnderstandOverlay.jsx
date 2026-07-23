@@ -19,7 +19,7 @@ import ProblemHeader from "./ProblemHeader";
 import ProblemInfo from "./ProblemInfo";
 import Button from "../ui/Button";
 
-function ProblemUnderstandOverlay({ problem, isSolved, onProceed }) {
+function ProblemUnderstandOverlay({ problem, isSolved, hideDifficulty, onProceed }) {
   return (
     <div
       className="absolute inset-0 z-40 flex items-center justify-center p-4 sm:p-8 bg-black/50"
@@ -29,7 +29,7 @@ function ProblemUnderstandOverlay({ problem, isSolved, onProceed }) {
         className="relative w-full max-w-2xl max-h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-6 sm:p-8 animate-understand-card-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <ProblemHeader problem={problem} isSolved={isSolved} />
+        <ProblemHeader problem={problem} isSolved={isSolved} hideDifficulty={hideDifficulty} />
         <ProblemInfo problem={problem} variant="reading" />
 
         <Button onClick={onProceed} className="mt-6 w-full">

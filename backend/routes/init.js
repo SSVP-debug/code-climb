@@ -82,6 +82,10 @@ router.get("/", async (req, res) => {
           preferredRole: req.userDoc.recruiterSnapshot?.preferredRole ?? null,
           expectedGraduation: req.userDoc.recruiterSnapshot?.expectedGraduation ?? null,
         },
+        preferences: {
+          blankEditorByDefault: req.userDoc.preferences?.blankEditorByDefault ?? false,
+          hideDifficultyLabels: req.userDoc.preferences?.hideDifficultyLabels ?? false,
+        },
         pinnedProblems: req.userDoc.pinnedProblems || [],
       },
 
