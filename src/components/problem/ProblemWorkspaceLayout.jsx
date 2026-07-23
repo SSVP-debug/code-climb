@@ -31,6 +31,17 @@
  * because a few desktop-only values (problemWidth/editorHeight, in pixels
  * and percent, from the resize-drag hooks) need to be applied or withheld
  * in JS, not just CSS.
+ *
+ * ── Batch 2: the Understand → Build → Validate stage machine ──────────────
+ * `useWorkspaceStage` drives a Stage-1 reading overlay and progressive
+ * testcase reveal — see that hook and ProblemUnderstandOverlay.jsx.
+ *
+ * ── Batch 3: WORKSPACE_V2_ENABLED ──────────────────────────────────────────
+ * The Batch 2 behavior is gated behind a feature flag (src/config/
+ * featureFlags.js). Flag OFF pins `stage` to "build" and `showValidation`
+ * to always-true, which reproduces the exact pre-redesign layout (panel
+ * always visible, no overlay) without a second copy of this component —
+ * there is deliberately only ever one workspace component to maintain.
  */
 import ErrorBanner from "../ErrorBanner";
 import ErrorBoundary from "../ErrorBoundary";
@@ -44,6 +55,7 @@ import Button from "../ui/Button";
 import MobileTabBar from "./MobileTabBar";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { useWorkspaceStage } from "../../hooks/useWorkspaceStage";
+import { WORKSPACE_V2_ENABLED } from "../../config/featureFlags";
 
 // Tailwind's default `lg` breakpoint — kept as one constant so the JS
 // breakpoint and the (few) remaining Tailwind `lg:` classes below can never
@@ -80,7 +92,15 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
     handleSubmitCode,
   } = solver;
 
-  const { stage, enterBuild } = useWorkspaceStage({ isSolved, hasResults });
+  const stageMachine = useWorkspaceStage({ isSolved, hasResults });
+  // Flag OFF: stage is pinned to "build" so the overlay condition
+  // (`stage === "understand"`) below can never be true, and validation
+  // visibility is pinned to always-on — together this reproduces the
+  // exact pre-redesign behavior with zero duplicated layout code. Flag ON:
+  // the real Understand → Build → Validate progression from the stage
+  // machine.
+  const stage = WORKSPACE_V2_ENABLED ? stageMachine.stage : "build";
+  const enterBuild = stageMachine.enterBuild;
 
   // The single visibility rule for all three panels. Desktop always shows
   // all three (split view); mobile shows exactly the one matching the
@@ -99,7 +119,13 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
   // eyes are on the screen waiting for their result. `stage` still exists
   // and is exposed below for the overlay/blur and any future stage-keyed
   // behavior — this is just the one spot that can't afford the lag.
-  const showValidation = hasResults;
+  // Flag OFF: always true (workspace panel always visible, matching the
+  // pre-redesign layout).
+  const showValidation = WORKSPACE_V2_ENABLED ? hasResults : true;
+
+  // Flag OFF: mobile's Results tab is always clickable, matching the
+  // pre-redesign MobileTabBar (it never gated on having results yet).
+  const resultsTabEnabled = WORKSPACE_V2_ENABLED ? hasResults : true;
 
   return (
     <div className="relative h-full w-full">
@@ -118,7 +144,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
         }
       >
         {!isDesktop && (
-          <MobileTabBar active={mobileTab} onChange={setMobileTab} hasResults={hasResults} resultsEnabled={hasResults} />
+          <MobileTabBar active={mobileTab} onChange={setMobileTab} hasResults={hasResults} resultsEnabled={resultsTabEnabled} />
         )}
 
         <div
