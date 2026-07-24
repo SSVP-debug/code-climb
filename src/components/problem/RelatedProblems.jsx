@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import problems from "../../data/problems.js";
+import { useHideDifficultyLabels } from "../../hooks/useHideDifficultyLabels";
 
 const DIFFICULTY_STYLES = {
   Easy:   "text-emerald-400 border-emerald-500/20 bg-emerald-500/10",
@@ -15,6 +16,7 @@ const DIFFICULTY_STYLES = {
  * Invalid/missing slugs are silently skipped.
  */
 function RelatedProblems({ relatedSlugs, currentSlug }) {
+  const hideDifficulty = useHideDifficultyLabels();
   if (!relatedSlugs || relatedSlugs.length === 0) return null;
 
   const resolved = relatedSlugs
@@ -38,13 +40,15 @@ function RelatedProblems({ relatedSlugs, currentSlug }) {
               {p.title}
             </span>
             <div className="flex items-center gap-2 shrink-0">
-              <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${
-                  DIFFICULTY_STYLES[p.difficulty] ?? "text-zinc-400 border-zinc-700 bg-zinc-800"
-                }`}
-              >
-                {p.difficulty}
-              </span>
+              {!hideDifficulty && (
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                    DIFFICULTY_STYLES[p.difficulty] ?? "text-zinc-400 border-zinc-700 bg-zinc-800"
+                  }`}
+                >
+                  {p.difficulty}
+                </span>
+              )}
               <svg
                 width="14"
                 height="14"

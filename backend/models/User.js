@@ -251,7 +251,16 @@ const userSchema = new mongoose.Schema(
     }],
 
     // ── Referrals (Phase 6 — add here if missing) ────────────────────────
-    referralCode: { type: String, default: null, unique: true, sparse: true },
+    // No `default: null` here on purpose — routes/referral.js generates
+    // this lazily on first use. A sparse unique index only excludes
+    // documents where the field is genuinely ABSENT, not documents where
+    // it's explicitly set to null; `default: null` was setting it on every
+    // new user, so the first user to sign up occupied the index's one
+    // allowed `null` slot and every user created after them failed with
+    // E11000 duplicate key on referralCode_1 the moment their account
+    // record was created — which is why req.userDoc kept ending up null
+    // and every route needing it 503'd with "Database unavailable."
+    referralCode: { type: String, unique: true, sparse: true },
     referredBy: { type: String, default: null },
     referralRewardDays: { type: Number, default: 0 },
 

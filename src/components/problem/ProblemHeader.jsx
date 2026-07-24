@@ -1,5 +1,6 @@
 import React from "react";
 import { Check } from "lucide-react";
+import { useHideDifficultyLabels } from "../../hooks/useHideDifficultyLabels";
 
 const COMPANY_COLORS = {
   Amazon:    "bg-orange-500/10 text-orange-400 border-orange-500/20",
@@ -22,7 +23,8 @@ function CompanyChip({ name }) {
   );
 }
 
-function ProblemHeader({ problem, isSolved, hideDifficulty = false }) {
+function ProblemHeader({ problem, isSolved }) {
+  const hideDifficulty = useHideDifficultyLabels();
   if (!problem) return null;
 
   const companies = problem.companies ?? [];

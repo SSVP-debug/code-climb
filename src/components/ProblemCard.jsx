@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 import { Clock, Star } from "lucide-react";
 
 function ProblemCard({ problem }) {
   const { theme } = useTheme();
+  const hideDifficulty = useHideDifficultyLabels();
 
   const {
     title,
@@ -118,14 +120,16 @@ function ProblemCard({ problem }) {
           </span>
         )}
 
-        <span
-          className={`px-3 py-1 rounded-full border text-xs font-semibold ${difficultyColors[difficulty] ?? "bg-zinc-700 text-zinc-300 border-zinc-600"
-            }`}
-        >
-          {difficulty
-            ? theme.words[difficulty.toLowerCase()] ?? difficulty
-            : "Unknown"}
-        </span>
+        {!hideDifficulty && (
+          <span
+            className={`px-3 py-1 rounded-full border text-xs font-semibold ${difficultyColors[difficulty] ?? "bg-zinc-700 text-zinc-300 border-zinc-600"
+              }`}
+          >
+            {difficulty
+              ? theme.words[difficulty.toLowerCase()] ?? difficulty
+              : "Unknown"}
+          </span>
+        )}
 
         <button
           onClick={(e) => e.preventDefault()}

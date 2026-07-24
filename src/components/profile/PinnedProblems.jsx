@@ -5,6 +5,7 @@ import SectionCard from "../ui/layout/SectionCard";
 import EmptyState from "../ui/feedback/EmptyState";
 import { useAppContext } from "../../hooks/useAppContext";
 import { useProblems } from "../../hooks/useProblems";
+import { useHideDifficultyLabels } from "../../hooks/useHideDifficultyLabels";
 import { useTheme } from "../../context/ThemeContext";
 import { Pin } from "lucide-react";
 
@@ -31,6 +32,7 @@ function PinnedProblems() {
   const { pinnedProblems, pinProblem, unpinProblem, solvedProblems } = useAppContext();
   const { problems } = useProblems();
   const { theme } = useTheme();
+  const hideDifficulty = useHideDifficultyLabels();
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -96,11 +98,13 @@ function PinnedProblems() {
               className="flex items-center justify-between bg-zinc-800 rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700 bg-zinc-800"}`}
-                >
-                  {p.difficulty}
-                </span>
+                {!hideDifficulty && (
+                  <span
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700 bg-zinc-800"}`}
+                  >
+                    {p.difficulty}
+                  </span>
+                )}
                 <Link
                   to={`/problems/${p.slug}`}
                   className="text-sm font-medium truncate hover:text-[var(--theme-primary,#2dd4bf)] transition"
@@ -163,9 +167,11 @@ function PinnedProblems() {
                         className="w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg hover:bg-zinc-800 transition disabled:opacity-50"
                       >
                         <span className="text-sm truncate">{p.title}</span>
-                        <span className={`text-xs px-1.5 py-0.5 rounded-full border flex-shrink-0 ml-2 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700"}`}>
-                          {p.difficulty}
-                        </span>
+                        {!hideDifficulty && (
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full border flex-shrink-0 ml-2 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700"}`}>
+                            {p.difficulty}
+                          </span>
+                        )}
                       </button>
                     ))
                   )}

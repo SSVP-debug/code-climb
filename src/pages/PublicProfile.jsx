@@ -14,6 +14,7 @@ import SectionCard
 import { getLevelProgress } from "../utils/xpLevel";
 import { SITE_URL } from "../config/site.js";
 import LinkedInShareButton from "../components/common/LinkedInShareButton";
+import DifficultyBadge from "../components/profile/public/DifficultyBadge";
 import { Pin } from "lucide-react";
 
 function PublicProfile() {
@@ -316,12 +317,7 @@ function PublicProfile() {
                                 {profile.pinnedProblems.map((p) => (
                                     <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
                                         <span className="text-sm text-zinc-300">{p.title}</span>
-                                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${p.difficulty === "Easy" ? "bg-green-500/10 text-green-400" :
-                                            p.difficulty === "Medium" ? "bg-yellow-500/10 text-yellow-400" :
-                                                "bg-red-500/10 text-red-400"
-                                            }`}>
-                                            {p.difficulty}
-                                        </span>
+                                        <DifficultyBadge difficulty={p.difficulty} />
                                     </div>
                                 ))}
                             </div>
@@ -338,12 +334,7 @@ function PublicProfile() {
                                 {profile.recentSolves.map((solve, i) => (
                                     <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
                                         <span className="text-sm text-zinc-300">{solve.title}</span>
-                                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${solve.difficulty === "Easy" ? "bg-green-500/10 text-green-400" :
-                                            solve.difficulty === "Medium" ? "bg-yellow-500/10 text-yellow-400" :
-                                                "bg-red-500/10 text-red-400"
-                                            }`}>
-                                            {solve.difficulty}
-                                        </span>
+                                        <DifficultyBadge difficulty={solve.difficulty} />
                                     </div>
                                 ))}
                             </div>

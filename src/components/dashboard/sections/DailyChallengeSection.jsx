@@ -5,12 +5,14 @@ import {
 } from "../../../utils/dailyChallenge";
 
 import { useTheme } from "../../../context/ThemeContext";
+import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
 import SectionCard from "../../ui/layout/SectionCard";
 import Button from "../../ui/Button";
 import { CheckCircle2 } from "lucide-react";
 
 function DailyChallengeSection() {
   const { theme } = useTheme();
+  const hideDifficulty = useHideDifficultyLabels();
   const [challenge, setChallenge] = useState(null);
 
   const {
@@ -68,17 +70,21 @@ function DailyChallengeSection() {
 
         <div className="text-right flex-shrink-0">
 
-          <p className="text-zinc-400 text-sm">
+          {!hideDifficulty && (
+            <>
+              <p className="text-zinc-400 text-sm">
 
-            {theme.words.difficulty}
+                {theme.words.difficulty}
 
-          </p>
+              </p>
 
-          <h2 className="text-xl font-semibold mt-2">
+              <h2 className="text-xl font-semibold mt-2">
 
-            {challenge.difficulty}
+                {challenge.difficulty}
 
-          </h2>
+              </h2>
+            </>
+          )}
 
         </div>
 

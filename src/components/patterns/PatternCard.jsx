@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useHideDifficultyLabels } from "../../hooks/useHideDifficultyLabels";
 
 // Static lookup — Tailwind's JIT scanner needs literal class strings in
 // source, so this can't be built with a template literal like
@@ -24,6 +25,7 @@ const DIFFICULTY_BADGE = {
 };
 
 function PatternCard({ pattern, solved, total, onClick }) {
+  const hideDifficulty = useHideDifficultyLabels();
   const colors = COLOR_CLASSES[pattern.color] || COLOR_CLASSES.green;
   const percent = total > 0 ? Math.round((solved / total) * 100) : 0;
   const complete = total > 0 && solved >= total;
@@ -41,11 +43,13 @@ function PatternCard({ pattern, solved, total, onClick }) {
 
       <div className="flex items-start justify-between gap-3">
         <span className="text-3xl">{pattern.icon}</span>
-        <span
-          className={`text-[10px] font-semibold uppercase tracking-wide rounded-full border px-2 py-0.5 ${DIFFICULTY_BADGE[pattern.difficulty] || DIFFICULTY_BADGE.Beginner}`}
-        >
-          {pattern.difficulty}
-        </span>
+        {!hideDifficulty && (
+          <span
+            className={`text-[10px] font-semibold uppercase tracking-wide rounded-full border px-2 py-0.5 ${DIFFICULTY_BADGE[pattern.difficulty] || DIFFICULTY_BADGE.Beginner}`}
+          >
+            {pattern.difficulty}
+          </span>
+        )}
       </div>
 
       <h3 className="mt-3 font-semibold text-white group-hover:underline">

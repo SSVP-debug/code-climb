@@ -5,6 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import Button from "../components/ui/Button";
+import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 
 function formatTime(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -16,6 +17,7 @@ function formatTime(ms) {
 export default function InterviewModePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const hideDifficulty = useHideDifficultyLabels();
 
   const [session, setSession]       = useState(null);
   const [code, setCode]             = useState("// Think out loud — explain your approach before coding.\n");
@@ -152,7 +154,9 @@ export default function InterviewModePage() {
         <div className="flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
           <div>
             <h1 className="text-lg font-bold text-white">{session?.problem?.title}</h1>
-            <p className="text-xs text-zinc-500">Live Interview Mode · {session?.problem?.difficulty}</p>
+            <p className="text-xs text-zinc-500">
+              Live Interview Mode{!hideDifficulty && session?.problem?.difficulty ? ` · ${session.problem.difficulty}` : ""}
+            </p>
           </div>
           <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono font-bold text-lg ${
             urgent ? "bg-red-500/20 text-red-400 animate-pulse" : "bg-zinc-800 text-green-400"

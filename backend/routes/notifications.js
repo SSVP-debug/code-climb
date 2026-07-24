@@ -10,6 +10,7 @@ const router = Router();
 
 // GET /api/notifications?limit=20&before=<ISO date>&unreadOnly=true
 router.get("/", async (req, res) => {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
   try {
     const { limit, before, unreadOnly } = req.query;
     const notifications = await listNotifications(req.userDoc._id, {
@@ -26,6 +27,7 @@ router.get("/", async (req, res) => {
 
 // GET /api/notifications/unread-count — cheap poll target for the bell badge
 router.get("/unread-count", async (req, res) => {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
   try {
     const count = await getUnreadCount(req.userDoc._id);
     return res.json({ count });
@@ -37,6 +39,7 @@ router.get("/unread-count", async (req, res) => {
 
 // POST /api/notifications/:id/read
 router.post("/:id/read", async (req, res) => {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
   try {
     await markAsRead(req.userDoc._id, req.params.id);
     return res.json({ ok: true });
@@ -48,6 +51,7 @@ router.post("/:id/read", async (req, res) => {
 
 // POST /api/notifications/read-all
 router.post("/read-all", async (req, res) => {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
   try {
     await markAllAsRead(req.userDoc._id);
     return res.json({ ok: true });
