@@ -90,3 +90,16 @@ jobs:
         # backend/test/README.md and the *.test.js files alongside the
         # modules they cover), so a failing one should fail the pipeline
         # like any other CI check, not be silently ignored.
+
+      - name: Run backend integration tests (real in-memory MongoDB)
+        run: npm run test:integration -- --reporter=verbose
+        env:
+          NODE_ENV: test
+          FIREBASE_PROJECT_ID:  test
+          FIREBASE_CLIENT_EMAIL: test@test.iam.gserviceaccount.com
+          FIREBASE_PRIVATE_KEY:  "-----BEGIN RSA PRIVATE KEY-----\nMIItest\n-----END RSA PRIVATE KEY-----\n"
+        # No MONGODB_URI here — mongodb-memory-server supplies its own URI at
+        # runtime; these tests import the User model directly rather than
+        # going through config/db.js's connectDB(). See backend/test/README.md,
+        # "Integration tier" section, for why this tier exists separately from
+        # the mock-based npm test suite above.

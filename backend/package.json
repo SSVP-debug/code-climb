@@ -14,7 +14,8 @@
     "backfill-xp": "node scripts/backfillXP.js",
     "weekly-review": "node scripts/sendWeeklyReviewEmails.js",
     "weekly-review:dry-run": "node scripts/sendWeeklyReviewEmails.js --dry-run",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.js"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "vitest": "^3.2.4"
   }

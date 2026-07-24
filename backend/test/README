@@ -57,3 +57,19 @@ npm test
 push/PR (see `.github/workflows/ci.yml`) and — as of this change — the
 job's `continue-on-error` was removed, so a failing backend test now fails
 the pipeline.
+
+## Integration tier (`*.integration.test.js`)
+
+A second, smaller test tier for the small number of behaviors that are genuinely
+about MongoDB semantics rather than application decision logic — sparse/unique index
+enforcement being the motivating case (see `models/User.integration.test.js` and the
+referralCode incident documented in `models/User.js`). Uses `mongodb-memory-server`
+for a real, in-memory MongoDB instance — no mocks, no external service required.
+
+Run with `npm run test:integration` (config: `vitest.integration.config.js`). Kept
+separate from `npm test` so the fast unit suite's speed and hermeticity are
+unaffected; CI runs both as separate steps (see `.github/workflows/ci.yml`).
+
+Add to this tier only when a mock genuinely can't express the behavior under test
+(index enforcement, real query semantics). Default to the mock-based unit style for
+everything else — that's still the right tool for testing decision logic.

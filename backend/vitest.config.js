@@ -11,6 +11,6 @@ export default defineConfig({
     environment: "node",
     globals: true,
     include: ["**/*.test.js"],
-    exclude: ["node_modules", "problems"],
+    exclude: ["node_modules", "problems", "**/*.integration.test.js"],
   },
 });
