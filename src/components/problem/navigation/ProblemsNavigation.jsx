@@ -3,10 +3,17 @@ import {
   Shapes,
   ListChecks,
   Bookmark,
+  Map,
 } from "lucide-react";
 import { useTheme } from "../../../context/ThemeContext";
 
 const navigationItems = [
+  {
+    id: "learning-paths",
+    label: "Learning Paths",
+    description: "Your guided roadmap",
+    icon: Map,
+  },
   {
     id: "browse",
     label: "Browse",
@@ -34,7 +41,6 @@ const navigationItems = [
 ];
 
 // Future items — uncomment when ready:
-// { id: "roadmaps", label: "Roadmaps", description: "Structured learning paths", icon: Map }
 // { id: "company",  label: "Company Tracks", description: "Interview prep by company", icon: Building2 }
 
 // orientation="vertical" (default): full card list, used in the desktop

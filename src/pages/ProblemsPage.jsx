@@ -18,13 +18,15 @@ import BrowseView from "../components/problem/browse/BrowseView";
 import PatternView from "../components/patterns/PatternView";
 import PlaylistView from "../components/problem/playlists/PlaylistView";
 import SavedView from "../components/problem/saved/SavedView";
+import LearningPathsView from "../components/problem/learning-paths/LearningPathsView";
 
-// View registry — add Roadmaps, Company Tracks, Revision, AI Picks here only.
+// View registry — add Company Tracks, Revision, AI Picks here only.
 const VIEWS = {
   browse: BrowseView,
   patterns: PatternView,
   playlists: PlaylistView,
   saved: SavedView,
+  "learning-paths": LearningPathsView,
 };
 
 function ProblemsPage() {
@@ -262,7 +264,12 @@ function ProblemsPage() {
       }
       : {};
 
-  const activeViewProps = { ...browseProps, ...patternsProps };
+  const learningPathsProps =
+    activeView === "learning-paths"
+      ? { problems, solvedProblems }
+      : {};
+
+  const activeViewProps = { ...browseProps, ...patternsProps, ...learningPathsProps };
 
   return (
     <ThemeSkin>
