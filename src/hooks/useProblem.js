@@ -10,7 +10,7 @@ export function useProblem(slug) {
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [adjacentSlugs, setAdjacentSlugs] = useState({ prev: null, next: null });
+  const [adjacentSlugs, setAdjacentSlugs] = useState({ prev: null, next: null, nextBest: null });
 
   useEffect(() => {
     if (!slug) return;
@@ -29,6 +29,7 @@ export function useProblem(slug) {
         setAdjacentSlugs({
           prev: problemResponse.prevSlug,
           next: problemResponse.nextSlug,
+          nextBest: problemResponse.nextBestProblem ?? null,
         });
       } catch (err) {
         if (cancelled) return;
@@ -48,5 +49,9 @@ export function useProblem(slug) {
     error,
     prevSlug: adjacentSlugs.prev,
     nextSlug: adjacentSlugs.next,
+    // { slug, title, difficulty, topic } | null — see
+    // backend/utils/recommendNextProblem.js for how this is chosen today
+    // and how it's designed to be swapped for a real recommender later.
+    nextBestProblem: adjacentSlugs.nextBest,
   };
 }

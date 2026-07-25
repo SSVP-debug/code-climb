@@ -26,7 +26,7 @@ function ProblemDetailsPage() {
   // POST /api/contests/:id/solve). See ContestDetailPage.jsx.
   const [searchParams] = useSearchParams();
   const contestId = searchParams.get("contest");
-  const { problem, loading, error, prevSlug, nextSlug } = useProblem(slug);
+  const { problem, loading, error, prevSlug, nextSlug, nextBestProblem } = useProblem(slug);
 
   if (loading) {
     return (
@@ -59,12 +59,13 @@ function ProblemDetailsPage() {
       slug={slug}
       prevSlug={prevSlug}
       nextSlug={nextSlug}
+      nextBestProblem={nextBestProblem}
       contestId={contestId}
     />
   );
 }
 
-function ProblemSolver({ problem, slug, prevSlug, nextSlug, contestId }) {
+function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, contestId }) {
   const solver = useProblemSolver({ problem, slug, contestId });
 
   return (
@@ -76,7 +77,12 @@ function ProblemSolver({ problem, slug, prevSlug, nextSlug, contestId }) {
         type="article"
       />
       <ProblemLayout title={problem.title} prevSlug={prevSlug} nextSlug={nextSlug}>
-        <ProblemWorkspaceLayout problem={problem} slug={slug} solver={solver} />
+        <ProblemWorkspaceLayout
+          problem={problem}
+          slug={slug}
+          solver={solver}
+          nextBestProblem={nextBestProblem}
+        />
       </ProblemLayout>
     </>
   );

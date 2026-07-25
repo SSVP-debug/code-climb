@@ -55,6 +55,7 @@ import weeklyChallengeRoutes from "./routes/weeklyChallenge.js";
 import hintsRoutes from "./routes/hints.js";
 import notesRoutes from "./routes/notes.js";
 import profilePdfRoutes from "./routes/profilePdf.js";
+import reflectionRoutes from "./routes/reflections.js";
 // ── Phase 8 / Batch E fix: these three were fully built but never mounted,
 // so /tpo, /billing, and /interview all 404'd for every real request from
 // TpoSignupPage, TpoDashboardPage, PricingPage, and InterviewModePage. ─────
@@ -145,6 +146,7 @@ app.use("/api/weekly", weeklyChallengeRoutes);
 // AI hints — auth + AI rate limiter (shares quota with insights)
 app.use("/api/hints", requireAuth, aiLimiter, hintsRoutes);
 app.use("/api/notes", requireAuth, apiLimiter, notesRoutes);
+app.use("/api/reflections", requireAuth, apiLimiter, reflectionRoutes);
 app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);

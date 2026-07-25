@@ -81,6 +81,23 @@ const submissionSchema = new mongoose.Schema(
       maxlength: 50_000,
       default: "",
     },
+    // ── Submission Experience (encouragement engine) ──────────────────────
+    // Set only for non-Accepted submissions. normalizedCodeHash lets the
+    // server tell "resubmitted the exact same logic" apart from "actually
+    // changed something" without storing/parsing an AST — see
+    // utils/codeNormalization.js. encouragementMessage is the resolved text
+    // shown to the student for THIS submission; it's persisted (not just
+    // computed on the fly) so a repeat of the same normalized code always
+    // reproduces the same message, and so submission history can show what
+    // was said at the time. See utils/encouragementMessages.js.
+    normalizedCodeHash: {
+      type: String,
+      default: null,
+    },
+    encouragementMessage: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -100,6 +117,11 @@ submissionSchema.index({ userId: 1, status: 1 });
 // submissions by problemSlug — without this, that aggregation would
 // fall back to a full collection scan as submission volume grows.
 submissionSchema.index({ problemSlug: 1, status: 1 });
+
+// Index: covers the "find my last non-accepted attempt on this problem"
+// lookup in submissionController.recordVerifiedSubmission (the encouragement
+// dedupe check) — sorted newest-first, scoped per user+problem.
+submissionSchema.index({ userId: 1, problemSlug: 1, createdAt: -1 });
 
 const Submission = mongoose.model("Submission", submissionSchema);
 

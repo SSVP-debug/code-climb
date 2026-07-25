@@ -10,6 +10,7 @@ import { useAppContext } from "./useAppContext";
 import { usePanelResize } from "./usePanelResize";
 import { useVerticalResize } from "./useVerticalResize";
 import { useTimer } from "./useTimer";
+import { getEarnedXP } from "../utils/xpUtils";
 import {
   loadSavedCode,
   saveCode,
@@ -132,15 +133,29 @@ export function useProblemSolver({ problem, slug, contestId }) {
       setSubmitInfo(null);
 
       const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
+      const justAccepted = judgeResult.status === "Accepted";
 
       setSubmitInfo({
         status: judgeResult.status,
         error: judgeResult.error ?? null,
         passed: judgeResult.passed ?? 0,
         total: judgeResult.total ?? 0,
+        // ── Submission Experience fields ──────────────────────────────────
+        // submissionId: ties a Reflection Score to this exact submission.
+        // encouragementMessage: server-picked copy for non-Accepted results
+        // (deduped against the student's last attempt — see
+        // backend/utils/encouragementMessages.js); undefined for Accepted.
+        // isFirstSolve / xpEarned: drive the celebration modal's XP + "new
+        // solve" framing. xpEarned reuses the same getEarnedXP() the
+        // context uses to persist XP server-side, so the number shown here
+        // always matches what actually gets saved — never a separate guess.
+        submissionId: judgeResult.submissionId ?? null,
+        encouragementMessage: judgeResult.encouragementMessage ?? null,
+        isFirstSolve: justAccepted ? !wasAlreadySolved : false,
+        xpEarned: justAccepted && !wasAlreadySolved ? getEarnedXP(problem.difficulty) : 0,
       });
 
-      if (judgeResult.status === "Accepted" && !wasAlreadySolved) {
+      if (justAccepted && !wasAlreadySolved) {
         await markProblemSolved({ slug, topic: problem.topic, difficulty: problem.difficulty, title: problem.title });
         try {
           const todayChallenge = await getDailyChallenge();

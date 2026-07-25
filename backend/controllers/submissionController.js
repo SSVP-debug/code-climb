@@ -1,5 +1,7 @@
 import Submission, { SUBMISSION_STATUSES } from "../models/Submission.js";
 import { logger } from "../config/logger.js";
+import { hashNormalizedCode } from "../utils/codeNormalization.js";
+import { pickEncouragementMessage } from "../utils/encouragementMessages.js";
 
 export function toClientSubmission(doc) {
   return {
@@ -15,6 +17,7 @@ export function toClientSubmission(doc) {
     executionTime: doc.executionTime,
     expectedOutput: doc.expectedOutput,
     actualOutput: doc.actualOutput,
+    encouragementMessage: doc.encouragementMessage ?? null,
     time: new Date(doc.createdAt).toISOString(),
     date: new Date(doc.createdAt).toISOString().split("T")[0],
     createdAt: doc.createdAt,
@@ -60,6 +63,35 @@ export async function recordVerifiedSubmission({
     throw new Error(`recordVerifiedSubmission: invalid status "${status}"`);
   }
 
+  // ── Wrong-answer encouragement engine ───────────────────────────────────
+  // Only computed for non-Accepted submissions — an Accepted result gets
+  // its own (randomized, non-persisted) celebratory copy purely on the
+  // frontend, since there's no "same attempt again" case to dedupe there.
+  let normalizedCodeHash = null;
+  let encouragementMessage = null;
+
+  if (status !== "Accepted") {
+    normalizedCodeHash = hashNormalizedCode(code, language);
+
+    // Most recent non-Accepted attempt by this user on this exact problem —
+    // used to decide whether this is "the same wrong code again" (reuse its
+    // message) or "an actual new attempt" (pick a different one).
+    const previous = await Submission.findOne({
+      userId,
+      problemSlug,
+      status: { $ne: "Accepted" },
+    })
+      .sort({ createdAt: -1 })
+      .select("normalizedCodeHash encouragementMessage")
+      .lean();
+
+    encouragementMessage = pickEncouragementMessage({
+      hash: normalizedCodeHash,
+      previousHash: previous?.normalizedCodeHash ?? null,
+      previousMessage: previous?.encouragementMessage ?? null,
+    });
+  }
+
   return Submission.create({
     userId,
     problemSlug,
@@ -74,6 +106,8 @@ export async function recordVerifiedSubmission({
     executionTime: executionTime ?? null,
     expectedOutput,
     actualOutput,
+    normalizedCodeHash,
+    encouragementMessage,
   });
 }
 

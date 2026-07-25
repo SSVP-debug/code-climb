@@ -2,6 +2,7 @@ import Problem from "../models/Problem.js";
 import Submission from "../models/Submission.js";
 import { getOrSetCache, invalidateCache } from "../utils/cache.js";
 import { XP_BY_DIFFICULTY } from "../utils/computeXP.js";
+import { getNextBestProblem } from "../utils/recommendNextProblem.js";
 
 const PROBLEMS_CACHE_KEY = "problems:all";
 const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes — unchanged from the original TTL
@@ -90,7 +91,13 @@ export const getProblemBySlug = async (req, res) => {
       });
     }
 
-    const [prevProblem, nextProblem] =
+    // `recommendedNext` also drives the Submission Experience's "Next Best
+    // Problem" card — see utils/recommendNextProblem.js for the swap seam.
+    // nextSlug is kept as its own field (rather than removed in favor of
+    // recommendedNext.slug) purely for backward compatibility with existing
+    // consumers (ProblemLayout's prev/next topbar nav) that only ever
+    // needed the slug.
+    const [prevProblem, recommendedNext] =
       await Promise.all([
         Problem.findOne({
           id: { $lt: problem.id },
@@ -99,18 +106,14 @@ export const getProblemBySlug = async (req, res) => {
           .sort({ id: -1 })
           .lean(),
 
-        Problem.findOne({
-          id: { $gt: problem.id },
-        })
-          .select("slug")
-          .sort({ id: 1 })
-          .lean(),
+        getNextBestProblem(problem),
       ]);
 
     return res.json({
       problem: withXP(problem),
       prevSlug: prevProblem?.slug ?? null,
-      nextSlug: nextProblem?.slug ?? null,
+      nextSlug: recommendedNext?.slug ?? null,
+      nextBestProblem: recommendedNext,
     });
   } catch (error) {
     req.log.error({ err: error }, "[Problems] getProblemBySlug failed");

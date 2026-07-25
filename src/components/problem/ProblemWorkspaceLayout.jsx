@@ -51,6 +51,7 @@ import ProblemInfo from "./ProblemInfo";
 import ProblemEditor from "./ProblemEditor";
 import WorkspacePanel from "./WorkspacePanel";
 import ProblemUnderstandOverlay from "./ProblemUnderstandOverlay";
+import SubmissionCelebrationModal from "./submission-experience/SubmissionCelebrationModal";
 import Button from "../ui/Button";
 import MobileTabBar from "./MobileTabBar";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
@@ -62,7 +63,7 @@ import { WORKSPACE_V2_ENABLED } from "../../config/featureFlags";
 // silently drift apart.
 const DESKTOP_QUERY = "(min-width: 1024px)";
 
-function ProblemWorkspaceLayout({ problem, slug, solver }) {
+function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem }) {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
 
   const {
@@ -350,6 +351,17 @@ function ProblemWorkspaceLayout({ problem, slug, solver }) {
       {stage === "understand" && (
         <ProblemUnderstandOverlay problem={problem} isSolved={isSolved} onProceed={enterBuild} />
       )}
+
+      {/* Submission Experience (Feature 1): owns its own open/close state,
+          keyed off submitInfo.submissionId — see that component's header
+          comment. Always mounted so it can react the instant submitInfo
+          transitions to Accepted, same pattern as ProblemUnderstandOverlay
+          above. */}
+      <SubmissionCelebrationModal
+        submitInfo={submitInfo}
+        problem={problem}
+        nextBestProblem={nextBestProblem}
+      />
     </div>
   );
 }

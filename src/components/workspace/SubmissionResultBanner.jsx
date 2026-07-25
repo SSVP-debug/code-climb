@@ -119,6 +119,17 @@ export default function SubmissionResultBanner({
                         {submitInfo.passed}/{submitInfo.total} testcases passed
                     </p>
                 )}
+
+            {/* Wrong-answer encouragement (Submission Experience, Feature 2).
+                Server-picked, deduped against the student's last attempt on
+                this problem — see backend/utils/encouragementMessages.js.
+                Deliberately never present for Accepted (that verdict gets
+                its own celebration — see SubmissionCelebrationModal). */}
+            {!isAccepted && submitInfo.encouragementMessage && (
+                <p className="text-xs mt-2 pt-2 border-t border-white/10 opacity-80 italic">
+                    {submitInfo.encouragementMessage}
+                </p>
+            )}
         </div>
     );
 }

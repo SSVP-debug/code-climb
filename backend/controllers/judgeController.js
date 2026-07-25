@@ -228,9 +228,19 @@ export async function submitHandler(req, res) {
   // depends on being able to find it immediately (see routes/progress.js's
   // verifyAgainstSubmissions middleware).
   async function finish(status, payload, submissionExtra = {}) {
+    // ── Submission Experience fields ──────────────────────────────────────
+    // submissionId lets the frontend attach a Reflection Score to THIS
+    // exact submission (see routes/reflections.js). encouragementMessage
+    // is the (possibly deduped) copy computed inside recordVerifiedSubmission
+    // for non-Accepted results — see utils/encouragementMessages.js.
+    // Both are best-effort: a persistence hiccup below must not turn a
+    // successfully-graded submission into a failed response for the user,
+    // so they're simply omitted from the payload if the write failed.
+    let responseExtras = {};
+
     if (req.userDoc) {
       try {
-        await recordVerifiedSubmission({
+        const submissionDoc = await recordVerifiedSubmission({
           userId: req.userDoc._id,
           problemSlug,
           problemTitle: problem.title,
@@ -245,12 +255,17 @@ export async function submitHandler(req, res) {
           expectedOutput: submissionExtra.expectedOutput,
           actualOutput: submissionExtra.actualOutput,
         });
+
+        responseExtras.submissionId = submissionDoc._id.toString();
+        if (submissionDoc.encouragementMessage) {
+          responseExtras.encouragementMessage = submissionDoc.encouragementMessage;
+        }
       } catch (err) {
         req.log.error({ err, problemSlug, status }, "[Judge] Failed to persist submission record");
       }
     }
 
-    return res.json({ status, ...payload });
+    return res.json({ status, ...payload, ...responseExtras });
   }
 
   try {
