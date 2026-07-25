@@ -97,6 +97,16 @@ export const getProblemBySlug = async (req, res) => {
     // recommendedNext.slug) purely for backward compatibility with existing
     // consumers (ProblemLayout's prev/next topbar nav) that only ever
     // needed the slug.
+    //
+    // solvedSlugs comes from req.userDoc (populated by optionalAuth when a
+    // session is present — see problemRoutes.js) so the recommendation
+    // never points back at something already solved. pathId comes from
+    // ?path=<id>, set by LearningPathProblemItem when the user opened this
+    // problem from inside a Learning Path (mirrors the existing ?contest=
+    // pattern) — see ProblemDetailsPage.jsx.
+    const solvedSlugs = req.userDoc?.solvedSlugs ?? [];
+    const pathId = req.query.path || null;
+
     const [prevProblem, recommendedNext] =
       await Promise.all([
         Problem.findOne({
@@ -106,7 +116,7 @@ export const getProblemBySlug = async (req, res) => {
           .sort({ id: -1 })
           .lean(),
 
-        getNextBestProblem(problem),
+        getNextBestProblem(problem, { solvedSlugs, pathId }),
       ]);
 
     return res.json({

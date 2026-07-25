@@ -18,7 +18,7 @@ const STATUS_STYLES = {
   [STATUS.LOCKED]: "text-zinc-600",
 };
 
-function LearningPathProblemItem({ problem, order, status, unlockHintTitle }) {
+function LearningPathProblemItem({ problem, order, status, unlockHintTitle, pathId }) {
   const hideDifficulty = useHideDifficultyLabels();
   const StatusIcon = STATUS_ICONS[status];
   const locked = status === STATUS.LOCKED;
@@ -85,7 +85,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle }) {
 
   return (
     <Link
-      to={`/problems/${problem.slug}`}
+      to={pathId ? `/problems/${problem.slug}?path=${pathId}` : `/problems/${problem.slug}`}
       className={`${rowClasses} ${
         status === STATUS.CURRENT
           ? "border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10"

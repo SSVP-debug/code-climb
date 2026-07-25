@@ -6,7 +6,7 @@ import { apiFetch } from "../services/api";
  * seeded problems appear without a frontend redeploy. Also resolves the
  * adjacent prev/next slugs for problem-to-problem navigation.
  */
-export function useProblem(slug) {
+export function useProblem(slug, pathId = null) {
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,8 +21,16 @@ export function useProblem(slug) {
         setLoading(true);
         setError(null);
 
+        // ?path=<id> tells the backend's Next Best Problem recommendation
+        // the user is currently solving inside that Learning Path, so it
+        // can recommend the next unlocked problem in the path (Priority 1)
+        // instead of falling straight to the global next-unsolved pick.
+        // See LearningPathProblemItem.jsx for where this gets set, and
+        // backend/services/recommendation/ for how it's consumed.
+        const query = pathId ? `?path=${encodeURIComponent(pathId)}` : "";
+
         const [problemResponse] = await Promise.all([
-          apiFetch(`/api/problems/${slug}`),
+          apiFetch(`/api/problems/${slug}${query}`),
         ]);
 
         setProblem(problemResponse.problem);
@@ -41,7 +49,7 @@ export function useProblem(slug) {
 
     fetchProblem();
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [slug, pathId]);
 
   return {
     problem,

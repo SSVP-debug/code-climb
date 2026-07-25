@@ -11,11 +11,14 @@ const DIFFICULTY_STYLES = {
 /**
  * NextBestProblemCard — Feature 4 of the Submission Experience.
  *
- * Purely presentational: takes whatever `{ slug, title, difficulty, topic }`
- * it's handed and renders it. Today that data comes from
- * backend/utils/recommendNextProblem.js's ordering-based placeholder; when
- * a real recommendation engine replaces it, this component doesn't change
- * at all — only the data it receives does.
+ * Purely presentational: takes whatever `{ slug, title, difficulty, topic,
+ * reason }` it's handed and renders it. Today that data comes from
+ * backend/services/recommendation/ (see RecommendationService.js's swap
+ * seam); when a smarter recommendation engine replaces those strategies,
+ * this component doesn't change at all — only the data it receives does.
+ *
+ * `reason` is always the strategy's own truthful explanation for the pick
+ * (e.g. "Next challenge in your Beginner path.") — never invented here.
  */
 function NextBestProblemCard({ nextProblem }) {
   const hideDifficulty = useHideDifficultyLabels();
@@ -27,33 +30,50 @@ function NextBestProblemCard({ nextProblem }) {
       <p className="text-xs font-medium text-zinc-500 mb-1.5">Next Best Problem</p>
       <Link
         to={`/problems/${nextProblem.slug}`}
-        className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-800/40 hover:bg-zinc-800/70 hover:border-zinc-700 transition px-3.5 py-2.5 group"
+        className="group block rounded-xl border border-zinc-800 bg-zinc-800/40 hover:bg-zinc-800/70 hover:border-zinc-700 transition px-3.5 py-3"
       >
-        <div className="min-w-0 pr-3">
-          <p className="text-sm font-medium text-white truncate group-hover:text-[var(--theme-primary,#2dd4bf)] transition-colors">
-            {nextProblem.title}
+        {nextProblem.reason && (
+          <p
+            className="text-[11px] font-medium mb-1.5 truncate"
+            style={{ color: "var(--theme-primary, #2dd4bf)" }}
+          >
+            {nextProblem.reason}
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            {!hideDifficulty && nextProblem.difficulty && (
-              <span
-                className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${
-                  DIFFICULTY_STYLES[nextProblem.difficulty] ??
-                  "text-zinc-400 border-zinc-700 bg-zinc-800"
-                }`}
-              >
-                {nextProblem.difficulty}
-              </span>
-            )}
-            {nextProblem.topic && (
-              <span className="text-[10px] text-zinc-500 truncate">{nextProblem.topic}</span>
-            )}
+        )}
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-white truncate group-hover:text-[var(--theme-primary,#2dd4bf)] transition-colors">
+              {nextProblem.title}
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              {!hideDifficulty && nextProblem.difficulty && (
+                <span
+                  className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${
+                    DIFFICULTY_STYLES[nextProblem.difficulty] ??
+                    "text-zinc-400 border-zinc-700 bg-zinc-800"
+                  }`}
+                >
+                  {nextProblem.difficulty}
+                </span>
+              )}
+              {nextProblem.topic && (
+                <span className="text-[10px] text-zinc-500 truncate">{nextProblem.topic}</span>
+              )}
+            </div>
           </div>
+
+          <span
+            className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold rounded-lg px-3 py-1.5 transition-all group-hover:translate-x-0.5"
+            style={{
+              color: "var(--theme-primary, #2dd4bf)",
+              backgroundColor: "color-mix(in srgb, var(--theme-primary, #2dd4bf) 12%, transparent)",
+            }}
+          >
+            Solve Next
+            <ArrowRight size={14} strokeWidth={2.5} aria-hidden="true" />
+          </span>
         </div>
-        <ArrowRight
-          size={16}
-          className="shrink-0 text-zinc-600 group-hover:text-[var(--theme-primary,#2dd4bf)] group-hover:translate-x-0.5 transition-all"
-          aria-hidden="true"
-        />
       </Link>
     </div>
   );

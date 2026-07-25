@@ -148,6 +148,7 @@ function LearningPathDetail({ path, solvedProblems, isFirstPathToComplete, onBac
               order={index + 1}
               status={statusBySlug.get(problem.slug) ?? STATUS.LOCKED}
               unlockHintTitle={previousProblemTitle(index)}
+              pathId={path.id}
             />
           ))}
         </div>

@@ -6,6 +6,7 @@ import Button from "../../ui/Button";
 import StreakBadge from "../../common/StreakBadge";
 import ReflectionPrompt from "./ReflectionPrompt";
 import NextBestProblemCard from "./NextBestProblemCard";
+import NextBestProblemEmptyState from "./NextBestProblemEmptyState";
 import { pickAcceptedMessage } from "../../../utils/submissionEncouragement";
 
 /**
@@ -131,11 +132,17 @@ function SubmissionCelebrationModal({ submitInfo, problem, nextBestProblem }) {
         </div>
 
         {/* ── Next Best Problem (Feature 4) ────────────────────────────── */}
-        {nextBestProblem && (
-          <div className="mt-4 pt-4 border-t border-zinc-800">
+        {/* Always rendered — never left blank. nextBestProblem is null only
+            when every recommendation strategy came up empty (the user has
+            solved everything currently available to them), which is a
+            completion state worth celebrating, not an empty section. */}
+        <div className="mt-4 pt-4 border-t border-zinc-800">
+          {nextBestProblem ? (
             <NextBestProblemCard nextProblem={nextBestProblem} />
-          </div>
-        )}
+          ) : (
+            <NextBestProblemEmptyState />
+          )}
+        </div>
 
         <Button
           variant="primary"

@@ -26,7 +26,11 @@ function ProblemDetailsPage() {
   // POST /api/contests/:id/solve). See ContestDetailPage.jsx.
   const [searchParams] = useSearchParams();
   const contestId = searchParams.get("contest");
-  const { problem, loading, error, prevSlug, nextSlug, nextBestProblem } = useProblem(slug);
+  // Set by LearningPathProblemItem when this problem was opened from
+  // inside a Learning Path — see useProblem.js for how this feeds the
+  // Next Best Problem recommendation.
+  const pathId = searchParams.get("path");
+  const { problem, loading, error, prevSlug, nextSlug, nextBestProblem } = useProblem(slug, pathId);
 
   if (loading) {
     return (
