@@ -15,6 +15,7 @@ import ThemeSkin from "../themes/ThemeSkin";
 import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
 import ProblemsNavigation from "../components/problem/navigation/ProblemsNavigation";
 import LearningWorkspace from "../components/learning/LearningWorkspace";
+import HoverTooltip from "../components/ui/HoverTooltip";
 
 import BrowseView from "../components/problem/browse/BrowseView";
 import PatternView from "../components/patterns/PatternView";
@@ -488,19 +489,15 @@ function ProblemsPage() {
         {/* ── RIGHT: learning hub — desktop (xl+) inline sidebar ── */}
         {rightRailCollapsed ? (
           <aside className="hidden xl:flex flex-col items-center flex-shrink-0 w-12 border-l border-zinc-800 bg-zinc-950 pt-4">
-            <button
-              onClick={() => setRightRailCollapsed(false)}
-              aria-label="Open Learning Hub"
-              className="group relative p-2 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
-            >
-              <ChevronsLeft size={16} />
-              <span
-                role="tooltip"
-                className="pointer-events-none absolute right-full top-1/2 -translate-y-1/2 mr-2 z-50 whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100"
+            <HoverTooltip label="Open Learning Hub" side="left">
+              <button
+                onClick={() => setRightRailCollapsed(false)}
+                aria-label="Open Learning Hub"
+                className="p-2 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
               >
-                Open Learning Hub
-              </span>
-            </button>
+                <ChevronsLeft size={16} />
+              </button>
+            </HoverTooltip>
           </aside>
         ) : (
           <aside

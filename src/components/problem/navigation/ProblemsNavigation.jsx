@@ -7,6 +7,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useTheme } from "../../../context/ThemeContext";
+import HoverTooltip from "../../ui/HoverTooltip";
 
 const navigationItems = [
   {
@@ -102,35 +103,26 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
           const active = activeView === item.id;
 
           return (
-            <button
-              key={item.id}
-              onClick={() => setActiveView(item.id)}
-              aria-label={item.label}
-              className={`group relative w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
-                active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-              }`}
-              style={
-                active
-                  ? {
-                      backgroundColor: theme.colors.primary,
-                      color: "#09090b",
-                      boxShadow: `0 10px 15px -3px ${theme.colors.primary}33`,
-                    }
-                  : undefined
-              }
-            >
-              <Icon size={16} strokeWidth={2} />
-
-              {/* Hover tooltip — Claude-sidebar style: dark pill, appears
-                  to the right, no layout shift (absolute + no reserved
-                  space), tiny delay via opacity transition only. */}
-              <span
-                role="tooltip"
-                className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100"
+            <HoverTooltip key={item.id} label={item.label}>
+              <button
+                onClick={() => setActiveView(item.id)}
+                aria-label={item.label}
+                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
+                  active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                }`}
+                style={
+                  active
+                    ? {
+                        backgroundColor: theme.colors.primary,
+                        color: "#09090b",
+                        boxShadow: `0 10px 15px -3px ${theme.colors.primary}33`,
+                      }
+                    : undefined
+                }
               >
-                {item.label}
-              </span>
-            </button>
+                <Icon size={16} strokeWidth={2} />
+              </button>
+            </HoverTooltip>
           );
         })}
       </nav>
