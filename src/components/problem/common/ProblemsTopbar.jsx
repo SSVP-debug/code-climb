@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "../../../context/authContext";
 import { useTheme } from "../../../context/ThemeContext";
 import { logoutUser } from "../../../services/auth";
@@ -16,8 +17,6 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
   };
 
   const navLinks = [
-    { to: "/dashboard", label: theme.words.dashboard },
-    { to: "/problems",  label: theme.words.problems  },
     { to: "/analytics", label: theme.words.analytics },
     { to: "/profile",   label: theme.words.profile   },
   ];
@@ -26,6 +25,26 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
     <>
       {/* ── Topbar ── */}
       <header className="h-14 flex-shrink-0 flex items-center gap-4 px-5 bg-zinc-900 border-b border-zinc-800 z-40">
+
+        {/* Back to Dashboard — the direct "way out". One click, always
+            visible, no drawer required. Icon-only with a hover tooltip
+            on sm+ (same interaction as the collapsed sidebar); sm and
+            below keep the label visible since there's no hover on touch
+            and screen space is tighter to spare for a tooltip anyway. */}
+        <Link
+          to="/dashboard"
+          aria-label={`Back to ${theme.words.dashboard}`}
+          className="group relative flex-shrink-0 flex items-center gap-1.5 p-2 sm:p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 hover:text-white transition"
+        >
+          <ArrowLeft size={18} strokeWidth={2} />
+          <span className="sm:hidden text-sm font-medium">{theme.words.dashboard}</span>
+          <span
+            role="tooltip"
+            className="hidden sm:block pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100"
+          >
+            Back to {theme.words.dashboard}
+          </span>
+        </Link>
 
         {/* Brand — always visible */}
         <div className="flex flex-col leading-tight flex-shrink-0">
@@ -80,7 +99,7 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
           {/* Hamburger */}
           <button
             onClick={() => setDrawerOpen((o) => !o)}
-            aria-label="Open navigation"
+            aria-label="Open menu"
             className="p-2 rounded-lg hover:bg-zinc-800 transition text-zinc-400 hover:text-white"
           >
             {drawerOpen ? (
@@ -137,7 +156,7 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
             {/* Nav links */}
             <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
               <p className="text-[10px] uppercase tracking-widest text-zinc-500 px-3 mb-2">
-                Navigate
+                More
               </p>
               {navLinks.map((link) => (
                 <Link

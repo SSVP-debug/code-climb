@@ -24,7 +24,14 @@ const DIFF_DOT = { Easy: "bg-green-400", Medium: "bg-yellow-400", Hard: "bg-red-
  */
 export default function HostBattleRoomForm() {
   const navigate = useNavigate();
-  const { problems, loading: problemsLoading } = useProblems();
+  const { problems: allProblems, loading: problemsLoading } = useProblems();
+  // Code Club Edition missions are real Problem documents but a separate,
+  // story-driven collection — kept out of generic problem pickers like
+  // this one, same as Browse/Patterns/Playlists on the main Problems page.
+  const problems = useMemo(
+    () => allProblems.filter((p) => !p.campaignCode),
+    [allProblems]
+  );
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

@@ -3,11 +3,13 @@ import {
   useMemo,
   useState
 } from "react";
-import { X } from "lucide-react";
+import { X, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useProblems } from "../hooks/useProblems";
+import { useLearningPaths } from "../hooks/useLearningPaths";
+import { useCodeClubEdition } from "../hooks/useCodeClubEdition";
 import ThemeSkin from "../themes/ThemeSkin";
 
 import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
@@ -19,9 +21,11 @@ import PatternView from "../components/patterns/PatternView";
 import PlaylistView from "../components/problem/playlists/PlaylistView";
 import SavedView from "../components/problem/saved/SavedView";
 import LearningPathsView from "../components/problem/learning-paths/LearningPathsView";
+import CodeClubEditionHome from "../components/problem/code-club-edition/CodeClubEditionHome";
 
 // View registry — add Company Tracks, Revision, AI Picks here only.
 const VIEWS = {
+  "code-club-edition": CodeClubEditionHome,
   browse: BrowseView,
   patterns: PatternView,
   playlists: PlaylistView,
@@ -34,11 +38,61 @@ function ProblemsPage() {
   const { problems, loading, error } = useProblems();
   const { solvedProblems, topicStats } = useAppContext();
 
+  // Code Club Edition missions are tagged with campaignCode and live in
+  // MongoDB as real Problem documents (same catalog `problems` fetches),
+  // by design — they run through the same execution engine and progress
+  // tracking. But per the PRD, they must NOT appear mixed into Browse,
+  // Learn by Pattern, Playlists, Saved, the total-problems count, or the
+  // Learning Hub — those all get `standardProblems` instead. Only the
+  // Code Club Edition view itself gets the full, unfiltered `problems`,
+  // since useCodeClubEdition() needs the campaign missions present to
+  // join against.
+  const standardProblems = useMemo(
+    () => problems.filter((p) => !p.campaignCode),
+    [problems]
+  );
+  const standardSlugSet = useMemo(
+    () => new Set(standardProblems.map((p) => p.slug)),
+    [standardProblems]
+  );
+  // The main Problems page's progress bar/solved-count is scoped to the
+  // standard catalog only — a solved Code Club Edition mission still
+  // counts toward XP and its own campaign's progress (shown in the
+  // Edition hero), it just shouldn't inflate/deflate this unrelated stat.
+  const standardSolvedProblems = useMemo(
+    () => solvedProblems.filter((slug) => standardSlugSet.has(slug)),
+    [solvedProblems, standardSlugSet]
+  );
+
+  // Reused (not re-derived) by the header's per-view count below — these
+  // are the exact same hooks LearningPathsView and CodeClubEditionHome
+  // call internally, so the header's numbers can never drift from what
+  // the view itself is showing.
+  const learningPaths = useLearningPaths(standardProblems, standardSolvedProblems);
+  const { chapters: editionChapters, campaignProgress: editionProgress } =
+    useCodeClubEdition(problems, solvedProblems);
+
   const [activeView, setActiveView] = useState(() => {
     try {
       return sessionStorage.getItem("cc_activeView") || "browse";
     } catch {
       return "browse";
+    }
+  });
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_sidebarCollapsed") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const [rightRailCollapsed, setRightRailCollapsed] = useState(() => {
+    try {
+      return sessionStorage.getItem("cc_rightRailCollapsed") === "true";
+    } catch {
+      return false;
     }
   });
 
@@ -82,6 +136,18 @@ function ProblemsPage() {
 
   useEffect(() => {
     try {
+      sessionStorage.setItem("cc_sidebarCollapsed", String(sidebarCollapsed));
+    } catch { }
+  }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("cc_rightRailCollapsed", String(rightRailCollapsed));
+    } catch { }
+  }, [rightRailCollapsed]);
+
+  useEffect(() => {
+    try {
       sessionStorage.setItem("cc_search", searchTerm);
     } catch { }
   }, [searchTerm]);
@@ -119,12 +185,12 @@ function ProblemsPage() {
     });
   }
 
-  const solvedCount = solvedProblems.length;
+  const solvedCount = standardSolvedProblems.length;
 
   const progress =
-    problems.length > 0
+    standardProblems.length > 0
       ? Math.round(
-        (solvedCount / problems.length) * 100
+        (solvedCount / standardProblems.length) * 100
       )
       : 0;
 
@@ -132,7 +198,7 @@ function ProblemsPage() {
   const topics = useMemo(() => {
     const unique = [
       ...new Set(
-        problems.map((p) => p.topic).filter(Boolean)
+        standardProblems.map((p) => p.topic).filter(Boolean)
       ),
     ];
 
@@ -142,7 +208,7 @@ function ProblemsPage() {
         a.localeCompare(b)
       ),
     ];
-  }, [problems]);
+  }, [standardProblems]);
 
   // Live suggestion chips shown under the search box as the person types.
   // Topics already have their own always-visible chip row below, so this
@@ -155,7 +221,7 @@ function ProblemsPage() {
 
     const counts = new Map(); // "type:value" -> { type, value, count }
 
-    for (const problem of problems) {
+    for (const problem of standardProblems) {
       if (problem.pattern?.toLowerCase().includes(term)) {
         const key = `pattern:${problem.pattern}`;
         counts.set(key, {
@@ -178,10 +244,10 @@ function ProblemsPage() {
     return [...counts.values()]
       .sort((a, b) => b.count - a.count)
       .slice(0, 6);
-  }, [problems, searchTerm]);
+  }, [standardProblems, searchTerm]);
 
   const filtered = useMemo(() => {
-    return problems.filter((problem) => {
+    return standardProblems.filter((problem) => {
       const matchesDifficulty =
         selectedDifficulty === "All" ||
         problem.difficulty === selectedDifficulty;
@@ -210,13 +276,69 @@ function ProblemsPage() {
       );
     });
   }, [
-    problems,
+    standardProblems,
     selectedDifficulty,
     selectedTopic,
     searchTerm,
     hideSolved,
     solvedProblems,
   ]);
+
+  const learningPathsTotalProblems = useMemo(
+    () => learningPaths.reduce((sum, path) => sum + path.problems.length, 0),
+    [learningPaths]
+  );
+
+  const releasedEditionChapters = useMemo(
+    () => editionChapters.filter((c) => !c.comingSoon),
+    [editionChapters]
+  );
+
+  // Each workspace view covers a different slice of content, so "Showing
+  // X of Y problems" (which only makes sense for Browse's filter/search)
+  // was misleading everywhere else — it always read as if every view held
+  // the full 250-problem catalog. This is that count, scoped per view.
+  // Playlists/Saved are still "Coming soon" stubs with no real data behind
+  // them yet, so they intentionally render no count rather than a fake one.
+  const viewSummary = useMemo(() => {
+    switch (activeView) {
+      case "browse":
+        return `Showing ${filtered.length} of ${standardProblems.length} problems`;
+      case "patterns":
+        return `${standardProblems.length} problems across ${topics.length - 1} topics`;
+      case "learning-paths":
+        return `${learningPaths.length} learning paths · ${learningPathsTotalProblems} problems`;
+      case "code-club-edition":
+        return `${releasedEditionChapters.length} chapters · ${editionProgress.totalMissions} missions`;
+      default:
+        return null;
+    }
+  }, [
+    activeView,
+    filtered.length,
+    standardProblems.length,
+    topics.length,
+    learningPaths.length,
+    learningPathsTotalProblems,
+    releasedEditionChapters.length,
+    editionProgress.totalMissions,
+  ]);
+
+  // The center column's reading width used to be a fixed max-w-4xl no
+  // matter what — so collapsing a sidebar freed up real horizontal space
+  // in the flex layout, but the problems list itself never grew into it.
+  // This steps the cap up with each sidebar that's collapsed so the list
+  // actually uses the space it's been given instead of leaving it as a
+  // dead margin. Both open keeps the original cozy 4xl reading width;
+  // both collapsed lets it breathe out to 6xl.
+  const collapsedSidebarCount =
+    (sidebarCollapsed ? 1 : 0) + (rightRailCollapsed ? 1 : 0);
+  const contentMaxWidthClass =
+    collapsedSidebarCount === 2
+      ? "max-w-6xl"
+      : collapsedSidebarCount === 1
+      ? "max-w-5xl"
+      : "max-w-4xl";
 
   // Learning hub (right rail) collapses off-screen below the `xl` breakpoint —
   // there simply isn't width for a 3-column layout on tablet/phone. This
@@ -257,7 +379,7 @@ function ProblemsPage() {
   const patternsProps =
     activeView === "patterns"
       ? {
-        problems,
+        problems: standardProblems,
         topicStats,
         setSelectedTopic,
         setActiveView,
@@ -266,10 +388,15 @@ function ProblemsPage() {
 
   const learningPathsProps =
     activeView === "learning-paths"
+      ? { problems: standardProblems, solvedProblems: standardSolvedProblems }
+      : {};
+
+  const codeClubEditionProps =
+    activeView === "code-club-edition"
       ? { problems, solvedProblems }
       : {};
 
-  const activeViewProps = { ...browseProps, ...patternsProps, ...learningPathsProps };
+  const activeViewProps = { ...browseProps, ...patternsProps, ...learningPathsProps, ...codeClubEditionProps };
 
   return (
     <ThemeSkin>
@@ -277,7 +404,7 @@ function ProblemsPage() {
 
       {/* Slim topbar — replaces global Navbar */}
       <ProblemsTopbar
-        totalProblems={problems.length}
+        totalProblems={standardProblems.length}
         solvedCount={solvedCount}
         progress={progress}
       />
@@ -297,16 +424,30 @@ function ProblemsPage() {
 
         {/* ── LEFT: workspace nav — desktop only, `lg` swaps in the strip above ── */}
         <aside
-          className="hidden lg:block w-56 flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto"
+          className={`hidden lg:flex flex-col flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto transition-all duration-200 ${
+            sidebarCollapsed ? "w-16" : "w-56"
+          }`}
           style={{ scrollbarWidth: "none" }}
         >
-          <div className="p-3 pt-4">
-            <p className="text-[10px] uppercase tracking-widest text-zinc-600 px-3 mb-3">
-              Workspace
-            </p>
+          <div className={`p-3 pt-4 flex-1 ${sidebarCollapsed ? "flex flex-col items-center" : ""}`}>
+            <div className={`flex items-center mb-3 ${sidebarCollapsed ? "justify-center" : "justify-between px-3"}`}>
+              {!sidebarCollapsed && (
+                <p className="text-[10px] uppercase tracking-widest text-zinc-600">
+                  Workspace
+                </p>
+              )}
+              <button
+                onClick={() => setSidebarCollapsed((c) => !c)}
+                aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                className="p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition flex-shrink-0"
+              >
+                {sidebarCollapsed ? <ChevronsRight size={14} /> : <ChevronsLeft size={14} />}
+              </button>
+            </div>
             <ProblemsNavigation
               activeView={activeView}
               setActiveView={setActiveView}
+              collapsed={sidebarCollapsed}
             />
           </div>
         </aside>
@@ -316,7 +457,7 @@ function ProblemsPage() {
           className="flex-1 min-w-0 bg-black overflow-y-auto"
           style={{ scrollbarWidth: "thin", scrollbarColor: "#3f3f46 transparent" }}
         >
-          <div className="px-4 sm:px-7 py-4 sm:py-6 max-w-4xl">
+          <div className={`px-4 sm:px-7 py-4 sm:py-6 transition-[max-width] duration-200 ${contentMaxWidthClass}`}>
 
             {/* Page header — tighter than before */}
             <div className="mb-5 flex items-start justify-between gap-3">
@@ -325,9 +466,9 @@ function ProblemsPage() {
                   {theme.words.problems}
                 </h1>
                 <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
-                <p className="text-xs text-zinc-600 mt-2">
-                  Showing {filtered.length} of {problems.length} problems
-                </p>
+                {viewSummary && (
+                  <p className="text-xs text-zinc-600 mt-2">{viewSummary}</p>
+                )}
               </div>
 
               {/* Learning hub toggle — only needed where the right rail is hidden */}
@@ -345,18 +486,48 @@ function ProblemsPage() {
         </main>
 
         {/* ── RIGHT: learning hub — desktop (xl+) inline sidebar ── */}
-        <aside
-          className="hidden xl:block w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
-          style={{ scrollbarWidth: "none" }}
-        >
-          <LearningWorkspace
-            problems={problems}
-            solvedCount={solvedCount}
-            progress={progress}
-            topicStats={topicStats}
-            onPracticeTopic={handlePracticeTopic}
-          />
-        </aside>
+        {rightRailCollapsed ? (
+          <aside className="hidden xl:flex flex-col items-center flex-shrink-0 w-12 border-l border-zinc-800 bg-zinc-950 pt-4">
+            <button
+              onClick={() => setRightRailCollapsed(false)}
+              aria-label="Open Learning Hub"
+              className="group relative p-2 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
+            >
+              <ChevronsLeft size={16} />
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute right-full top-1/2 -translate-y-1/2 mr-2 z-50 whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100"
+              >
+                Open Learning Hub
+              </span>
+            </button>
+          </aside>
+        ) : (
+          <aside
+            className="hidden xl:block w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
+            style={{ scrollbarWidth: "none" }}
+          >
+            <div className="flex items-center justify-between px-4 pt-4">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-600">
+                Learning Hub
+              </span>
+              <button
+                onClick={() => setRightRailCollapsed(true)}
+                aria-label="Collapse Learning Hub"
+                className="p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
+              >
+                <ChevronsRight size={14} />
+              </button>
+            </div>
+            <LearningWorkspace
+              problems={standardProblems}
+              solvedCount={solvedCount}
+              progress={progress}
+              topicStats={topicStats}
+              onPracticeTopic={handlePracticeTopic}
+            />
+          </aside>
+        )}
 
         {/* ── Learning hub — mobile/tablet slide-over sheet ── */}
         {learningHubOpen && (
@@ -377,7 +548,7 @@ function ProblemsPage() {
                 </button>
               </div>
               <LearningWorkspace
-                problems={problems}
+                problems={standardProblems}
                 solvedCount={solvedCount}
                 progress={progress}
                 topicStats={topicStats}

@@ -48,6 +48,7 @@ import ErrorBoundary from "../ErrorBoundary";
 import SubmissionResultBanner from "../workspace/SubmissionResultBanner";
 import ProblemHeader from "./ProblemHeader";
 import ProblemInfo from "./ProblemInfo";
+import MissionHeader from "./code-club-edition/MissionHeader";
 import ProblemEditor from "./ProblemEditor";
 import WorkspacePanel from "./WorkspacePanel";
 import ProblemUnderstandOverlay from "./ProblemUnderstandOverlay";
@@ -63,7 +64,7 @@ import { WORKSPACE_V2_ENABLED } from "../../config/featureFlags";
 // silently drift apart.
 const DESKTOP_QUERY = "(min-width: 1024px)";
 
-function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem }) {
+function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editionChapterId }) {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
 
   const {
@@ -178,6 +179,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem }) {
                   <span className="text-xs font-mono text-zinc-500">⏱ {timerFormatted}</span>
                 </div>
               )}
+              <MissionHeader chapterId={editionChapterId} slug={slug} />
               <ProblemHeader problem={problem} isSolved={isSolved} />
               <ProblemInfo problem={problem} />
               {!isDesktop && (

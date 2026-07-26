@@ -87,6 +87,23 @@ const problemSchema = new mongoose.Schema(
       default: "core",
     },
 
+    // Content-library identifier for problems that belong to a separate,
+    // independently-versioned collection (e.g. Code Club Edition missions:
+    // "CCE-001", "CCE-002", …). null/absent for the standard interview
+    // catalog. This is deliberately just a tag, not a foreign key — the
+    // Problem document itself is still the single source of truth for
+    // everything execution-related (starter code, testcases, judging),
+    // shared identically across every collection. Campaign/story metadata
+    // (chapter, mission order, narrative intro) never lives here — see
+    // src/data/codeClubEdition.js.
+    campaignCode: {
+      type: String,
+      trim: true,
+      default: null,
+      index: true,
+      sparse: true,
+    },
+
     description: {
       type: String,
       required: true,

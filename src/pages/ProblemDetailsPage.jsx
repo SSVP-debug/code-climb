@@ -30,6 +30,11 @@ function ProblemDetailsPage() {
   // inside a Learning Path — see useProblem.js for how this feeds the
   // Next Best Problem recommendation.
   const pathId = searchParams.get("path");
+  // Set by MissionCard when this problem was opened from a Code Club
+  // Edition mission. Purely a client-side display concern (which mission
+  // banner to render, see MissionHeader.jsx) — unlike `path` above, this
+  // never reaches the backend or the recommendation engine.
+  const editionChapterId = searchParams.get("edition");
   const { problem, loading, error, prevSlug, nextSlug, nextBestProblem } = useProblem(slug, pathId);
 
   if (loading) {
@@ -65,11 +70,12 @@ function ProblemDetailsPage() {
       nextSlug={nextSlug}
       nextBestProblem={nextBestProblem}
       contestId={contestId}
+      editionChapterId={editionChapterId}
     />
   );
 }
 
-function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, contestId }) {
+function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, contestId, editionChapterId }) {
   const solver = useProblemSolver({ problem, slug, contestId });
 
   return (
@@ -86,6 +92,7 @@ function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, con
           slug={slug}
           solver={solver}
           nextBestProblem={nextBestProblem}
+          editionChapterId={editionChapterId}
         />
       </ProblemLayout>
     </>

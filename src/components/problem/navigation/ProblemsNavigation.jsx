@@ -4,10 +4,17 @@ import {
   ListChecks,
   Bookmark,
   Map,
+  Sparkles,
 } from "lucide-react";
 import { useTheme } from "../../../context/ThemeContext";
 
 const navigationItems = [
+  {
+    id: "code-club-edition",
+    label: "Code Club Edition",
+    description: "An original story campaign",
+    icon: Sparkles,
+  },
   {
     id: "learning-paths",
     label: "Learning Paths",
@@ -44,11 +51,14 @@ const navigationItems = [
 // { id: "company",  label: "Company Tracks", description: "Interview prep by company", icon: Building2 }
 
 // orientation="vertical" (default): full card list, used in the desktop
-// left sidebar. orientation="horizontal": compact scrollable pill row,
-// used as the mobile/tablet replacement for that sidebar (icon + label
-// only — no room for the description line at pill size, and a touch
-// target of ~40px tall keeps it comfortably tappable).
-function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical" }) {
+// left sidebar — supports `collapsed` (icon-only, w-12 rail, hover
+// tooltip showing the label, same interaction as Claude's own sidebar).
+// orientation="horizontal": compact scrollable pill row, used as the
+// mobile/tablet replacement for that sidebar (icon + label only — no
+// room for the description line at pill size, and a touch target of
+// ~40px tall keeps it comfortably tappable). `collapsed` has no effect
+// here — the pill row is already compact.
+function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical", collapsed = false }) {
   const { theme } = useTheme();
 
   if (orientation === "horizontal") {
@@ -77,6 +87,49 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
             >
               <Icon size={14} />
               {item.label}
+            </button>
+          );
+        })}
+      </nav>
+    );
+  }
+
+  if (collapsed) {
+    return (
+      <nav className="flex flex-col items-center gap-1">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const active = activeView === item.id;
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveView(item.id)}
+              aria-label={item.label}
+              className={`group relative w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
+                active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              }`}
+              style={
+                active
+                  ? {
+                      backgroundColor: theme.colors.primary,
+                      color: "#09090b",
+                      boxShadow: `0 10px 15px -3px ${theme.colors.primary}33`,
+                    }
+                  : undefined
+              }
+            >
+              <Icon size={16} strokeWidth={2} />
+
+              {/* Hover tooltip — Claude-sidebar style: dark pill, appears
+                  to the right, no layout shift (absolute + no reserved
+                  space), tiny delay via opacity transition only. */}
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-xl transition-opacity duration-150 group-hover:opacity-100"
+              >
+                {item.label}
+              </span>
             </button>
           );
         })}
