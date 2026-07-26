@@ -2,7 +2,7 @@
 
 A LeetCode-style DSA (Data Structures & Algorithms) practice platform built for Indian engineering students preparing for placement season. Write code, run it instantly, submit against hidden test cases, track progress, and build a recruiter-ready public profile.
 
-**Live:** [code-club.vercel.app](https://code-club.vercel.app)
+**Live:** [code-club-one.vercel.app](https://code-club-one.vercel.app)
 
 ---
 
