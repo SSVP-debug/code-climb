@@ -919,12 +919,21 @@ const rawProblems = [
       { input: "nums = [1,2,3,4,5], target = 6", output: "2" },
       { input: "nums = [1,1,1], target = 2", output: "3" },
     ],
-    constraints: ["1 <= nums.length <= 10^5", "-10^9 <= nums[i] <= 10^9"],
+    constraints: [
+      "1 <= nums.length <= 10^5",
+      "-10^9 <= nums[i] <= 10^9",
+      "-10^9 <= target <= 10^9",
+    ],
+    // The pair count can reach 100000 * 99999 / 2 = 4,999,950,000, which
+    // overflows a 32-bit int — the statically-typed languages must return a
+    // 64-bit type. See backend/utils/generateDriverCode.js, which reads this
+    // field instead of guessing the type from the user's submitted code.
+    returnType: { java: "long", cpp: "long long" },
     starterCode: {
       python: `class Solution:\n    def countPairs(self, nums, target):\n        pass`,
       javascript: `function countPairs(nums, target) {\n\n}`,
-      java: `class Solution {\n    public int countPairs(int[] nums, int target) {\n        return 0;\n    }\n}`,
-      cpp: `class Solution {\npublic:\n    int countPairs(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
+      java: `class Solution {\n    public long countPairs(int[] nums, int target) {\n        return 0;\n    }\n}`,
+      cpp: `class Solution {\npublic:\n    long long countPairs(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
     },
     testcases: [
       { input: { nums: [1, 5, 3, 3, 3], target: 6 }, expectedOutput: 4 },
@@ -934,6 +943,9 @@ const rawProblems = [
     hiddentestcases: [
       { input: { nums: [0, 0, 0, 0], target: 0 }, expectedOutput: 6 },
       { input: { nums: [5, 5, 5, 5, 5], target: 10 }, expectedOutput: 10 },
+      // Overflow regression: 100000 choose 2 pairs, all summing to target.
+      // 100000 * 99999 / 2 = 4,999,950,000 > Integer.MAX_VALUE (2,147,483,647).
+      { input: { nums: Array(100000).fill(1), target: 2 }, expectedOutput: 4999950000 },
     ],
   },
 

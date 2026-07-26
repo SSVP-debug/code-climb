@@ -169,10 +169,15 @@ function sleep(ms) {
 //   languageId    — Judge0 language ID: 71 | 63 | 62 | 54
 //   testcaseInput — plain object matching function parameter names: { nums: [...], target: 9 }
 //   functionName  — the function to call: "twoSum", "maxSubArray", etc.
-export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName }) {
+//   returnType    — optional declared return type for this language, from the
+//                   problem's contract (Problem.returnType[language]). Passed
+//                   straight through to generateDriverCode, which prefers it
+//                   over guessing the type from the user's source. Only
+//                   meaningful for java/cpp — safe to omit for python/js.
+export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName, returnType }) {
   const lang = language || LANGUAGE_STRINGS[languageId] || "python";
 
-  const driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName);
+  const driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName, returnType);
 
   logger.debug(
     { language: lang, languageId, functionName, inputPreview: JSON.stringify(testcaseInput).slice(0, 80) },

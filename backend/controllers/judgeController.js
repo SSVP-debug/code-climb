@@ -17,7 +17,7 @@ function sanitizeStderr(stderr) {
 }
 
 export async function runHandler(req, res) {
-  const { code, language, functionName, testcases } = req.body;
+  const { code, language, functionName, testcases, returnType } = req.body;
   const languageId = languageIdMap[language];
   const results = [];
 
@@ -31,6 +31,7 @@ export async function runHandler(req, res) {
         languageId,
         testcaseInput: testcase.input,
         functionName,
+        returnType,
       });
     } catch (callErr) {
       return res.json({
@@ -112,7 +113,7 @@ const languageIdMap = {
  * one of: "callError" | "noResult" | "compileError" | "infraError" |
  * "runtimeError" | "wrongAnswer" | "passed".
  */
-async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName }) {
+async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName, returnType }) {
   let result;
   try {
     result = await callJudge0({
@@ -121,6 +122,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
       languageId,
       testcaseInput: testcase.input,
       functionName,
+      returnType,
     });
   } catch (callErr) {
     return { index, isVisible, kind: "callError", error: callErr, errorMessage: callErr.message };
@@ -194,6 +196,13 @@ export async function submitHandler(req, res) {
 
   const languageId = languageIdMap[language];
   const alltestcases = [...visibletestcases, ...hidden];
+
+  // Declared return type for this language, from the problem's own contract
+  // (never from the client — submit-mode grading only trusts what's stored
+  // server-side). Undefined for python/javascript or for problems that
+  // haven't declared a contract yet; generateDriverCode falls back to its
+  // regex inference in that case.
+  const returnType = problem.returnType?.[language] || undefined;
 
   // ── CRITICAL GUARD: empty testcases → would silently return Accepted ──
   if (alltestcases.length === 0) {
@@ -279,7 +288,7 @@ export async function submitHandler(req, res) {
       testcase: alltestcases[0],
       index: 0,
       isVisible: 0 < visibletestcases.length,
-      code, language, languageId, functionName,
+      code, language, languageId, functionName, returnType,
     });
 
     let allResults;
@@ -301,7 +310,7 @@ export async function submitHandler(req, res) {
             testcase,
             index,
             isVisible: index < visibletestcases.length,
-            code, language, languageId, functionName,
+            code, language, languageId, functionName, returnType,
           });
         })
       );

@@ -50,6 +50,9 @@ export const runTestcases = async ({ problem, code, language }) => {
         language,
         functionName: problem.functionName,
         testcases: problem.testcases || [],
+        // Optional — only java/cpp problems that declare a returnType
+        // contract set this; undefined is fine (falls back to inference).
+        returnType: problem.returnType?.[language] || undefined,
       }),
     });
 

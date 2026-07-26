@@ -103,18 +103,29 @@ function buildCallArgs(testcaseInput) {
   return Object.entries(normalized).map(([key, value]) => ({ key, value }));
 }
 
-function inferReturnType(userCode, language) {
+// Regex-based inference is a FALLBACK ONLY, for problems that don't declare
+// an explicit `returnType` contract (see backend/models/Problem.js). It is
+// intentionally a short whitelist and will always miss some valid type —
+// any problem whose natural return type isn't on this list, or isn't on the
+// list of common types below, MUST declare `returnType` explicitly rather
+// than relying on this regex. Do not treat extending this list as a
+// substitute for declaring the contract on the problem itself.
+function inferReturnType(userCode, language, declaredReturnType) {
+  if (declaredReturnType) return declaredReturnType;
+
   if (language === "java") {
     const match = userCode.match(
-      /public\s+(int\[\]|boolean|int|String)\s+\w+\s*\(/
+      /public\s+(int\[\]|boolean|long|double|int|String)\s+\w+\s*\(/
     );
 
     return match?.[1] || "int";
   }
 
   if (language === "cpp") {
+    // vector<vector<int>> must be checked before vector<int> — the latter
+    // is a substring of the former, so alternation order matters here.
     const match = userCode.match(
-      /(vector<vector<int>>|vector<string>|vector<int>|bool|string|int)\s+\w+\s*\(/
+      /(vector<vector<int>>|vector<string>|vector<int>|long long|double|bool|string|int)\s+\w+\s*\(/
     );
 
     return match?.[1] || "int";
@@ -123,9 +134,9 @@ function inferReturnType(userCode, language) {
   return null;
 }
 
-export function generateDriverCode(language, userCode, testcaseInput, functionName) {
+export function generateDriverCode(language, userCode, testcaseInput, functionName, declaredReturnType) {
   const fn = functionName || "solve";
-  const returnType = inferReturnType(userCode, language);
+  const returnType = inferReturnType(userCode, language, declaredReturnType);
   const args = buildCallArgs(testcaseInput);
   const isDev =
     typeof process !== "undefined"

@@ -5,6 +5,11 @@ export const TestcaseSchema = z.object({
     expectedOutput: z.any(),
 });
 
+export const ReturnTypeSchema = z.object({
+    java: z.string().nullable().default(null),
+    cpp: z.string().nullable().default(null),
+}).default({});
+
 export const MetaSchema = z.object({
     id: z.number().int().positive(),
     slug: z.string().min(1),
@@ -21,6 +26,11 @@ export const MetaSchema = z.object({
     estimatedTime: z.string().default(""),
     companies: z.array(z.string()).default([]),
     relatedProblems: z.array(z.string()).default([]),
+    // Optional per-language execution contract — see backend/models/Problem.js
+    // returnTypeSchema. Absent for problems that don't need it (dynamically
+    // typed languages, or statically-typed methods returning a type the
+    // regex-inference fallback in generateDriverCode.js already handles).
+    returnType: ReturnTypeSchema,
 });
 
 export const ProblemFolderSchema =

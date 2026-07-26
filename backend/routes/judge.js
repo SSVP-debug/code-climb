@@ -62,6 +62,14 @@ const runSchema = z.object({
     }))
     .min(1, "At least one testcase required")
     .max(10),
+
+  // Declared return type for java/cpp (e.g. "long", "long long"), from the
+  // problem's contract. Optional — omitted for python/javascript or for
+  // problems without a declared contract. Run mode has no server-side
+  // problem lookup, so this travels from the frontend, which already has
+  // the full problem object loaded. Submit mode does NOT accept this from
+  // the client — it derives it server-side from the stored Problem document.
+  returnType: z.string().max(50).optional(),
 });
 
 router.post("/run", validateBody(runSchema), runHandler);

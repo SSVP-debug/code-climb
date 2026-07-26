@@ -21,6 +21,20 @@ const starterCodeSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Declared per-language return type for the solution function. This is the
+// execution contract's source of truth for statically-typed languages —
+// backend/utils/generateDriverCode.js prefers this over sniffing the return
+// type out of the user's submitted code. Optional/nullable so existing
+// problems without it keep working via the (fallback) regex inference.
+// Python/JavaScript are dynamically typed and don't need an entry here.
+const returnTypeSchema = new mongoose.Schema(
+  {
+    java: { type: String, default: null }, // e.g. "int", "long", "boolean", "String", "int[]"
+    cpp: { type: String, default: null }, // e.g. "int", "long long", "bool", "string", "vector<int>"
+  },
+  { _id: false }
+);
+
 const testcaseSchema = new mongoose.Schema(
   {
     input: { type: mongoose.Schema.Types.Mixed, required: true },
@@ -112,6 +126,9 @@ const problemSchema = new mongoose.Schema(
     examples: { type: [exampleSchema], default: [] },
     constraints: { type: [String], default: [] },
     starterCode: { type: starterCodeSchema },
+
+    // Optional per-language return-type contract — see returnTypeSchema above.
+    returnType: { type: returnTypeSchema, default: () => ({}) },
 
     // Visible testcases — returned to the client for "Run" mode
     testcases: { type: [testcaseSchema], default: [] },

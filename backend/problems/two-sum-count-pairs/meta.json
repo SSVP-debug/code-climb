@@ -16,5 +16,9 @@
     "two-sum",
     "two-sum-ii-sorted",
     "three-sum"
-  ]
+  ],
+  "returnType": {
+    "java": "long",
+    "cpp": "long long"
+  }
 }
