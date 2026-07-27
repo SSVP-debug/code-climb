@@ -9,5 +9,8 @@
   "functionName": "findMaximizedCapital",
   "estimatedTime": "35–60 min",
   "companies": [],
-  "relatedProblems": []
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

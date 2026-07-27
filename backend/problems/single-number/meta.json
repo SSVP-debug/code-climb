@@ -17,5 +17,8 @@
   "relatedProblems": [
     "contains-duplicate",
     "majority-element"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

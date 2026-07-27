@@ -19,5 +19,8 @@
     "two-sum",
     "two-sum-ii-sorted",
     "container-with-most-water"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

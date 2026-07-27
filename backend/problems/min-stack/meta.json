@@ -18,5 +18,8 @@
     "valid-parentheses",
     "daily-temperatures",
     "kth-largest-element"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

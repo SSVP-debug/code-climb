@@ -17,7 +17,7 @@ function sanitizeStderr(stderr) {
 }
 
 export async function runHandler(req, res) {
-  const { code, language, functionName, testcases, returnType } = req.body;
+  const { code, language, functionName, testcases, returnType, comparisonMode } = req.body;
   const languageId = languageIdMap[language];
   const results = [];
 
@@ -58,7 +58,7 @@ export async function runHandler(req, res) {
       result.stdout || ""
     );
 
-    const passed = outputsMatch(expected, actual);
+    const passed = outputsMatch(expected, actual, comparisonMode);
     const hasError = !!result.stderr;
 
     req.log.debug(
@@ -92,10 +92,39 @@ function normalizeOutput(output) {
     .replace(/\r\n/g, "\n");
 }
 
-function outputsMatch(expected, actual) {
+// Canonical, order-independent key for one array element — used only to
+// pair up elements between expected/actual when comparisonMode is
+// "unordered". Sorting by JSON.stringify is enough to detect "same
+// multiset of elements, different order"; it doesn't need to be a
+// meaningful/natural sort, just a deterministic one so equal elements land
+// at the same position on both sides.
+function sortForUnorderedComparison(arr) {
+  return [...arr].map((el) => JSON.stringify(el)).sort();
+}
+
+// `comparisonMode` — "exact" (default) or "unordered". "unordered" only
+// relaxes ordering of the TOP-LEVEL array; nested structure within each
+// element is still compared in its original order. See audit finding P0-3
+// and Problem.comparisonMode's doc comment in backend/models/Problem.js.
+function outputsMatch(expected, actual, comparisonMode = "exact") {
   try {
-    return JSON.stringify(JSON.parse(expected))
-      === JSON.stringify(JSON.parse(actual));
+    const expectedParsed = JSON.parse(expected);
+    const actualParsed = JSON.parse(actual);
+
+    if (
+      comparisonMode === "unordered" &&
+      Array.isArray(expectedParsed) &&
+      Array.isArray(actualParsed)
+    ) {
+      if (expectedParsed.length !== actualParsed.length) return false;
+
+      return (
+        JSON.stringify(sortForUnorderedComparison(expectedParsed)) ===
+        JSON.stringify(sortForUnorderedComparison(actualParsed))
+      );
+    }
+
+    return JSON.stringify(expectedParsed) === JSON.stringify(actualParsed);
   } catch {
     return normalizeOutput(expected)
       === normalizeOutput(actual);
@@ -113,7 +142,7 @@ const languageIdMap = {
  * one of: "callError" | "noResult" | "compileError" | "infraError" |
  * "runtimeError" | "wrongAnswer" | "passed".
  */
-async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName, returnType }) {
+async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName, returnType, comparisonMode }) {
   let result;
   try {
     result = await callJudge0({
@@ -149,7 +178,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
   const expected = normalizeOutput(JSON.stringify(testcase.expectedOutput));
   const actual = normalizeOutput(result.stdout || "");
 
-  if (!outputsMatch(expected, actual)) {
+  if (!outputsMatch(expected, actual, comparisonMode)) {
     return {
       index,
       isVisible,
@@ -203,6 +232,12 @@ export async function submitHandler(req, res) {
   // haven't declared a contract yet; generateDriverCode falls back to its
   // regex inference in that case.
   const returnType = problem.returnType?.[language] || undefined;
+
+  // Output comparison mode — see Problem.comparisonMode's doc comment and
+  // audit finding P0-3. Server-side only, same trust model as returnType
+  // above: a submission's grading must not depend on anything the client
+  // sends beyond the code itself.
+  const comparisonMode = problem.comparisonMode || "exact";
 
   // ── CRITICAL GUARD: empty testcases → would silently return Accepted ──
   if (alltestcases.length === 0) {
@@ -288,7 +323,7 @@ export async function submitHandler(req, res) {
       testcase: alltestcases[0],
       index: 0,
       isVisible: 0 < visibletestcases.length,
-      code, language, languageId, functionName, returnType,
+      code, language, languageId, functionName, returnType, comparisonMode,
     });
 
     let allResults;
@@ -310,7 +345,7 @@ export async function submitHandler(req, res) {
             testcase,
             index,
             isVisible: index < visibletestcases.length,
-            code, language, languageId, functionName, returnType,
+            code, language, languageId, functionName, returnType, comparisonMode,
           });
         })
       );

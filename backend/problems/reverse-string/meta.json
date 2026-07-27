@@ -17,5 +17,8 @@
     "is-palindrome",
     "move-zeroes",
     "reverse-linked-list"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

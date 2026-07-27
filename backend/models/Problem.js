@@ -35,6 +35,25 @@ const returnTypeSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Declared per-language, per-parameter argument types for the solution
+// function — the input-side counterpart to returnTypeSchema above. Added
+// during the execution-pipeline audit (finding P0-1/P1-2/P1-3): the driver
+// generator previously guessed argument types structurally from the JS
+// testcase value, which works for numeric arrays but silently produces
+// invalid Java/C++ for String, String[], boolean, and 2D-array parameters.
+// Keyed by parameter name so a problem only needs to declare the
+// parameters that need it — e.g. { java: { s: "String" } } for a
+// single-string-argument problem. Optional/nullable, same as returnType:
+// existing problems without it keep working via generateDriverCode.js's
+// structural inference fallback.
+const paramTypesSchema = new mongoose.Schema(
+  {
+    java: { type: Object, default: null }, // e.g. { s: "String", strs: "String[]", grid: "int[][]" }
+    cpp: { type: Object, default: null }, // e.g. { s: "string", strs: "vector<string>", grid: "vector<vector<int>>" }
+  },
+  { _id: false }
+);
+
 const testcaseSchema = new mongoose.Schema(
   {
     input: { type: mongoose.Schema.Types.Mixed, required: true },
@@ -129,6 +148,27 @@ const problemSchema = new mongoose.Schema(
 
     // Optional per-language return-type contract — see returnTypeSchema above.
     returnType: { type: returnTypeSchema, default: () => ({}) },
+
+    // Optional per-language, per-parameter argument-type contract — see
+    // paramTypesSchema above.
+    paramTypes: { type: paramTypesSchema, default: () => ({}) },
+
+    // How the judge compares a submission's stdout against expectedOutput
+    // (see backend/controllers/judgeController.js outputsMatch()).
+    // "exact"      — default. Structural equality, order matters exactly
+    //                as stored (safe default, matches all prior behavior).
+    // "unordered"  — the TOP-LEVEL array may be returned in any order (the
+    //                problem's own description explicitly grants this,
+    //                e.g. "you may return the answer in any order").
+    //                Nested structure within each element is still compared
+    //                in order — e.g. for a list-of-paths problem, which
+    //                path comes first doesn't matter, but the sequence of
+    //                nodes WITHIN a path still does. See audit finding P0-3.
+    comparisonMode: {
+      type: String,
+      enum: ["exact", "unordered"],
+      default: "exact",
+    },
 
     // Visible testcases — returned to the client for "Run" mode
     testcases: { type: [testcaseSchema], default: [] },

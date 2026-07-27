@@ -18,5 +18,8 @@
   "relatedProblems": [
     "binary-search",
     "find-minimum-in-rotated-sorted-array"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

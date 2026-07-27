@@ -15,5 +15,8 @@
   "relatedProblems": [
     "subsets",
     "combination-sum"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

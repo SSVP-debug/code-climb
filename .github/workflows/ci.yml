@@ -75,6 +75,21 @@ jobs:
       - name: Validate problem folders
         run: node scripts/importProblems.js --dry-run
 
+      - name: Validate problem contracts (returnType/paramTypes vs starter code)
+        run: npm run validate:problems
+        # Previously written but never wired into CI (audit finding P1-7) —
+        # a PR that reintroduces a returnType/paramTypes-vs-starter-code
+        # mismatch would otherwise pass CI silently.
+
+      - name: Check backend/problems/* drift against src/data/problems.js
+        run: node scripts/checkProblemsFolderDrift.js
+        # src/data/problems.js and backend/problems/* are two independent
+        # paths into MongoDB (seedProblems.js vs importProblems.js) with no
+        # prior check that they agree (audit finding P1-6). Fails the build
+        # if backend/problems/* wasn't regenerated via
+        # `npm run problems:export-to-folders` after a src/data/problems.js
+        # change, or was hand-edited out of sync.
+
       - name: Run backend tests
         run: npm test -- --reporter=verbose
         env:

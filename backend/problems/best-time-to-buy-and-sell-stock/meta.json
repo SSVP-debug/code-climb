@@ -19,5 +19,8 @@
     "maximum-subarray",
     "maximum-average-subarray",
     "move-zeroes"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

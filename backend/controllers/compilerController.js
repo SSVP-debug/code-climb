@@ -174,10 +174,18 @@ function sleep(ms) {
 //                   straight through to generateDriverCode, which prefers it
 //                   over guessing the type from the user's source. Only
 //                   meaningful for java/cpp — safe to omit for python/js.
-export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName, returnType }) {
+//   paramTypes    — optional declared per-parameter argument types for this
+//                   language, from the problem's contract
+//                   (Problem.paramTypes[language], e.g. { s: "String" }).
+//                   Passed straight through to generateDriverCode, which
+//                   prefers each declared entry over structurally guessing
+//                   the type from the testcase value. Only meaningful for
+//                   java/cpp — safe to omit for python/js. See audit
+//                   finding P0-1.
+export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName, returnType, paramTypes }) {
   const lang = language || LANGUAGE_STRINGS[languageId] || "python";
 
-  const driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName, returnType);
+  const driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName, returnType, paramTypes);
 
   logger.debug(
     { language: lang, languageId, functionName, inputPreview: JSON.stringify(testcaseInput).slice(0, 80) },

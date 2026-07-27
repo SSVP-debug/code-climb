@@ -18,5 +18,8 @@
     "fibonacci-number",
     "house-robber",
     "coin-change"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

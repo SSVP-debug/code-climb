@@ -15,5 +15,8 @@
   "relatedProblems": [
     "kth-largest-element",
     "minimum-size-subarray-sum"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

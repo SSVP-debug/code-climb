@@ -17,5 +17,8 @@
     "valid-anagram",
     "reverse-string",
     "is-palindrome"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

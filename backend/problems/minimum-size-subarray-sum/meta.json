@@ -17,5 +17,8 @@
     "longest-substring-without-repeating-characters",
     "maximum-average-subarray",
     "maximum-subarray"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

@@ -18,5 +18,8 @@
     "single-number",
     "valid-anagram",
     "longest-consecutive-sequence"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

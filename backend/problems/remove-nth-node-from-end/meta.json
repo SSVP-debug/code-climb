@@ -18,5 +18,8 @@
     "middle-of-the-linked-list",
     "reverse-linked-list",
     "merge-two-sorted-lists"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

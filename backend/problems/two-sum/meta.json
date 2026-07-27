@@ -19,5 +19,8 @@
     "two-sum-ii-sorted",
     "two-sum-count-pairs",
     "three-sum"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

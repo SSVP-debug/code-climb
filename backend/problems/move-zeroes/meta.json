@@ -17,5 +17,8 @@
     "contains-duplicate",
     "two-sum-ii-sorted",
     "reverse-string"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

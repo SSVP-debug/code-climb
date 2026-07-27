@@ -8,5 +8,8 @@
   "functionName": "firstBadVersion",
   "estimatedTime": "",
   "companies": [],
-  "relatedProblems": []
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

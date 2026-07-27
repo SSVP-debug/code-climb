@@ -18,5 +18,8 @@
     "find-minimum-in-rotated-sorted-array",
     "search-in-rotated-sorted-array",
     "kth-largest-element"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

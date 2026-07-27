@@ -16,5 +16,8 @@
     "invert-binary-tree",
     "maximum-depth-of-binary-tree",
     "validate-binary-search-tree"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

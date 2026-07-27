@@ -8,5 +8,8 @@
   "functionName": "trapRainWater",
   "estimatedTime": "",
   "companies": [],
-  "relatedProblems": []
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

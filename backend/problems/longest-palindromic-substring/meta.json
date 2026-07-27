@@ -9,5 +9,8 @@
   "functionName": "longestPalindrome",
   "estimatedTime": "20–35 min",
   "companies": [],
-  "relatedProblems": []
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

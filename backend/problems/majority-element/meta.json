@@ -18,5 +18,8 @@
     "single-number",
     "contains-duplicate",
     "maximum-subarray"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

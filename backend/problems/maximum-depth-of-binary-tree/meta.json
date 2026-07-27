@@ -18,5 +18,8 @@
     "invert-binary-tree",
     "diameter-of-binary-tree",
     "same-tree"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

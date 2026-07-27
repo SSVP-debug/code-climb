@@ -16,5 +16,8 @@
   "relatedProblems": [
     "number-of-islands",
     "maximum-depth-of-binary-tree"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

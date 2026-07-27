@@ -1,14 +1,33 @@
 /**
- * IMPORTANT:
- * Frontend and backend copies of this file must remain identical.
- * Update both whenever changing driver generation logic.
+ * generateDriverCode.js
+ *
+ * Single source of truth for turning (userCode, testcaseInput, functionName,
+ * returnType, paramTypes) into a self-contained, compilable program per
+ * language. There is only one copy of this file in the repo (backend/) —
+ * the frontend never duplicates it, it only references the return-type
+ * contract by name in comments (see src/data/problems.js). The previous
+ * "frontend and backend copies must remain identical" header comment here
+ * was stale and has been removed as part of the execution-pipeline audit.
  */
+import { javaDeclaration } from "./languageTypes/java.js";
+import { cppDeclaration } from "./languageTypes/cpp.js";
+
 function formatJsArg(value) {
   return JSON.stringify(value);
 }
 
 function formatPythonArg(value) {
   if (value === null) return "None";
+  // Booleans MUST be checked before the generic array/object/string
+  // branches and before the `String(value)` fallback: Python's boolean
+  // literals are `True`/`False` (capitalized), not `true`/`false`. The
+  // previous version had no boolean branch at all, so any boolean argument
+  // fell through to `String(value)` → the literal text "true"/"false",
+  // which are not valid Python identifiers and raise NameError at runtime
+  // (misreported as a user RUNTIME_ERROR rather than the platform bug it
+  // actually is). No current problem has a boolean-typed argument, so this
+  // was latent rather than live — see audit finding P1-3.
+  if (typeof value === "boolean") return value ? "True" : "False";
   if (typeof value === "string") return JSON.stringify(value);
   if (Array.isArray(value)) {
     return `[${value.map((v) => formatPythonArg(v)).join(", ")}]`;
@@ -20,70 +39,6 @@ function formatPythonArg(value) {
     return `{${entries}}`;
   }
   return String(value);
-}
-
-function formatJavaValue(value) {
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "new int[] {}";
-    if (value.every((v) => typeof v === "number")) return `new int[] {${value.join(", ")}}`;
-    return JSON.stringify(value);
-  }
-  if (typeof value === "number") return String(value);
-  if (typeof value === "string") return `"${value}"`;
-  if (value === null) return "null";
-  return JSON.stringify(value);
-}
-
-function escapeCppString(str) {
-  return String(str).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-
-function formatCppValue(value) {
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "{}";
-
-    if (Array.isArray(value[0])) {
-      return `{${value.map((v) => formatCppValue(v)).join(", ")}}`;
-    }
-
-    if (typeof value[0] === "string") {
-      return `{${value.map((v) => `"${escapeCppString(v)}"`).join(", ")}}`;
-    }
-
-    if (value.every((v) => typeof v === "number")) {
-      return `{${value.join(", ")}}`;
-    }
-
-    return JSON.stringify(value);
-  }
-
-  if (typeof value === "boolean") return value ? "true" : "false";
-  if (typeof value === "number") return String(value);
-  if (typeof value === "string") return `"${escapeCppString(value)}"`;
-
-  return JSON.stringify(value);
-}
-
-function inferCppType(value) {
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "vector<int>";
-
-    if (Array.isArray(value[0])) {
-      return "vector<vector<int>>";
-    }
-
-    if (typeof value[0] === "string") {
-      return "vector<string>";
-    }
-
-    return "vector<int>";
-  }
-
-  if (typeof value === "boolean") return "bool";
-  if (typeof value === "number") return "int";
-  if (typeof value === "string") return "string";
-
-  return "auto";
 }
 
 function normalizeTestcaseInput(testcaseInput) {
@@ -134,10 +89,15 @@ function inferReturnType(userCode, language, declaredReturnType) {
   return null;
 }
 
-export function generateDriverCode(language, userCode, testcaseInput, functionName, declaredReturnType) {
+export function generateDriverCode(language, userCode, testcaseInput, functionName, declaredReturnType, declaredParamTypes) {
   const fn = functionName || "solve";
   const returnType = inferReturnType(userCode, language, declaredReturnType);
   const args = buildCallArgs(testcaseInput);
+  // Per-language declared argument types (Problem.paramTypes[language]),
+  // e.g. { s: "String", strs: "String[]" }. Optional — languageTypes'
+  // inferJavaType/inferCppType fall back to structural inference from the
+  // testcase value for any key not present here. See audit finding P0-1.
+  const paramTypes = declaredParamTypes || {};
   const isDev =
     typeof process !== "undefined"
       ? process.env.NODE_ENV !== "production"
@@ -211,12 +171,7 @@ try {
 
   if (language === "java") {
     const declarations = args
-      .map(({ key, value }) => {
-        const javaValue = formatJavaValue(value);
-        if (Array.isArray(value)) return `int[] ${key} = ${javaValue};`;
-        if (typeof value === "number") return `int ${key} = ${javaValue};`;
-        return `Object ${key} = ${javaValue};`;
-      })
+      .map(({ key, value }) => javaDeclaration(key, value, paramTypes[key]))
       .join("\n    ");
 
     const javaCallArgs = args.map((a) => a.key).join(", ");
@@ -252,12 +207,7 @@ class Main {
 
   if (language === "cpp") {
     const declarations = args
-      .map(({ key, value }) => {
-        const cppType = inferCppType(value);
-        const cppValue = formatCppValue(value);
-
-        return `${cppType} ${key} = ${cppValue};`;
-      })
+      .map(({ key, value }) => cppDeclaration(key, value, paramTypes[key]))
       .join("\n  ");
 
     const cppCallArgs = args.map((a) => a.key).join(", ");

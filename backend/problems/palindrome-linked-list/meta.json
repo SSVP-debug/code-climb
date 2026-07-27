@@ -9,5 +9,8 @@
   "functionName": "isPalindrome",
   "estimatedTime": "10–20 min",
   "companies": [],
-  "relatedProblems": []
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

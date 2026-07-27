@@ -18,5 +18,8 @@
   "relatedProblems": [
     "min-stack",
     "daily-temperatures"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

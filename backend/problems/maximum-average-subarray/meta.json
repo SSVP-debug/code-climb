@@ -17,5 +17,8 @@
     "minimum-size-subarray-sum",
     "maximum-subarray",
     "best-time-to-buy-and-sell-stock"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

@@ -18,5 +18,8 @@
   "relatedProblems": [
     "flood-fill",
     "maximum-depth-of-binary-tree"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

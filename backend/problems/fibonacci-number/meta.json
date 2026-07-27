@@ -16,5 +16,8 @@
   "relatedProblems": [
     "climbing-stairs",
     "house-robber"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

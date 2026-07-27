@@ -10,6 +10,14 @@ export const ReturnTypeSchema = z.object({
     cpp: z.string().nullable().default(null),
 }).default({});
 
+// Per-parameter argument-type contract — see backend/models/Problem.js
+// paramTypesSchema. Keyed by parameter name rather than a fixed shape,
+// since different problems have different parameter names.
+export const ParamTypesSchema = z.object({
+    java: z.record(z.string(), z.string()).nullable().default(null),
+    cpp: z.record(z.string(), z.string()).nullable().default(null),
+}).default({});
+
 export const MetaSchema = z.object({
     id: z.number().int().positive(),
     slug: z.string().min(1),
@@ -31,6 +39,11 @@ export const MetaSchema = z.object({
     // typed languages, or statically-typed methods returning a type the
     // regex-inference fallback in generateDriverCode.js already handles).
     returnType: ReturnTypeSchema,
+    // Optional per-language, per-parameter execution contract — see
+    // backend/models/Problem.js paramTypesSchema.
+    paramTypes: ParamTypesSchema,
+    // Output-comparison mode — see backend/models/Problem.js comparisonMode.
+    comparisonMode: z.enum(["exact", "unordered"]).default("exact"),
 });
 
 export const ProblemFolderSchema =

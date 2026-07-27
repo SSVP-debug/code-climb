@@ -19,5 +19,8 @@
     "minimum-size-subarray-sum",
     "maximum-average-subarray",
     "longest-consecutive-sequence"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

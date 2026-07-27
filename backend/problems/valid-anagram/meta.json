@@ -18,5 +18,8 @@
     "group-anagrams",
     "longest-consecutive-sequence",
     "contains-duplicate"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

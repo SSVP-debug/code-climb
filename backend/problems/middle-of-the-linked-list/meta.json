@@ -17,5 +17,8 @@
     "reverse-linked-list",
     "remove-nth-node-from-end",
     "merge-two-sorted-lists"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

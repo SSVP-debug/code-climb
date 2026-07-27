@@ -17,5 +17,8 @@
     "maximum-depth-of-binary-tree",
     "same-tree",
     "diameter-of-binary-tree"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

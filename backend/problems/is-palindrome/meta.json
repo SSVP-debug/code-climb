@@ -17,5 +17,8 @@
     "reverse-string",
     "longest-common-prefix",
     "valid-anagram"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

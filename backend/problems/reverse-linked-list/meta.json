@@ -19,5 +19,8 @@
     "merge-two-sorted-lists",
     "middle-of-the-linked-list",
     "remove-nth-node-from-end"
-  ]
+  ],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact"
 }

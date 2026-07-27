@@ -186,4 +186,76 @@ describe("submitHandler", () => {
     );
     expect(req.log.error).toHaveBeenCalled();
   });
+
+  // ── comparisonMode: "unordered" — audit finding P0-3 ─────────────────────
+  // Regression tests using the exact shape of the confirmed-broken
+  // problems (e.g. top-k-frequent-elements: "you may return the answer in
+  // any order"). Before this fix, a correct solution returning a
+  // differently-ordered (but equally valid) answer was graded Wrong Answer.
+  describe("comparisonMode: \"unordered\"", () => {
+    const unorderedProblemDoc = {
+      slug: "top-k-frequent-elements",
+      title: "Top K Frequent Elements",
+      comparisonMode: "unordered",
+      hiddentestcases: [
+        { input: { nums: [1, 1, 1, 2, 2, 3], k: 2 }, expectedOutput: [1, 2] },
+      ],
+    };
+
+    it("accepts a differently-ordered but equally correct array when the problem allows any order", async () => {
+      Problem.findOne.mockResolvedValue(unorderedProblemDoc);
+      callJudge0.mockResolvedValue({
+        stdout: JSON.stringify([2, 1]), // same elements, reversed order
+        stderr: null,
+        compile_output: null,
+      });
+      const req = {
+        body: { ...baseBody, problemSlug: "top-k-frequent-elements", visibletestcases: [] },
+        log: mockLog(),
+        userDoc,
+      };
+
+      await submitHandler(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ status: "Accepted" })
+      );
+    });
+
+    it("still rejects a genuinely wrong (different multiset) answer under unordered comparison", async () => {
+      Problem.findOne.mockResolvedValue(unorderedProblemDoc);
+      callJudge0.mockResolvedValue({
+        stdout: JSON.stringify([1, 3]), // wrong elements, not just reordered
+        stderr: null,
+        compile_output: null,
+      });
+      const req = {
+        body: { ...baseBody, problemSlug: "top-k-frequent-elements", visibletestcases: [] },
+        log: mockLog(),
+        userDoc,
+      };
+
+      await submitHandler(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ status: "Wrong Answer" })
+      );
+    });
+
+    it("defaults to exact (order-sensitive) comparison when the problem doesn't declare comparisonMode — no regression for every other problem", async () => {
+      Problem.findOne.mockResolvedValue(problemDoc); // two-sum, no comparisonMode field
+      callJudge0.mockResolvedValue({
+        stdout: JSON.stringify([1, 0]), // same elements, reversed — wrong for Two Sum
+        stderr: null,
+        compile_output: null,
+      });
+      const req = { body: baseBody, log: mockLog(), userDoc };
+
+      await submitHandler(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ status: "Wrong Answer" })
+      );
+    });
+  });
 });

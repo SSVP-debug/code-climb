@@ -114,6 +114,103 @@ describe("generateDriverCode — Two Sum Count Pairs overflow regression", () =>
   });
 });
 
+describe("generateDriverCode — Java argument types (audit P0-1)", () => {
+  it("a String argument declares as String, not Object — the valid-parentheses reproduction", () => {
+    const code = `class Solution {\n    public boolean isValid(String s) {\n        return true;\n    }\n}`;
+    const driver = generateDriverCode("java", code, { s: "()[]{}" }, "isValid", "boolean");
+
+    expect(driver).toContain('String s = "()[]{}";');
+    expect(driver).not.toContain("Object s");
+  });
+
+  it("a String[] argument declares as String[] with a valid brace literal — the group-anagrams reproduction", () => {
+    const code = `class Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        return null;\n    }\n}`;
+    const driver = generateDriverCode("java", code, { strs: ["eat", "tea", "tan"] }, "groupAnagrams", "List<List<String>>");
+
+    expect(driver).toContain('String[] strs = {"eat", "tea", "tan"};');
+    expect(driver).not.toContain("int[] strs");
+    expect(driver).not.toMatch(/strs\s*=\s*\[/); // no invalid bracket literal
+  });
+
+  it("a numeric matrix argument declares as int[][] with nested braces — the course-schedule/clone-graph reproduction", () => {
+    const code = `class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        return true;\n    }\n}`;
+    const driver = generateDriverCode(
+      "java", code, { numCourses: 2, prerequisites: [[1, 0]] }, "canFinish", "boolean"
+    );
+
+    expect(driver).toContain("int[][] prerequisites = {{1, 0}};");
+    expect(driver).not.toMatch(/prerequisites\s*=\s*\[/);
+  });
+
+  it("real confirmed-broken problems from src/data/problems.js now generate clean Java for every declared/first testcase", async () => {
+    const { default: problems } = await import("../../src/data/problems.js");
+    const targets = [
+      "valid-parentheses", "group-anagrams", "course-schedule",
+      "clone-graph", "pacific-atlantic-water-flow", "word-break",
+      "longest-common-prefix", "encode-and-decode-strings",
+    ];
+
+    for (const slug of targets) {
+      const problem = problems.find((p) => p.slug === slug);
+      expect(problem, `expected to find problem "${slug}" in src/data/problems.js`).toBeTruthy();
+
+      const testcase = problem.testcases?.[0] || problem.hiddentestcases?.[0];
+      const driver = generateDriverCode(
+        "java",
+        problem.starterCode.java,
+        testcase.input,
+        problem.functionName,
+        problem.returnType?.java,
+        problem.paramTypes?.java
+      );
+
+      expect(driver, `${slug}: should not declare any argument as Object`).not.toMatch(/\bObject\s+\w+\s*=/);
+      expect(driver, `${slug}: should not use an invalid [ bracket array literal`).not.toMatch(/\]\s*\w+\s*=\s*\[/);
+    }
+  });
+});
+
+describe("generateDriverCode — paramTypes contract overrides structural inference", () => {
+  it("an explicit paramTypes.java entry wins over the structural guess", () => {
+    const code = `class Solution {\n    public long solve(long n) {\n        return n;\n    }\n}`;
+    // A bare JS number like 5000000000 IS structurally distinguishable
+    // from an int (Number.isInteger is still true for it, so the
+    // structural fallback alone would call it "int" and silently
+    // truncate/fail to compile as a long literal) — this is exactly the
+    // case an explicit paramTypes declaration exists to cover.
+    const driver = generateDriverCode(
+      "java", code, { n: 5000000000 }, "solve", "long", { n: "long" }
+    );
+
+    expect(driver).toContain("long n = 5000000000L;");
+  });
+});
+
+describe("generateDriverCode — Python boolean arguments (audit P1-3)", () => {
+  it("formats a boolean argument as True/False, not the invalid lowercase true/false", () => {
+    const code = `class Solution:\n    def hasCycle(self, flag):\n        return flag`;
+    const driver = generateDriverCode("python", code, { flag: true }, "hasCycle");
+
+    expect(driver).toContain("hasCycle(True)");
+    expect(driver).not.toContain("hasCycle(true)");
+  });
+
+  it("formats a nested boolean (inside an array) correctly too", () => {
+    const code = `class Solution:\n    def solve(self, flags):\n        return flags`;
+    const driver = generateDriverCode("python", code, { flags: [true, false] }, "solve");
+
+    expect(driver).toContain("solve([True, False])");
+  });
+});
+
+describe("validateProblemContracts — argument generation check (audit P0-1)", () => {
+  it("every real problem (except tracked design-pattern problems) generates argument-safe Java and C++", async () => {
+    const { default: problems } = await import("../../src/data/problems.js");
+    const errors = validateProblems(problems);
+    expect(errors).toHaveLength(0);
+  });
+});
+
 describe("validateProblemContracts — mismatch detection", () => {
   it("flags a problem whose starter code disagrees with its declared returnType", () => {
     const mismatched = {
