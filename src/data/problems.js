@@ -2147,6 +2147,8 @@ const rawProblems = [
     title: "LRU Cache",
     slug: "lru-cache",
     functionName: "LRUCache",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Medium",
     topic: "Linked List",
     pattern: "doubly linked list + hashmap",
@@ -2740,6 +2742,8 @@ const rawProblems = [
     title: "Top K Frequent Elements",
     slug: "top-k-frequent-elements",
     functionName: "topKFrequent",
+    // Description says "return the answer in any order" — see audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Heap",
     pattern: "bucket sort / heap",
@@ -2773,6 +2777,8 @@ const rawProblems = [
     title: "Find Median from Data Stream",
     slug: "find-median-from-data-stream",
     functionName: "MedianFinder",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Hard",
     topic: "Heap",
     pattern: "two heaps (max-heap + min-heap)",
@@ -2803,6 +2809,8 @@ const rawProblems = [
     title: "K Closest Points to Origin",
     slug: "k-closest-points-to-origin",
     functionName: "kClosest",
+    // Description says "you may return the answer in any order" — audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Heap",
     pattern: "max-heap of size k",
@@ -2972,6 +2980,8 @@ const rawProblems = [
     title: "Time Based Key-Value Store",
     slug: "time-based-key-value-store",
     functionName: "TimeMap",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Medium",
     topic: "Binary Search",
     pattern: "binary search on sorted timestamps",
@@ -3069,6 +3079,8 @@ const rawProblems = [
     title: "Permutations",
     slug: "permutations",
     functionName: "permute",
+    // Description says "return the answer in any order" — audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Backtracking",
     pattern: "swap-based backtracking",
@@ -3229,6 +3241,8 @@ const rawProblems = [
     title: "Implement Trie (Prefix Tree)",
     slug: "implement-trie",
     functionName: "Trie",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Medium",
     topic: "Trie",
     pattern: "trie insert/search/prefix",
@@ -3288,6 +3302,8 @@ const rawProblems = [
     title: "Design Add and Search Words Data Structure",
     slug: "design-add-search-words",
     functionName: "WordDictionary",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Medium",
     topic: "Trie",
     pattern: "trie with wildcard DFS",
@@ -4187,6 +4203,8 @@ const rawProblems = [
     title: "Implement Queue using Stacks",
     slug: "implement-queue-using-stacks",
     functionName: "MyQueue",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "returningOnly" },
     difficulty: "Easy",
     topic: "Stacks",
     pattern: "two stacks",
@@ -5054,6 +5072,8 @@ const rawProblems = [
     title: "Implement Stack using Queues",
     slug: "implement-stack-using-queues",
     functionName: "MyStack",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Easy",
     topic: "Design",
     pattern: "queue rotation trick",
@@ -5083,6 +5103,8 @@ const rawProblems = [
     title: "Design HashMap",
     slug: "design-hashmap",
     functionName: "MyHashMap",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Easy",
     topic: "Design",
     pattern: "chaining / open addressing",
@@ -5112,6 +5134,8 @@ const rawProblems = [
     title: "Design Circular Queue",
     slug: "design-circular-queue",
     functionName: "MyCircularQueue",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Design",
     pattern: "ring buffer",
@@ -5136,7 +5160,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 157, title: "Design Twitter", slug: "design-twitter", functionName: "Twitter", difficulty: "Medium", topic: "Design", pattern: "heap + timestamp", companies: ["Amazon","Facebook"], description: "Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).", examples: [{ input: '["Twitter","postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"]\n[[],[1,5],[1],[1,2],[2,6],[1],[1,2],[1]]', output: "[null,null,[5],null,null,[6,5],null,[5]]" }], constraints: ["1 <= userId, followerId, followeeId <= 500", "0 <= tweetId <= 10^4", "At most 3 * 10^4 calls."], starterCode: { python: `class Twitter:\n    def __init__(self):\n        pass\n    def postTweet(self, userId, tweetId):\n        pass\n    def getNewsFeed(self, userId):\n        pass\n    def follow(self, followerId, followeeId):\n        pass\n    def unfollow(self, followerId, followeeId):\n        pass`, javascript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, java: `class Twitter {\n    public Twitter() {}\n    public void postTweet(int userId, int tweetId) {}\n    public List<Integer> getNewsFeed(int userId) { return new ArrayList<>(); }\n    public void follow(int followerId, int followeeId) {}\n    public void unfollow(int followerId, int followeeId) {}\n}`, cpp: `class Twitter {\npublic:\n    Twitter() {}\n    void postTweet(int userId, int tweetId) {}\n    vector<int> getNewsFeed(int userId) { return {}; }\n    void follow(int followerId, int followeeId) {}\n    void unfollow(int followerId, int followeeId) {}\n};` }, testcases: [{ input: { ops: ["postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"], vals: [[1,5],[1],[1,2],[2,6],[1],[1,2],[1]] }, expectedOutput: [null,[5],null,null,[6,5],null,[5]] }], hiddentestcases: [{ input: { ops: ["postTweet","follow","getNewsFeed"], vals: [[2,5],[1,2],[1]] }, expectedOutput: [null,null,[5]] }] },
+  { id: 157, title: "Design Twitter", slug: "design-twitter", functionName: "Twitter", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Design", pattern: "heap + timestamp", companies: ["Amazon","Facebook"], description: "Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).", examples: [{ input: '["Twitter","postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"]\n[[],[1,5],[1],[1,2],[2,6],[1],[1,2],[1]]', output: "[null,null,[5],null,null,[6,5],null,[5]]" }], constraints: ["1 <= userId, followerId, followeeId <= 500", "0 <= tweetId <= 10^4", "At most 3 * 10^4 calls."], starterCode: { python: `class Twitter:\n    def __init__(self):\n        pass\n    def postTweet(self, userId, tweetId):\n        pass\n    def getNewsFeed(self, userId):\n        pass\n    def follow(self, followerId, followeeId):\n        pass\n    def unfollow(self, followerId, followeeId):\n        pass`, javascript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, java: `class Twitter {\n    public Twitter() {}\n    public void postTweet(int userId, int tweetId) {}\n    public List<Integer> getNewsFeed(int userId) { return new ArrayList<>(); }\n    public void follow(int followerId, int followeeId) {}\n    public void unfollow(int followerId, int followeeId) {}\n}`, cpp: `class Twitter {\npublic:\n    Twitter() {}\n    void postTweet(int userId, int tweetId) {}\n    vector<int> getNewsFeed(int userId) { return {}; }\n    void follow(int followerId, int followeeId) {}\n    void unfollow(int followerId, int followeeId) {}\n};` }, testcases: [{ input: { ops: ["postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"], vals: [[1,5],[1],[1,2],[2,6],[1],[1,2],[1]] }, expectedOutput: [null,[5],null,null,[6,5],null,[5]] }], hiddentestcases: [{ input: { ops: ["postTweet","follow","getNewsFeed"], vals: [[2,5],[1,2],[1]] }, expectedOutput: [null,null,[5]] }] },
 
   { id: 158, title: "Random Pick with Weight", slug: "random-pick-with-weight", functionName: "Solution", difficulty: "Medium", topic: "Binary Search", pattern: "prefix sum + binary search", companies: ["Facebook","Google","Amazon"], description: "Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.", examples: [{ input: "w = [1,3], pickIndex called", output: "Returns 0 with 25% probability, 1 with 75% probability" }], constraints: ["1 <= w.length <= 10^4", "1 <= w[i] <= 10^5", "pickIndex called at most 10^4 times"], starterCode: { python: `class Solution:\n    def __init__(self, w):\n        pass\n    def pickIndex(self):\n        pass`, javascript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, java: `class Solution {\n    public Solution(int[] w) {}\n    public int pickIndex() { return 0; }\n}`, cpp: `class Solution {\npublic:\n    Solution(vector<int>& w) {}\n    int pickIndex() { return 0; }\n};` }, testcases: [{ input: { w: [1], ops: ["pickIndex"] }, expectedOutput: [0] }, { input: { w: [1,3], ops: ["pickIndex","pickIndex","pickIndex","pickIndex"] }, expectedOutput: "varies" }], hiddentestcases: [{ input: { w: [1,1,1,1], ops: ["pickIndex"] }, expectedOutput: "0-3" }] },
 
@@ -5145,6 +5169,8 @@ const rawProblems = [
     title: "Maximum Frequency Stack",
     slug: "maximum-frequency-stack",
     functionName: "FreqStack",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Hard",
     topic: "Design",
     pattern: "frequency groups stack",
@@ -5165,7 +5191,7 @@ const rawProblems = [
       { input: { ops: ["push","push","push","push","push","push","pop","pop","pop","pop"], vals: [[5],[7],[5],[7],[4],[5],[],[],[],[]] }, expectedOutput: [null,null,null,null,null,null,5,7,5,4] },
     ],
     hiddentestcases: [
-      { input: { ops: ["push","push","push","pop","pop"], vals: [[1],[1],[2],[],[]] }, expectedOutput: [null,null,null,1,1] },
+      { input: { ops: ["push","push","push","pop","pop"], vals: [[1],[1],[2],[],[]] }, expectedOutput: [null,null,null,1,2] },
     ],
   },
 
@@ -5648,6 +5674,9 @@ const rawProblems = [
     title: "All Paths From Source to Target",
     slug: "all-paths-source-to-target",
     functionName: "allPathsSourceTarget",
+    // List of paths may be returned in any order (each path's own node
+    // sequence still matters) — audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Graphs",
     pattern: "DFS backtracking on DAG",
@@ -5715,7 +5744,7 @@ const rawProblems = [
 
   { id: 184, title: "Letter Combinations of a Phone Number", slug: "letter-combinations-phone-number", functionName: "letterCombinations", difficulty: "Medium", topic: "Backtracking", pattern: "DFS digit mapping", companies: ["Amazon","Facebook","Google","Microsoft"], description: "Given a string containing digits 2-9, return all possible letter combinations that the number could represent (phone keypad mapping). Return an empty list for empty input.", examples: [{ input: 'digits = "23"', output: '["ad","ae","af","bd","be","bf","cd","ce","cf"]' }, { input: 'digits = ""', output: "[]" }, { input: 'digits = "2"', output: '["a","b","c"]' }], constraints: ["0 <= digits.length <= 4", "digits[i] is a digit in ['2','9']."], starterCode: { python: `class Solution:\n    def letterCombinations(self, digits):\n        pass`, javascript: `function letterCombinations(digits) {\n\n}`, java: `class Solution {\n    public List<String> letterCombinations(String digits) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> letterCombinations(string digits) { return {}; }\n};` }, testcases: [{ input: { digits: "23" }, expectedOutput: ["ad","ae","af","bd","be","bf","cd","ce","cf"] }, { input: { digits: "" }, expectedOutput: [] }, { input: { digits: "2" }, expectedOutput: ["a","b","c"] }], hiddentestcases: [{ input: { digits: "9" }, expectedOutput: ["w","x","y","z"] }, { input: { digits: "29" }, expectedOutput: ["aw","ax","ay","az","bw","bx","by","bz","cw","cx","cy","cz"] }] },
 
-  { id: 185, title: "Permutations II", slug: "permutations-ii", functionName: "permuteUnique", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with used array + dedup", companies: ["Amazon","Microsoft"], description: "Given a collection of numbers that might contain duplicates, return all possible unique permutations in any order.", examples: [{ input: "nums = [1,1,2]", output: "[[1,1,2],[1,2,1],[2,1,1]]" }, { input: "nums = [1,2,3]", output: "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]" }], constraints: ["1 <= nums.length <= 8", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def permuteUnique(self, nums):\n        pass`, javascript: `function permuteUnique(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> permuteUnique(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> permuteUnique(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,1,2] }, expectedOutput: [[1,1,2],[1,2,1],[2,1,1]] }, { input: { nums: [1,2,3] }, expectedOutput: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]] }], hiddentestcases: [{ input: { nums: [0,1] }, expectedOutput: [[0,1],[1,0]] }, { input: { nums: [1,1,1] }, expectedOutput: [[1,1,1]] }] },
+  { id: 185, title: "Permutations II", slug: "permutations-ii", comparisonMode: "unordered", functionName: "permuteUnique", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with used array + dedup", companies: ["Amazon","Microsoft"], description: "Given a collection of numbers that might contain duplicates, return all possible unique permutations in any order.", examples: [{ input: "nums = [1,1,2]", output: "[[1,1,2],[1,2,1],[2,1,1]]" }, { input: "nums = [1,2,3]", output: "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]" }], constraints: ["1 <= nums.length <= 8", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def permuteUnique(self, nums):\n        pass`, javascript: `function permuteUnique(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> permuteUnique(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> permuteUnique(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,1,2] }, expectedOutput: [[1,1,2],[1,2,1],[2,1,1]] }, { input: { nums: [1,2,3] }, expectedOutput: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]] }], hiddentestcases: [{ input: { nums: [0,1] }, expectedOutput: [[0,1],[1,0]] }, { input: { nums: [1,1,1] }, expectedOutput: [[1,1,1]] }] },
 
   { id: 186, title: "First Bad Version", slug: "first-bad-version", functionName: "firstBadVersion", difficulty: "Easy", topic: "Binary Search", pattern: "leftmost binary search", companies: ["Facebook","Amazon"], description: "You are a product manager with n versions. isBadVersion(version) returns whether a version is bad. All versions after the first bad one are also bad. Find the first bad version using minimum API calls.", examples: [{ input: "n = 5, bad = 4", output: "4" }, { input: "n = 1, bad = 1", output: "1" }], constraints: ["1 <= bad <= n <= 2^31 - 1"], starterCode: { python: `class Solution:\n    def firstBadVersion(self, n):\n        pass`, javascript: `function solution(isBadVersion) {\n    return function(n) {\n\n    };\n}`, java: `class Solution extends VersionControl {\n    public int firstBadVersion(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int firstBadVersion(int n) { return 0; }\n};` }, testcases: [{ input: { n: 5, bad: 4 }, expectedOutput: 4 }, { input: { n: 1, bad: 1 }, expectedOutput: 1 }], hiddentestcases: [{ input: { n: 2126753390, bad: 1702766719 }, expectedOutput: 1702766719 }, { input: { n: 100, bad: 1 }, expectedOutput: 1 }] },
 
@@ -5791,7 +5820,7 @@ const rawProblems = [
 
   // ── BATCH 045: Hash Maps + Heap II (IDs 191-200) ──────────────────────────
 
-  { id: 191, title: "Two Sum III — Data Structure Design", slug: "two-sum-iii-data-structure", functionName: "TwoSum", difficulty: "Easy", topic: "Hash Maps", pattern: "frequency map", companies: ["LinkedIn"], description: "Design a TwoSum class that supports add(number) and find(value). find(value) returns true if there exist any two numbers whose sum equals value.", examples: [{ input: '["TwoSum","add","add","add","find","find"]\n[[],[1],[3],[5],[4],[7]]', output: "[null,null,null,null,true,false]" }], constraints: ["At most 10^4 calls to add and find.", "-2^31 <= number <= 2^31 - 1", "-2^63 <= value <= 2^63 - 1"], starterCode: { python: `class TwoSum:\n    def __init__(self):\n        pass\n    def add(self, number):\n        pass\n    def find(self, value):\n        pass`, javascript: `class TwoSum {\n  constructor() {}\n  add(number) {}\n  find(value) { return false; }\n}`, java: `class TwoSum {\n    public TwoSum() {}\n    public void add(int number) {}\n    public boolean find(int value) { return false; }\n}`, cpp: `class TwoSum {\npublic:\n    TwoSum() {}\n    void add(int number) {}\n    bool find(int value) { return false; }\n};` }, testcases: [{ input: { ops: ["add","add","add","find","find"], vals: [[1],[3],[5],[4],[7]] }, expectedOutput: [null,null,null,true,false] }], hiddentestcases: [{ input: { ops: ["add","find"], vals: [[0],[0]] }, expectedOutput: [null,false] }, { input: { ops: ["add","add","find"], vals: [[3],[3],[6]] }, expectedOutput: [null,null,true] }] },
+  { id: 191, title: "Two Sum III — Data Structure Design", slug: "two-sum-iii-data-structure", functionName: "TwoSum", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Easy", topic: "Hash Maps", pattern: "frequency map", companies: ["LinkedIn"], description: "Design a TwoSum class that supports add(number) and find(value). find(value) returns true if there exist any two numbers whose sum equals value.", examples: [{ input: '["TwoSum","add","add","add","find","find"]\n[[],[1],[3],[5],[4],[7]]', output: "[null,null,null,null,true,false]" }], constraints: ["At most 10^4 calls to add and find.", "-2^31 <= number <= 2^31 - 1", "-2^63 <= value <= 2^63 - 1"], starterCode: { python: `class TwoSum:\n    def __init__(self):\n        pass\n    def add(self, number):\n        pass\n    def find(self, value):\n        pass`, javascript: `class TwoSum {\n  constructor() {}\n  add(number) {}\n  find(value) { return false; }\n}`, java: `class TwoSum {\n    public TwoSum() {}\n    public void add(int number) {}\n    public boolean find(int value) { return false; }\n}`, cpp: `class TwoSum {\npublic:\n    TwoSum() {}\n    void add(int number) {}\n    bool find(int value) { return false; }\n};` }, testcases: [{ input: { ops: ["add","add","add","find","find"], vals: [[1],[3],[5],[4],[7]] }, expectedOutput: [null,null,null,true,false] }], hiddentestcases: [{ input: { ops: ["add","find"], vals: [[0],[0]] }, expectedOutput: [null,false] }, { input: { ops: ["add","add","find"], vals: [[3],[3],[6]] }, expectedOutput: [null,null,true] }] },
 
   { id: 192, title: "Top K Frequent Words", slug: "top-k-frequent-words", functionName: "topKFrequent", difficulty: "Medium", topic: "Hash Maps", pattern: "frequency map + heap", companies: ["Amazon","Facebook","Bloomberg"], description: "Given an array of strings words and an integer k, return the k most frequent strings. Return the answer sorted by frequency (highest first). For ties, sort lexicographically.", examples: [{ input: 'words = ["i","love","leetcode","i","love","coding"], k = 2', output: '["i","love"]' }, { input: 'words = ["the","day","is","sunny","the","the","the","sunny","is","is"], k = 4', output: '["the","is","sunny","day"]' }], constraints: ["1 <= words.length <= 500", "1 <= words[i].length <= 10", "k is in [1, unique word count]"], starterCode: { python: `class Solution:\n    def topKFrequent(self, words, k):\n        pass`, javascript: `function topKFrequent(words, k) {\n\n}`, java: `class Solution {\n    public List<String> topKFrequent(String[] words, int k) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> topKFrequent(vector<string>& words, int k) { return {}; }\n};` }, testcases: [{ input: { words: ["i","love","leetcode","i","love","coding"], k: 2 }, expectedOutput: ["i","love"] }, { input: { words: ["the","day","is","sunny","the","the","the","sunny","is","is"], k: 4 }, expectedOutput: ["the","is","sunny","day"] }], hiddentestcases: [{ input: { words: ["a","aa","aaa"], k: 1 }, expectedOutput: ["a"] }, { input: { words: ["a","b","a"], k: 2 }, expectedOutput: ["a","b"] }] },
 
@@ -5866,6 +5895,9 @@ const rawProblems = [
     title: "Find K Pairs with Smallest Sums",
     slug: "find-k-pairs-with-smallest-sums",
     functionName: "kSmallestPairs",
+    // List of pairs may be returned in any order (each pair's own order
+    // still matters) — audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Heap",
     pattern: "min heap with index pairs",
@@ -6030,6 +6062,8 @@ const rawProblems = [
     title: "Implement Trie (Prefix Tree)",
     slug: "implement-trie-prefix-tree",
     functionName: "Trie",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Trie",
     pattern: "children array node",
@@ -6059,6 +6093,8 @@ const rawProblems = [
     title: "Add and Search Word - Data structure design",
     slug: "add-and-search-word",
     functionName: "WordDictionary",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Trie",
     pattern: "trie with wildcard DFS",
@@ -6188,6 +6224,8 @@ const rawProblems = [
     title: "Find All Anagrams in a String",
     slug: "find-all-anagrams-in-string",
     functionName: "findAnagrams",
+    // Description says "you may return the answer in any order" — audit P0-3.
+    comparisonMode: "unordered",
     difficulty: "Medium",
     topic: "Sliding Window",
     pattern: "fixed window frequency map",
@@ -6316,13 +6354,15 @@ const rawProblems = [
 
   { id: 225, title: "Decode String", slug: "decode-string", functionName: "decodeString", difficulty: "Medium", topic: "Stacks", pattern: "stack string expansion", companies: ["Amazon","Facebook","Google"], description: 'Given an encoded string, return its decoded string. The encoding rule is k[encoded_string], where the encoded_string is repeated exactly k times. You may assume k is always positive. Input is always valid.', examples: [{ input: 's = "3[a]2[bc]"', output: '"aaabcbc"' }, { input: 's = "3[a2[c]]"', output: '"accaccacc"' }, { input: 's = "2[abc]3[cd]ef"', output: '"abcabccdcdcdef"' }], constraints: ["1 <= s.length <= 30", "s consists of lowercase letters, digits, and '[]'.", "All integers are in range [1,300]."], starterCode: { python: `class Solution:\n    def decodeString(self, s):\n        pass`, javascript: `function decodeString(s) {\n\n}`, java: `class Solution {\n    public String decodeString(String s) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string decodeString(string s) { return ""; }\n};` }, testcases: [{ input: { s: "3[a]2[bc]" }, expectedOutput: "aaabcbc" }, { input: { s: "3[a2[c]]" }, expectedOutput: "accaccacc" }, { input: { s: "2[abc]3[cd]ef" }, expectedOutput: "abcabccdcdcdef" }], hiddentestcases: [{ input: { s: "100[leetcode]" }, expectedOutput: "leetcode".repeat(100) }, { input: { s: "1[a]" }, expectedOutput: "a" }] },
 
-  { id: 226, title: "Online Stock Span", slug: "online-stock-span", functionName: "StockSpanner", difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack span count", companies: ["Amazon","Google"], description: "Design an algorithm to collect stock prices and return the span of the stock's price for the current day. The span is the maximum number of consecutive days (starting from today and going backward) for which the stock price was <= today's price.", examples: [{ input: '["StockSpanner","next","next","next","next","next","next","next"]\n[[],[100],[80],[60],[70],[60],[75],[85]]', output: "[null,1,1,1,2,1,4,6]" }], constraints: ["0 <= price <= 10^5", "At most 10^4 calls to next."], starterCode: { python: `class StockSpanner:\n    def __init__(self):\n        pass\n    def next(self, price):\n        pass`, javascript: `class StockSpanner {\n  constructor() {}\n  next(price) { return 0; }\n}`, java: `class StockSpanner {\n    public StockSpanner() {}\n    public int next(int price) { return 0; }\n}`, cpp: `class StockSpanner {\npublic:\n    StockSpanner() {}\n    int next(int price) { return 0; }\n};` }, testcases: [{ input: { ops: ["next","next","next","next","next","next","next"], vals: [[100],[80],[60],[70],[60],[75],[85]] }, expectedOutput: [1,1,1,2,1,4,6] }], hiddentestcases: [{ input: { ops: ["next","next","next"], vals: [[1],[1],[1]] }, expectedOutput: [1,2,3] }] },
+  { id: 226, title: "Online Stock Span", slug: "online-stock-span", functionName: "StockSpanner", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack span count", companies: ["Amazon","Google"], description: "Design an algorithm to collect stock prices and return the span of the stock's price for the current day. The span is the maximum number of consecutive days (starting from today and going backward) for which the stock price was <= today's price.", examples: [{ input: '["StockSpanner","next","next","next","next","next","next","next"]\n[[],[100],[80],[60],[70],[60],[75],[85]]', output: "[null,1,1,1,2,1,4,6]" }], constraints: ["0 <= price <= 10^5", "At most 10^4 calls to next."], starterCode: { python: `class StockSpanner:\n    def __init__(self):\n        pass\n    def next(self, price):\n        pass`, javascript: `class StockSpanner {\n  constructor() {}\n  next(price) { return 0; }\n}`, java: `class StockSpanner {\n    public StockSpanner() {}\n    public int next(int price) { return 0; }\n}`, cpp: `class StockSpanner {\npublic:\n    StockSpanner() {}\n    int next(int price) { return 0; }\n};` }, testcases: [{ input: { ops: ["next","next","next","next","next","next","next"], vals: [[100],[80],[60],[70],[60],[75],[85]] }, expectedOutput: [1,1,1,2,1,4,6] }], hiddentestcases: [{ input: { ops: ["next","next","next"], vals: [[1],[1],[1]] }, expectedOutput: [1,2,3] }] },
 
   {
     id: 227,
     title: "Minimum Stack",
     slug: "minimum-stack",
     functionName: "MinStack",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Stacks",
     pattern: "auxiliary min stack",

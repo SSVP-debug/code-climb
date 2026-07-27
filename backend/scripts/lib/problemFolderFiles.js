@@ -37,6 +37,7 @@ export function buildProblemFiles(problem) {
         returnType: problem.returnType ?? {},
         paramTypes: problem.paramTypes ?? {},
         comparisonMode: problem.comparisonMode ?? "exact",
+        operationSequence: problem.operationSequence ?? { enabled: false, resultMode: "all" },
       },
       null,
       2

@@ -11,5 +11,9 @@
   "relatedProblems": [],
   "returnType": {},
   "paramTypes": {},
-  "comparisonMode": "exact"
+  "comparisonMode": "unordered",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
 }

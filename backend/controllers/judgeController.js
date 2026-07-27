@@ -17,7 +17,7 @@ function sanitizeStderr(stderr) {
 }
 
 export async function runHandler(req, res) {
-  const { code, language, functionName, testcases, returnType, comparisonMode } = req.body;
+  const { code, language, functionName, testcases, returnType, comparisonMode, operationSequence } = req.body;
   const languageId = languageIdMap[language];
   const results = [];
 
@@ -32,6 +32,7 @@ export async function runHandler(req, res) {
         testcaseInput: testcase.input,
         functionName,
         returnType,
+        operationSequence,
       });
     } catch (callErr) {
       return res.json({
@@ -142,7 +143,7 @@ const languageIdMap = {
  * one of: "callError" | "noResult" | "compileError" | "infraError" |
  * "runtimeError" | "wrongAnswer" | "passed".
  */
-async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName, returnType, comparisonMode }) {
+async function runTestcase({ testcase, index, isVisible, code, language, languageId, functionName, returnType, comparisonMode, operationSequence }) {
   let result;
   try {
     result = await callJudge0({
@@ -152,6 +153,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
       testcaseInput: testcase.input,
       functionName,
       returnType,
+      operationSequence,
     });
   } catch (callErr) {
     return { index, isVisible, kind: "callError", error: callErr, errorMessage: callErr.message };
@@ -239,6 +241,13 @@ export async function submitHandler(req, res) {
   // sends beyond the code itself.
   const comparisonMode = problem.comparisonMode || "exact";
 
+  // Operation-sequence contract opt-in — see Problem.operationSequence's
+  // doc comment and audit finding P0-2. Server-side only, same trust
+  // model as returnType/comparisonMode above.
+  const operationSequence = problem.operationSequence?.enabled
+    ? problem.operationSequence
+    : undefined;
+
   // ── CRITICAL GUARD: empty testcases → would silently return Accepted ──
   if (alltestcases.length === 0) {
     req.log.error({ problemSlug }, "[Judge] No testcases found — CRITICAL: would silently return Accepted without this guard");
@@ -323,7 +332,7 @@ export async function submitHandler(req, res) {
       testcase: alltestcases[0],
       index: 0,
       isVisible: 0 < visibletestcases.length,
-      code, language, languageId, functionName, returnType, comparisonMode,
+      code, language, languageId, functionName, returnType, comparisonMode, operationSequence,
     });
 
     let allResults;
@@ -345,7 +354,7 @@ export async function submitHandler(req, res) {
             testcase,
             index,
             isVisible: index < visibletestcases.length,
-            code, language, languageId, functionName, returnType, comparisonMode,
+            code, language, languageId, functionName, returnType, comparisonMode, operationSequence,
           });
         })
       );

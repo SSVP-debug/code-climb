@@ -36,6 +36,8 @@
  */
 import problems from "../../src/data/problems.js";
 import { generateDriverCode } from "../utils/generateDriverCode.js";
+import { generateOperationSequenceDriver } from "../utils/operationSequenceDriver.js";
+import { identifyOperationSequence } from "../utils/operationSequenceShape.js";
 
 const JAVA_RETURN_RE = /public\s+([\w<>[\],]+(?:\s*<[\w<>[\],\s]*>)?)\s+\w+\s*\(/;
 
@@ -83,21 +85,22 @@ function checkCpp(problem) {
 }
 
 // "Design" problems (constructor + operation-sequence contract, e.g.
-// LRUCache, MinStack) are a known, separately-tracked architectural gap
-// (audit finding P0-2 — the runner doesn't support this contract in any
-// language yet). Their testcase shape (`{ operations: [...] }`) isn't a
-// normal single-call argument list, so running it through
-// generateDriverCode here would just report the same known issue 19 times
-// under a misleading "argument generation" label. Skipped here — tracked
-// separately until the operation-sequence driver exists.
-const DESIGN_PROBLEM_SLUGS = new Set([
-  "min-stack", "lru-cache", "find-median-from-data-stream",
-  "time-based-key-value-store", "implement-trie", "design-add-search-words",
-  "implement-queue-using-stacks", "binary-search-tree-iterator",
-  "implement-stack-using-queues", "design-hashmap", "design-circular-queue",
-  "design-twitter", "random-pick-with-weight", "maximum-frequency-stack",
-  "two-sum-iii-data-structure", "implement-trie-prefix-tree",
-  "add-and-search-word", "online-stock-span", "minimum-stack",
+// LRUCache, MinStack) don't fit the single-call argument-generation check
+// below — they're validated separately by checkOperationSequenceGeneration.
+// Two problems remain explicitly excluded from BOTH checks, tracked as
+// known follow-up work rather than silently ignored:
+//   - binary-search-tree-iterator: constructor takes a tree (`root`), and
+//     no driver (Java/C++/JS) has tree-construction support yet — only
+//     Python's build_tree heuristic exists, and only for the single-call
+//     contract (audit finding P2-1). Needs that generalized first.
+//   - random-pick-with-weight: its own stored testcases have
+//     non-deterministic placeholder expectedOutput ("varies", "0-3") —
+//     this problem needs a custom range/distribution checker, which this
+//     judge doesn't have, not just an operation-sequence driver. Enabling
+//     it here would just always fail against a placeholder string.
+const DEFERRED_DESIGN_PROBLEM_SLUGS = new Set([
+  "binary-search-tree-iterator",
+  "random-pick-with-weight",
 ]);
 
 // A declaration typed `Object` is the old String/boolean/2D-array
@@ -111,7 +114,8 @@ const JAVA_RED_FLAGS = [
 ];
 
 function checkArgumentGeneration(problem) {
-  if (DESIGN_PROBLEM_SLUGS.has(problem.slug)) return [];
+  if (problem.operationSequence?.enabled) return [];
+  if (DEFERRED_DESIGN_PROBLEM_SLUGS.has(problem.slug)) return [];
 
   const testcase = problem.testcases?.[0] || problem.hiddentestcases?.[0];
   if (!testcase) return [];
@@ -157,11 +161,50 @@ function checkArgumentGeneration(problem) {
   return errors;
 }
 
+// Validates every operation-sequence problem (Problem.operationSequence.enabled)
+// by actually running identifyOperationSequence + generateOperationSequenceDriver
+// against every one of the problem's own testcases, for every language that
+// has starter code. Catches shape-detection failures (a testcase that
+// doesn't match either known storage shape) and generator exceptions
+// before they reach a real submission. Java is included even though this
+// script can't compile it (no JDK dependency for a fast pre-merge check) —
+// generation-time exceptions (e.g. a malformed shape) still surface here.
+function checkOperationSequenceGeneration(problem) {
+  if (!problem.operationSequence?.enabled) return [];
+
+  const errors = [];
+  const testcases = [...(problem.testcases || []), ...(problem.hiddentestcases || [])];
+
+  for (const [i, testcase] of testcases.entries()) {
+    const shape = identifyOperationSequence(testcase.input);
+    if (!shape) {
+      errors.push(
+        `${problem.slug}: testcase #${i} doesn't match either known operation-sequence shape (see operationSequenceShape.js)`
+      );
+      continue;
+    }
+
+    for (const lang of ["python", "javascript", "java", "cpp"]) {
+      if (!problem.starterCode?.[lang]) continue;
+      try {
+        generateOperationSequenceDriver(
+          lang, problem.starterCode[lang], shape, problem.functionName, problem.operationSequence.resultMode
+        );
+      } catch (err) {
+        errors.push(`${problem.slug}: generateOperationSequenceDriver threw for ${lang} on testcase #${i} — ${err.message}`);
+      }
+    }
+  }
+
+  return errors;
+}
+
 export function validateProblems(problemList) {
   return problemList.flatMap((p) => [
     checkJava(p),
     checkCpp(p),
     ...checkArgumentGeneration(p),
+    ...checkOperationSequenceGeneration(p),
   ].filter(Boolean));
 }
 

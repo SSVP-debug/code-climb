@@ -20,5 +20,9 @@
   ],
   "returnType": {},
   "paramTypes": {},
-  "comparisonMode": "exact"
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
 }

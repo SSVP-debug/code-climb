@@ -12,5 +12,9 @@
   "relatedProblems": [],
   "returnType": {},
   "paramTypes": {},
-  "comparisonMode": "exact"
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": true,
+    "resultMode": "returningOnly"
+  }
 }

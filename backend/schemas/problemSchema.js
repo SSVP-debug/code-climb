@@ -44,6 +44,12 @@ export const MetaSchema = z.object({
     paramTypes: ParamTypesSchema,
     // Output-comparison mode — see backend/models/Problem.js comparisonMode.
     comparisonMode: z.enum(["exact", "unordered"]).default("exact"),
+    // Operation-sequence contract opt-in — see backend/models/Problem.js
+    // operationSequence and audit finding P0-2.
+    operationSequence: z.object({
+        enabled: z.boolean().default(false),
+        resultMode: z.enum(["all", "returningOnly"]).default("all"),
+    }).default({}),
 });
 
 export const ProblemFolderSchema =

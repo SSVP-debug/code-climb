@@ -1,4 +1,6 @@
 import { generateDriverCode } from "../utils/generateDriverCode.js";
+import { generateOperationSequenceDriver } from "../utils/operationSequenceDriver.js";
+import { identifyOperationSequence } from "../utils/operationSequenceShape.js";
 import { logger } from "../config/logger.js";
 import {
   enqueueExecution,
@@ -182,10 +184,29 @@ function sleep(ms) {
 //                   the type from the testcase value. Only meaningful for
 //                   java/cpp — safe to omit for python/js. See audit
 //                   finding P0-1.
-export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName, returnType, paramTypes }) {
+//   operationSequence — optional { enabled, resultMode } from the problem's
+//                   contract (Problem.operationSequence). When enabled,
+//                   dispatches to generateOperationSequenceDriver instead
+//                   of the normal single-call generateDriverCode — see
+//                   audit finding P0-2 ("design" problems like LRUCache,
+//                   MinStack, Trie).
+export async function callJudge0({ sourceCode, language, languageId, testcaseInput, functionName, returnType, paramTypes, operationSequence }) {
   const lang = language || LANGUAGE_STRINGS[languageId] || "python";
 
-  const driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName, returnType, paramTypes);
+  let driverCode;
+  if (operationSequence?.enabled) {
+    const shape = identifyOperationSequence(testcaseInput);
+    if (!shape) {
+      throw new Error(
+        "operationSequence.enabled is true but testcaseInput didn't match either known operation-sequence shape"
+      );
+    }
+    driverCode = generateOperationSequenceDriver(
+      lang, sourceCode, shape, functionName, operationSequence.resultMode || "all"
+    );
+  } else {
+    driverCode = generateDriverCode(lang, sourceCode, testcaseInput, functionName, returnType, paramTypes);
+  }
 
   logger.debug(
     { language: lang, languageId, functionName, inputPreview: JSON.stringify(testcaseInput).slice(0, 80) },

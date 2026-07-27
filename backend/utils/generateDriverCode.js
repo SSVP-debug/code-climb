@@ -12,11 +12,11 @@
 import { javaDeclaration } from "./languageTypes/java.js";
 import { cppDeclaration } from "./languageTypes/cpp.js";
 
-function formatJsArg(value) {
+export function formatJsArg(value) {
   return JSON.stringify(value);
 }
 
-function formatPythonArg(value) {
+export function formatPythonArg(value) {
   if (value === null) return "None";
   // Booleans MUST be checked before the generic array/object/string
   // branches and before the `String(value)` fallback: Python's boolean

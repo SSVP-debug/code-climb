@@ -170,6 +170,20 @@ const problemSchema = new mongoose.Schema(
       default: "exact",
     },
 
+    // Opt-in for the "operation-sequence" contract (constructor + a
+    // sequence of method calls on a stateful object — e.g. LRUCache,
+    // MinStack, Trie) rather than the default single-call contract every
+    // other problem uses. See backend/utils/operationSequenceDriver.js and
+    // audit finding P0-2. `resultMode` controls whether void-returning
+    // calls contribute a `null` entry to the output array ("all") or are
+    // omitted entirely ("returningOnly") — the real problem data was
+    // authored against both conventions inconsistently (see the Phase 4
+    // changes doc), so this is declared per-problem rather than assumed.
+    operationSequence: {
+      enabled: { type: Boolean, default: false },
+      resultMode: { type: String, enum: ["all", "returningOnly"], default: "all" },
+    },
+
     // Visible testcases — returned to the client for "Run" mode
     testcases: { type: [testcaseSchema], default: [] },
 
