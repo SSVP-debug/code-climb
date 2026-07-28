@@ -57,7 +57,7 @@ function TrackCard({ track, onClaim }) {
 
       {track.certified ? (
         <button onClick={() => downloadPDF(track.verifyCode)}
-          className="w-full py-2 rounded-xl text-sm bg-green-600/20 hover:bg-green-600/30 text-green-400 font-semibold border border-green-500/20 transition">
+          className="w-full py-2 rounded-xl text-sm bg-[var(--theme-primary,#2dd4bf)]/20 hover:bg-[var(--theme-primary,#2dd4bf)]/30 text-[var(--theme-primary,#2dd4bf)] font-semibold border border-[var(--theme-primary,#2dd4bf)]/20 transition">
           ⬇ Download Certificate
         </button>
       ) : track.complete ? (
@@ -90,7 +90,7 @@ export default function CertificationsPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 

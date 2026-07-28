@@ -18,7 +18,7 @@ export default function CertVerifyPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -42,7 +42,7 @@ export default function CertVerifyPage() {
         {result?.valid ? (
           <div className="space-y-2 text-sm text-zinc-400 mt-4">
             <p><span className="text-zinc-500">Issued to:</span> <span className="text-white font-semibold">{result.displayName}</span></p>
-            <p><span className="text-zinc-500">Track:</span> <span className="text-green-400 font-semibold">{result.trackName}</span></p>
+            <p><span className="text-zinc-500">Track:</span> <span className="text-[var(--theme-primary,#2dd4bf)] font-semibold">{result.trackName}</span></p>
             <p><span className="text-zinc-500">Issued on:</span> {new Date(result.issuedAt).toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" })}</p>
             <p><span className="text-zinc-500">Certificate ID:</span> <span className="font-mono text-xs">{result.verifyCode}</span></p>
           </div>

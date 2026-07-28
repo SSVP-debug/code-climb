@@ -61,10 +61,10 @@ function FilterBar({ filters, onChange }) {
     <div className="flex flex-wrap gap-3 mb-6">
       <input placeholder="College domain (e.g. marwadiuniversity.ac.in)"
         value={filters.college} onChange={e => onChange("college", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50 w-72" />
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-72" />
       <input placeholder="Topic (e.g. Dynamic Programming)"
         value={filters.topic} onChange={e => onChange("topic", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50 w-56" />
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-56" />
       <input type="number" placeholder="Min solved" value={filters.minSolved}
         onChange={e => onChange("minSolved", e.target.value)}
         className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
@@ -199,7 +199,7 @@ function SentTestsTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -233,7 +233,7 @@ function SentTestsTab() {
               {t.status.replace("_", " ")}
             </span>
           </span>
-          <span className="text-center text-sm text-green-400 font-semibold">
+          <span className="text-center text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">
             {t.score != null ? `${t.score}%` : "—"}
           </span>
           <span className="text-right text-xs text-zinc-500">
@@ -350,7 +350,7 @@ export default function RecruiterDashboardPage() {
               key={t}
               onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${
-                tab === t ? "bg-green-600 text-white" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+                tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
               }`}
             >
               {t === "candidates" ? "Candidates" : "Sent Tests"}
@@ -367,7 +367,7 @@ export default function RecruiterDashboardPage() {
 
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
@@ -393,7 +393,7 @@ export default function RecruiterDashboardPage() {
                         ))}
                       </div>
                     </div>
-                    <span className="text-center text-sm text-green-400 font-semibold">{c.solvedCount}</span>
+                    <span className="text-center text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">{c.solvedCount}</span>
                     <span className="text-center text-sm text-red-400">{c.hard}</span>
                     <span className="text-center flex justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
                       {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : "—"}

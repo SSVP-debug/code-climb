@@ -98,7 +98,7 @@ function ConnectLeetCodeSection({ initial }) {
         <div className="flex items-center justify-between gap-3 flex-wrap bg-zinc-800 rounded-xl p-4">
           <div className="min-w-0">
             <p className="text-sm text-zinc-400">LeetCode</p>
-            <p className="font-semibold text-green-400 truncate">@{username}</p>
+            <p className="font-semibold text-[var(--theme-primary,#2dd4bf)] truncate">@{username}</p>
             <p className="text-xs text-zinc-500 mt-1">
               {totalSolved} solved — {stats.easySolved} Easy, {stats.mediumSolved} Medium, {stats.hardSolved} Hard
             </p>
@@ -126,7 +126,7 @@ function ConnectLeetCodeSection({ initial }) {
           placeholder="LeetCode username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="flex-1 min-w-[180px] bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl outline-none focus:border-green-500 transition"
+          className="flex-1 min-w-[180px] bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl outline-none focus:border-[var(--theme-primary,#2dd4bf)] transition"
         />
         <Button
           onClick={handleSync}
@@ -175,7 +175,7 @@ function ConnectLeetCodeSection({ initial }) {
                     }));
                   }}
                   className={`w-full rounded-lg px-3 py-2 text-sm outline-none ${manualMode
-                    ? "bg-zinc-800 border border-zinc-700 focus:border-green-500/50"
+                    ? "bg-zinc-800 border border-zinc-700 focus:border-[var(--theme-primary,#2dd4bf)]/50"
                     : "bg-zinc-950 border border-zinc-800 text-zinc-400 cursor-not-allowed"
                     }`}
                 />

@@ -152,8 +152,8 @@ function ProblemEditor({
             onClick={onSubmit}
             disabled={running || submitting}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${submitting
-              ? "bg-green-500/20 text-green-500 border border-green-500/30"
-              : "bg-green-600 text-white hover:bg-green-500 shadow-lg shadow-green-900/20"
+              ? "bg-[var(--theme-primary,#2dd4bf)]/20 text-[var(--theme-primary,#2dd4bf)] border border-[var(--theme-primary,#2dd4bf)]/30"
+              : "bg-[var(--theme-primary,#2dd4bf)] text-[#09090b] hover:brightness-110 shadow-lg shadow-[var(--theme-primary,#2dd4bf)]/20"
               }`}
             title="Submit solution (Ctrl+Shift+Enter)"
           >

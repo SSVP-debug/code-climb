@@ -30,7 +30,7 @@ function MobileTabBar({ active, onChange, hasResults, resultsEnabled = hasResult
           >
             {tab.label}
             {tab.id === "results" && hasResults && (
-              <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-green-400 align-middle" />
+              <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-[var(--theme-primary,#2dd4bf)] align-middle" />
             )}
             {active === tab.id && (
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />

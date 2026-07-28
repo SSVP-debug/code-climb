@@ -104,7 +104,7 @@ function ToggleRow({ label, description, checked, saving, onToggle }) {
         disabled={saving}
         onClick={onToggle}
         className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${
-          checked ? "bg-green-500" : "bg-zinc-700"
+          checked ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-zinc-700"
         }`}
       >
         <span

@@ -21,7 +21,7 @@ function LanguageBreakdown({ languageBreakdown, solvedCount }) {
                 <span>{item.solved} solved</span>
               </div>
               <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                <div className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
           );

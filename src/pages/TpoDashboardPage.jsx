@@ -81,20 +81,20 @@ function CreateAssignmentModal({ onClose, onCreated }) {
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Assignment title (e.g. Week 3 — Arrays)"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <textarea
             value={slugsText}
             onChange={e => setSlugsText(e.target.value)}
             placeholder="Problem slugs, comma-separated (e.g. two-sum, valid-parentheses)"
             rows={3}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <input
             type="date"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
         <div className="flex gap-2 mt-5">
@@ -248,7 +248,7 @@ export default function TpoDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -311,7 +311,7 @@ export default function TpoDashboardPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${tab === t ? "bg-green-600 text-white" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
                 }`}
             >
               {t}
@@ -336,7 +336,7 @@ export default function TpoDashboardPage() {
                     <span className="text-sm text-zinc-300 w-40 truncate">{t.topic}</span>
                     <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-green-500 rounded-full"
+                        className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full"
                         style={{ width: `${Math.min(100, (t.totalSolves / dashboard.topicCoverage[0].totalSolves) * 100)}%` }}
                       />
                     </div>
@@ -355,7 +355,7 @@ export default function TpoDashboardPage() {
                 value={studentSearch}
                 onChange={e => setStudentSearch(e.target.value)}
                 placeholder="Search by name or email…"
-                className="flex-1 min-w-[200px] bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+                className="flex-1 min-w-[200px] bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
               />
               <select
                 value={studentSort}
@@ -389,7 +389,7 @@ export default function TpoDashboardPage() {
                         </span>
                       ) : "—"}
                     </span>
-                    <span className="w-20 text-right text-sm text-green-400 font-semibold">{s.totalXP}</span>
+                    <span className="w-20 text-right text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">{s.totalXP}</span>
                   </div>
                 ))}
             </div>
@@ -420,7 +420,7 @@ export default function TpoDashboardPage() {
                     <p className="text-xs text-zinc-500 mb-3">{a.problemSlugs.length} problems</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500" style={{ width: `${a.completionPercent}%` }} />
+                        <div className="h-full bg-[var(--theme-primary,#2dd4bf)]" style={{ width: `${a.completionPercent}%` }} />
                       </div>
                       <span className="text-xs text-zinc-500">{a.completedCount}/{a.totalStudents} done</span>
                       <Button

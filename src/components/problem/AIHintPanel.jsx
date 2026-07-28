@@ -56,7 +56,7 @@ function AIHintPanel({ slug }) {
     <section>
       <div className="flex items-center gap-2 mb-3">
         <h3 className="text-lg font-semibold text-white">AI Hint</h3>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-500/10 border border-green-500/20 px-1.5 py-0.5 rounded">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-primary,#2dd4bf)] bg-[var(--theme-primary,#2dd4bf)]/10 border border-[var(--theme-primary,#2dd4bf)]/20 px-1.5 py-0.5 rounded">
           Claude
         </span>
       </div>
@@ -70,7 +70,7 @@ function AIHintPanel({ slug }) {
             disabled={loading}
             className={`flex-1 text-sm px-3 py-2 rounded-xl border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               hintLevel === level
-                ? "border-green-500/40 bg-green-500/10 text-green-400"
+                ? "border-[var(--theme-primary,#2dd4bf)]/40 bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]"
                 : "border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
             }`}
           >
@@ -92,7 +92,7 @@ function AIHintPanel({ slug }) {
       {/* Hint result */}
       {!loading && hintText && !error && (
         <div className="flex gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
-          <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-[10px] font-bold text-green-400">
+          <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-[var(--theme-primary,#2dd4bf)]/10 border border-[var(--theme-primary,#2dd4bf)]/20 flex items-center justify-center text-[10px] font-bold text-[var(--theme-primary,#2dd4bf)]">
             {hintLevel}
           </span>
           <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
@@ -108,7 +108,7 @@ function AIHintPanel({ slug }) {
           {upgradeUrl && (
             <Link
               to={upgradeUrl}
-              className="inline-block mt-2 text-xs font-semibold text-green-400 hover:text-green-300"
+              className="inline-block mt-2 text-xs font-semibold text-[var(--theme-primary,#2dd4bf)] hover:brightness-110"
             >
               View Pro plans →
             </Link>

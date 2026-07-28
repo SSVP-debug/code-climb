@@ -47,7 +47,7 @@ export default function CandidateTestsPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
@@ -88,9 +88,9 @@ export default function CandidateTestsPage() {
                 {t.status === "submitted" && (
                   <div className="flex items-center gap-2 mb-3">
                     <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-500" style={{ width: `${t.score}%` }} />
+                      <div className="h-full bg-[var(--theme-primary,#2dd4bf)]" style={{ width: `${t.score}%` }} />
                     </div>
-                    <span className="text-green-400 text-sm font-bold">{t.score}%</span>
+                    <span className="text-[var(--theme-primary,#2dd4bf)] text-sm font-bold">{t.score}%</span>
                   </div>
                 )}
 

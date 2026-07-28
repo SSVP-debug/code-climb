@@ -35,7 +35,7 @@ function ProblemList({
             setSelectedTopic("All");
             setSearchTerm("");
           }}
-          className="mt-4 text-green-400 hover:underline text-sm"
+          className="mt-4 text-[var(--theme-primary,#2dd4bf)] hover:underline text-sm"
         >
           {theme.words.clearFilters}
         </button>

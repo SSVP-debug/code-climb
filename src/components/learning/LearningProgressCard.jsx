@@ -22,7 +22,7 @@ function LearningProgressCard({ solvedCount = 0, total = 0, progress = 0 }) {
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
           Learning Progress
         </p>
-        <button className="text-xs text-green-400 hover:text-green-300 transition">
+        <button className="text-xs text-[var(--theme-primary,#2dd4bf)] hover:brightness-110 transition">
           View analytics
         </button>
       </div>
@@ -52,7 +52,7 @@ function LearningProgressCard({ solvedCount = 0, total = 0, progress = 0 }) {
               cy="40"
               r={normalised}
               fill="none"
-              stroke="#22c55e"
+              stroke="var(--theme-primary, #2dd4bf)"
               strokeWidth={stroke}
               strokeLinecap="round"
               strokeDasharray={circumference}

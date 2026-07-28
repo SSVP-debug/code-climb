@@ -122,7 +122,7 @@ function ApplicationForm({ onSubmitted }) {
             value={form.collegeName}
             onChange={(e) => setForm((f) => ({ ...f, collegeName: e.target.value }))}
             placeholder="e.g. Marwadi University"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-green-500/50"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
 
@@ -134,7 +134,7 @@ function ApplicationForm({ onSubmitted }) {
             value={form.collegeDomain}
             onChange={(e) => setForm((f) => ({ ...f, collegeDomain: e.target.value }))}
             placeholder="e.g. marwadiuniversity.ac.in"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-green-500/50"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
 
@@ -147,7 +147,7 @@ function ApplicationForm({ onSubmitted }) {
             onChange={(e) => setForm((f) => ({ ...f, motivation: e.target.value }))}
             rows={3}
             placeholder="A couple of sentences is plenty."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-green-500/50 resize-none"
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
           />
         </div>
 
@@ -203,7 +203,7 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-zinc-500 text-sm">Your referral code</p>
-            <p className="text-2xl font-bold text-green-400 mt-1">{referralCode}</p>
+            <p className="text-2xl font-bold text-[var(--theme-primary,#2dd4bf)] mt-1">{referralCode}</p>
           </div>
           <div className="text-right">
             <p className="text-zinc-500 text-sm">Referred so far</p>

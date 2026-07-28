@@ -132,7 +132,7 @@ function PrivacyPolicyPage() {
             Questions about this policy or your data:{" "}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="text-green-400 hover:text-green-300"
+              className="text-[var(--theme-primary,#2dd4bf)] hover:brightness-110"
             >
               {SUPPORT_EMAIL}
             </a>

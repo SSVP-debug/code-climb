@@ -111,7 +111,7 @@ function TermsPage() {
           <p>
             We may suspend accounts that violate these terms. You can stop
             using Code Club and request account deletion at any time — see
-            our <Link to="/privacy" className="text-green-400 hover:text-green-300">Privacy Policy</Link> for how.
+            our <Link to="/privacy" className="text-[var(--theme-primary,#2dd4bf)] hover:brightness-110">Privacy Policy</Link> for how.
           </p>
         </Section>
 
@@ -120,7 +120,7 @@ function TermsPage() {
             Questions about these terms:{" "}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="text-green-400 hover:text-green-300"
+              className="text-[var(--theme-primary,#2dd4bf)] hover:brightness-110"
             >
               {SUPPORT_EMAIL}
             </a>

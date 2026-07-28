@@ -13,7 +13,7 @@ function TopicBreakdownCard({ topicStats, strongestTopic }) {
               className="flex items-center justify-between bg-zinc-800 px-4 py-3 rounded-xl"
             >
               <span>{topic}</span>
-              <span className="text-green-400 font-semibold">{count}</span>
+              <span className="text-[var(--theme-primary,#2dd4bf)] font-semibold">{count}</span>
             </div>
           ))}
         </div>

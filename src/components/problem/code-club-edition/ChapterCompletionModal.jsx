@@ -27,6 +27,14 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
     });
   }, []);
 
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onDismiss?.();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onDismiss]);
+
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none" aria-live="polite">
       <div
@@ -36,7 +44,7 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
           <div className="absolute inset-0 rounded-full bg-teal-500/20 animate-ping" />
-          <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-500/30">
+          <div className="relative w-24 h-24 rounded-full bg-teal-400 flex items-center justify-center shadow-lg shadow-teal-500/30">
             <Icon size={36} strokeWidth={2} className="text-black" aria-hidden="true" />
           </div>
         </div>

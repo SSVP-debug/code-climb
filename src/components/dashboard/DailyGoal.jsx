@@ -1,5 +1,3 @@
-
-
 function DailyGoal({ dailySolved }) {
 
   return (
@@ -11,7 +9,7 @@ function DailyGoal({ dailySolved }) {
           Daily Goal
         </h2>
 
-        <p className="text-green-400 font-semibold">
+        <p className="text-[var(--theme-primary,#2dd4bf)] font-semibold">
           {dailySolved} / 5 Completed
         </p>
 
@@ -20,7 +18,7 @@ function DailyGoal({ dailySolved }) {
       <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
 
         <div
-          className="bg-green-500 h-full transition-all"
+          className="bg-[var(--theme-primary,#2dd4bf)] h-full transition-all"
           style={{
             width: `${Math.min(
               (dailySolved / 5) * 100,

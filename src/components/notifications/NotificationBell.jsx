@@ -123,7 +123,7 @@ function NotificationBell() {
           <path d="M8 17a2 2 0 0 0 4 0" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-green-500 text-black text-[10px] font-bold flex items-center justify-center">
+          <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-[var(--theme-primary,#2dd4bf)] text-black text-[10px] font-bold flex items-center justify-center">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -136,7 +136,7 @@ function NotificationBell() {
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-xs text-green-400 hover:underline"
+                className="text-xs text-[var(--theme-primary,#2dd4bf)] hover:underline"
               >
                 Mark all read
               </button>
@@ -160,7 +160,7 @@ function NotificationBell() {
                     }`}
                   >
                     <div className="flex items-start gap-2">
-                      {!n.read && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />}
+                      {!n.read && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[var(--theme-primary,#2dd4bf)] shrink-0" />}
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{title}</p>
                         {message && (

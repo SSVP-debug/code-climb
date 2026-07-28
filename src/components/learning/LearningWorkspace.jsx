@@ -17,7 +17,7 @@ function LearningWorkspace({
       {/* Panel header */}
       <div className="flex items-center gap-2 pt-1">
         <h2 className="text-sm font-bold text-white">Where am I</h2>
-        <span className="text-[9px] font-bold bg-green-500 text-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+        <span className="text-[9px] font-bold bg-[var(--theme-primary,#2dd4bf)] text-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">
           NEW
         </span>
       </div>
@@ -29,7 +29,7 @@ function LearningWorkspace({
       <div className="grid grid-cols-3 gap-2">
         {[
           { label: "Solved",   value: solvedCount,        color: "text-white"      },
-          { label: "Progress", value: `${progress}%`,     color: "text-green-400"  },
+          { label: "Progress", value: `${progress}%`,     color: "text-[var(--theme-primary,#2dd4bf)]"  },
           { label: "Vaults",   value: problems.length,    color: "text-white"      },
         ].map(({ label, value, color }) => (
           <div

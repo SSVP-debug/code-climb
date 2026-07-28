@@ -54,7 +54,7 @@ export default function TpoSignupPage() {
               value={collegeName}
               onChange={e => setCollegeName(e.target.value)}
               placeholder="e.g. Marwadi University"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-green-500/50"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
             />
           </div>
 
