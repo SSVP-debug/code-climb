@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import { getTimeRemaining } from "../utils/countdown";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -22,13 +23,16 @@ export default function ContestDetailPage() {
   const [loading, setLoading] = useState(true);
   const [timer, setTimer]     = useState("");
 
-  const fetch = useCallback(() => {
-    apiFetch(`/api/contests/${id}`).then(d => {
-      if (d.error) return navigate("/club/public-contests");
+  const fetch = useCallback(async () => {
+    try {
+      const d = await apiFetch(`/api/contests/${id}`);
       setContest(d);
-      setLoading(false);
-    });
-  }, [id]);
+    } catch (err) {
+      toast.error(err.message || "Failed to load contest.");
+      navigate("/club/public-contests");
+    }
+    setLoading(false);
+  }, [id, navigate]);
 
   useEffect(() => { fetch(); }, [fetch]);
 

@@ -120,7 +120,9 @@ export default function ContestsPage() {
   function fetchContests() {
     setLoading(true);
     apiFetch(`/api/contests?status=${tab}&type=public`)
-      .then(d => { setContests(d.contests || []); setLoading(false); });
+      .then(d => setContests(d.contests || []))
+      .catch(err => toast.error(err.message || "Failed to load contests."))
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => { fetchContests(); }, [tab]);

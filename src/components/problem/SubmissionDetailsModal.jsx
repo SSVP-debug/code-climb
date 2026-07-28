@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { getStatusMeta } from "../../utils/statusMessages";
 
 function SubmissionDetailsModal({ submission, onClose }) {
+  // Escape-to-close, matching SubmissionCelebrationModal.jsx's pattern —
+  // previously this modal had no keyboard dismissal path at all.
+  useEffect(() => {
+    if (!submission) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [submission, onClose]);
+
   if (!submission) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Submission details"
+    >
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
         onClick={onClose}
