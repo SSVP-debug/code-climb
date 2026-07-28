@@ -71,10 +71,20 @@ router.get("/global", async (req, res) => {
 // ── GET /api/leaderboard/college — requires a verified college (Phase 12C) ──
 router.get("/college", requireAuth, async (req, res) => {
   try {
-    if (!req.userDoc.education?.verified) {
+    // Official College Leaderboard status requires BOTH that this student
+    // owns the institutional email (emailVerified) AND that the institution
+    // itself has been reviewed and approved (collegeStatus === "verified").
+    // Email ownership alone must never be enough here — that would let
+    // anyone with a plausible-looking institutional address get listed
+    // under an unreviewed "college" before Code Club has vetted it.
+    const { emailVerified, collegeStatus } = req.userDoc.education || {};
+    if (!emailVerified || collegeStatus !== "verified") {
       return res.status(403).json({
-        error: "Verify your college email to unlock your College Leaderboard.",
-        code: "COLLEGE_NOT_VERIFIED",
+        error:
+          collegeStatus === "pending"
+            ? "Your college is still being reviewed. You'll get access once it's approved."
+            : "Verify your college email to unlock your College Leaderboard.",
+        code: collegeStatus === "pending" ? "COLLEGE_PENDING_REVIEW" : "COLLEGE_NOT_VERIFIED",
       });
     }
 

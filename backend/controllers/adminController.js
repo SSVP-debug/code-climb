@@ -35,18 +35,25 @@ const RECRUITER_QUEUE_FIELDS = "email displayName recruiterProfile createdAt";
 // ── GET /api/admin/pending ──────────────────────────────────────────────────
 export async function getPendingQueue(req, res) {
   try {
-    const [recruiters, tpoColleges] = await Promise.all([
+    const [recruiters, pendingColleges] = await Promise.all([
       User.find(
         { role: "recruiter", "recruiterProfile.verified": false },
         RECRUITER_QUEUE_FIELDS
       )
         .sort({ createdAt: 1 })
         .lean(),
-      College.find({ verified: false })
-        .populate("adminUserId", "email displayName")
+      // Pending College docs come from two submitter paths — TPO
+      // registration and student college-email verification — mixed in the
+      // same collection and split below by submittedByRole so the queue
+      // can render/label them separately.
+      College.find({ status: "pending" })
+        .populate("submittedBy", "email displayName")
         .sort({ createdAt: 1 })
         .lean(),
     ]);
+
+    const tpoColleges = pendingColleges.filter((c) => c.submittedByRole === "tpo");
+    const studentColleges = pendingColleges.filter((c) => c.submittedByRole === "student");
 
     return res.json({
       recruiters: recruiters.map((u) => ({
@@ -61,9 +68,19 @@ export async function getPendingQueue(req, res) {
       tpos: tpoColleges.map((c) => ({
         collegeId: c._id,
         collegeName: c.name,
-        domain: c.domain,
-        requestedBy: c.adminUserId
-          ? { email: c.adminUserId.email, displayName: c.adminUserId.displayName }
+        domain: c.domains?.[0],
+        requestedBy: c.submittedBy
+          ? { email: c.submittedBy.email, displayName: c.submittedBy.displayName }
+          : null,
+        requestedAt: c.createdAt,
+      })),
+      studentCollegeRequests: studentColleges.map((c) => ({
+        collegeId: c._id,
+        collegeName: c.name,
+        domains: c.domains,
+        website: c.website,
+        requestedBy: c.submittedBy
+          ? { email: c.submittedBy.email, displayName: c.submittedBy.displayName }
           : null,
         requestedAt: c.createdAt,
       })),
@@ -146,28 +163,36 @@ export async function rejectRecruiter(req, res) {
   }
 }
 
+// Shared by approveTpo/rejectTpo and approveStudentCollege/rejectStudentCollege
+// — flips the institution's own trust state. Callers are responsible for
+// whatever role-specific follow-up (tpoProfile sync, education.collegeStatus
+// sync) their submitter type needs.
+async function setCollegeStatus(collegeId, status) {
+  const college = await College.findById(collegeId);
+  if (!college) return null;
+  college.status = status;
+  college.verifiedAt = status === "verified" ? new Date() : null;
+  await college.save();
+  return college;
+}
+
 // ── POST /api/admin/tpo/:collegeId/approve ──────────────────────────────────
 export async function approveTpo(req, res) {
   try {
-    const college = await College.findById(req.params.collegeId);
+    const college = await setCollegeStatus(req.params.collegeId, "verified");
 
     if (!college) {
       return res.status(404).json({ error: "College request not found." });
     }
 
-    const now = new Date();
-    college.verified = true;
-    college.verifiedAt = now;
-    await college.save();
-
     await User.updateMany(
-      { role: "tpo", "tpoProfile.collegeDomain": college.domain, "tpoProfile.verified": false },
-      { $set: { "tpoProfile.verified": true, "tpoProfile.verifiedAt": now } }
+      { role: "tpo", "tpoProfile.collegeDomain": { $in: college.domains }, "tpoProfile.verified": false },
+      { $set: { "tpoProfile.verified": true, "tpoProfile.verifiedAt": college.verifiedAt } }
     );
 
-    if (college.adminUserId) {
+    if (college.submittedBy) {
       createNotification({
-        userId: college.adminUserId,
+        userId: college.submittedBy,
         type: "tpo_verified",
         title: "TPO access approved",
         message: `${college.name} is verified. Your placement dashboard is ready.`,
@@ -191,9 +216,12 @@ export async function rejectTpo(req, res) {
       return res.status(404).json({ error: "College request not found." });
     }
 
-    const requesterId = college.adminUserId;
+    const requesterId = college.submittedBy;
     const collegeName = college.name;
 
+    // Unlike student-submitted colleges (rejectStudentCollege below), a
+    // rejected TPO signup has no other purpose for the record, so the
+    // College doc itself is deleted here — unchanged from prior behavior.
     await College.deleteOne({ _id: college._id });
 
     if (requesterId) {
@@ -224,6 +252,94 @@ export async function rejectTpo(req, res) {
   } catch (err) {
     logger.error({ err }, "[Admin] reject TPO error");
     return res.status(500).json({ error: "Failed to reject TPO request." });
+  }
+}
+
+// ── POST /api/admin/student-colleges/:collegeId/approve ────────────────────
+// Approves a college that was requested via a student's college-email
+// verification (backend/routes/collegeVerification.js), as opposed to a TPO
+// registration. Pushes the new status to every user whose education is
+// linked to this college and has already verified their email — mirrors the
+// tpoProfile-sync pattern in approveTpo above, applied to `education`.
+export async function approveStudentCollege(req, res) {
+  try {
+    const college = await setCollegeStatus(req.params.collegeId, "verified");
+    if (!college) {
+      return res.status(404).json({ error: "College request not found." });
+    }
+
+    const affected = await User.find({
+      "education.collegeId": college._id,
+      "education.emailVerified": true,
+    });
+
+    await Promise.all(
+      affected.map((u) => {
+        u.education.collegeStatus = "verified";
+        return u.save();
+      })
+    );
+
+    affected.forEach((u) => invalidateCachedUserByFirebaseUid(u.firebaseUid));
+
+    affected.forEach((u) =>
+      createNotification({
+        userId: u._id,
+        type: "college_verified",
+        title: "Your college is now verified",
+        message: `${college.name} has been added to Code Club's verified colleges. Your College Leaderboard is unlocked.`,
+        link: "/club/leaderboard",
+      }).catch(() => {})
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] approve student college error");
+    return res.status(500).json({ error: "Failed to approve college." });
+  }
+}
+
+// ── POST /api/admin/student-colleges/:collegeId/reject ──────────────────────
+// Unlike rejectTpo, this does NOT delete the College doc — the record is
+// kept with status:"rejected" so a resubmission for the same domain is
+// recognized as "already reviewed" (see the 409 check in
+// collegeVerification.js's findOrCreatePendingCollege) rather than silently
+// re-queuing a previously-rejected institution.
+export async function rejectStudentCollege(req, res) {
+  try {
+    const college = await setCollegeStatus(req.params.collegeId, "rejected");
+    if (!college) {
+      return res.status(404).json({ error: "College request not found." });
+    }
+
+    const affected = await User.find({
+      "education.collegeId": college._id,
+      "education.emailVerified": true,
+    });
+
+    await Promise.all(
+      affected.map((u) => {
+        u.education.collegeStatus = "rejected";
+        return u.save();
+      })
+    );
+
+    affected.forEach((u) => invalidateCachedUserByFirebaseUid(u.firebaseUid));
+
+    affected.forEach((u) =>
+      createNotification({
+        userId: u._id,
+        type: "college_rejected",
+        title: "College verification update",
+        message: `We weren't able to verify ${college.name} for official College Leaderboard status. Your email verification is unaffected.`,
+        link: "/profile",
+      }).catch(() => {})
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] reject student college error");
+    return res.status(500).json({ error: "Failed to reject college." });
   }
 }
 

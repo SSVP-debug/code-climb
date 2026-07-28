@@ -10,7 +10,7 @@ import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
 import { invalidateTpoCache } from "../controllers/tpoController.js";
 import { createNotificationBulk } from "../services/notificationService.js";
-import { isDomainAutoVerified } from "../utils/domainVerification.js";
+import { isDomainAutoVerified, isConsumerEmailDomain } from "../utils/domainVerification.js";
 
 const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
 const TPO_CACHE_PREFIX = "tpo:";
@@ -52,7 +52,7 @@ router.post("/register", async (req, res) => {
     const email = req.userDoc.email || "";
     const domain = email.split("@")[1];
 
-    if (!domain || domain.includes("gmail.com") || domain.includes("yahoo.com") || domain.includes("outlook.com")) {
+    if (!domain || isConsumerEmailDomain(domain)) {
       return res.status(400).json({
         error: "Please sign up with your institutional email (e.g. yourname@college.ac.in), not a personal email.",
       });
@@ -62,12 +62,12 @@ router.post("/register", async (req, res) => {
     // another manual review — the college itself has already been vetted.
     // A domain that's still pending review stays blocked from a second
     // claim, same as before, to avoid two conflicting requests in the queue.
-    const existingCollege = await College.findOne({ domain });
+    const existingCollege = await College.findByDomain(domain);
 
-    if (existingCollege && !existingCollege.verified) {
+    if (existingCollege && existingCollege.status !== "verified") {
       return res.status(409).json({
         error: "This college is already registered and pending verification.",
-        status: "pending",
+        status: existingCollege.status,
       });
     }
 
@@ -77,15 +77,16 @@ router.post("/register", async (req, res) => {
     // queue. Everything else is created pending and shows up in
     // GET /api/admin/pending for manual approval.
     const autoVerified =
-      Boolean(existingCollege?.verified) || (await isDomainAutoVerified(domain, "college"));
+      existingCollege?.status === "verified" || (await isDomainAutoVerified(domain, "college"));
 
     if (!existingCollege) {
       await College.create({
-        domain,
+        domains: [domain],
         name: collegeName,
-        verified: autoVerified,
+        status: autoVerified ? "verified" : "pending",
         verifiedAt: autoVerified ? now : null,
-        adminUserId: req.userDoc._id,
+        submittedBy: req.userDoc._id,
+        submittedByRole: "tpo",
       });
     }
 

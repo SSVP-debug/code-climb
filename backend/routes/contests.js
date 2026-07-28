@@ -116,7 +116,18 @@ const STUDENT_CONTEST_LIMITS = {
 
 // ── POST /api/contests/private — create private contest (090, extended 12B/12C) ─
 // TPO/Admin: unrestricted, as before. Student: guardrailed per Phase 12B,
-// plus the "verified account required" gate as of Phase 12C (education.verified).
+// plus the "verified account required" gate as of Phase 12C
+// (education.emailVerified).
+//
+// Deliberate: this checks emailVerified only, NOT collegeStatus === "verified".
+// Hosting a student-created private contest doesn't grant the creator
+// "official college" status or list the contest under an institution's
+// official rankings (Contest.collegeDomain is sourced only from tpoProfile,
+// never from student education — confirmed unused here). The gate's real
+// purpose is "prove this is a real student with a real institutional inbox,"
+// which emailVerified alone satisfies. Requiring full college approval here
+// would be a stricter regression for students at not-yet-reviewed
+// institutions, who have every right to host their own private contest.
 router.post("/private", requireRole("student", "tpo", "admin"), async (req, res) => {
   try {
     const { title, description, problemSlugs, startsAt, endsAt } = req.body;
@@ -140,11 +151,12 @@ router.post("/private", requireRole("student", "tpo", "admin"), async (req, res)
     if (isStudent) {
       // Phase 12C shipped student college verification — enforcing the
       // "verified account required" guardrail now that it's actually
-      // possible to. "Verified" here means education.verified (college
+      // possible to. "Verified" here means education.emailVerified (college
       // email confirmed) since that's the only verification concept
       // students have; there's no separate generic account-verification
-      // flag in this codebase to check instead.
-      if (!req.userDoc.education?.verified) {
+      // flag in this codebase to check instead. See the module-level note
+      // above for why this is emailVerified and not full collegeStatus.
+      if (!req.userDoc.education?.emailVerified) {
         return res.status(403).json({
           error: "Verify your college email before hosting a contest.",
           code: "HOST_NOT_VERIFIED",

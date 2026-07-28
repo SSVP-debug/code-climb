@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import { withAlpha } from "../themes/themeIcons";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
-import { BadgeCheck, XCircle } from "lucide-react";
+import { BadgeCheck, XCircle, Clock } from "lucide-react";
 
 /**
  * CollegeVerifyConfirmPage — the landing page a student hits after clicking
@@ -19,6 +19,7 @@ export default function CollegeVerifyConfirmPage() {
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [message, setMessage] = useState("");
   const [collegeName, setCollegeName] = useState("");
+  const [collegeStatus, setCollegeStatus] = useState(null); // "pending" | "verified" | "rejected"
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -31,6 +32,7 @@ export default function CollegeVerifyConfirmPage() {
     apiFetch(`/api/college-verification/confirm?token=${encodeURIComponent(token)}`)
       .then((d) => {
         setCollegeName(d.collegeName);
+        setCollegeStatus(d.collegeStatus);
         setStatus("success");
       })
       .catch((err) => {
@@ -55,15 +57,22 @@ export default function CollegeVerifyConfirmPage() {
               className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ backgroundColor: withAlpha(theme.colors.primary, "1f"), color: theme.colors.primary }}
             >
-              <BadgeCheck size={32} strokeWidth={2} aria-hidden="true" />
+              {collegeStatus === "pending" ? (
+                <Clock size={32} strokeWidth={2} aria-hidden="true" />
+              ) : (
+                <BadgeCheck size={32} strokeWidth={2} aria-hidden="true" />
+              )}
             </div>
-            <h1 className="text-2xl font-bold mb-2">College Verified</h1>
+            <h1 className="text-2xl font-bold mb-2">
+              {collegeStatus === "pending" ? "Email Verified" : "College Verified"}
+            </h1>
             <p className="text-zinc-400 mb-8">
-              {collegeName} is now linked to your account. Your College
-              Leaderboard is unlocked.
+              {collegeStatus === "pending"
+                ? `We've confirmed you own this email. ${collegeName} is now under review — you'll get College Leaderboard access once it's approved.`
+                : `${collegeName} is now linked to your account. Your College Leaderboard is unlocked.`}
             </p>
-            <Button to="/club/leaderboard" variant="theme">
-              View College Leaderboard
+            <Button to={collegeStatus === "pending" ? "/profile" : "/club/leaderboard"} variant="theme">
+              {collegeStatus === "pending" ? "Back to Profile" : "View College Leaderboard"}
             </Button>
           </>
         )}

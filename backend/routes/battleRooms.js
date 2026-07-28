@@ -38,7 +38,7 @@ router.post("/", requireRole("student", "tpo", "admin"), async (req, res) => {
     let durationMs = Number(durationMinutes) * 60 * 1000;
 
     if (isStudent) {
-      if (!req.userDoc.education?.verified) {
+      if (!req.userDoc.education?.emailVerified) {
         return res.status(403).json({
           error: "Verify your college email before hosting a Battle Room.",
           code: "HOST_NOT_VERIFIED",

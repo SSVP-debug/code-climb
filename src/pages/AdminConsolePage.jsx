@@ -81,6 +81,7 @@ export default function AdminConsolePage() {
   const [loading, setLoading] = useState(true);
   const [recruiters, setRecruiters] = useState([]);
   const [tpos, setTpos] = useState([]);
+  const [studentCollegeRequests, setStudentCollegeRequests] = useState([]);
   // Tracks which row is mid-request so its own buttons show a spinner
   // without disabling the rest of the queue: { [id]: "approve" | "reject" }
   const [busyIds, setBusyIds] = useState({});
@@ -101,6 +102,7 @@ export default function AdminConsolePage() {
       const data = await apiFetch("/api/admin/pending");
       setRecruiters(data.recruiters || []);
       setTpos(data.tpos || []);
+      setStudentCollegeRequests(data.studentCollegeRequests || []);
     } catch (err) {
       toast.error(err.message || "Failed to load the approval queue.");
     } finally {
@@ -194,7 +196,24 @@ export default function AdminConsolePage() {
     }
   }
 
-  const pendingCount = recruiters.length + tpos.length;
+  async function actOnStudentCollege(collegeId, action) {
+    setBusyIds((b) => ({ ...b, [collegeId]: action }));
+    try {
+      await apiFetch(`/api/admin/student-colleges/${collegeId}/${action}`, { method: "POST" });
+      setStudentCollegeRequests((list) => list.filter((c) => c.collegeId !== collegeId));
+      toast.success(action === "approve" ? "College approved." : "College request rejected.");
+    } catch (err) {
+      toast.error(err.message || `Failed to ${action} college request.`);
+    } finally {
+      setBusyIds((b) => {
+        const next = { ...b };
+        delete next[collegeId];
+        return next;
+      });
+    }
+  }
+
+  const pendingCount = recruiters.length + tpos.length + studentCollegeRequests.length;
 
   return (
     <>
@@ -405,7 +424,7 @@ export default function AdminConsolePage() {
           </section>
 
           {/* ── Pending TPOs ─────────────────────────────────────────── */}
-          <section>
+          <section className="mb-10">
             <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
               TPO / college requests {tpos.length > 0 && `(${tpos.length})`}
             </h2>
@@ -424,6 +443,32 @@ export default function AdminConsolePage() {
                     busy={busyIds[t.collegeId]}
                     onApprove={() => actOnTpo(t.collegeId, "approve")}
                     onReject={() => actOnTpo(t.collegeId, "reject")}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* ── College requests from students ──────────────────────── */}
+          <section>
+            <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+              College requests from students {studentCollegeRequests.length > 0 && `(${studentCollegeRequests.length})`}
+            </h2>
+            {loading ? (
+              <p className="text-zinc-600 text-sm">Loading…</p>
+            ) : studentCollegeRequests.length === 0 ? (
+              <p className="text-zinc-600 text-sm">No student college requests awaiting review.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {studentCollegeRequests.map((c) => (
+                  <QueueRow
+                    key={c.collegeId}
+                    title={c.collegeName}
+                    subtitle={c.requestedBy?.displayName || c.requestedBy?.email || "Unknown requester"}
+                    meta={`${(c.domains || []).join(", ")}${c.website ? " · " + c.website : ""} · requested ${formatDate(c.requestedAt)}`}
+                    busy={busyIds[c.collegeId]}
+                    onApprove={() => actOnStudentCollege(c.collegeId, "approve")}
+                    onReject={() => actOnStudentCollege(c.collegeId, "reject")}
                   />
                 ))}
               </div>

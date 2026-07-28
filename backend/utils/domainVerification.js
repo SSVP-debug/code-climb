@@ -24,3 +24,21 @@ export async function isDomainAutoVerified(domain, type) {
     return false;
   }
 }
+
+// Free/consumer email providers — not valid for institutional verification
+// (TPO registration or student college verification). Extracted from what
+// was previously a hardcoded inline check in routes/tpo.js so both routes
+// share one list instead of two copies drifting apart. Extend
+// conservatively — over-blocking is a support burden, not just a bug.
+const CONSUMER_EMAIL_DOMAINS = new Set([
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "icloud.com",
+  "protonmail.com",
+]);
+
+export function isConsumerEmailDomain(domain) {
+  return CONSUMER_EMAIL_DOMAINS.has(domain?.toLowerCase().trim());
+}

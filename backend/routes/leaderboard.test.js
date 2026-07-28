@@ -122,7 +122,7 @@ describe("leaderboard.js — college ranking", () => {
       query: {},
       log: mockLog(),
       userDoc: {
-        education: { verified: true, collegeEmail: "student@example.edu" },
+        education: { emailVerified: true, collegeStatus: "verified", collegeEmail: "student@example.edu" },
       },
     };
   });
@@ -152,5 +152,52 @@ describe("leaderboard.js — college ranking", () => {
 
     const [payload] = res.json.mock.calls[0];
     expect(payload.users.map((u) => u.username)).toEqual(["top", "bottom"]);
+  });
+
+  // Security requirement (plans/001 §5.6): official College Leaderboard
+  // access must require BOTH emailVerified AND collegeStatus === "verified".
+  // Email ownership alone — or a merely-pending institution — must never
+  // be enough; a pending college must not grant official college privileges.
+  it("403s with COLLEGE_NOT_VERIFIED when the email itself was never verified", async () => {
+    req.userDoc.education = { emailVerified: false, collegeStatus: "unset" };
+
+    const handler = getHandler("/college");
+    await handler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ code: "COLLEGE_NOT_VERIFIED" }));
+    expect(User.aggregate).not.toHaveBeenCalled();
+  });
+
+  it("403s with COLLEGE_PENDING_REVIEW when the email is verified but the institution is still pending — cannot be bypassed by creating a pending college", async () => {
+    req.userDoc.education = { emailVerified: true, collegeStatus: "pending", collegeEmail: "s@unknown-college.ac.in" };
+
+    const handler = getHandler("/college");
+    await handler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ code: "COLLEGE_PENDING_REVIEW" }));
+    expect(User.aggregate).not.toHaveBeenCalled();
+  });
+
+  it("403s with COLLEGE_NOT_VERIFIED when the institution was rejected", async () => {
+    req.userDoc.education = { emailVerified: true, collegeStatus: "rejected" };
+
+    const handler = getHandler("/college");
+    await handler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(User.aggregate).not.toHaveBeenCalled();
+  });
+
+  it("allows access when both emailVerified and collegeStatus === verified", async () => {
+    User.aggregate.mockResolvedValue([]);
+    req.userDoc.education = { emailVerified: true, collegeStatus: "verified", collegeEmail: "student@example.edu" };
+
+    const handler = getHandler("/college");
+    await handler(req, res);
+
+    expect(res.status).not.toHaveBeenCalledWith(403);
+    expect(User.aggregate).toHaveBeenCalled();
   });
 });

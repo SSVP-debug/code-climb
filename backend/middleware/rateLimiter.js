@@ -62,3 +62,21 @@ export const aiLimiter = rateLimit({
     error: "You've requested insights too many times. Wait a few minutes before refreshing.",
   },
 });
+
+/**
+ * College verification resend limiter — applied to
+ * POST /api/college-verification/resend. 3 resends per hour per user;
+ * generous enough for a genuinely lost/expired email, tight enough to stop
+ * someone hammering the mail provider.
+ */
+export const collegeVerificationResendLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  keyGenerator: userOrIpKey,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
+  message: {
+    error: "Too many resend attempts. Please wait before requesting another verification email.",
+  },
+});

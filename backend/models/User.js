@@ -175,32 +175,6 @@ const userSchema = new mongoose.Schema(
       expectedGraduation: { type: String, default: null, trim: true, maxlength: 20 },
     },
 
-    // ── Developer Profile (GitHub / LinkedIn / Featured Project / Resume) ──
-    // Public-safe fields (githubUrl, linkedinUrl, featuredProjects) are
-    // surfaced on the public profile the same tier as recruiterSnapshot.
-    // resumeUrl is NOT public by default — gated by resumeVisibility, since
-    // saving a resume link should never implicitly mean "show this to
-    // anyone who finds my profile." featuredProjects is an array (capped
-    // at 1, enforced in userController.js, same convention as
-    // pinnedProblems) so this can grow into multiple showcased projects
-    // later without a schema migration.
-    developerProfile: {
-      githubUrl: { type: String, default: null, trim: true, maxlength: 200 },
-      linkedinUrl: { type: String, default: null, trim: true, maxlength: 200 },
-      resumeUrl: { type: String, default: null, trim: true, maxlength: 500 },
-      resumeVisibility: { type: String, enum: ["private", "public"], default: "private" },
-      featuredProjects: {
-        type: [
-          {
-            url: String,
-            owner: String,
-            repo: String,
-          },
-        ],
-        default: [],
-      },
-    },
-
     // ── Role system ─────────────────────────────────────────────
     role: {
       type: String,
@@ -250,8 +224,23 @@ const userSchema = new mongoose.Schema(
       branch:         { type: String, default: null, trim: true, maxlength: 60 },
       graduationYear: { type: Number, default: null },
       collegeEmail:   { type: String, default: null, trim: true, lowercase: true },
-      verified:       { type: Boolean, default: false },
-      verifiedAt:     { type: Date, default: null },
+      collegeId:      { type: mongoose.Schema.Types.ObjectId, ref: "College", default: null },
+
+      // "Do we know this person controls collegeEmail." Independent of
+      // whether the institution itself is trusted — see collegeStatus.
+      emailVerified:   { type: Boolean, default: false },
+      emailVerifiedAt: { type: Date, default: null },
+
+      // Denormalized copy of the linked College.status, kept in sync by
+      // adminController's approveStudentCollege/rejectStudentCollege and
+      // by the request/confirm routes at creation/confirm time.
+      // "unset" = no education record yet, or emailVerified is still false.
+      collegeStatus: {
+        type: String,
+        enum: ["unset", "pending", "verified", "rejected"],
+        default: "unset",
+      },
+
       // Verification link token — cleared once used or replaced by a new
       // request. Not select()-ed by default so a stray `res.json(user)`
       // elsewhere in the app can't leak it.

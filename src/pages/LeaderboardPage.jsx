@@ -7,7 +7,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
 import CollegeVerifyModal from "../components/profile/CollegeVerifyModal";
 import { withAlpha } from "../themes/themeIcons";
-import { Globe, GraduationCap, Flame } from "lucide-react";
+import { Globe, GraduationCap, Flame, Clock } from "lucide-react";
 import RankBadge from "../components/common/RankBadge";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -78,8 +78,14 @@ export default function LeaderboardPage() {
   const [total, setTotal]       = useState(0);
   const [domain, setDomain]     = useState("");
 
-  // Phase 12C: college verification gate state
-  const [collegeVerified, setCollegeVerified] = useState(undefined); // undefined = not checked yet
+  // Phase 12C: college verification gate state. Two distinct reasons a
+  // user can lack access — not just verified/unverified — since college
+  // approval is a separate axis from email verification (see
+  // plans/001-college-verification-two-track-flow.md §5.6):
+  //   "verified"        — full access
+  //   "not_verified"    — hasn't verified their college email at all
+  //   "pending_review"  — email verified, institution still under review
+  const [collegeGateStatus, setCollegeGateStatus] = useState(undefined); // undefined = not checked yet
   const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const fetchLeaderboard = useCallback(async () => {
@@ -94,16 +100,17 @@ export default function LeaderboardPage() {
         // Requires auth + a verified college — derives domain server-side
         // from the caller's own record, so no domain param here at all.
         // apiFetch *throws* on non-2xx (it doesn't resolve to {error}) —
-        // the 403 "not verified" gate response lands in the catch below.
+        // the 403 "not verified"/"pending review" gate response lands in
+        // the catch below.
         const d = await apiFetch("/api/leaderboard/college");
-        setCollegeVerified(true);
+        setCollegeGateStatus("verified");
         setDomain(d.domain || "");
         setUsers(d.users || []);
         setTotal(d.total || 0);
       }
-    } catch {
+    } catch (err) {
       if (tab === "college") {
-        setCollegeVerified(false);
+        setCollegeGateStatus(err.body?.code === "COLLEGE_PENDING_REVIEW" ? "pending_review" : "not_verified");
         setUsers([]);
         setTotal(0);
       }
@@ -163,7 +170,21 @@ export default function LeaderboardPage() {
         {/* College tab, not verified — gate card (PRD's "clicking without
             verification shows a prompt" flow, as an inline card rather than
             an immediate popup so it isn't jarring on every tab click) */}
-        {tab === "college" && collegeVerified === false ? (
+        {tab === "college" && collegeGateStatus === "pending_review" ? (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ backgroundColor: withAlpha(theme.colors.primary, "1f"), color: theme.colors.primary }}
+            >
+              <Clock size={26} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h2 className="text-lg font-bold mb-2">College verification pending</h2>
+            <p className="text-zinc-400 text-sm max-w-sm mx-auto">
+              Your college email has been verified. We're reviewing your institution
+              before adding it to official college rankings — check back soon.
+            </p>
+          </div>
+        ) : tab === "college" && collegeGateStatus === "not_verified" ? (
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"

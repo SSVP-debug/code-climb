@@ -16,6 +16,8 @@
     "problems:export-to-folders": "node scripts/exportProblemsToFolders.js",
     "problems:import-from-folders": "node scripts/importProblems.js",
     "backfill-xp": "node scripts/backfillXP.js",
+    "migrate:college-schema": "node scripts/migrateCollegeSchema.js",
+    "migrate:college-schema:dry-run": "node scripts/migrateCollegeSchema.js --dry-run",
     "weekly-review": "node scripts/sendWeeklyReviewEmails.js",
     "weekly-review:dry-run": "node scripts/sendWeeklyReviewEmails.js --dry-run",
     "test": "vitest run",

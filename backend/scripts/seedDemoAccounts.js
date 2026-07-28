@@ -96,17 +96,18 @@ async function seedDemoAccounts() {
   const adminEmail = process.argv[2]?.toLowerCase() || null;
 
   // ── 1. Demo college ──────────────────────────────────────────────────
-  let college = await College.findOne({ domain: DEMO_COLLEGE_DOMAIN });
+  let college = await College.findByDomain(DEMO_COLLEGE_DOMAIN);
   if (!college) {
     college = await College.create({
-      domain: DEMO_COLLEGE_DOMAIN,
+      domains: [DEMO_COLLEGE_DOMAIN],
       name: DEMO_COLLEGE_NAME,
-      verified: true,
+      status: "verified",
       verifiedAt: new Date(),
+      submittedByRole: "tpo",
     });
     console.log(`+ created college: ${DEMO_COLLEGE_NAME}`);
   } else {
-    college.verified = true;
+    college.status = "verified";
     college.verifiedAt = college.verifiedAt || new Date();
     await college.save();
     console.log(`~ college already exists: ${DEMO_COLLEGE_NAME}`);
@@ -137,8 +138,8 @@ async function seedDemoAccounts() {
     { upsert: true, new: true }
   );
 
-  if (!college.adminUserId) {
-    college.adminUserId = tpoUser._id;
+  if (!college.submittedBy) {
+    college.submittedBy = tpoUser._id;
     await college.save();
   }
   console.log(`+ demo TPO contact ready: ${tpoUser.email}`);

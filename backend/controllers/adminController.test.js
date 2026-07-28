@@ -39,6 +39,8 @@ import {
     rejectRecruiter,
     approveTpo,
     rejectTpo,
+    approveStudentCollege,
+    rejectStudentCollege,
     listUsers,
     startImpersonation,
     stopImpersonation,
@@ -86,7 +88,7 @@ describe("adminController", () => {
     });
 
     describe("getPendingQueue", () => {
-        it("returns pending recruiters and TPO colleges", async () => {
+        it("returns pending recruiters, split into TPO and student college requests by submittedByRole", async () => {
             User.find.mockReturnValueOnce(
                 chainableQuery([
                     { _id: "r1", email: "r@b.com", displayName: "R", recruiterProfile: { companyName: "Acme" }, createdAt: "t1" },
@@ -94,17 +96,32 @@ describe("adminController", () => {
             );
             College.find.mockReturnValueOnce(
                 chainableQuery([
-                    { _id: "c1", name: "MIT", domain: "mit.edu", adminUserId: { email: "a@b.com", displayName: "A" }, createdAt: "t2" },
+                    {
+                        _id: "c1", name: "MIT", domains: ["mit.edu"],
+                        submittedBy: { email: "a@b.com", displayName: "A" },
+                        submittedByRole: "tpo",
+                        createdAt: "t2",
+                    },
+                    {
+                        _id: "c2", name: "XYZ Institute", domains: ["xyz.ac.in"], website: "https://xyz.ac.in",
+                        submittedBy: { email: "s@b.com", displayName: "S" },
+                        submittedByRole: "student",
+                        createdAt: "t3",
+                    },
                 ])
             );
 
             const req = {};
             await getPendingQueue(req, res);
 
+            expect(College.find).toHaveBeenCalledWith({ status: "pending" });
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({
                     recruiters: [expect.objectContaining({ id: "r1", companyName: "Acme" })],
-                    tpos: [expect.objectContaining({ collegeId: "c1", collegeName: "MIT" })],
+                    tpos: [expect.objectContaining({ collegeId: "c1", collegeName: "MIT", domain: "mit.edu" })],
+                    studentCollegeRequests: [
+                        expect.objectContaining({ collegeId: "c2", collegeName: "XYZ Institute", domains: ["xyz.ac.in"] }),
+                    ],
                 })
             );
         });
@@ -163,10 +180,10 @@ describe("adminController", () => {
         it("verifies the college and bulk-verifies matching pending TPO profiles", async () => {
             const college = {
                 _id: "c1",
-                domain: "mit.edu",
+                domains: ["mit.edu"],
                 name: "MIT",
-                adminUserId: "admin-user-1",
-                verified: false,
+                submittedBy: "admin-user-1",
+                status: "pending",
                 save: vi.fn().mockResolvedValue(true),
             };
             College.findById.mockResolvedValueOnce(college);
@@ -174,9 +191,9 @@ describe("adminController", () => {
 
             await approveTpo({ params: { collegeId: "c1" } }, res);
 
-            expect(college.verified).toBe(true);
+            expect(college.status).toBe("verified");
             expect(User.updateMany).toHaveBeenCalledWith(
-                { role: "tpo", "tpoProfile.collegeDomain": "mit.edu", "tpoProfile.verified": false },
+                { role: "tpo", "tpoProfile.collegeDomain": { $in: ["mit.edu"] }, "tpoProfile.verified": false },
                 expect.objectContaining({ $set: expect.any(Object) })
             );
             expect(createNotification).toHaveBeenCalledWith(
@@ -196,7 +213,7 @@ describe("adminController", () => {
 
     describe("rejectTpo", () => {
         it("deletes the college and demotes the requester if still a TPO", async () => {
-            const college = { _id: "c1", name: "MIT", adminUserId: "req1" };
+            const college = { _id: "c1", name: "MIT", submittedBy: "req1" };
             const requester = makeUser({ _id: "req1", role: "tpo", firebaseUid: "fb-req1" });
 
             College.findById.mockResolvedValueOnce(college);
@@ -208,6 +225,87 @@ describe("adminController", () => {
             expect(requester.role).toBe("student");
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-req1");
             expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+    });
+
+    describe("approveStudentCollege", () => {
+        it("verifies the college and pushes collegeStatus to every linked, email-verified user", async () => {
+            const college = {
+                _id: "c2",
+                domains: ["xyz.ac.in"],
+                name: "XYZ Institute",
+                status: "pending",
+                save: vi.fn().mockResolvedValue(true),
+            };
+            const linkedUser = makeUser({
+                _id: "stu1",
+                role: "student",
+                firebaseUid: "fb-stu1",
+                education: { collegeId: "c2", emailVerified: true, collegeStatus: "pending" },
+            });
+            College.findById.mockResolvedValueOnce(college);
+            User.find.mockResolvedValueOnce([linkedUser]);
+
+            await approveStudentCollege({ params: { collegeId: "c2" } }, res);
+
+            expect(college.status).toBe("verified");
+            expect(User.find).toHaveBeenCalledWith({
+                "education.collegeId": "c2",
+                "education.emailVerified": true,
+            });
+            expect(linkedUser.education.collegeStatus).toBe("verified");
+            expect(linkedUser.save).toHaveBeenCalledOnce();
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-stu1");
+            expect(createNotification).toHaveBeenCalledWith(
+                expect.objectContaining({ userId: "stu1", type: "college_verified" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the college request doesn't exist", async () => {
+            College.findById.mockResolvedValueOnce(null);
+
+            await approveStudentCollege({ params: { collegeId: "missing" } }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+    });
+
+    describe("rejectStudentCollege", () => {
+        it("does NOT delete the college doc — marks it rejected and updates linked users", async () => {
+            const college = {
+                _id: "c2",
+                domains: ["xyz.ac.in"],
+                name: "XYZ Institute",
+                status: "pending",
+                save: vi.fn().mockResolvedValue(true),
+            };
+            const linkedUser = makeUser({
+                _id: "stu1",
+                role: "student",
+                firebaseUid: "fb-stu1",
+                education: { collegeId: "c2", emailVerified: true, collegeStatus: "pending" },
+            });
+            College.findById.mockResolvedValueOnce(college);
+            User.find.mockResolvedValueOnce([linkedUser]);
+
+            await rejectStudentCollege({ params: { collegeId: "c2" } }, res);
+
+            expect(college.status).toBe("rejected");
+            expect(College.deleteOne).not.toHaveBeenCalled();
+            expect(linkedUser.education.collegeStatus).toBe("rejected");
+            expect(createNotification).toHaveBeenCalledWith(
+                expect.objectContaining({ userId: "stu1", type: "college_rejected" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the college request doesn't exist", async () => {
+            College.findById.mockResolvedValueOnce(null);
+
+            await rejectStudentCollege({ params: { collegeId: "missing" } }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
         });
     });
 
