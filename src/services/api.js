@@ -73,15 +73,25 @@ export async function apiFetch(path, options = {}) {
   if (!response.ok) {
     const text = await response.text();
     let message = text;
+    let body = null;
 
     try {
-      const json = JSON.parse(text);
-      message = json.error || json.message || text;
+      body = JSON.parse(text);
+      message = body.error || body.message || text;
     } catch {
       // keep raw text if response is not JSON
     }
 
-    throw new Error(message || `Request failed (${response.status})`);
+    // Audit fix: previously only the string message survived past this
+    // point, so structured fields on error responses — most importantly
+    // the 402 premium-gate body's `upgradeUrl`/`currentPlan`
+    // (backend/middleware/premiumGate.js) — were silently discarded.
+    // Callers that only read `.message` are unaffected; callers that want
+    // the extra context (e.g. an upgrade CTA) can now read `.status`/`.body`.
+    const err = new Error(message || `Request failed (${response.status})`);
+    err.status = response.status;
+    err.body = body;
+    throw err;
   }
 
   if (response.status === 204) return null;

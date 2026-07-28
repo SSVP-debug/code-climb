@@ -1,11 +1,7 @@
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useTheme } from "../../../context/ThemeContext";
 import SectionCard from "../../ui/layout/SectionCard";
-import {
-  getLevel,
-  getLevelProgress,
-  getXPForNextLevel,
-} from "../../../utils/levelUtils";
+import { getLevel, getLevelProgress } from "../../../utils/xpLevel";
 import StreakBadge from "../../common/StreakBadge";
 function RankProgressSection() {
   const { theme } = useTheme();
@@ -22,9 +18,19 @@ function RankProgressSection() {
   const progress =
     getLevelProgress(totalXP);
 
-  const xpRemaining =
-    getXPForNextLevel(totalXP);
+  // Audit fix: previously sourced from levelUtils.js's flat xp/100 formula
+  // via a separate getXPForNextLevel() — that formula disagreed with the
+  // curve-based one Profile.jsx/PublicProfile.jsx/LevelUpModal now all use
+  // (see xpLevel.js), so this card could show a different level than
+  // Profile for the same user. getLevelProgress already returns the XP
+  // span for the *current* level, so "remaining" is just needed - current.
+  const xpRemaining = progress.needed - progress.current;
 
+  // Audit fix: thresholds aligned with Profile.jsx/useAnalyticsStats.js —
+  // previously this card used its own (level<3/<5/<10/<20) table, which,
+  // combined with the different level formula above, meant this card's
+  // rank label rarely matched the rank shown on Profile/Analytics for the
+  // same user.
   const RANKS = [
     "Beginner",
     "Learner",
@@ -34,13 +40,13 @@ function RankProgressSection() {
   ];
 
   const rank =
-    level < 3
+    level < 5
       ? RANKS[0]
-      : level < 5
+      : level < 15
         ? RANKS[1]
-        : level < 10
+        : level < 30
           ? RANKS[2]
-          : level < 20
+          : level < 60
             ? RANKS[3]
             : RANKS[4];
 
@@ -74,7 +80,7 @@ function RankProgressSection() {
           <p className="text-zinc-400 text-sm mt-1" data-testid="dashboard-xp">
             {totalXP} XP
           </p>
-          <p className="text-xs text-green-400 mt-1">
+          <p className="text-xs text-[var(--theme-primary,#2dd4bf)] mt-1">
             {progress.percent}% to Level {level + 1}
           </p>
         </div>

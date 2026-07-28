@@ -1,3 +1,16 @@
+/**
+ * @deprecated — audit fix, frontend audit implementation session.
+ *
+ * This was a duplicate of src/components/problem/common/ProblemsTopbar.jsx
+ * that had drifted out of sync — imported nowhere (verified via repo-wide
+ * grep), so dead code, but it happened to have the theme-aware stat labels
+ * and teal highlight color that the *wired-in* copy was missing. Those
+ * fixes have now been merged into the real file instead of swapping to
+ * this one, because this version was also missing a feature the wired-in
+ * one has (the "Back to Dashboard" button). Left in place rather than
+ * deleted since removal wasn't explicitly requested — safe to delete in a
+ * follow-up once confirmed once more against the live branch.
+ */
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";

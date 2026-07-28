@@ -57,8 +57,15 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
         {/* Stat chips — horizontally scrollable so 4 chips never force page
             overflow or get crushed below their min-width on narrow screens */}
         <div className="flex items-center gap-2 flex-1 overflow-x-auto no-scrollbar">
-          <StatChip label="Vaults"   value={totalProblems} />
-          <StatChip label="Cleared"  value={solvedCount} />
+          {/* Audit fix: these were hardcoded "Vaults"/"Cleared" — the Code
+              Heist theme's own vocabulary — baked directly into this
+              component, so every other theme's users (Breaking Bug, Ghost
+              Protocol, Survival Code, Debug Dynasty, default) saw
+              Code-Heist-flavored labels no matter which universe they'd
+              actually selected. theme.words.* is populated for every
+              theme (verified), same pattern used elsewhere in the app. */}
+          <StatChip label={theme.words.problems}    value={totalProblems} />
+          <StatChip label={theme.words.totalSolved} value={solvedCount} />
           <StatChip
             label="Progress"
             value={`${progress}%`}
@@ -173,8 +180,8 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
                 Your Stats
               </p>
               <div className="grid grid-cols-3 gap-2">
-                <StatChip label="Vaults"   value={totalProblems} />
-                <StatChip label="Cleared"  value={solvedCount} />
+                <StatChip label={theme.words.problems}    value={totalProblems} />
+                <StatChip label={theme.words.totalSolved} value={solvedCount} />
                 <StatChip label="Progress" value={`${progress}%`} highlight={progress > 0} />
               </div>
             </div>
@@ -197,9 +204,16 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
 }
 
 function StatChip({ label, value, highlight = false }) {
+  const { theme } = useTheme();
   return (
     <div className="flex flex-col items-center bg-zinc-800/80 border border-zinc-700/50 rounded-lg px-3 py-1.5 min-w-[58px]">
-      <span className={`text-sm font-bold leading-none tabular-nums ${highlight ? "text-green-400" : "text-white"}`}>
+      {/* Audit fix: was hardcoded text-green-400 — off-brand, teal
+          (var(--theme-primary)/theme.colors.primary) is the intentional
+          accent color, green was never a deliberate choice. */}
+      <span
+        className="text-sm font-bold leading-none tabular-nums"
+        style={{ color: highlight ? theme.colors.primary : "#ffffff" }}
+      >
         {value}
       </span>
       <span className="text-[9px] text-zinc-500 uppercase tracking-wide mt-0.5 whitespace-nowrap">

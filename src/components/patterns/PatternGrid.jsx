@@ -2,6 +2,22 @@ import { useMemo } from "react";
 import patterns from "../../data/patterns";
 import PatternCard from "./PatternCard";
 
+// AUDIT NOTE — orphan, needs a product decision, not a code fix.
+// This component (and its sole dependent, PatternCard.jsx) is never
+// imported anywhere in the app — verified via repo-wide grep. The
+// "patterns" tab actually shown on /problems today uses a *different*
+// component, PatternView.jsx, which is a broader, currently-live
+// implementation: it ranks all ~21 real topic categories by completion
+// with a "Focus Areas" callout. This file instead maps a small *curated*
+// taxonomy of 10 named algorithm patterns (see src/data/patterns.js) onto
+// topics — a different, narrower framing that PatternView doesn't cover.
+// Left in place rather than deleted since it's unclear whether this was
+// superseded by PatternView (safe to remove) or is a distinct feature
+// that was scaffolded but never wired into a tab/route (migration
+// incomplete). Recommend: product call on whether "Learn by Pattern
+// (curated)" should become its own view/tab, before either deleting this
+// or building the missing entry point.
+//
 // Joins the curated pattern taxonomy (src/data/patterns.js) to problems via
 // the `topic` field — the same controlled-vocabulary field already used
 // for topic filtering/stats everywhere else in the app. Most pattern

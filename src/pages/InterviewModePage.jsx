@@ -5,6 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import Button from "../components/ui/Button";
+import UpgradePrompt from "../components/ui/UpgradePrompt";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 
 function formatTime(ms) {
@@ -29,6 +30,7 @@ export default function InterviewModePage() {
   const [asking, setAsking]         = useState(false);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
+  const [upgrade, setUpgrade]       = useState(null); // audit fix: structured 402 body (upgradeUrl, currentPlan)
 
   const timerRef = useRef(null);
 
@@ -43,12 +45,6 @@ export default function InterviewModePage() {
         });
         if (cancelled) return;
 
-        if (data.error) {
-          setError(data.error);
-          setLoading(false);
-          return;
-        }
-
         setSession(data);
         setTimeLeft(data.durationMs);
         setChatLog([{
@@ -56,7 +52,12 @@ export default function InterviewModePage() {
           text: `Let's begin. Tell me how you'd approach "${data.problem.title}" — what's your first instinct?`,
         }]);
       } catch (err) {
-        setError(err.message || "Failed to start interview session.");
+        if (cancelled) return;
+        if (err.status === 402) {
+          setUpgrade(err.body || {});
+        } else {
+          setError(err.message || "Failed to start interview session.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -119,6 +120,26 @@ export default function InterviewModePage() {
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
           <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (upgrade) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
+          <UpgradePrompt
+            feature="Interview Mode"
+            message={upgrade.error || "Interview Mode requires Code Club Pro."}
+            upgradeUrl={upgrade.upgradeUrl || "/pricing"}
+          />
+          <button
+            onClick={() => navigate(`/problems/${slug}`)}
+            className="text-sm text-zinc-500 hover:text-zinc-300 transition"
+          >
+            Back to Problem
+          </button>
         </div>
       </DashboardLayout>
     );

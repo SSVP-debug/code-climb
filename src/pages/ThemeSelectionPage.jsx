@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Lock } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useAppContext } from "../hooks/useAppContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
 import { DEFAULT_THEME, getTheme } from "../themes";
 import { THEME_ICONS, withAlpha } from "../themes/themeIcons";
@@ -10,6 +12,7 @@ export default function ThemeSelectionPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setTheme, themeId: currentThemeId } = useTheme();
+    const { totalXP = 0 } = useAppContext();
     const scrollerRef = useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
@@ -43,6 +46,13 @@ export default function ThemeSelectionPage() {
     };
 
     const handleSelect = (themeId) => {
+        // Audit fix: unlockXP was defined per-theme but never enforced —
+        // every theme was selectable by every user regardless of XP.
+        // Guard here too, not just via the disabled button below, so this
+        // stays safe even if the button is reached another way later.
+        const theme = THEME_OPTIONS.find((t) => t.id === themeId);
+        if (theme && totalXP < (theme.unlockXP || 0)) return;
+
         setTheme(themeId);
         // If already had a theme, go straight to destination (no confirmation needed)
         if (themeId === currentThemeId) {
@@ -130,6 +140,7 @@ export default function ThemeSelectionPage() {
                     {THEME_OPTIONS.map((theme) => {
                         const colors = getTheme(theme.id).colors;
                         const Icon = THEME_ICONS[theme.id];
+                        const isLocked = totalXP < (theme.unlockXP || 0);
 
                         return (
                             <div
@@ -139,16 +150,15 @@ export default function ThemeSelectionPage() {
                                     "--tb": colors.border,
                                     "--tbg": colors.secondary,
                                 }}
-                                className="
+                                className={`
         relative overflow-hidden
         bg-[var(--tbg)] border border-[var(--tb)] rounded-2xl p-6
         transition-all duration-300
-        hover:-translate-y-2
-        hover:scale-[1.02]
-        hover:border-[var(--tp)]
-        hover:shadow-[0_0_30px_-10px_var(--tp)]
         flex-none w-80 snap-start
-    "
+        ${isLocked
+            ? "opacity-60 saturate-50"
+            : "hover:-translate-y-2 hover:scale-[1.02] hover:border-[var(--tp)] hover:shadow-[0_0_30px_-10px_var(--tp)]"}
+    `}
                             >
                                 {/* Top accent stripe — each universe's own gradient, not a shared default */}
                                 <div
@@ -169,8 +179,16 @@ export default function ThemeSelectionPage() {
                                     <Icon size={28} strokeWidth={2} aria-hidden="true" />
                                 </div>
 
-                                <h2 className="text-2xl font-bold mb-3">
+                                <h2 className="text-2xl font-bold mb-3 flex items-center gap-2">
                                     {theme.name}
+                                    {isLocked && (
+                                        <Lock
+                                            size={16}
+                                            strokeWidth={2}
+                                            className="text-zinc-500"
+                                            aria-label={`Locked — requires ${theme.unlockXP} XP`}
+                                        />
+                                    )}
                                 </h2>
                                 {currentThemeId === theme.id && (
                                     <p
@@ -204,13 +222,24 @@ export default function ThemeSelectionPage() {
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={() => handleSelect(theme.id)}
-                                    style={{ backgroundColor: colors.primary, color: "#09090b" }}
-                                    className="w-full py-3 rounded-xl font-semibold transition hover:brightness-110"
-                                >
-                                    Enter Universe
-                                </button>
+                                {isLocked ? (
+                                    <button
+                                        disabled
+                                        aria-disabled="true"
+                                        className="w-full py-3 rounded-xl font-semibold bg-zinc-800 text-zinc-500 cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        <Lock size={16} strokeWidth={2} aria-hidden="true" />
+                                        Unlock at {theme.unlockXP.toLocaleString()} XP
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => handleSelect(theme.id)}
+                                        style={{ backgroundColor: colors.primary, color: "#09090b" }}
+                                        className="w-full py-3 rounded-xl font-semibold transition hover:brightness-110"
+                                    >
+                                        Enter Universe
+                                    </button>
+                                )}
                             </div>
                         );
                     })}

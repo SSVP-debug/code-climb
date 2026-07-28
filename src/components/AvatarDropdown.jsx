@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck } from "lucide-react";
 import { useAppContext } from "../hooks/useAppContext";
+import { usePremium } from "../context/PremiumContext";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { getLastVisitedProblem } from "../utils/recentProblem";
 
@@ -11,6 +12,7 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { totalXP, currentStreak, solvedProblems, role } = useAppContext();
+  const { monetizationEnabled, isPremium } = usePremium();
   const isStudent = role === "student" || !role;
 
   const lastVisitedSlug = getLastVisitedProblem();
@@ -89,7 +91,25 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
       {open && (
         <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
           <div className="px-4 py-4 border-b border-zinc-800">
-            <p className="font-semibold">{user?.displayName}</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-semibold">{user?.displayName}</p>
+              {/* Audit fix: this was the first place besides PricingPage
+                  itself where the frontend showed the user's plan at all.
+                  Hidden while monetization is off, since everyone is
+                  effectively "Pro" then and a badge would just be noise —
+                  matches PricingPage's own "coming soon" framing. */}
+              {monetizationEnabled && (
+                <span
+                  className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    isPremium
+                      ? "bg-[var(--theme-primary,#2dd4bf)]/15 text-[var(--theme-primary,#2dd4bf)]"
+                      : "bg-zinc-800 text-zinc-400"
+                  }`}
+                >
+                  {isPremium ? "Pro" : "Free"}
+                </span>
+              )}
+            </div>
             <p className="text-xs text-zinc-400">{user?.email}</p>
           </div>
 

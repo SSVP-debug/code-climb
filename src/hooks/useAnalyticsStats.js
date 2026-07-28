@@ -10,9 +10,18 @@
  * returns plain values out; no side effects, no fetching.
  */
 import { useMemo } from "react";
+import { getLevel } from "../utils/xpLevel";
+import { getStatusMeta } from "../utils/statusMessages";
 
-export function useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity }) {
-  const level = solvedProblems.length;
+export function useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity, totalXP = 0 }) {
+  // Audit fix: this used to be `solvedProblems.length` labeled as "level" —
+  // a raw solved-problem count fed into the same Beginner..Expert threshold
+  // table Profile.jsx uses for its (correctly) XP-based level. Two users
+  // with the same solved count but very different XP (e.g. all-Easy vs.
+  // all-Hard) would get the same Analytics rank but different Profile
+  // levels. Now both pages derive `level` from the same xpLevel.js curve
+  // the backend also uses, so rank/level agree everywhere.
+  const level = getLevel(totalXP);
 
   const rank = useMemo(() => {
     if (level < 5) return "Beginner";
@@ -23,9 +32,16 @@ export function useAnalyticsStats({ solvedProblems, submissions, topicStats, rec
   }, [level]);
 
   const acceptanceRate = useMemo(() => {
-    if (submissions.length === 0) return 0;
-    const accepted = submissions.filter((s) => s.status === "Accepted").length;
-    return ((accepted / submissions.length) * 100).toFixed(1);
+    // Audit fix: this used to divide by submissions.length unconditionally,
+    // so a "Judge Error" or "Runner Unavailable" verdict (Code Club's own
+    // execution service failing, not the student's code) silently counted
+    // against them — dragging accuracy down for something outside their
+    // control. Infra-kind verdicts are excluded from both sides of the
+    // ratio entirely, same as if the attempt never happened.
+    const gradable = submissions.filter((s) => getStatusMeta(s.status).kind !== "infra");
+    if (gradable.length === 0) return 0;
+    const accepted = gradable.filter((s) => s.status === "Accepted").length;
+    return ((accepted / gradable.length) * 100).toFixed(1);
   }, [submissions]);
 
   const averageRuntime = useMemo(() => {

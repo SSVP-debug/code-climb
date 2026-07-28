@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
+import PremiumRoute from "./components/auth/PremiumRoute";
 import ThemeGate from "./routes/ThemeGate";
 
 // ── Eagerly loaded ─────────────────────────────────────────────────────────
@@ -58,7 +59,7 @@ function PageLoader() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
         <p className="text-zinc-500 text-sm">Loading…</p>
       </div>
     </div>
@@ -237,12 +238,21 @@ function App() {
           }
         />
         {/* ── Phase 10: Interview Mode ────────────────────────────────── */}
+        {/* Audit fix: this route was previously registered without a
+            :slug param, but InterviewModePage reads useParams().slug and
+            sends it straight to POST /api/interview/start, which the
+            backend rejects (slug is a required field) — the page could
+            never actually start a session even when reached directly.
+            There was also no link anywhere in the app pointing here; see
+            the launch button added in ProblemInfo.jsx. */}
         <Route
-          path="/interview-mode"
+          path="/interview-mode/:slug"
           element={
             <ProtectedRoute>
               <ThemeGate>
-                <InterviewModePage />
+                <PremiumRoute feature="Interview Mode">
+                  <InterviewModePage />
+                </PremiumRoute>
               </ThemeGate>
             </ProtectedRoute>
           }

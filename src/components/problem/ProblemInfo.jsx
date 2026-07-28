@@ -1,9 +1,13 @@
 import React from "react";
+import { MessageSquareText } from "lucide-react";
 import HintSystem from "./HintSystem.jsx";
 import EditorialPanel from "./EditorialPanel.jsx";
 import RelatedProblems from "./RelatedProblems.jsx";
+import Button from "../ui/Button.jsx";
+import { usePremium } from "../../context/PremiumContext";
 
 function ProblemInfo({ problem, variant = "full" }) {
+  const { monetizationEnabled, isPremium } = usePremium();
   if (!problem) return null;
 
   return (
@@ -81,6 +85,37 @@ function ProblemInfo({ problem, variant = "full" }) {
 
       {variant === "full" && (
         <>
+          {/* Interview Mode launch — audit fix: this feature had no entry
+              point anywhere in the app despite being fully built
+              (InterviewModePage + backend /api/interview/*). Premium
+              gating (this is a hard-gated Pro feature server-side) is
+              still enforced by the backend either way; a proactive
+              locked/upgrade state here is tracked as a follow-up once
+              usePremium() lands. */}
+          <section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)] flex items-center justify-center flex-shrink-0">
+                <MessageSquareText size={20} strokeWidth={2} aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  Try Interview Mode
+                  {monetizationEnabled && !isPremium && (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-400">
+                      Pro
+                    </span>
+                  )}
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  45-minute timed session with an AI interviewer asking follow-up questions on this problem.
+                </p>
+              </div>
+            </div>
+            <Button to={`/interview-mode/${problem.slug}`} variant="secondary" size="sm">
+              Start
+            </Button>
+          </section>
+
           {/* Progressive hints */}
           <HintSystem hints={problem.hints} />
 

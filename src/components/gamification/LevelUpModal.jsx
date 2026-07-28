@@ -3,7 +3,7 @@ import { useAppContext } from "../../hooks/useAppContext";
 import { useTheme } from "../../context/ThemeContext";
 import confetti from "canvas-confetti";
 import { share } from "../../utils/share";
-import { getLevel } from "../../utils/levelUtils";
+import { getLevel } from "../../utils/xpLevel";
 
 export default function LevelUpModal() {
   const { totalXP } = useAppContext();
@@ -20,7 +20,7 @@ export default function LevelUpModal() {
       setNewLevel(current);
       setVisible(true);
       prevLevelRef.current = current;
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 }, colors: ["#22c55e", "#facc15", "#f97316", "#a855f7"] });
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 }, colors: ["#2dd4bf", "#facc15", "#f97316", "#a855f7"] });
       clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => setVisible(false), 4000);
     } else {
@@ -28,6 +28,15 @@ export default function LevelUpModal() {
     }
     return () => clearTimeout(timerRef.current);
   }, [totalXP]);
+
+  useEffect(() => {
+    if (!visible) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setVisible(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [visible]);
 
   if (!visible || !newLevel) return null;
 
@@ -43,16 +52,16 @@ export default function LevelUpModal() {
     <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none" aria-live="polite">
       <div
         onClick={() => setVisible(false)}
-        className="pointer-events-auto bg-zinc-900 border border-green-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-green-900/40 max-w-xs w-full mx-4"
+        className="pointer-events-auto bg-zinc-900 border border-[var(--theme-primary,#2dd4bf)]/30 rounded-3xl p-8 text-center shadow-2xl shadow-[var(--theme-primary,#2dd4bf)]/20 max-w-xs w-full mx-4"
         style={{ animation: "levelUpPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
-          <div className="absolute inset-0 rounded-full bg-green-500/20 animate-ping" />
-          <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+          <div className="absolute inset-0 rounded-full bg-[var(--theme-primary,#2dd4bf)]/20 animate-ping" />
+          <div className="relative w-24 h-24 rounded-full bg-[var(--theme-primary,#2dd4bf)] flex items-center justify-center shadow-lg shadow-[var(--theme-primary,#2dd4bf)]/30">
             <span className="text-3xl font-black text-black">{newLevel}</span>
           </div>
         </div>
-        <p className="text-xs text-green-400 uppercase tracking-[0.2em] font-semibold mb-1">
+        <p className="text-xs text-[var(--theme-primary,#2dd4bf)] uppercase tracking-[0.2em] font-semibold mb-1">
           {theme.words?.level ?? "Level"} Up!
         </p>
         <h2 className="text-2xl font-black text-white mb-2">
@@ -68,7 +77,7 @@ export default function LevelUpModal() {
                 url: `${window.location.origin}/u/me`,
               })
             }
-            className="w-full bg-green-500 hover:bg-green-400 transition rounded-xl py-2 font-semibold text-black"
+            className="w-full bg-[var(--theme-primary,#2dd4bf)] hover:brightness-110 transition rounded-xl py-2 font-semibold text-black"
           >
             Share
           </button>

@@ -12,6 +12,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
 import { AuthProvider } from "./context/authContext";
+import { PremiumProvider } from "./context/PremiumContext";
 import AppContextProvider from "./context/appContext";
 
 import { Toaster } from "react-hot-toast";
@@ -63,6 +64,7 @@ ReactDOM.createRoot(
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
+          <PremiumProvider>
           <AppContextProvider>
 
             <ErrorBoundary
@@ -107,10 +109,10 @@ ReactDOM.createRoot(
             </ErrorBoundary>
 
           </AppContextProvider>
+          </PremiumProvider>
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
     </HelmetProvider>
   </React.StrictMode>
 );
-

@@ -25,9 +25,10 @@ function Analytics() {
     currentStreak,
     longestStreak,
     recentActivity,
+    totalXP,
   } = useAppContext();
 
-  const stats = useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity });
+  const stats = useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity, totalXP });
 
   return (
     <DashboardLayout>
