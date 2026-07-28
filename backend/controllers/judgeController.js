@@ -16,54 +16,76 @@ function sanitizeStderr(stderr) {
     .trim();
 }
 
+// ── runHandler ───────────────────────────────────────────────────────────────
+// "Run" mode: preview against visible/custom testcases the client already
+// has (no credit is granted here — see submitHandler for actual grading).
+//
+// The execution CONTRACT (functionName/returnType/comparisonMode/
+// operationSequence), however, is resolved server-side from the problem's
+// own record whenever `problemSlug` is provided — mirroring submitHandler's
+// trust model exactly (audit finding P1-1: previously Run trusted whatever
+// the client sent for these fields; nothing enforced that a Run preview
+// used the same contract Submit would actually grade against). Falls back
+// to client-sent values only if `problemSlug` is omitted entirely, so a
+// caller that genuinely has no saved problem (e.g. a future "scratch code"
+// feature) doesn't hard-break.
 export async function runHandler(req, res) {
-  const { code, language, functionName, testcases, returnType, comparisonMode, operationSequence } = req.body;
-  const languageId = languageIdMap[language];
-  const results = [];
+  const { code, language, testcases, problemSlug } = req.body;
+  let { functionName, returnType, comparisonMode, operationSequence } = req.body;
 
-  for (const [index, testcase] of testcases.entries()) {
-    let result;
+  // Empty testcases → nothing to run. Checked before the (otherwise
+  // wasted) problem lookup below — see audit finding P2-2.
+  if (!testcases || testcases.length === 0) {
+    return res.json({ results: [], compileFailed: false });
+  }
 
-    try {
-      result = await callJudge0({
-        sourceCode: code,
-        language,
-        languageId,
-        testcaseInput: testcase.input,
-        functionName,
-        returnType,
-        operationSequence,
-      });
-    } catch (callErr) {
-      return res.json({
-        error: callErr.message,
-        results,
+  if (problemSlug) {
+    const problem = await Problem.findOne({ slug: problemSlug });
+
+    if (!problem) {
+      return res.status(404).json({
+        error: `Problem "${problemSlug}" not found.`,
+        results: [],
         compileFailed: false,
       });
     }
 
-    // Compile error on first testcase aborts all — no point running rest
-    if (result.compile_output) {
-      return res.json({
-        error: result.compile_output,
-        compileFailed: true,
-        results,
-      });
+    functionName = problem.functionName;
+    returnType = problem.returnType?.[language] || undefined;
+    comparisonMode = problem.comparisonMode || "exact";
+    operationSequence = problem.operationSequence?.enabled ? problem.operationSequence : undefined;
+  }
+
+  const languageId = languageIdMap[language];
+  const results = [];
+
+  for (const [index, testcase] of testcases.entries()) {
+    const r = await runTestcase({
+      testcase, index, isVisible: true,
+      code, language, languageId, functionName, returnType, comparisonMode, operationSequence,
+    });
+
+    if (r.kind === "callError" || r.kind === "noResult") {
+      return res.json({ error: r.errorMessage, results, compileFailed: false });
     }
 
-    const expected = normalizeOutput(
-      JSON.stringify(testcase.expectedOutput)
-    );
+    // Compile error on first testcase aborts all — no point running rest.
+    if (r.kind === "compileError") {
+      return res.json({ error: r.errorMessage, compileFailed: true, results });
+    }
 
-    const actual = normalizeOutput(
-      result.stdout || ""
-    );
-
-    const passed = outputsMatch(expected, actual, comparisonMode);
-    const hasError = !!result.stderr;
+    // A genuine platform/runtime error (Judge0-level stderr — NOT the
+    // driver's own caught "RUNTIME_ERROR:" text, which prints to stdout
+    // and is compared normally, surfacing as "wrongAnswer" instead; the
+    // frontend already detects that prefix client-side in `.actual` — see
+    // TestcaseResultPanel.jsx). Distinguishing infra vs. plain runtime
+    // error (audit P1-4) now uses the exact same classification
+    // submitHandler already relies on, instead of a separate, coarser
+    // `!!result.stderr` check.
+    const isGenuineError = r.kind === "infraError" || r.kind === "runtimeError";
 
     req.log.debug(
-      { testcaseIndex: index + 1, expected, actual, passed },
+      { testcaseIndex: index + 1, kind: r.kind },
       "[Run] Testcase result"
     );
 
@@ -71,15 +93,14 @@ export async function runHandler(req, res) {
       index,
       input: testcase.input,
       expected: testcase.expectedOutput,
-      actual: result.stdout?.trim() ?? "",
-      passed: hasError ? false : passed,
-      error: sanitizeStderr(result.stderr),
-      time: result.time ?? null,
-      memory: result.memory ?? null,
+      actual: (r.actualOutput ?? "").trim(),
+      passed: r.kind === "passed",
+      error: isGenuineError ? r.errorMessage : null,
+      time: r.time,
+      memory: r.memory,
     });
 
-    // Runtime error: record it then stop — remaining testcases will also fail
-    if (hasError) {
+    if (isGenuineError) {
       return res.json({ results, compileFailed: false });
     }
   }
@@ -163,8 +184,15 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
     return { index, isVisible, kind: "noResult", errorMessage: "Judge0 returned no result" };
   }
 
+  // Carried on every returned kind (not just wrongAnswer) so callers that
+  // need per-testcase display data — e.g. runHandler's Run-mode response,
+  // which predates submitHandler's summary-only needs — don't have to
+  // duplicate this function just to get at time/memory/raw stdout.
+  const time = result.time ?? null;
+  const memory = result.memory ?? null;
+
   if (result.compile_output) {
-    return { index, isVisible, kind: "compileError", errorMessage: result.compile_output };
+    return { index, isVisible, kind: "compileError", errorMessage: result.compile_output, time, memory };
   }
 
   if (result.stderr) {
@@ -174,6 +202,9 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
       isVisible,
       kind: isInfra ? "infraError" : "runtimeError",
       errorMessage: sanitizeStderr(result.stderr),
+      actualOutput: result.stdout || "",
+      time,
+      memory,
     };
   }
 
@@ -187,10 +218,12 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
       kind: "wrongAnswer",
       expectedOutput: testcase.expectedOutput,
       actualOutput: result.stdout || "",
+      time,
+      memory,
     };
   }
 
-  return { index, isVisible, kind: "passed" };
+  return { index, isVisible, kind: "passed", actualOutput: result.stdout || "", time, memory };
 }
 
 // ── submitHandler ─────────────────────────────────────────────────────────────

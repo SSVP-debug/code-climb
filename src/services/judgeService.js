@@ -46,22 +46,16 @@ export const runTestcases = async ({ problem, code, language }) => {
     const result = await apiFetch("/api/judge/run", {
       method: "POST",
       body: JSON.stringify({
+        problemSlug: problem.slug,
         code,
         language,
-        functionName: problem.functionName,
         testcases: problem.testcases || [],
-        // Optional — only java/cpp problems that declare a returnType
-        // contract set this; undefined is fine (falls back to inference).
-        returnType: problem.returnType?.[language] || undefined,
-        // Optional — only problems that explicitly permit any output order
-        // set this (see backend/models/Problem.js comparisonMode); absent
-        // is fine, defaults to "exact" server-side.
-        comparisonMode: problem.comparisonMode || undefined,
-        // Optional — only "design" problems (LRUCache, MinStack, Trie,
-        // etc.) set this (see backend/models/Problem.js
-        // operationSequence); absent is fine, defaults to the normal
-        // single-call contract server-side.
-        operationSequence: problem.operationSequence?.enabled ? problem.operationSequence : undefined,
+        // functionName/returnType/comparisonMode/operationSequence are
+        // resolved SERVER-SIDE from the problem's own record via
+        // problemSlug above (see backend/controllers/judgeController.js
+        // runHandler) — the same trust model submitHandler already used,
+        // now applied to Run too (audit finding P1-1). Not sent from here
+        // anymore; sending them would have no effect server-side.
       }),
     });
 

@@ -98,13 +98,17 @@ export function generateDriverCode(language, userCode, testcaseInput, functionNa
   // inferJavaType/inferCppType fall back to structural inference from the
   // testcase value for any key not present here. See audit finding P0-1.
   const paramTypes = declaredParamTypes || {};
-  const isDev =
-    typeof process !== "undefined"
-      ? process.env.NODE_ENV !== "production"
-      : import.meta.env?.DEV; // was: import.meta.env.DEV
+  // Gated behind an explicit opt-in flag rather than "NODE_ENV !==
+  // production" (audit finding P2-3: the old check fired in every
+  // non-production environment — staging, test, CI — not just local dev,
+  // which is noisier than intended and not what "isDev" was meant to
+  // mean). Set DRIVER_DEBUG=1 to see per-generation input/args/invocation
+  // logging when actually debugging a driver-generation issue.
+  const debugEnabled =
+    typeof process !== "undefined" && process.env.DRIVER_DEBUG === "1";
 
-  if (isDev) console.log("[generateDriverCode] TESTCASE INPUT:", testcaseInput);
-  if (isDev) console.log("[generateDriverCode] ARGS:", args);
+  if (debugEnabled) console.log("[generateDriverCode] TESTCASE INPUT:", testcaseInput);
+  if (debugEnabled) console.log("[generateDriverCode] ARGS:", args);
 
   if (language === "python") {
     const callArgs = args
@@ -121,7 +125,7 @@ export function generateDriverCode(language, userCode, testcaseInput, functionNa
       ? `Solution().${fn}(${callArgs})`
       : `${fn}(${callArgs})`;
 
-    if (isDev) console.log("[generateDriverCode] PYTHON INVOCATION:", invocation);
+    if (debugEnabled) console.log("[generateDriverCode] PYTHON INVOCATION:", invocation);
 
     return `
 import json
