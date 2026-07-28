@@ -16,6 +16,9 @@ import SkillRadar from "../components/profile/SkillRadar";
 import CodingDNA from "../components/profile/CodingDNA";
 import JourneyTimeline from "../components/profile/JourneyTimeline";
 import RecruiterSnapshot from "../components/profile/RecruiterSnapshot";
+import ProfessionalPresence from "../components/profile/ProfessionalPresence";
+import ResumeCard from "../components/profile/ResumeCard";
+import FeaturedProject from "../components/profile/FeaturedProject";
 import PinnedProblems from "../components/profile/PinnedProblems";
 import ProfileCompletion from "../components/profile/ProfileCompletion";
 import EducationSection from "../components/profile/EducationSection";
@@ -153,6 +156,23 @@ function Profile() {
               </div>
             </div>
           </SectionCard>
+        </ContentSlot>
+
+        {/* ── 1B. Developer Identity: Professional Presence + Resume ────── */}
+        {/* GitHub/LinkedIn/Resume live here, right after the identity hero
+            and before any account-nudge or recruiter content — this is
+            "who is this developer / where can I learn more", not a
+            settings section. See profile audit for placement rationale. */}
+        <ContentSlot id="profile-professional-presence">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ProfessionalPresence />
+            <ResumeCard />
+          </div>
+        </ContentSlot>
+
+        {/* ── 1C. Featured Project ─────────────────────────────────────── */}
+        <ContentSlot id="profile-featured-project">
+          <FeaturedProject />
         </ContentSlot>
 
         {/* ── 2. Profile Completion nudge ──────────────────────────────── */}

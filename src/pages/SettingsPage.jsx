@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
@@ -226,7 +227,15 @@ function SettingsPage() {
     return (
         <DashboardLayout>
         <div className="max-w-4xl mx-auto text-white">
-            <h1 className="text-3xl font-bold mb-8">Settings</h1>
+            <div className="flex items-start justify-between gap-4 mb-8">
+                <h1 className="text-3xl font-bold">Settings</h1>
+                <Link
+                    to="/profile"
+                    className="flex-shrink-0 text-sm text-zinc-400 hover:text-white transition whitespace-nowrap mt-1"
+                >
+                    ← Back to Profile
+                </Link>
+            </div>
 
             <div className="space-y-6">
 

@@ -137,6 +137,21 @@ async function fetchProfile(username) {
       // Pinned Favorite Problems (Phase 9D) — already denormalized
       // (slug/title/difficulty) at pin time, no join needed here.
       pinnedProblems: user.pinnedProblems || [],
+
+      // Developer Profile — GitHub/LinkedIn/Featured Project are treated
+      // as public-safe (same tier as recruiterSnapshot above). resumeUrl
+      // is only included when the owner has explicitly opted it into
+      // public visibility; saving a resume link must never implicitly
+      // expose it to anyone viewing this profile.
+      developerProfile: {
+        githubUrl: user.developerProfile?.githubUrl ?? null,
+        linkedinUrl: user.developerProfile?.linkedinUrl ?? null,
+        featuredProjects: user.developerProfile?.featuredProjects || [],
+        resumeUrl:
+          user.developerProfile?.resumeVisibility === "public"
+            ? user.developerProfile?.resumeUrl ?? null
+            : null,
+      },
     },
   };
 }

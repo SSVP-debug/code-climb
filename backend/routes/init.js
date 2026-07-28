@@ -87,6 +87,13 @@ router.get("/", async (req, res) => {
           hideDifficultyLabels: req.userDoc.preferences?.hideDifficultyLabels ?? false,
         },
         pinnedProblems: req.userDoc.pinnedProblems || [],
+        developerProfile: {
+          githubUrl: req.userDoc.developerProfile?.githubUrl ?? null,
+          linkedinUrl: req.userDoc.developerProfile?.linkedinUrl ?? null,
+          resumeUrl: req.userDoc.developerProfile?.resumeUrl ?? null,
+          resumeVisibility: req.userDoc.developerProfile?.resumeVisibility ?? "private",
+          featuredProjects: req.userDoc.developerProfile?.featuredProjects || [],
+        },
       },
 
       impersonation,

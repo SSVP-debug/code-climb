@@ -15,7 +15,8 @@ import { getLevelProgress } from "../utils/xpLevel";
 import { SITE_URL } from "../config/site.js";
 import LinkedInShareButton from "../components/common/LinkedInShareButton";
 import DifficultyBadge from "../components/profile/public/DifficultyBadge";
-import { Pin } from "lucide-react";
+import { Pin, FileText, ArrowUpRight, Sparkles } from "lucide-react";
+import { GithubMark, LinkedinMark } from "../components/icons/BrandIcons";
 
 function PublicProfile() {
     const { username } = useParams();
@@ -102,6 +103,47 @@ function PublicProfile() {
                         <p className="text-zinc-400 mt-2">
                             @{profile.username}
                         </p>
+
+                        {(profile.developerProfile?.githubUrl ||
+                            profile.developerProfile?.linkedinUrl ||
+                            profile.developerProfile?.resumeUrl) && (
+                            <div className="flex items-center gap-4 mt-2">
+                                {profile.developerProfile?.githubUrl && (
+                                    <a
+                                        href={profile.developerProfile.githubUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                    >
+                                        <GithubMark size={15} />
+                                        GitHub
+                                    </a>
+                                )}
+                                {profile.developerProfile?.linkedinUrl && (
+                                    <a
+                                        href={profile.developerProfile.linkedinUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                    >
+                                        <LinkedinMark size={15} />
+                                        LinkedIn
+                                    </a>
+                                )}
+                                {profile.developerProfile?.resumeUrl && (
+                                    <a
+                                        href={profile.developerProfile.resumeUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                    >
+                                        <FileText size={15} strokeWidth={2} aria-hidden="true" />
+                                        Resume
+                                        <ArrowUpRight size={12} strokeWidth={2} aria-hidden="true" />
+                                    </a>
+                                )}
+                            </div>
+                        )}
 
                         {(profile.recruiterSnapshot?.preferredRole || profile.recruiterSnapshot?.expectedGraduation) && (
                             <p className="text-zinc-500 text-sm mt-1">
@@ -308,6 +350,32 @@ function PublicProfile() {
                                 })}
                             </div>
                         </div>
+                    )}
+
+                    {/* ── Featured Project ──────────────────────────────────────── */}
+                    {profile.developerProfile?.featuredProjects?.[0] && (
+                        <SectionCard title="Featured Project" icon={<Sparkles size={18} strokeWidth={2} />} accented className="mb-6">
+                            <a
+                                href={profile.developerProfile.featuredProjects[0].url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex items-center justify-between gap-4 bg-zinc-800 rounded-xl px-5 py-4 hover:bg-zinc-800/80 transition"
+                            >
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-white truncate">
+                                        {profile.developerProfile.featuredProjects[0].repo}
+                                    </p>
+                                    <p className="text-zinc-500 text-sm mt-0.5">
+                                        {profile.developerProfile.featuredProjects[0].owner}/
+                                        {profile.developerProfile.featuredProjects[0].repo}
+                                    </p>
+                                </div>
+                                <span className="flex items-center gap-1 text-sm text-zinc-400 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">
+                                    View Repository
+                                    <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+                                </span>
+                            </a>
+                        </SectionCard>
                     )}
 
                     {/* ── Pinned Problems ───────────────────────────────────────── */}

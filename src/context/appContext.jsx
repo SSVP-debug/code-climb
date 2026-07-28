@@ -146,6 +146,18 @@ function AppContextProvider({ children }) {
     hideDifficultyLabels: false,
   });
 
+  // Developer Profile — GitHub/LinkedIn/Resume/Featured Project. Same
+  // hydration source and update pattern as recruiterSnapshot above.
+  // featuredProjects is an array (schema supports multiple later) but the
+  // UI only surfaces one for now.
+  const [developerProfile, setDeveloperProfile] = useState({
+    githubUrl: null,
+    linkedinUrl: null,
+    resumeUrl: null,
+    resumeVisibility: "private",
+    featuredProjects: [],
+  });
+
   // Phase 9E — consolidated here instead of SettingsPage's own fetch
   // (single source of truth; also needed by ProfileCompletion).
   const [username, setUsername] = useState("");
@@ -276,6 +288,16 @@ function AppContextProvider({ children }) {
         }
 
         setPinnedProblems(bootUser?.pinnedProblems || []);
+
+        if (bootUser?.developerProfile) {
+          setDeveloperProfile({
+            githubUrl: bootUser.developerProfile.githubUrl ?? null,
+            linkedinUrl: bootUser.developerProfile.linkedinUrl ?? null,
+            resumeUrl: bootUser.developerProfile.resumeUrl ?? null,
+            resumeVisibility: bootUser.developerProfile.resumeVisibility ?? "private",
+            featuredProjects: bootUser.developerProfile.featuredProjects ?? [],
+          });
+        }
 
         setUsername(bootUser?.username || "");
         setLeetcodeUsername(bootUser?.leetcodeUsername || "");
@@ -537,6 +559,25 @@ function AppContextProvider({ children }) {
   }
 
   // --------------------------------------------------
+  // DEVELOPER PROFILE (GitHub / LinkedIn / Resume / Featured Project)
+  // --------------------------------------------------
+
+  async function updateDeveloperProfile(patch) {
+    const result = await apiFetch("/api/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ developerProfile: patch }),
+    });
+    setDeveloperProfile({
+      githubUrl: result.developerProfile?.githubUrl ?? null,
+      linkedinUrl: result.developerProfile?.linkedinUrl ?? null,
+      resumeUrl: result.developerProfile?.resumeUrl ?? null,
+      resumeVisibility: result.developerProfile?.resumeVisibility ?? "private",
+      featuredProjects: result.developerProfile?.featuredProjects ?? [],
+    });
+    return result.developerProfile;
+  }
+
+  // --------------------------------------------------
   // PINNED PROBLEMS (Phase 9D)
   // --------------------------------------------------
 
@@ -584,6 +625,8 @@ function AppContextProvider({ children }) {
     updateRecruiterSnapshot,
     preferences,
     updatePreferences,
+    developerProfile,
+    updateDeveloperProfile,
     pinnedProblems,
     pinProblem,
     unpinProblem,

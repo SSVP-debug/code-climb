@@ -175,6 +175,32 @@ const userSchema = new mongoose.Schema(
       expectedGraduation: { type: String, default: null, trim: true, maxlength: 20 },
     },
 
+    // ── Developer Profile (GitHub / LinkedIn / Featured Project / Resume) ──
+    // Public-safe fields (githubUrl, linkedinUrl, featuredProjects) are
+    // surfaced on the public profile the same tier as recruiterSnapshot.
+    // resumeUrl is NOT public by default — gated by resumeVisibility, since
+    // saving a resume link should never implicitly mean "show this to
+    // anyone who finds my profile." featuredProjects is an array (capped
+    // at 1, enforced in userController.js, same convention as
+    // pinnedProblems) so this can grow into multiple showcased projects
+    // later without a schema migration.
+    developerProfile: {
+      githubUrl: { type: String, default: null, trim: true, maxlength: 200 },
+      linkedinUrl: { type: String, default: null, trim: true, maxlength: 200 },
+      resumeUrl: { type: String, default: null, trim: true, maxlength: 500 },
+      resumeVisibility: { type: String, enum: ["private", "public"], default: "private" },
+      featuredProjects: {
+        type: [
+          {
+            url: String,
+            owner: String,
+            repo: String,
+          },
+        ],
+        default: [],
+      },
+    },
+
     // ── Role system ─────────────────────────────────────────────
     role: {
       type: String,

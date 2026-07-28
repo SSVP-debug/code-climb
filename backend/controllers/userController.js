@@ -1,5 +1,11 @@
 import Problem from "../models/Problem.js";
 import { invalidateProfileCache } from "./publicProfileController.js";
+import {
+  normalizeGithubProfileUrl,
+  normalizeLinkedinUrl,
+  normalizeGenericUrl,
+  parseGithubRepoUrl,
+} from "../utils/profileLinks.js";
 
 // Controlled vocabulary for preferredRole — keeps the field filterable on
 // the recruiter/TPO side (a free-text field would fragment into "Backend",
@@ -51,6 +57,14 @@ function serializeUser(userDoc) {
     },
 
     pinnedProblems: userDoc.pinnedProblems || [],
+
+    developerProfile: {
+      githubUrl: userDoc.developerProfile?.githubUrl ?? null,
+      linkedinUrl: userDoc.developerProfile?.linkedinUrl ?? null,
+      resumeUrl: userDoc.developerProfile?.resumeUrl ?? null,
+      resumeVisibility: userDoc.developerProfile?.resumeVisibility ?? "private",
+      featuredProjects: userDoc.developerProfile?.featuredProjects ?? [],
+    },
   };
 }
 
@@ -69,6 +83,7 @@ export async function updateMe(req, res) {
     emailPreferences,
     recruiterSnapshot,
     preferences,
+    developerProfile,
   } = req.body;
 
   if (leetcodeUsername !== undefined) {
@@ -181,13 +196,60 @@ export async function updateMe(req, res) {
     req.userDoc.preferences = next;
   }
 
+  // ── Developer Profile (GitHub / LinkedIn / Resume / Featured Project) ──
+  if (developerProfile !== undefined) {
+    const current =
+      req.userDoc.developerProfile?.toObject?.() ?? req.userDoc.developerProfile ?? {};
+    const next = { ...current };
+
+    if (developerProfile.githubUrl !== undefined) {
+      const result = normalizeGithubProfileUrl(developerProfile.githubUrl);
+      if (!result.ok) return res.status(400).json({ error: result.error });
+      next.githubUrl = result.value;
+    }
+
+    if (developerProfile.linkedinUrl !== undefined) {
+      const result = normalizeLinkedinUrl(developerProfile.linkedinUrl);
+      if (!result.ok) return res.status(400).json({ error: result.error });
+      next.linkedinUrl = result.value;
+    }
+
+    if (developerProfile.resumeUrl !== undefined) {
+      const result = normalizeGenericUrl(developerProfile.resumeUrl, { label: "resume link" });
+      if (!result.ok) return res.status(400).json({ error: result.error });
+      next.resumeUrl = result.value;
+    }
+
+    if (developerProfile.resumeVisibility !== undefined) {
+      if (!["private", "public"].includes(developerProfile.resumeVisibility)) {
+        return res.status(400).json({ error: "resumeVisibility must be 'private' or 'public'" });
+      }
+      next.resumeVisibility = developerProfile.resumeVisibility;
+    }
+
+    // Single field in, single-item array stored — same shape the schema
+    // already supports for a future multi-project list. Sending null/""
+    // clears it.
+    if (developerProfile.featuredProjectUrl !== undefined) {
+      const result = parseGithubRepoUrl(developerProfile.featuredProjectUrl);
+      if (!result.ok) return res.status(400).json({ error: result.error });
+      next.featuredProjects = result.value ? [result.value] : [];
+    }
+
+    req.userDoc.developerProfile = next;
+  }
+
   await req.userDoc.save();
 
   // Public profile is cached for 2 minutes (see publicProfileController).
-  // A student flipping "available for work" on shouldn't have to wait for
-  // that TTL to expire before recruiters see it. Fire-and-forget, same
-  // pattern as progressController — cache invalidation failure must never
-  // block the save response.
+  // A student flipping "available for work" on, or adding a GitHub/resume
+  // link, shouldn't have to wait for that TTL to expire before recruiters
+  // see it. Fire-and-forget, same pattern as progressController — cache
+  // invalidation failure must never block the save response.
+  invalidateProfileCache(req.userDoc.username).catch((err) =>
+    req.log?.error?.({ err }, "[userController] invalidateProfileCache failed")
+  );
+
   res.json(serializeUser(req.userDoc));
 }
 
