@@ -37,7 +37,7 @@ const VIEWS = {
 function ProblemsPage() {
   const { theme } = useTheme();
   const { problems, loading, error } = useProblems();
-  const { solvedProblems, topicStats } = useAppContext();
+  const { solvedProblems, topicStats, currentStreak, solvedDifficulty, submissions } = useAppContext();
 
   // Code Club Edition missions are tagged with campaignCode and live in
   // MongoDB as real Problem documents (same catalog `problems` fetches),
@@ -187,6 +187,14 @@ function ProblemsPage() {
   }
 
   const solvedCount = standardSolvedProblems.length;
+
+  // Attempted = distinct problems with at least one submission, solved or
+  // not — same "distinct problemSlug" shape the backend already stores per
+  // submission (see backend/models/Submission.js). Real data, not a stored
+  // counter, since nothing tracks "attempted" as its own field today.
+  const attemptedCount = new Set(
+    (submissions || []).map((s) => s.problemSlug)
+  ).size;
 
   const progress =
     standardProblems.length > 0
@@ -408,6 +416,7 @@ function ProblemsPage() {
         totalProblems={standardProblems.length}
         solvedCount={solvedCount}
         progress={progress}
+        currentStreak={currentStreak}
       />
 
       {/* ── Mobile/tablet workspace nav — horizontal pill strip, replaces
@@ -521,6 +530,10 @@ function ProblemsPage() {
               solvedCount={solvedCount}
               progress={progress}
               topicStats={topicStats}
+              solvedDifficulty={solvedDifficulty}
+              attemptedCount={attemptedCount}
+              submissions={submissions}
+              currentStreak={currentStreak}
               onPracticeTopic={handlePracticeTopic}
             />
           </aside>
@@ -549,6 +562,10 @@ function ProblemsPage() {
                 solvedCount={solvedCount}
                 progress={progress}
                 topicStats={topicStats}
+                solvedDifficulty={solvedDifficulty}
+                attemptedCount={attemptedCount}
+                submissions={submissions}
+                currentStreak={currentStreak}
                 onPracticeTopic={handlePracticeTopic}
               />
             </aside>

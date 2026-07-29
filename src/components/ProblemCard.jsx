@@ -1,19 +1,22 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
+import { useAppContext } from "../hooks/useAppContext";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 import { Clock, Star } from "lucide-react";
 
 function ProblemCard({ problem }) {
   const { theme } = useTheme();
   const hideDifficulty = useHideDifficultyLabels();
+  const { solvedProblems, savedProblems, saveProblem, unsaveProblem } = useAppContext();
+  const [saving, setSaving] = useState(false);
 
   const {
     title,
     difficulty,
     topic,
     slug,
-    solved = false,
-    saved = false,
     pattern,
     estimatedTime,
     learningLabel,
@@ -21,6 +24,32 @@ function ProblemCard({ problem }) {
     xp,
     acceptanceRate,
   } = problem;
+
+  // solved/saved were previously read off `problem.solved`/`problem.saved`,
+  // but nothing upstream ever set those fields — every card silently showed
+  // "not solved, not saved" regardless of reality. Deriving both straight
+  // from AppContext here (same source Navbar/Profile/analytics already use)
+  // instead of relying on callers to pre-flag every problem object passed
+  // down through Browse, Related Problems, Learning Paths, etc.
+  const solved = solvedProblems.includes(slug);
+  const saved = savedProblems.some((p) => p.slug === slug);
+
+  async function handleToggleSave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setSaving(true);
+    try {
+      if (saved) {
+        await unsaveProblem(slug);
+      } else {
+        await saveProblem(slug);
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to update saved problems");
+    } finally {
+      setSaving(false);
+    }
+  }
 
 
   // Difficulty stays in its own green/yellow/red family regardless of the
@@ -132,12 +161,14 @@ function ProblemCard({ problem }) {
         )}
 
         <button
-          onClick={(e) => e.preventDefault()}
-          className={`transition ${saved
+          onClick={handleToggleSave}
+          disabled={saving}
+          className={`transition disabled:opacity-50 ${saved
             ? "text-yellow-400"
             : "text-zinc-500 hover:text-yellow-400"
             }`}
-          title="Save problem"
+          title={saved ? "Remove from saved" : "Save problem"}
+          aria-pressed={saved}
         >
           <Star size={16} strokeWidth={2} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
         </button>

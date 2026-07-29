@@ -167,6 +167,10 @@ function AppContextProvider({ children }) {
   // Phase 9D — [{ slug, title, difficulty }], denormalized at pin time.
   const [pinnedProblems, setPinnedProblems] = useState([]);
 
+  // Private "read later" bookmarks — [{ slug, savedAt }]. Separate from
+  // pinnedProblems (public-profile showcase); see User model comment.
+  const [savedProblems, setSavedProblems] = useState([]);
+
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
   // --------------------------------------------------
@@ -288,6 +292,8 @@ function AppContextProvider({ children }) {
         }
 
         setPinnedProblems(bootUser?.pinnedProblems || []);
+
+        setSavedProblems(bootUser?.savedProblems || []);
 
         if (bootUser?.developerProfile) {
           setDeveloperProfile({
@@ -598,6 +604,23 @@ function AppContextProvider({ children }) {
     return result.pinnedProblems;
   }
 
+  async function saveProblem(slug) {
+    const result = await apiFetch("/api/users/me/saved-problems", {
+      method: "POST",
+      body: JSON.stringify({ slug }),
+    });
+    setSavedProblems(result.savedProblems || []);
+    return result.savedProblems;
+  }
+
+  async function unsaveProblem(slug) {
+    const result = await apiFetch(`/api/users/me/saved-problems/${slug}`, {
+      method: "DELETE",
+    });
+    setSavedProblems(result.savedProblems || []);
+    return result.savedProblems;
+  }
+
   // --------------------------------------------------
   // --------------------------------------------------
   // CONTEXT
@@ -630,6 +653,9 @@ function AppContextProvider({ children }) {
     pinnedProblems,
     pinProblem,
     unpinProblem,
+    savedProblems,
+    saveProblem,
+    unsaveProblem,
     username,
     setUsername,
     leetcodeUsername,

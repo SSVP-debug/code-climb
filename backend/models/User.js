@@ -164,6 +164,25 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
+    // ── Saved Problems (private "read later" bookmarks) ─────────────────
+    // Not to be confused with pinnedProblems above — that's a solved-only,
+    // capped, PUBLIC-profile showcase. This is a private, unlimited,
+    // any-status (solved or not) bookmark list, only ever shown to the
+    // owner inside the app (Saved view). No title/difficulty denormalized
+    // here on purpose — the frontend already has the full problem catalog
+    // loaded client-side (useProblems()) whenever this list is rendered,
+    // so there's no per-view join cost to avoid, unlike the public-profile
+    // case pinnedProblems was built for.
+    savedProblems: {
+      type: [
+        {
+          slug: String,
+          savedAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
+
     // ── Recruiter Snapshot (Phase 9C) ───────────────────────────────────
     // NOT to be confused with recruiterProfile above — that's for users
     // whose role IS "recruiter". This is what a STUDENT fills in so
@@ -173,6 +192,32 @@ const userSchema = new mongoose.Schema(
       availableForWork: { type: Boolean, default: false },
       preferredRole: { type: String, default: null, trim: true, maxlength: 60 },
       expectedGraduation: { type: String, default: null, trim: true, maxlength: 20 },
+    },
+
+    // ── Developer Profile (GitHub / LinkedIn / Featured Project / Resume) ──
+    // Public-safe fields (githubUrl, linkedinUrl, featuredProjects) are
+    // surfaced on the public profile the same tier as recruiterSnapshot.
+    // resumeUrl is NOT public by default — gated by resumeVisibility, since
+    // saving a resume link should never implicitly mean "show this to
+    // anyone who finds my profile." featuredProjects is an array (capped
+    // at 1, enforced in userController.js, same convention as
+    // pinnedProblems) so this can grow into multiple showcased projects
+    // later without a schema migration.
+    developerProfile: {
+      githubUrl: { type: String, default: null, trim: true, maxlength: 200 },
+      linkedinUrl: { type: String, default: null, trim: true, maxlength: 200 },
+      resumeUrl: { type: String, default: null, trim: true, maxlength: 500 },
+      resumeVisibility: { type: String, enum: ["private", "public"], default: "private" },
+      featuredProjects: {
+        type: [
+          {
+            url: String,
+            owner: String,
+            repo: String,
+          },
+        ],
+        default: [],
+      },
     },
 
     // ── Role system ─────────────────────────────────────────────
@@ -224,23 +269,8 @@ const userSchema = new mongoose.Schema(
       branch:         { type: String, default: null, trim: true, maxlength: 60 },
       graduationYear: { type: Number, default: null },
       collegeEmail:   { type: String, default: null, trim: true, lowercase: true },
-      collegeId:      { type: mongoose.Schema.Types.ObjectId, ref: "College", default: null },
-
-      // "Do we know this person controls collegeEmail." Independent of
-      // whether the institution itself is trusted — see collegeStatus.
-      emailVerified:   { type: Boolean, default: false },
-      emailVerifiedAt: { type: Date, default: null },
-
-      // Denormalized copy of the linked College.status, kept in sync by
-      // adminController's approveStudentCollege/rejectStudentCollege and
-      // by the request/confirm routes at creation/confirm time.
-      // "unset" = no education record yet, or emailVerified is still false.
-      collegeStatus: {
-        type: String,
-        enum: ["unset", "pending", "verified", "rejected"],
-        default: "unset",
-      },
-
+      verified:       { type: Boolean, default: false },
+      verifiedAt:     { type: Date, default: null },
       // Verification link token — cleared once used or replaced by a new
       // request. Not select()-ed by default so a stray `res.json(user)`
       // elsewhere in the app can't leak it.

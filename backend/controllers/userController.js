@@ -58,6 +58,8 @@ function serializeUser(userDoc) {
 
     pinnedProblems: userDoc.pinnedProblems || [],
 
+    savedProblems: userDoc.savedProblems || [],
+
     developerProfile: {
       githubUrl: userDoc.developerProfile?.githubUrl ?? null,
       linkedinUrl: userDoc.developerProfile?.linkedinUrl ?? null,
@@ -317,6 +319,45 @@ export async function unpinProblem(req, res) {
   invalidateProfileCache(req.userDoc.username).catch((err) =>
     req.log?.error?.({ err }, "[userController] invalidateProfileCache failed")
   );
+
+  res.json(serializeUser(req.userDoc));
+}
+
+// ── Saved Problems (private read-later list) ────────────────────────────────
+// Deliberately simpler than pin/unpin above: no solved-only restriction (the
+// whole point is bookmarking things you HAVEN'T done yet), no cap, and no
+// Problem lookup/denormalization or invalidateProfileCache — this is never
+// shown on the public profile, so there's nothing to keep in sync there.
+
+export async function saveProblem(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
+  const { slug } = req.body;
+
+  if (!slug || typeof slug !== "string") {
+    return res.status(400).json({ error: "slug is required" });
+  }
+
+  const already = req.userDoc.savedProblems.some((p) => p.slug === slug);
+  if (already) {
+    return res.json(serializeUser(req.userDoc));
+  }
+
+  req.userDoc.savedProblems.push({ slug, savedAt: new Date() });
+
+  await req.userDoc.save();
+
+  res.json(serializeUser(req.userDoc));
+}
+
+export async function unsaveProblem(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
+  const { slug } = req.params;
+
+  req.userDoc.savedProblems = req.userDoc.savedProblems.filter((p) => p.slug !== slug);
+
+  await req.userDoc.save();
 
   res.json(serializeUser(req.userDoc));
 }

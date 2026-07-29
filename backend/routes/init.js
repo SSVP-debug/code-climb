@@ -87,6 +87,7 @@ router.get("/", async (req, res) => {
           hideDifficultyLabels: req.userDoc.preferences?.hideDifficultyLabels ?? false,
         },
         pinnedProblems: req.userDoc.pinnedProblems || [],
+        savedProblems: req.userDoc.savedProblems || [],
         developerProfile: {
           githubUrl: req.userDoc.developerProfile?.githubUrl ?? null,
           linkedinUrl: req.userDoc.developerProfile?.linkedinUrl ?? null,

@@ -1,11 +1,22 @@
-function LearningProgressCard({ solvedCount = 0, total = 0, progress = 0 }) {
-  // Placeholder breakdown — replace with real data from user progress.
+import { Link } from "react-router-dom";
+
+function LearningProgressCard({
+  solvedCount = 0,
+  total = 0,
+  progress = 0,
+  solvedDifficulty = { easy: 0, medium: 0, hard: 0 },
+  attemptedCount = 0,
+}) {
+  // Real breakdown — Attempted is the distinct-problemSlug count derived
+  // from submission history (see ProblemsPage), Easy/Medium/Hard come
+  // straight from the same solvedDifficulty the profile/analytics pages
+  // already use (backend/controllers/progressController.js).
   const breakdown = [
-    { label: "Solved",    count: solvedCount, color: "bg-green-500"  },
-    { label: "Attempted", count: 0,           color: "bg-blue-500"   },
-    { label: "Easy",      count: 0,           color: "bg-green-400"  },
-    { label: "Medium",    count: 0,           color: "bg-yellow-500" },
-    { label: "Hard",      count: 0,           color: "bg-red-500"    },
+    { label: "Solved",    count: solvedCount,               color: "bg-green-500"  },
+    { label: "Attempted", count: attemptedCount,             color: "bg-blue-500"   },
+    { label: "Easy",      count: solvedDifficulty.easy,      color: "bg-green-400"  },
+    { label: "Medium",    count: solvedDifficulty.medium,    color: "bg-yellow-500" },
+    { label: "Hard",      count: solvedDifficulty.hard,      color: "bg-red-500"    },
   ];
 
   // SVG donut ring params
@@ -22,9 +33,12 @@ function LearningProgressCard({ solvedCount = 0, total = 0, progress = 0 }) {
         <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
           Learning Progress
         </p>
-        <button className="text-xs text-[var(--theme-primary,#2dd4bf)] hover:brightness-110 transition">
+        <Link
+          to="/analytics"
+          className="text-xs text-[var(--theme-primary,#2dd4bf)] hover:brightness-110 transition"
+        >
           View analytics
-        </button>
+        </Link>
       </div>
 
       <div className="flex items-center gap-4">

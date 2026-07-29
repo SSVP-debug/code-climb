@@ -9,6 +9,10 @@ function LearningWorkspace({
   solvedCount = 0,
   progress = 0,
   topicStats = {},
+  solvedDifficulty = { easy: 0, medium: 0, hard: 0 },
+  attemptedCount = 0,
+  submissions = [],
+  currentStreak = 0,
   onPracticeTopic = () => {},
 }) {
   return (
@@ -48,7 +52,7 @@ function LearningWorkspace({
 
       {/* Cards */}
       <ContinueLearningCard />
-      <DailyMissionCard />
+      <DailyMissionCard submissions={submissions} currentStreak={currentStreak} />
       <AICoachCard
         problems={problems}
         topicStats={topicStats}
@@ -58,6 +62,8 @@ function LearningWorkspace({
         solvedCount={solvedCount}
         total={problems.length}
         progress={progress}
+        solvedDifficulty={solvedDifficulty}
+        attemptedCount={attemptedCount}
       />
       {/* Reuses the same card built for Dashboard — not a duplicate
           implementation. See known-issue note in PROJECT_STATE.md re:
