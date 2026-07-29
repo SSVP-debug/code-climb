@@ -1,3 +1,3 @@
-function findCheapestPrice(n, flights, src, dst, k) {
+function minMutation(startGene, endGene, bank) {
 
 }

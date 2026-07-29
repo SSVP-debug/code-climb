@@ -1,0 +1,20 @@
+{
+  "id": 151,
+  "slug": "3sum-smaller",
+  "title": "3Sum Smaller",
+  "difficulty": "Medium",
+  "topic": "Two Pointers",
+  "pattern": "sort + two pointer counting",
+  "sourceType": "core",
+  "functionName": "threeSumSmaller",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
+}

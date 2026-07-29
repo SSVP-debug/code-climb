@@ -1,4 +1,4 @@
 class Solution {
 public:
-    int totalFruit(vector<int>& fruits) { return 0; }
+    int longestOnes(vector<int>& nums, int k) { return 0; }
 };

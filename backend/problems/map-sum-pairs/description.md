@@ -1,0 +1,1 @@
+Design a MapSum class with: insert(key, val) — inserts the key-val pair (if key already existed, the previous key-value pair is overridden); and sum(prefix) — returns the sum of all the values whose keys start with prefix.

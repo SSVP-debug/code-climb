@@ -1,4 +1,4 @@
 class Solution {
 public:
-    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) { return 0; }
+    int minMutation(string startGene, string endGene, vector<string>& bank) { return 0; }
 };

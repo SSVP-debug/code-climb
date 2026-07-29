@@ -1,0 +1,19 @@
+{
+  "id": 165,
+  "slug": "optimize-water-distribution",
+  "title": "Optimize Water Distribution in a Village",
+  "difficulty": "Hard",
+  "topic": "Graphs",
+  "pattern": "MST with a virtual source node",
+  "functionName": "minCostToSupplyWater",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
+}

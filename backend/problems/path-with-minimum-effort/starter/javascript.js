@@ -1,3 +1,3 @@
-function countComponents(n, edges) {
+function minimumEffortPath(heights) {
 
 }

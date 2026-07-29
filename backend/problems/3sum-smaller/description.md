@@ -1,0 +1,1 @@
+Given an integer array nums of length n and an integer target, return the number of index triplets i, j, k with 0 <= i < j < k < n such that nums[i] + nums[j] + nums[k] < target.

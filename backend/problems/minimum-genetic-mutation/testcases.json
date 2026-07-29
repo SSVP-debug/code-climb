@@ -2,93 +2,55 @@
   "visible": [
     {
       "input": {
-        "n": 4,
-        "flights": [
-          [
-            0,
-            1,
-            100
-          ],
-          [
-            1,
-            2,
-            100
-          ],
-          [
-            2,
-            0,
-            100
-          ],
-          [
-            1,
-            3,
-            600
-          ],
-          [
-            2,
-            3,
-            200
-          ]
-        ],
-        "src": 0,
-        "dst": 3,
-        "k": 1
+        "startGene": "AACCGGTT",
+        "endGene": "AACCGGTA",
+        "bank": [
+          "AACCGGTA"
+        ]
       },
-      "expectedOutput": 700
+      "expectedOutput": 1
     },
     {
       "input": {
-        "n": 3,
-        "flights": [
-          [
-            0,
-            1,
-            100
-          ],
-          [
-            1,
-            2,
-            100
-          ],
-          [
-            0,
-            2,
-            500
-          ]
-        ],
-        "src": 0,
-        "dst": 2,
-        "k": 1
+        "startGene": "AACCGGTT",
+        "endGene": "AAACGGTA",
+        "bank": [
+          "AACCGGTA",
+          "AACCGCTA",
+          "AAACGGTA"
+        ]
       },
-      "expectedOutput": 200
+      "expectedOutput": 2
+    },
+    {
+      "input": {
+        "startGene": "AAAAACCC",
+        "endGene": "AACCCCCC",
+        "bank": [
+          "AAAACCCC",
+          "AAACCCCC",
+          "AACCCCCC"
+        ]
+      },
+      "expectedOutput": 3
     }
   ],
   "hidden": [
     {
       "input": {
-        "n": 3,
-        "flights": [
-          [
-            0,
-            1,
-            100
-          ],
-          [
-            1,
-            2,
-            100
-          ],
-          [
-            0,
-            2,
-            500
-          ]
-        ],
-        "src": 0,
-        "dst": 2,
-        "k": 0
+        "startGene": "AACCGGTT",
+        "endGene": "AACCGGTA",
+        "bank": []
       },
-      "expectedOutput": 500
+      "expectedOutput": -1
+    },
+    {
+      "input": {
+        "startGene": "AAAAAAAA",
+        "endGene": "AAAAAAAA",
+        "bank": []
+      },
+      "expectedOutput": 0
     }
   ]
 }

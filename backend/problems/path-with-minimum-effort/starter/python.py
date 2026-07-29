@@ -1,3 +1,3 @@
 class Solution:
-    def countComponents(self, n, edges):
+    def minimumEffortPath(self, heights):
         pass

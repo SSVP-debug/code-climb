@@ -1,3 +1,3 @@
 class Solution {
-    public int countComponents(int n, int[][] edges) { return 0; }
+    public int minimumEffortPath(int[][] heights) { return 0; }
 }

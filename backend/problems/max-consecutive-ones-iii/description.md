@@ -1,1 +1,1 @@
-You have a row of fruit trees. Each tree produces one type of fruit. You have two baskets, each holding one type of fruit. Pick as many fruits as possible starting from any tree, picking from each consecutive tree. Return the maximum number of fruits you can pick.
+Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's to 1's.

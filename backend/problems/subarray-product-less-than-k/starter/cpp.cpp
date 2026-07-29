@@ -1,4 +1,4 @@
 class Solution {
 public:
-    int minSubArrayLen(int target, vector<int>& nums) { return 0; }
+    int numSubarrayProductLessThanK(vector<int>& nums, int k) { return 0; }
 };

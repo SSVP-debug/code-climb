@@ -1,0 +1,19 @@
+{
+  "id": 183,
+  "slug": "n-queens-ii",
+  "title": "N-Queens II",
+  "difficulty": "Hard",
+  "topic": "Backtracking",
+  "pattern": "constraint backtracking count-only",
+  "functionName": "totalNQueens",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
+}

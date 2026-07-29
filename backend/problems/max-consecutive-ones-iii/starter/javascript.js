@@ -1,3 +1,3 @@
-function totalFruit(fruits) {
+function longestOnes(nums, k) {
 
 }

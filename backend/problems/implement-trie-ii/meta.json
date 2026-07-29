@@ -1,0 +1,20 @@
+{
+  "id": 202,
+  "slug": "implement-trie-ii",
+  "title": "Implement Trie II (Prefix Tree)",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "trie with per-word counts",
+  "sourceType": "core",
+  "functionName": "Trie",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": true,
+    "resultMode": "all"
+  }
+}

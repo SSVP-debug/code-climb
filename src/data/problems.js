@@ -4465,34 +4465,32 @@ const rawProblems = [
 
   {
     id: 135,
-    title: "Meeting Rooms II",
-    slug: "meeting-rooms-ii",
-    functionName: "minMeetingRooms",
+    title: "My Calendar II",
+    slug: "my-calendar-ii",
+    functionName: "MyCalendarTwo",
+    // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
+    operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Intervals",
-    pattern: "min heap / sweep line",
+    pattern: "double-booking overlap tracking",
     sourceType: "core",
     companies: ["Facebook", "Google", "Amazon", "Microsoft"],
-    description: "Given an array of meeting time intervals, return the minimum number of conference rooms required to hold all meetings simultaneously.",
+    description: "Implement a MyCalendarTwo class to book events, where a new event can be added to the calendar as long as it does not cause a triple booking (three events with a common time slot). A double booking (two events overlapping, but not three) is allowed. book(start, end) returns true if the event can be added without causing a triple booking, and false otherwise (in which case the event is not added). Each event is a half-open interval [start, end).",
     examples: [
-      { input: "intervals = [[0,30],[5,10],[15,20]]", output: "2" },
-      { input: "intervals = [[7,10],[2,4]]", output: "1" },
+      { input: '["MyCalendarTwo","book","book","book","book","book","book"]\n[[],[10,20],[50,60],[10,40],[5,15],[5,10],[25,55]]', output: "[null,true,true,true,false,true,true]" },
     ],
-    constraints: ["1 <= intervals.length <= 10^4", "0 <= starti < endi <= 10^6"],
+    constraints: ["0 <= start < end <= 10^9", "At most 1000 calls will be made to book."],
     starterCode: {
-      python: `class Solution:\n    def minMeetingRooms(self, intervals):\n        pass`,
-      javascript: `function minMeetingRooms(intervals) {\n\n}`,
-      java: `class Solution {\n    public int minMeetingRooms(int[][] intervals) {\n        return 0;\n    }\n}`,
-      cpp: `class Solution {\npublic:\n    int minMeetingRooms(vector<vector<int>>& intervals) {\n        return 0;\n    }\n};`,
+      python: `class MyCalendarTwo:\n    def __init__(self):\n        pass\n\n    def book(self, start, end):\n        pass`,
+      javascript: `class MyCalendarTwo {\n  constructor() {}\n  book(start, end) { return false; }\n}`,
+      java: `class MyCalendarTwo {\n    public MyCalendarTwo() {}\n    public boolean book(int start, int end) { return false; }\n}`,
+      cpp: `class MyCalendarTwo {\npublic:\n    MyCalendarTwo() {}\n    bool book(int start, int end) { return false; }\n};`,
     },
     testcases: [
-      { input: { intervals: [[0,30],[5,10],[15,20]] }, expectedOutput: 2 },
-      { input: { intervals: [[7,10],[2,4]] }, expectedOutput: 1 },
-      { input: { intervals: [[1,5]] }, expectedOutput: 1 },
+      { input: { ops: ["book","book","book","book","book","book"], vals: [[10,20],[50,60],[10,40],[5,15],[5,10],[25,55]] }, expectedOutput: [true,true,true,false,true,true] },
     ],
     hiddentestcases: [
-      { input: { intervals: [[1,4],[2,5],[7,9]] }, expectedOutput: 2 },
-      { input: { intervals: [[6,15],[13,20],[6,17]] }, expectedOutput: 3 },
+      { input: { ops: ["book","book","book"], vals: [[0,10],[0,10],[0,10]] }, expectedOutput: [true,true,false] },
     ],
   },
 
@@ -4971,33 +4969,35 @@ const rawProblems = [
 
   {
     id: 151,
-    title: "4Sum",
-    slug: "4sum",
-    functionName: "fourSum",
+    title: "3Sum Smaller",
+    slug: "3sum-smaller",
+    functionName: "threeSumSmaller",
     difficulty: "Medium",
     topic: "Two Pointers",
-    pattern: "sort + two pointer extension",
+    pattern: "sort + two pointer counting",
     sourceType: "core",
     companies: ["Amazon", "Facebook"],
-    description: "Given an integer array nums and an integer target, return all unique quadruplets [a,b,c,d] such that a+b+c+d == target. No duplicate quadruplets.",
+    description: "Given an integer array nums of length n and an integer target, return the number of index triplets i, j, k with 0 <= i < j < k < n such that nums[i] + nums[j] + nums[k] < target.",
     examples: [
-      { input: "nums = [1,0,-1,0,-2,2], target = 0", output: "[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]" },
-      { input: "nums = [2,2,2,2,2], target = 8", output: "[[2,2,2,2]]" },
+      { input: "nums = [-2,0,1,3], target = 2", output: "2", explanation: "The two triplets are [-2,0,1] (sum -1) and [-2,0,3] (sum 1); both are less than 2." },
+      { input: "nums = [], target = 0", output: "0" },
+      { input: "nums = [0], target = 0", output: "0", explanation: "Fewer than 3 elements, so no triplet exists." },
     ],
-    constraints: ["1 <= nums.length <= 200", "-10^9 <= nums[i] <= 10^9", "-10^9 <= target <= 10^9"],
+    constraints: ["0 <= nums.length <= 3500", "-100 <= nums[i] <= 100", "-100 <= target <= 100"],
     starterCode: {
-      python: `class Solution:\n    def fourSum(self, nums, target):\n        pass`,
-      javascript: `function fourSum(nums, target) {\n\n}`,
-      java: `class Solution {\n    public List<List<Integer>> fourSum(int[] nums, int target) {\n        return new ArrayList<>();\n    }\n}`,
-      cpp: `class Solution {\npublic:\n    vector<vector<int>> fourSum(vector<int>& nums, int target) {\n        return {};\n    }\n};`,
+      python: `class Solution:\n    def threeSumSmaller(self, nums, target):\n        pass`,
+      javascript: `function threeSumSmaller(nums, target) {\n\n}`,
+      java: `class Solution {\n    public int threeSumSmaller(int[] nums, int target) {\n        return 0;\n    }\n}`,
+      cpp: `class Solution {\npublic:\n    int threeSumSmaller(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
     },
     testcases: [
-      { input: { nums: [1,0,-1,0,-2,2], target: 0 }, expectedOutput: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]] },
-      { input: { nums: [2,2,2,2,2], target: 8 }, expectedOutput: [[2,2,2,2]] },
-      { input: { nums: [1,2,3,4], target: 10 }, expectedOutput: [[1,2,3,4]] },
+      { input: { nums: [-2,0,1,3], target: 2 }, expectedOutput: 2 },
+      { input: { nums: [], target: 0 }, expectedOutput: 0 },
+      { input: { nums: [0], target: 0 }, expectedOutput: 0 },
     ],
     hiddentestcases: [
-      { input: { nums: [-2,-1,-1,1,1,2,2], target: 0 }, expectedOutput: [[-2,-1,1,2],[-1,-1,1,1]] },
+      { input: { nums: [1,1,1], target: 3 }, expectedOutput: 0 },
+      { input: { nums: [1,1,1], target: 4 }, expectedOutput: 1 },
     ],
   },
 
@@ -5230,7 +5230,7 @@ const rawProblems = [
 
   // ── BATCH 042: Mixed Hard + Company-Specific (IDs 161-170) ───────────────
 
-  { id: 161, title: "Path With Minimum Effort", slug: "path-with-minimum-effort", functionName: "minimumEffortPath", difficulty: "Medium", topic: "Graphs", pattern: "union find", companies: ["LinkedIn","Amazon"], description: "A path's effort is the maximum absolute difference in heights between two consecutive cells. Return the minimum effort to travel from top-left to bottom-right of a rows x columns matrix heights.", examples: [{ input: "n = 5, edges = [[0,1],[1,2],[3,4]]", output: "2" }, { input: "n = 5, edges = [[0,1],[1,2],[2,3],[3,4]]", output: "1" }], constraints: ["1 <= n <= 2000", "1 <= edges.length <= 5000"], starterCode: { python: `class Solution:\n    def countComponents(self, n, edges):\n        pass`, javascript: `function countComponents(n, edges) {\n\n}`, java: `class Solution {\n    public int countComponents(int n, int[][] edges) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int countComponents(int n, vector<vector<int>>& edges) { return 0; }\n};` }, testcases: [{ input: { n: 5, edges: [[0,1],[1,2],[3,4]] }, expectedOutput: 2 }, { input: { n: 5, edges: [[0,1],[1,2],[2,3],[3,4]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { n: 4, edges: [] }, expectedOutput: 4 }, { input: { n: 3, edges: [[0,1],[0,2]] }, expectedOutput: 1 }] },
+  { id: 161, title: "Path With Minimum Effort", slug: "path-with-minimum-effort", functionName: "minimumEffortPath", difficulty: "Medium", topic: "Graphs", pattern: "union find", companies: ["LinkedIn","Amazon"], description: "You are given a rows x columns matrix heights, where heights[row][col] represents the height of cell (row, col). You start at (0, 0) and want to travel to (rows-1, columns-1). You can move up, down, left, or right, and you want to find a route that minimizes the maximum absolute difference in heights between two consecutive cells of the route. Return the minimum effort required to travel from the top-left cell to the bottom-right cell.", examples: [{ input: "heights = [[1,2,2],[3,8,2],[5,3,5]]", output: "2", explanation: "The route [1,3,5,3,5] down the left column then right along the bottom has a maximum absolute difference of 2." }, { input: "heights = [[1,2,3],[3,8,4],[5,3,5]]", output: "1", explanation: "The route [1,2,3,4,5] along the top row then down the right column has a maximum absolute difference of 1." }, { input: "heights = [[1]]", output: "0", explanation: "Start and end are the same single cell, so no movement is required." }], constraints: ["rows == heights.length", "columns == heights[i].length", "1 <= rows, columns <= 100", "1 <= heights[i][j] <= 10^6"], starterCode: { python: `class Solution:\n    def minimumEffortPath(self, heights):\n        pass`, javascript: `function minimumEffortPath(heights) {\n\n}`, java: `class Solution {\n    public int minimumEffortPath(int[][] heights) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minimumEffortPath(vector<vector<int>>& heights) { return 0; }\n};` }, testcases: [{ input: { heights: [[1,2,2],[3,8,2],[5,3,5]] }, expectedOutput: 2 }, { input: { heights: [[1,2,3],[3,8,4],[5,3,5]] }, expectedOutput: 1 }, { input: { heights: [[1]] }, expectedOutput: 0 }], hiddentestcases: [{ input: { heights: [[1,10,6,7,9,10,4,9]] }, expectedOutput: 9 }, { input: { heights: [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]] }, expectedOutput: 0 }] },
 
   {
     id: 162,
@@ -5299,11 +5299,11 @@ const rawProblems = [
     ],
   },
 
-  { id: 164, title: "Redundant Connection", slug: "swim-in-water-bfs", functionName: "findRedundantConnection", difficulty: "Medium", topic: "Graphs", pattern: "union find cycle detection", companies: ["Amazon","Google"], description: "In a tree of n nodes, one extra edge is added creating a cycle. Return the redundant edge. If multiple answers, return the one appearing last.", examples: [{ input: "edges = [[1,2],[1,3],[2,3]]", output: "[2,3]" }, { input: "edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]", output: "[1,4]" }], constraints: ["n == edges.length", "3 <= n <= 1000", "edges[i].length == 2", "1 <= ai < bi <= n"], starterCode: { python: `class Solution:\n    def findRedundantConnection(self, edges):\n        pass`, javascript: `function findRedundantConnection(edges) {\n\n}`, java: `class Solution {\n    public int[] findRedundantConnection(int[][] edges) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findRedundantConnection(vector<vector<int>>& edges) { return {}; }\n};` }, testcases: [{ input: { edges: [[1,2],[1,3],[2,3]] }, expectedOutput: [2,3] }, { input: { edges: [[1,2],[2,3],[3,4],[1,4],[1,5]] }, expectedOutput: [1,4] }], hiddentestcases: [{ input: { edges: [[1,2],[2,3],[1,3]] }, expectedOutput: [1,3] }] },
+  { id: 164, title: "Shortest Bridge", slug: "shortest-bridge", functionName: "shortestBridge", difficulty: "Medium", topic: "Graphs", pattern: "DFS island marking + multi-source BFS", companies: ["Amazon","Google"], description: "You are given an n x n binary matrix grid where 1 represents land and 0 represents water. An island is a group of 1's connected 4-directionally. The grid contains exactly two islands. You may change any 0 to a 1 to connect the two islands into one. Return the smallest number of 0's you must flip to connect the two islands.", examples: [{ input: "grid = [[0,1],[1,0]]", output: "1", explanation: "The two single-cell islands at (0,1) and (1,0) are 2 apart (Manhattan distance), so 1 flip connects them." }, { input: "grid = [[0,1,0],[0,0,0],[0,0,1]]", output: "2", explanation: "The islands at (0,1) and (2,2) are 3 apart, so 2 flips connect them." }, { input: "grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]", output: "1", explanation: "The outer ring and the single center cell are separated by a ring of water only 1 cell thick at the closest point." }], constraints: ["n == grid.length == grid[i].length", "2 <= n <= 100", "grid[i][j] is either 0 or 1", "There are exactly two islands in grid"], starterCode: { python: `class Solution:\n    def shortestBridge(self, grid):\n        pass`, javascript: `function shortestBridge(grid) {\n\n}`, java: `class Solution {\n    public int shortestBridge(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int shortestBridge(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[0,1],[1,0]] }, expectedOutput: 1 }, { input: { grid: [[0,1,0],[0,0,0],[0,0,1]] }, expectedOutput: 2 }, { input: { grid: [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { grid: [[1,0],[0,1]] }, expectedOutput: 1 }, { input: { grid: [[1,1,0],[0,0,0],[0,1,1]] }, expectedOutput: 1 }] },
 
-  { id: 165, title: "Min Cost to Connect All Points", slug: "min-cost-connect-all-points", functionName: "minCostConnectPoints", difficulty: "Medium", topic: "Graphs", pattern: "Prim's MST", companies: ["Amazon","Google"], description: "Given an array of points in 2D space, connect all points using the minimum total Manhattan distance cost (Minimum Spanning Tree).", examples: [{ input: "points = [[0,0],[2,2],[3,10],[5,2],[7,0]]", output: "20" }, { input: "points = [[3,12],[-2,5],[-4,1]]", output: "18" }], constraints: ["1 <= points.length <= 1000", "-10^6 <= xi, yi <= 10^6", "All points distinct."], starterCode: { python: `class Solution:\n    def minCostConnectPoints(self, points):\n        pass`, javascript: `function minCostConnectPoints(points) {\n\n}`, java: `class Solution {\n    public int minCostConnectPoints(int[][] points) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minCostConnectPoints(vector<vector<int>>& points) { return 0; }\n};` }, testcases: [{ input: { points: [[0,0],[2,2],[3,10],[5,2],[7,0]] }, expectedOutput: 20 }, { input: { points: [[3,12],[-2,5],[-4,1]] }, expectedOutput: 18 }], hiddentestcases: [{ input: { points: [[0,0]] }, expectedOutput: 0 }, { input: { points: [[0,0],[1,1],[1,0],[0,1]] }, expectedOutput: 3 }] },
+  { id: 165, title: "Optimize Water Distribution in a Village", slug: "optimize-water-distribution", functionName: "minCostToSupplyWater", difficulty: "Hard", topic: "Graphs", pattern: "MST with a virtual source node", companies: ["Amazon","Google"], description: "There are n houses in a village, numbered 1 to n. For each house i, you can either build a well directly in that house at cost wells[i-1], or connect it to another house via a pipe. pipes[j] = [house1, house2, cost] represents a bidirectional pipe between house1 and house2 with the given cost. Return the minimum total cost to supply water to all houses (every house must end up with water, either from its own well or via a chain of pipes to a house that has a well).", examples: [{ input: "n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]", output: "3", explanation: "Build a well at house 1 (cost 1), then pipe 1-2 (cost 1) and pipe 2-3 (cost 1), total 3 — cheaper than any other combination." }, { input: "n = 2, wells = [1,1], pipes = [[1,2,1]]", output: "2", explanation: "Build a well at house 1 (cost 1) and a pipe to house 2 (cost 1), total 2." }], constraints: ["1 <= n <= 10^4", "wells.length == n", "0 <= wells[i] <= 10^5", "1 <= pipes.length <= 10^4", "pipes[j].length == 3", "1 <= house1_j, house2_j <= n", "0 <= cost_j <= 10^5", "house1_j != house2_j"], starterCode: { python: `class Solution:\n    def minCostToSupplyWater(self, n, wells, pipes):\n        pass`, javascript: `function minCostToSupplyWater(n, wells, pipes) {\n\n}`, java: `class Solution {\n    public int minCostToSupplyWater(int n, int[] wells, int[][] pipes) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minCostToSupplyWater(int n, vector<int>& wells, vector<vector<int>>& pipes) { return 0; }\n};` }, testcases: [{ input: { n: 3, wells: [1,2,2], pipes: [[1,2,1],[2,3,1]] }, expectedOutput: 3 }, { input: { n: 2, wells: [1,1], pipes: [[1,2,1]] }, expectedOutput: 2 }], hiddentestcases: [{ input: { n: 1, wells: [5], pipes: [] }, expectedOutput: 5 }, { input: { n: 3, wells: [10,10,10], pipes: [[1,2,1],[1,3,1]] }, expectedOutput: 12 }] },
 
-  { id: 166, title: "Cheapest Flights Within K Stops", slug: "minimum-genetic-mutation", functionName: "findCheapestPrice", difficulty: "Medium", topic: "Graphs", pattern: "Bellman-Ford / BFS DP", companies: ["Amazon","Facebook","Google"], description: "There are n cities and flights between them. Find the cheapest price from src to dst with at most k stops. Return -1 if impossible.", examples: [{ input: "n=4, flights=[[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src=0, dst=3, k=1", output: "700" }, { input: "n=3, flights=[[0,1,100],[1,2,100],[0,2,500]], src=0, dst=2, k=1", output: "200" }], constraints: ["1 <= n <= 100", "0 <= flights.length <= n*(n-1)/2", "0 <= k < n", "1 <= price <= 10^4"], starterCode: { python: `class Solution:\n    def findCheapestPrice(self, n, flights, src, dst, k):\n        pass`, javascript: `function findCheapestPrice(n, flights, src, dst, k) {\n\n}`, java: `class Solution {\n    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) { return 0; }\n};` }, testcases: [{ input: { n: 4, flights: [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src: 0, dst: 3, k: 1 }, expectedOutput: 700 }, { input: { n: 3, flights: [[0,1,100],[1,2,100],[0,2,500]], src: 0, dst: 2, k: 1 }, expectedOutput: 200 }], hiddentestcases: [{ input: { n: 3, flights: [[0,1,100],[1,2,100],[0,2,500]], src: 0, dst: 2, k: 0 }, expectedOutput: 500 }] },
+  { id: 166, title: "Minimum Genetic Mutation", slug: "minimum-genetic-mutation", functionName: "minMutation", difficulty: "Medium", topic: "Graphs", pattern: "BFS shortest path over strings", companies: ["Amazon","Facebook","Google"], description: "A gene string is an 8-character string made only of the characters 'A', 'C', 'G', and 'T'. A single mutation changes exactly one character in the gene string. There is also a bank of valid gene strings — every gene the string mutates into (including the final endGene) must appear in bank. Given startGene, endGene, and bank, return the minimum number of mutations needed to mutate startGene into endGene. If there is no such path, return -1. Note that startGene itself does not need to be in bank.", examples: [{ input: "startGene = \"AACCGGTT\", endGene = \"AACCGGTA\", bank = [\"AACCGGTA\"]", output: "1", explanation: "Changing the last character T to A produces endGene directly, and \"AACCGGTA\" is in bank." }, { input: "startGene = \"AACCGGTT\", endGene = \"AAACGGTA\", bank = [\"AACCGGTA\",\"AACCGCTA\",\"AAACGGTA\"]", output: "2", explanation: "AACCGGTT -> AACCGGTA -> AAACGGTA, both intermediate/final genes are in bank, so 2 mutations suffice." }, { input: "startGene = \"AAAAACCC\", endGene = \"AACCCCCC\", bank = [\"AAAACCCC\",\"AAACCCCC\",\"AACCCCCC\"]", output: "3", explanation: "AAAAACCC -> AAAACCCC -> AAACCCCC -> AACCCCCC, one character changes at a time and every step is in bank." }], constraints: ["0 <= bank.length <= 10", "startGene.length == endGene.length == bank[i].length == 8", "startGene, endGene, and bank[i] consist of only the characters 'A', 'C', 'G', and 'T'"], starterCode: { python: `class Solution:\n    def minMutation(self, startGene, endGene, bank):\n        pass`, javascript: `function minMutation(startGene, endGene, bank) {\n\n}`, java: `class Solution {\n    public int minMutation(String startGene, String endGene, String[] bank) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minMutation(string startGene, string endGene, vector<string>& bank) { return 0; }\n};` }, testcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: ["AACCGGTA"] }, expectedOutput: 1 }, { input: { startGene: "AACCGGTT", endGene: "AAACGGTA", bank: ["AACCGGTA","AACCGCTA","AAACGGTA"] }, expectedOutput: 2 }, { input: { startGene: "AAAAACCC", endGene: "AACCCCCC", bank: ["AAAACCCC","AAACCCCC","AACCCCCC"] }, expectedOutput: 3 }], hiddentestcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: [] }, expectedOutput: -1 }, { input: { startGene: "AAAAAAAA", endGene: "AAAAAAAA", bank: [] }, expectedOutput: 0 }] },
 
   {
     id: 167,
@@ -5740,7 +5740,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 183, title: "Sudoku Solver", slug: "sudoku-solver-ii", functionName: "solveSudoku", difficulty: "Hard", topic: "Backtracking", pattern: "constraint propagation backtrack", companies: ["Amazon","Microsoft"], description: "Write a program to solve a Sudoku puzzle by filling the empty cells (marked '.'). Each row, column, and 3x3 box must contain digits 1-9.", examples: [{ input: 'board = [["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]', output: 'Solved board.' }], constraints: ["board.length == 9", "board[i].length == 9", "Each cell is a digit or '.'."], starterCode: { python: `class Solution:\n    def solveSudoku(self, board):\n        pass`, javascript: `function solveSudoku(board) {\n\n}`, java: `class Solution {\n    public void solveSudoku(char[][] board) {}\n}`, cpp: `class Solution {\npublic:\n    void solveSudoku(vector<vector<char>>& board) {}\n};` }, testcases: [{ input: { board: [["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]] }, expectedOutput: [["5","3","4","6","7","8","9","1","2"],["6","7","2","1","9","5","3","4","8"],["1","9","8","3","4","2","5","6","7"],["8","5","9","7","6","1","4","2","3"],["4","2","6","8","5","3","7","9","1"],["7","1","3","9","2","4","8","5","6"],["9","6","1","5","3","7","2","8","4"],["2","8","7","4","1","9","6","3","5"],["3","4","5","2","8","6","1","7","9"]] }], hiddentestcases: [{ input: { board: [[".",".","9","7","4","8",".",".","."],["7",".",".",".",".",".",".",".","."],[".",".",".",".","1",".",".","3","."],[".",".",".",".",".",".",".",".","8"],[".",".",".",".","5",".",".",".","."],["4",".",".",".",".",".",".",".","."],[".",".",".",".",".",".","4",".","."],[".",".",".","1",".",".",".",".","7"],[".",".",".",".",".","5",".",".","."]] }, expectedOutput: "valid solution" }] },
+  { id: 183, title: "N-Queens II", slug: "n-queens-ii", functionName: "totalNQueens", difficulty: "Hard", topic: "Backtracking", pattern: "constraint backtracking count-only", companies: ["Amazon","Microsoft"], description: "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other (no two queens share the same row, column, or diagonal). Given an integer n, return the number of distinct solutions to the n-queens puzzle.", examples: [{ input: "n = 4", output: "2", explanation: "There are exactly 2 distinct ways to place 4 non-attacking queens on a 4x4 board." }, { input: "n = 1", output: "1", explanation: "A single queen on a 1x1 board trivially doesn't attack anything." }, { input: "n = 2", output: "0", explanation: "No arrangement of 2 non-attacking queens exists on a 2x2 board." }], constraints: ["1 <= n <= 9"], starterCode: { python: `class Solution:\n    def totalNQueens(self, n):\n        pass`, javascript: `function totalNQueens(n) {\n\n}`, java: `class Solution {\n    public int totalNQueens(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalNQueens(int n) { return 0; }\n};` }, testcases: [{ input: { n: 4 }, expectedOutput: 2 }, { input: { n: 1 }, expectedOutput: 1 }, { input: { n: 2 }, expectedOutput: 0 }], hiddentestcases: [{ input: { n: 3 }, expectedOutput: 0 }, { input: { n: 5 }, expectedOutput: 10 }] },
 
   { id: 184, title: "Letter Combinations of a Phone Number", slug: "letter-combinations-phone-number", functionName: "letterCombinations", difficulty: "Medium", topic: "Backtracking", pattern: "DFS digit mapping", companies: ["Amazon","Facebook","Google","Microsoft"], description: "Given a string containing digits 2-9, return all possible letter combinations that the number could represent (phone keypad mapping). Return an empty list for empty input.", examples: [{ input: 'digits = "23"', output: '["ad","ae","af","bd","be","bf","cd","ce","cf"]' }, { input: 'digits = ""', output: "[]" }, { input: 'digits = "2"', output: '["a","b","c"]' }], constraints: ["0 <= digits.length <= 4", "digits[i] is a digit in ['2','9']."], starterCode: { python: `class Solution:\n    def letterCombinations(self, digits):\n        pass`, javascript: `function letterCombinations(digits) {\n\n}`, java: `class Solution {\n    public List<String> letterCombinations(String digits) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> letterCombinations(string digits) { return {}; }\n};` }, testcases: [{ input: { digits: "23" }, expectedOutput: ["ad","ae","af","bd","be","bf","cd","ce","cf"] }, { input: { digits: "" }, expectedOutput: [] }, { input: { digits: "2" }, expectedOutput: ["a","b","c"] }], hiddentestcases: [{ input: { digits: "9" }, expectedOutput: ["w","x","y","z"] }, { input: { digits: "29" }, expectedOutput: ["aw","ax","ay","az","bw","bx","by","bz","cw","cx","cy","cz"] }] },
 
@@ -6059,63 +6059,63 @@ const rawProblems = [
 
   {
     id: 202,
-    title: "Implement Trie (Prefix Tree)",
-    slug: "implement-trie-prefix-tree",
+    title: "Implement Trie II (Prefix Tree)",
+    slug: "implement-trie-ii",
     functionName: "Trie",
     // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
     operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Trie",
-    pattern: "children array node",
+    pattern: "trie with per-word counts",
     sourceType: "core",
     companies: ["Amazon", "Google", "Microsoft", "Facebook"],
-    description: "Implement a trie with insert, search, and startsWith methods. insert(word) inserts word into the trie. search(word) returns true if word is in the trie. startsWith(prefix) returns true if any word in the trie starts with the given prefix.",
+    description: "Implement a Trie class that supports: insert(word) — inserts word into the trie; countWordsEqualTo(word) — returns the number of instances of word that have been inserted; countWordsStartingWith(prefix) — returns the number of previously inserted strings that have prefix as a prefix; and erase(word) — removes one instance of word from the trie (word is guaranteed to be present when erase is called).",
     examples: [
-      { input: '["Trie","insert","search","search","startsWith","insert","search"]\n[[],["apple"],["apple"],["app"],["app"],["app"],["app"]]', output: "[null,null,true,false,true,null,true]" },
+      { input: '["Trie","insert","insert","countWordsEqualTo","countWordsStartingWith","erase","countWordsEqualTo","countWordsStartingWith","erase","countWordsStartingWith"]\n[[],["apple"],["apple"],["apple"],["app"],["apple"],["apple"],["app"],["apple"],["app"]]', output: "[null,null,null,2,2,null,1,1,null,0]" },
     ],
-    constraints: ["1 <= word.length, prefix.length <= 2000", "word and prefix consist only of lowercase English letters.", "At most 3 * 10^4 calls total."],
+    constraints: ["1 <= word.length, prefix.length <= 2000", "word and prefix consist only of lowercase English letters.", "At most 3 * 10^4 calls total to insert, countWordsEqualTo, countWordsStartingWith, and erase.", "erase(word) is only called on a word that is present in the trie."],
     starterCode: {
-      python: `class Trie:\n    def __init__(self):\n        pass\n    def insert(self, word):\n        pass\n    def search(self, word):\n        pass\n    def startsWith(self, prefix):\n        pass`,
-      javascript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  search(word) { return false; }\n  startsWith(prefix) { return false; }\n}`,
-      java: `class Trie {\n    public Trie() {}\n    public void insert(String word) {}\n    public boolean search(String word) { return false; }\n    public boolean startsWith(String prefix) { return false; }\n}`,
-      cpp: `class Trie {\npublic:\n    Trie() {}\n    void insert(string word) {}\n    bool search(string word) { return false; }\n    bool startsWith(string prefix) { return false; }\n};`,
+      python: `class Trie:\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def countWordsEqualTo(self, word):\n        pass\n\n    def countWordsStartingWith(self, prefix):\n        pass\n\n    def erase(self, word):\n        pass`,
+      javascript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  countWordsEqualTo(word) { return 0; }\n  countWordsStartingWith(prefix) { return 0; }\n  erase(word) {}\n}`,
+      java: `class Trie {\n    public Trie() {}\n    public void insert(String word) {}\n    public int countWordsEqualTo(String word) { return 0; }\n    public int countWordsStartingWith(String prefix) { return 0; }\n    public void erase(String word) {}\n}`,
+      cpp: `class Trie {\npublic:\n    Trie() {}\n    void insert(string word) {}\n    int countWordsEqualTo(string word) { return 0; }\n    int countWordsStartingWith(string prefix) { return 0; }\n    void erase(string word) {}\n};`,
     },
     testcases: [
-      { input: { ops: ["insert","search","search","startsWith","insert","search"], vals: [["apple"],["apple"],["app"],["app"],["app"],["app"]] }, expectedOutput: [null,true,false,true,null,true] },
+      { input: { ops: ["insert","insert","countWordsEqualTo","countWordsStartingWith","erase","countWordsEqualTo","countWordsStartingWith","erase","countWordsStartingWith"], vals: [["apple"],["apple"],["apple"],["app"],["apple"],["apple"],["app"],["apple"],["app"]] }, expectedOutput: [null,null,2,2,null,1,1,null,0] },
     ],
     hiddentestcases: [
-      { input: { ops: ["insert","insert","search","startsWith"], vals: [["abc"],["ab"],["abc"],["ab"]] }, expectedOutput: [null,null,true,true] },
+      { input: { ops: ["insert","countWordsEqualTo","countWordsStartingWith"], vals: [["bag"],["bag"],["ba"]] }, expectedOutput: [null,1,1] },
     ],
   },
 
   {
     id: 203,
-    title: "Add and Search Word - Data structure design",
-    slug: "add-and-search-word",
-    functionName: "WordDictionary",
+    title: "Map Sum Pairs",
+    slug: "map-sum-pairs",
+    functionName: "MapSum",
     // Operation-sequence contract (audit P0-2) — see backend/utils/operationSequenceDriver.js.
     operationSequence: { enabled: true, resultMode: "all" },
     difficulty: "Medium",
     topic: "Trie",
-    pattern: "trie with wildcard DFS",
+    pattern: "trie with subtree value sums",
     sourceType: "core",
     companies: ["Facebook", "Amazon"],
-    description: "Design a data structure that supports adding new words and finding if a string matches any previously added string. search(word) can contain dots '.' where dots can be matched with any letter.",
+    description: "Design a MapSum class with: insert(key, val) — inserts the key-val pair (if key already existed, the previous key-value pair is overridden); and sum(prefix) — returns the sum of all the values whose keys start with prefix.",
     examples: [
-      { input: '["WordDictionary","addWord","addWord","addWord","search","search","search","search"]\n[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]', output: "[null,null,null,null,false,true,true,true]" },
+      { input: '["MapSum","insert","sum","insert","sum"]\n[[],["apple",3],["ap"],["app",2],["ap"]]', output: "[null,null,3,null,5]" },
     ],
-    constraints: ["1 <= word.length <= 25", "word in addWord consists of lowercase English letters.", "word in search consists of lowercase '.' or letters.", "At most 10^4 calls."],
+    constraints: ["1 <= key.length, prefix.length <= 50", "key and prefix consist of only lowercase English letters.", "1 <= val <= 1000", "At most 50 calls will be made to insert and sum."],
     starterCode: {
-      python: `class WordDictionary:\n    def __init__(self):\n        pass\n    def addWord(self, word):\n        pass\n    def search(self, word):\n        pass`,
-      javascript: `class WordDictionary {\n  constructor() {}\n  addWord(word) {}\n  search(word) { return false; }\n}`,
-      java: `class WordDictionary {\n    public WordDictionary() {}\n    public void addWord(String word) {}\n    public boolean search(String word) { return false; }\n}`,
-      cpp: `class WordDictionary {\npublic:\n    WordDictionary() {}\n    void addWord(string word) {}\n    bool search(string word) { return false; }\n};`,
+      python: `class MapSum:\n    def __init__(self):\n        pass\n\n    def insert(self, key, val):\n        pass\n\n    def sum(self, prefix):\n        pass`,
+      javascript: `class MapSum {\n  constructor() {}\n  insert(key, val) {}\n  sum(prefix) { return 0; }\n}`,
+      java: `class MapSum {\n    public MapSum() {}\n    public void insert(String key, int val) {}\n    public int sum(String prefix) { return 0; }\n}`,
+      cpp: `class MapSum {\npublic:\n    MapSum() {}\n    void insert(string key, int val) {}\n    int sum(string prefix) { return 0; }\n};`,
     },
     testcases: [
-      { input: { ops: ["addWord","addWord","addWord","search","search","search","search"], vals: [["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]] }, expectedOutput: [null,null,null,false,true,true,true] },
+      { input: { ops: ["insert","sum","insert","sum"], vals: [["apple",3],["ap"],["app",2],["ap"]] }, expectedOutput: [null,3,null,5] },
     ],
     hiddentestcases: [
-      { input: { ops: ["addWord","search","search"], vals: [["a"],["."],["a"]] }, expectedOutput: [null,true,true] },
+      { input: { ops: ["insert","sum","insert","sum"], vals: [["apple",3],["apple"],["apple",5],["apple"]] }, expectedOutput: [null,3,null,5] },
     ],
   },
 
@@ -6254,7 +6254,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 209, title: "Fruit Into Baskets", slug: "max-consecutive-ones-iii", functionName: "totalFruit", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window at most K distinct", companies: ["Amazon","Google"], description: "You have a row of fruit trees. Each tree produces one type of fruit. You have two baskets, each holding one type of fruit. Pick as many fruits as possible starting from any tree, picking from each consecutive tree. Return the maximum number of fruits you can pick.", examples: [{ input: "fruits = [1,2,1]", output: "3" }, { input: "fruits = [0,1,2,2]", output: "3" }, { input: "fruits = [1,2,3,2,2]", output: "4" }], constraints: ["1 <= fruits.length <= 10^5", "0 <= fruits[i] < fruits.length"], starterCode: { python: `class Solution:\n    def totalFruit(self, fruits):\n        pass`, javascript: `function totalFruit(fruits) {\n\n}`, java: `class Solution {\n    public int totalFruit(int[] fruits) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalFruit(vector<int>& fruits) { return 0; }\n};` }, testcases: [{ input: { fruits: [1,2,1] }, expectedOutput: 3 }, { input: { fruits: [0,1,2,2] }, expectedOutput: 3 }, { input: { fruits: [1,2,3,2,2] }, expectedOutput: 4 }], hiddentestcases: [{ input: { fruits: [3,3,3,1,2,1,1,2,3,3,4] }, expectedOutput: 5 }, { input: { fruits: [0,1,6,6,4,4,6] }, expectedOutput: 5 }] },
+  { id: 209, title: "Max Consecutive Ones III", slug: "max-consecutive-ones-iii", functionName: "longestOnes", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with flip budget", companies: ["Amazon","Google"], description: "Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's to 1's.", examples: [{ input: "nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2", output: "6", explanation: "Flip the two 0's at indices 3 and 4 to get [1,1,1,1,1,1,1,1,1,1,0], which has 6 consecutive 1's starting at index 5." }, { input: "nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k = 3", output: "10", explanation: "Flip the three 0's at indices 4,5,9 to get a run of 10 consecutive 1's." }, { input: "nums = [0], k = 0", output: "0", explanation: "No flips allowed and there are no 1's, so the longest run of 1's is 0." }], constraints: ["1 <= nums.length <= 10^5", "nums[i] is either 0 or 1", "0 <= k <= nums.length"], starterCode: { python: `class Solution:\n    def longestOnes(self, nums, k):\n        pass`, javascript: `function longestOnes(nums, k) {\n\n}`, java: `class Solution {\n    public int longestOnes(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int longestOnes(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [1,1,1,0,0,0,1,1,1,1,0], k: 2 }, expectedOutput: 6 }, { input: { nums: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k: 3 }, expectedOutput: 10 }, { input: { nums: [0], k: 0 }, expectedOutput: 0 }], hiddentestcases: [{ input: { nums: [1,1,1,1], k: 0 }, expectedOutput: 4 }, { input: { nums: [0,0,0,0], k: 2 }, expectedOutput: 2 }] },
 
   { id: 210, title: "Course Schedule II", slug: "course-schedule-ii", functionName: "findOrder", difficulty: "Medium", topic: "Graphs", pattern: "topological sort DFS/BFS", companies: ["Amazon","Facebook","Microsoft","Google"], description: "Given numCourses and prerequisites where prerequisites[i] = [ai, bi] means you must take bi before ai, return an ordering of courses you can take to finish all courses. Return empty array if impossible.", examples: [{ input: "numCourses = 2, prerequisites = [[1,0]]", output: "[0,1]" }, { input: "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]", output: "[0,2,1,3]" }, { input: "numCourses = 1, prerequisites = []", output: "[0]" }], constraints: ["1 <= numCourses <= 2000", "0 <= prerequisites.length <= numCourses * (numCourses-1)"], starterCode: { python: `class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        pass`, javascript: `function findOrder(numCourses, prerequisites) {\n\n}`, java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) { return {}; }\n};` }, testcases: [{ input: { numCourses: 2, prerequisites: [[1,0]] }, expectedOutput: [0,1] }, { input: { numCourses: 4, prerequisites: [[1,0],[2,0],[3,1],[3,2]] }, expectedOutput: [0,1,2,3] }, { input: { numCourses: 1, prerequisites: [] }, expectedOutput: [0] }], hiddentestcases: [{ input: { numCourses: 2, prerequisites: [[1,0],[0,1]] }, expectedOutput: [] }, { input: { numCourses: 3, prerequisites: [[0,1],[0,2],[1,2]] }, expectedOutput: [2,1,0] }] },
 
@@ -6766,7 +6766,7 @@ const rawProblems = [
 
   { id: 241, title: "Squares of a Sorted Array", slug: "squares-of-sorted-array", functionName: "sortedSquares", difficulty: "Easy", topic: "Two Pointers", pattern: "two pointer merge from ends", companies: ["Google","Amazon","Facebook"], description: "Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.", examples: [{ input: "nums = [-4,-1,0,3,10]", output: "[0,1,9,16,100]" }, { input: "nums = [-7,-3,2,3,11]", output: "[4,9,9,49,121]" }], constraints: ["1 <= nums.length <= 10^4", "-10^4 <= nums[i] <= 10^4", "nums is sorted in non-decreasing order."], starterCode: { python: `class Solution:\n    def sortedSquares(self, nums):\n        pass`, javascript: `function sortedSquares(nums) {\n\n}`, java: `class Solution {\n    public int[] sortedSquares(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> sortedSquares(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [-4,-1,0,3,10] }, expectedOutput: [0,1,9,16,100] }, { input: { nums: [-7,-3,2,3,11] }, expectedOutput: [4,9,9,49,121] }], hiddentestcases: [{ input: { nums: [-3,-1,0,1,3] }, expectedOutput: [0,1,1,9,9] }, { input: { nums: [1] }, expectedOutput: [1] }] },
 
-  { id: 242, title: "Minimum Size Subarray Sum", slug: "subarray-product-less-than-k", functionName: "minSubArrayLen", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window shrink", companies: ["Amazon","Facebook","Google"], description: "Given an array of positive integers nums and a positive integer target, return the minimal length of a subarray whose sum is >= target. Return 0 if no such subarray exists.", examples: [{ input: "target = 7, nums = [2,3,1,2,4,3]", output: "2", explanation: "[4,3]" }, { input: "target = 4, nums = [1,4,4]", output: "1" }, { input: "target = 11, nums = [1,1,1,1,1,1,1,1]", output: "0" }], constraints: ["1 <= target <= 10^9", "1 <= nums.length <= 10^5", "1 <= nums[i] <= 10^4"], starterCode: { python: `class Solution:\n    def minSubArrayLen(self, target, nums):\n        pass`, javascript: `function minSubArrayLen(target, nums) {\n\n}`, java: `class Solution {\n    public int minSubArrayLen(int target, int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minSubArrayLen(int target, vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { target: 7, nums: [2,3,1,2,4,3] }, expectedOutput: 2 }, { input: { target: 4, nums: [1,4,4] }, expectedOutput: 1 }, { input: { target: 11, nums: [1,1,1,1,1,1,1,1] }, expectedOutput: 0 }], hiddentestcases: [{ input: { target: 15, nums: [5,1,3,5,10,7,4,9,2,8] }, expectedOutput: 2 }, { input: { target: 213, nums: [12,28,83,4,25,26,25,2,25,25,25,12] }, expectedOutput: 8 }] },
+  { id: 242, title: "Subarray Product Less Than K", slug: "subarray-product-less-than-k", functionName: "numSubarrayProductLessThanK", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with running product", companies: ["Amazon","Facebook","Google"], description: "Given an array of positive integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.", examples: [{ input: "nums = [10,5,2,6], k = 100", output: "8", explanation: "The 8 subarrays with product less than 100 are [10], [5], [2], [6], [10,5], [5,2], [2,6], [5,2,6]. Note that [10,5,2] is not included because its product is 100, which is not strictly less than 100." }, { input: "nums = [1,2,3], k = 0", output: "0", explanation: "No product of positive integers can be less than 0, so there are no valid subarrays." }, { input: "nums = [1], k = 2", output: "1", explanation: "The only subarray is [1], with product 1, which is less than 2." }], constraints: ["1 <= nums.length <= 3 * 10^4", "1 <= nums[i] <= 1000", "0 <= k <= 10^6"], starterCode: { python: `class Solution:\n    def numSubarrayProductLessThanK(self, nums, k):\n        pass`, javascript: `function numSubarrayProductLessThanK(nums, k) {\n\n}`, java: `class Solution {\n    public int numSubarrayProductLessThanK(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int numSubarrayProductLessThanK(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [10,5,2,6], k: 100 }, expectedOutput: 8 }, { input: { nums: [1,2,3], k: 0 }, expectedOutput: 0 }, { input: { nums: [1], k: 2 }, expectedOutput: 1 }], hiddentestcases: [{ input: { nums: [1,1,1], k: 1 }, expectedOutput: 0 }, { input: { nums: [100], k: 100 }, expectedOutput: 0 }] },
 
   {
     id: 243,

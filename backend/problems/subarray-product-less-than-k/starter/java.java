@@ -1,3 +1,3 @@
 class Solution {
-    public int minSubArrayLen(int target, int[] nums) { return 0; }
+    public int numSubarrayProductLessThanK(int[] nums, int k) { return 0; }
 }

@@ -1,0 +1,19 @@
+{
+  "id": 164,
+  "slug": "shortest-bridge",
+  "title": "Shortest Bridge",
+  "difficulty": "Medium",
+  "topic": "Graphs",
+  "pattern": "DFS island marking + multi-source BFS",
+  "functionName": "shortestBridge",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": false,
+    "resultMode": "all"
+  }
+}

@@ -1,3 +1,3 @@
 class Solution:
-    def minSubArrayLen(self, target, nums):
+    def numSubarrayProductLessThanK(self, nums, k):
         pass

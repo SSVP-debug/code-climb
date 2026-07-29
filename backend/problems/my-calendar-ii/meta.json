@@ -1,0 +1,20 @@
+{
+  "id": 135,
+  "slug": "my-calendar-ii",
+  "title": "My Calendar II",
+  "difficulty": "Medium",
+  "topic": "Intervals",
+  "pattern": "double-booking overlap tracking",
+  "sourceType": "core",
+  "functionName": "MyCalendarTwo",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": true,
+    "resultMode": "all"
+  }
+}

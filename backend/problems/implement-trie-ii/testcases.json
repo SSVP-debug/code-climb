@@ -1,0 +1,86 @@
+{
+  "visible": [
+    {
+      "input": {
+        "ops": [
+          "insert",
+          "insert",
+          "countWordsEqualTo",
+          "countWordsStartingWith",
+          "erase",
+          "countWordsEqualTo",
+          "countWordsStartingWith",
+          "erase",
+          "countWordsStartingWith"
+        ],
+        "vals": [
+          [
+            "apple"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "app"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "app"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "app"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        null,
+        null,
+        2,
+        2,
+        null,
+        1,
+        1,
+        null,
+        0
+      ]
+    }
+  ],
+  "hidden": [
+    {
+      "input": {
+        "ops": [
+          "insert",
+          "countWordsEqualTo",
+          "countWordsStartingWith"
+        ],
+        "vals": [
+          [
+            "bag"
+          ],
+          [
+            "bag"
+          ],
+          [
+            "ba"
+          ]
+        ]
+      },
+      "expectedOutput": [
+        null,
+        1,
+        1
+      ]
+    }
+  ]
+}

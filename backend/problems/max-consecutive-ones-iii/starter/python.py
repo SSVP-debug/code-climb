@@ -1,3 +1,3 @@
 class Solution:
-    def totalFruit(self, fruits):
+    def longestOnes(self, nums, k):
         pass

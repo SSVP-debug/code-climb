@@ -1,0 +1,20 @@
+{
+  "id": 203,
+  "slug": "map-sum-pairs",
+  "title": "Map Sum Pairs",
+  "difficulty": "Medium",
+  "topic": "Trie",
+  "pattern": "trie with subtree value sums",
+  "sourceType": "core",
+  "functionName": "MapSum",
+  "estimatedTime": "",
+  "companies": [],
+  "relatedProblems": [],
+  "returnType": {},
+  "paramTypes": {},
+  "comparisonMode": "exact",
+  "operationSequence": {
+    "enabled": true,
+    "resultMode": "all"
+  }
+}

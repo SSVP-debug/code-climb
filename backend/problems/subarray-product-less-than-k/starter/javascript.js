@@ -1,3 +1,3 @@
-function minSubArrayLen(target, nums) {
+function numSubarrayProductLessThanK(nums, k) {
 
 }

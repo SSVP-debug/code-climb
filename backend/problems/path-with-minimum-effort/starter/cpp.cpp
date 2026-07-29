@@ -1,4 +1,4 @@
 class Solution {
 public:
-    int countComponents(int n, vector<vector<int>>& edges) { return 0; }
+    int minimumEffortPath(vector<vector<int>>& heights) { return 0; }
 };
