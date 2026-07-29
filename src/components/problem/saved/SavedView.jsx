@@ -108,7 +108,7 @@ function SavedView() {
         <EmptyState
           icon={<Bookmark size={28} strokeWidth={1.75} />}
           title="Nothing saved yet"
-          description="Tap the star on any problem while browsing to bookmark it and build your list here."
+          description="Tap the bookmark Icon on any problem while browsing to bookmark it and build your list here."
           compact
         />
       ) : (

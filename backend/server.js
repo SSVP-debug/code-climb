@@ -38,6 +38,7 @@ import { requireAuth } from "./middleware/auth.js";
 import recruiterRoutes, { candidateTestsRouter } from "./routes/recruiter.js";
 import certificationRoutes from "./routes/certification.js";
 import contestRoutes from "./routes/contests.js";
+import playlistRoutes from "./routes/playlists.js";
 import profileSignRoutes from "./routes/profileSign.js";
 import { requireRole } from "./middleware/roleGuard.js";
 
@@ -172,6 +173,7 @@ app.use("/api/recruiter", apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert", apiLimiter, certificationRoutes);
 app.use("/api/contests", requireAuth, apiLimiter, contestRoutes);
+app.use("/api/playlists", requireAuth, apiLimiter, playlistRoutes);
 app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 
 // ── Phase 8 / Batch E fix: mount previously-orphaned route modules ──────────

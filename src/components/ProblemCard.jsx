@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
-import { Clock, Star } from "lucide-react";
+import { Clock, Bookmark } from "lucide-react";
 
 function ProblemCard({ problem }) {
   const { theme } = useTheme();
@@ -164,13 +164,13 @@ function ProblemCard({ problem }) {
           onClick={handleToggleSave}
           disabled={saving}
           className={`transition disabled:opacity-50 ${saved
-            ? "text-yellow-400"
-            : "text-zinc-500 hover:text-yellow-400"
+            ? "text-[var(--theme-primary,#2dd4bf)]"
+            : "text-zinc-500 hover:text-[var(--theme-primary,#2dd4bf)]"
             }`}
           title={saved ? "Remove from saved" : "Save problem"}
           aria-pressed={saved}
         >
-          <Star size={16} strokeWidth={2} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
+          <Bookmark size={16} strokeWidth={2} fill={saved ? "currentColor" : "none"} aria-hidden="true" />
         </button>
 
       </div>
