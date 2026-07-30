@@ -2,15 +2,27 @@ import { Router } from "express";
 import Problem from "../models/Problem.js";
 import { isUserPremium } from "./billing.js";
 import { requireRole } from "../middleware/roleGuard.js";
+import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 
 const router = Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {
   try {
     const { slug } = req.params;
-    const problem  = await Problem.findOne({ slug }).select("editorial slug title").lean();
+    const problem  = await Problem.findOne({ slug }).select("editorial slug title visibility").lean();
 
     if (!problem) return res.status(404).json({ error: "Problem not found." });
+
+    // ── Contest access gate (Fest Readiness Audit, P0-2) ──────────────────
+    // Premium accounts bypass the normal "solve it first" gate below by
+    // design (see isUserPremium check further down) — without this check,
+    // that path would let a premium user read a private contest problem's
+    // editorial/solution before the contest ever opens, without solving
+    // anything. Same generic 404 as "not found."
+    if (problem.visibility === "contest") {
+      const allowed = await canAccessContestProblem(slug, req.userDoc);
+      if (!allowed) return res.status(404).json({ error: "Problem not found." });
+    }
 
     // Check if user has solved this problem (userDoc populated by requireAuth)
     const solved   = req.userDoc?.solvedSlugs?.includes(slug) ?? false;

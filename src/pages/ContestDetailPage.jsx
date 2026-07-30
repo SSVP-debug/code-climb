@@ -53,7 +53,7 @@ export default function ContestDetailPage() {
     </DashboardLayout>
   );
 
-  const { leaderboard = [], problemSlugs = [], myRank, myScore, mySolvedSlugs = [], isJoined } = contest;
+  const { leaderboard = [], problemSlugs = [], problemCount = 0, myRank, myScore, mySolvedSlugs = [], isJoined } = contest;
 
   // Results computed entirely client-side from data already fetched above —
   // no new endpoint needed for this. Percentile: "you beat X% of the field".
@@ -157,7 +157,14 @@ export default function ContestDetailPage() {
           <div className="md:col-span-1">
             <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-3">Problems</h2>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-              {problemSlugs.map((slug, i) => {
+              {contest.status === "upcoming" && problemSlugs.length === 0 ? (
+                <div className="px-4 py-6 text-sm text-zinc-500 text-center">
+                  {problemCount > 0
+                    ? `${problemCount} problem${problemCount === 1 ? "" : "s"} — revealed when the contest starts`
+                    : "Problems will be revealed when the contest starts"}
+                </div>
+              ) : (
+              problemSlugs.map((slug, i) => {
                 const solved = isJoined && mySolvedSlugs.includes(slug);
                 return (
                   <Link key={slug} to={`/problems/${slug}?contest=${contest._id}`}
@@ -174,7 +181,8 @@ export default function ContestDetailPage() {
                     {solved && <Check size={14} className="ml-auto text-green-400" aria-hidden="true" />}
                   </Link>
                 );
-              })}
+              })
+              )}
             </div>
 
             {isJoined && (

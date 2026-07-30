@@ -6,6 +6,7 @@ import {
   enqueueExecution,
 } from "../services/executionQueue.js";
 import { EXECUTION_LIMITS } from "../config/executionLimits.js";
+import { recordJudge0Success, recordJudge0Failure } from "../services/judge0Health.js";
 
 const JUDGE0_LANGUAGE_NAMES = {
   54: "C++",
@@ -114,12 +115,29 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
           }
 
           logger.error({ httpStatus: response.status, raw }, "[Judge0] Error response (final attempt, not retrying)");
-          throw new Error(`Judge0 returned HTTP ${response.status}: ${raw}`);
+
+          // A 5xx that survived every retry is a genuine Judge0
+          // infrastructure failure. A 4xx is OUR request being malformed —
+          // that's a bug on our side, not Judge0 being unhealthy, so it's
+          // deliberately NOT recorded here (Fest Readiness Audit, P1-1).
+          if (response.status >= 500) {
+            recordJudge0Failure();
+          }
+
+          const httpError = new Error(`Judge0 returned HTTP ${response.status}: ${raw}`);
+          // This throw is caught by the catch block just below (it's a
+          // synchronous throw inside this same try) — mark it so that
+          // catch doesn't ALSO run its own fallback recordJudge0Failure()
+          // and double-count (or wrongly count a 4xx, which the branch
+          // above just deliberately chose not to record).
+          httpError.judge0HealthAlreadyRecorded = true;
+          throw httpError;
         }
 
         const data = await response.json();
 
         // Decode the base64-encoded output fields back to plain strings.
+        recordJudge0Success();
         return {
           ...data,
           stdout: b64Decode(data.stdout),
@@ -147,6 +165,15 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
           continue;
         }
 
+        // Exhausted every retry on a network error, or hit some other
+        // unexpected failure trying to reach Judge0 — either way, this
+        // fetchJudge0 call did not succeed. Skipped if the HTTP-status
+        // branch above already made its own recording decision (including
+        // deliberately not recording for a 4xx) — this fallback is only
+        // for errors this function hasn't already classified.
+        if (!err.judge0HealthAlreadyRecorded) {
+          recordJudge0Failure();
+        }
         throw err;
       }
     }

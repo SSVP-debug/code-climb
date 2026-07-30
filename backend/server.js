@@ -114,19 +114,40 @@ app.use(express.json({ limit: "1mb" }));
 // ─── Public routes (no auth needed) ────────────────────────────────────────
 app.get("/", (req, res) => res.send("Code Club Backend Running"));
 
+// Fest Readiness Audit, P1-1: this used to report `mongo: "configured"`
+// based purely on whether MONGODB_URI *looked like* a valid connection
+// string — never whether Mongo was actually reachable. A server could (and
+// did, in principle) return this as "ok" while the database was fully
+// down. mongoose.connection.readyState is an in-memory flag Mongoose
+// already maintains (no network round trip), so this stays cheap enough to
+// poll frequently — see docs/architecture.md's connection-state comments
+// for why a live ping isn't added on top: readyState already reflects a
+// disconnect within one heartbeat cycle, and this endpoint is meant to be
+// polled far more often than that.
+const MONGO_STATE_LABELS = {
+  0: "disconnected",
+  1: "connected",
+  2: "connecting",
+  3: "disconnecting",
+};
+
 app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
+  const mongoState = mongoose.connection.readyState;
+  const mongoOk = mongoState === 1;
+
+  res.status(mongoOk ? 200 : 503).json({
+    status: mongoOk ? "ok" : "degraded",
     timestamp: new Date().toISOString(),
-    mongo: process.env.MONGODB_URI?.startsWith("mongodb") ? "configured" : "missing",
+    mongo: MONGO_STATE_LABELS[mongoState] ?? "unknown",
   });
 });
 
-// GET /api/health/compiler — Judge0 circuit-breaker/request stats. Written
-// but never mounted until now (routes/health.js existed, was never
-// imported). Note: services/judge0Health.js's updateJudge0Health() is also
-// never called anywhere, so today this will always report zeroed counters —
-// tracked as a follow-up for the observability phase, not fixed here.
+// GET /api/health/compiler — Judge0 circuit-breaker/request stats.
+// Fest Readiness Audit, P1-1: previously mounted but never populated —
+// services/judge0Health.js's counters are now updated from
+// controllers/compilerController.js's fetchJudge0 on every real Judge0
+// interaction (success or genuine infra failure), so this reflects actual
+// state instead of always reporting zeros.
 app.use("/api/health", healthRoutes);
 
 

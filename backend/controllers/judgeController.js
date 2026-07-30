@@ -1,6 +1,8 @@
 import { callJudge0 } from "./compilerController.js";
 import Problem from "../models/Problem.js";
 import { recordVerifiedSubmission } from "./submissionController.js";
+import { awardContestSolve } from "../services/contestScoring.js";
+import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 
 /**
  * Sanitize stderr output from Judge0 before sending to the client.
@@ -48,6 +50,25 @@ export async function runHandler(req, res) {
         results: [],
         compileFailed: false,
       });
+    }
+
+    // ── Contest access gate (Fest Readiness Audit, P0-2) ──────────────────
+    // Protecting the problem-detail endpoint alone isn't enough: without
+    // this check, a private contest problem's own execution contract
+    // (functionName/returnType/etc., resolved from `problem` above) could
+    // still be pre-solved through a direct Run call before the contest
+    // even opens. Same 404 shape as "problem not found" — deliberately
+    // generic, so this doesn't confirm the problem exists to a caller who
+    // isn't entitled to it. See services/contestProblemAccess.js.
+    if (problem.visibility === "contest") {
+      const allowed = await canAccessContestProblem(problemSlug, req.userDoc);
+      if (!allowed) {
+        return res.status(404).json({
+          error: `Problem "${problemSlug}" not found.`,
+          results: [],
+          compileFailed: false,
+        });
+      }
     }
 
     functionName = problem.functionName;
@@ -237,7 +258,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
 // matters. Every `finish()` call below persists the actual, just-computed
 // grading result before responding; nothing here is client-supplied.
 export async function submitHandler(req, res) {
-  const { problemSlug, code, language, functionName, visibletestcases } = req.body;
+  const { problemSlug, code, language, functionName, visibletestcases, contestId } = req.body;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
   const problem = await Problem.findOne({
@@ -248,6 +269,20 @@ export async function submitHandler(req, res) {
     return res.status(404).json({
       error: `Problem "${problemSlug}" not found.`,
     });
+  }
+
+  // ── Contest access gate (Fest Readiness Audit, P0-2) ────────────────────
+  // Same reasoning as runHandler's identical check above — a private
+  // contest problem must not be directly submittable before its contest
+  // window either, even by someone who already knows the slug. Generic
+  // 404, same shape as "problem not found," on purpose.
+  if (problem.visibility === "contest") {
+    const allowed = await canAccessContestProblem(problemSlug, req.userDoc);
+    if (!allowed) {
+      return res.status(404).json({
+        error: `Problem "${problemSlug}" not found.`,
+      });
+    }
   }
 
   const hidden = problem.hiddentestcases ?? [];
@@ -340,6 +375,7 @@ export async function submitHandler(req, res) {
           executionTime: payload.executionTime ?? null,
           expectedOutput: submissionExtra.expectedOutput,
           actualOutput: submissionExtra.actualOutput,
+          contestId: contestId || null,
         });
 
         responseExtras.submissionId = submissionDoc._id.toString();
@@ -348,6 +384,46 @@ export async function submitHandler(req, res) {
         }
       } catch (err) {
         req.log.error({ err, problemSlug, status }, "[Judge] Failed to persist submission record");
+      }
+
+      // ── Contest scoring (Fest Readiness Audit, P0-1) ─────────────────────
+      // The ONLY trusted trigger for contest credit: this runs immediately
+      // after THIS server just computed "Accepted" itself via Judge0 above
+      // — never from a bare client claim. See services/contestScoring.js.
+      // Best-effort and isolated from the Submission-persistence try/catch
+      // above: a scoring hiccup must not be reported to the user as a
+      // failed/incorrect grading result (the verdict itself is already
+      // real and already returned), and a Submission-persistence failure
+      // must not by itself prevent a scoring attempt (the Accepted verdict
+      // is still just as real either way).
+      if (status === "Accepted" && contestId) {
+        try {
+          const result = await awardContestSolve({
+            contestId,
+            userId: req.userDoc._id,
+            slug: problemSlug,
+          });
+
+          if (result.ok) {
+            responseExtras.contest = {
+              scored: true,
+              alreadySolved: result.alreadySolved,
+              score: result.score,
+            };
+          } else {
+            req.log.warn(
+              { problemSlug, contestId, reason: result.reason },
+              "[Judge] Accepted submission did not qualify for contest credit"
+            );
+            responseExtras.contest = { scored: false, reason: result.reason };
+          }
+        } catch (err) {
+          req.log.error(
+            { err, problemSlug, contestId },
+            "[Judge] Failed to record contest score"
+          );
+          responseExtras.contest = { scored: false, reason: "error" };
+        }
       }
     }
 

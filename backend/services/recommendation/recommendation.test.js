@@ -153,6 +153,7 @@ describe("nextUnsolvedStrategy (via getRecommendation, Priority 2)", () => {
     expect(Problem.findOne).toHaveBeenCalledWith({
       id: { $gt: 10 },
       slug: { $nin: ["already-solved-1"] },
+      visibility: { $ne: "contest" },
     });
   });
 
@@ -178,6 +179,7 @@ describe("nextUnsolvedStrategy (via getRecommendation, Priority 2)", () => {
     expect(Problem.findOne).toHaveBeenNthCalledWith(2, {
       id: { $ne: 50 },
       slug: { $nin: [] },
+      visibility: { $ne: "contest" },
     });
   });
 });

@@ -64,6 +64,34 @@ export const aiLimiter = rateLimit({
 });
 
 /**
+ * Judge "Run" limiter — applied only to POST /api/judge/run.
+ *
+ * Fest Readiness Audit, P1-2: Run and Submit used to share both the same
+ * rate limiter (apiLimiter, 200/15min — generic, shared with all other
+ * /api/judge traffic) and the same global Judge0 concurrency pool (see
+ * services/executionQueue.js), with nothing to stop one participant
+ * repeatedly mashing Run from degrading Submit availability for everyone
+ * else during a live contest. This mirrors compilerLimiter's existing
+ * 10/min figure (already used for custom-stdin runs via /api/compiler) —
+ * generous enough for real iteration, tight enough that Run-spam from a
+ * few users can't dominate the shared execution capacity a contest's
+ * Submits need. Submit deliberately keeps the more permissive apiLimiter
+ * (see routes/judge.js) — a participant should never feel throttled on
+ * the action that actually scores.
+ */
+export const judgeRunLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  keyGenerator: userOrIpKey,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
+  message: {
+    error: "Too many Run requests. Please wait a moment — if your code looks ready, try Submit.",
+  },
+});
+
+/**
  * College verification resend limiter — applied to
  * POST /api/college-verification/resend. 3 resends per hour per user;
  * generous enough for a genuinely lost/expired email, tight enough to stop

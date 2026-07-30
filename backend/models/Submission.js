@@ -23,6 +23,20 @@ const submissionSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    // ── Contest linkage (Fest Readiness Audit, P0-1) ───────────────────────
+    // Optional — null/absent for ordinary practice submissions, which are
+    // the overwhelming majority and must keep working exactly as before.
+    // Set only when this submission was made with a contest context (see
+    // controllers/judgeController.js submitHandler and
+    // services/contestScoring.js). This is what makes contest scoring
+    // verifiable server-side instead of trusting a bare client claim: see
+    // docs/security-fixes/Solve-integrity.md for the identical reasoning
+    // already applied to XP/progress, which this extends to contests.
+    contestId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Contest",
+      default: null,
+    },
     statusDescription: {
       type: String,
     },
@@ -122,6 +136,17 @@ submissionSchema.index({ problemSlug: 1, status: 1 });
 // lookup in submissionController.recordVerifiedSubmission (the encouragement
 // dedupe check) — sorted newest-first, scoped per user+problem.
 submissionSchema.index({ userId: 1, problemSlug: 1, createdAt: -1 });
+
+// Index: covers the contest-solve proof lookup (P0-1) — "does this user
+// have a server-verified Accepted submission for this problem, in this
+// contest?" — used by the legacy POST /api/contests/:id/solve compat path.
+// Sparse: the overwhelming majority of submissions have no contestId at
+// all, so a sparse index keeps this cheap rather than indexing every
+// practice-mode row under a null key.
+submissionSchema.index(
+  { contestId: 1, userId: 1, problemSlug: 1, status: 1 },
+  { sparse: true }
+);
 
 const Submission = mongoose.model("Submission", submissionSchema);
 

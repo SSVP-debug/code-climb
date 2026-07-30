@@ -191,6 +191,39 @@ const problemSchema = new mongoose.Schema(
     // Only read server-side by the judge route.
     hiddentestcases: { type: [testcaseSchema], default: [] },
 
+    // ── Contest visibility (Fest Readiness Audit, P0-2) ────────────────────
+    // "public"  — default. Behaves exactly as every problem always has:
+    //              listed in the catalog, freely reachable by slug, usable
+    //              in recommendations/editorial/hints/weekly-challenge, and
+    //              (if an organizer includes it) also usable in a contest —
+    //              in which case it's simply not private, same as today.
+    // "contest" — authored specifically for one or more private contests
+    //              (see Contest.problemSlugs, the only link — this is
+    //              deliberately just a visibility tag, not a foreign key,
+    //              same pattern as campaignCode above). Excluded from the
+    //              public catalog/search/recommendations/weekly-challenge,
+    //              and from the problem-detail, editorial, hints, and
+    //              Run/Submit endpoints, UNLESS the requester is that
+    //              contest's organizer (any time) or a joined participant
+    //              while the contest is active — or the contest has ended,
+    //              at which point it opens up to everyone. See
+    //              services/contestProblemAccess.js for the enforcement
+    //              logic and the full policy write-up.
+    //
+    // There is currently no in-app authoring UI for this — a problem is
+    // marked "contest" via the existing seed/import scripts
+    // (scripts/seedProblems.js / scripts/importProblems.js), same as any
+    // other problem field. Organizers building a contest still SELECT
+    // from whatever problems already exist (public or contest-tagged);
+    // this field only controls whether a given problem is also reachable
+    // outside that selection.
+    visibility: {
+      type: String,
+      enum: ["public", "contest"],
+      default: "public",
+      index: true,
+    },
+
     // ── Metadata ──────────────────────────────────────────────────────────────
 
     // Rough time budget for a prepared candidate, e.g. "10–15 min"

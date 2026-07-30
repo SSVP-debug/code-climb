@@ -22,10 +22,17 @@ import Problem from "../../../models/Problem.js";
  */
 export async function nextUnsolvedStrategy({ problem, solvedSlugs }) {
   const excludeSolved = { slug: { $nin: solvedSlugs } };
+  // Fest Readiness Audit, P0-2: this walks the FULL catalog by canonical
+  // id order — without this, a "contest" visibility problem could get
+  // recommended to any random user (via ordinary next-problem navigation)
+  // whenever its id happened to fall next in sequence, entirely outside
+  // any contest context.
+  const excludeContestOnly = { visibility: { $ne: "contest" } };
 
   const ahead = await Problem.findOne({
     id: { $gt: problem.id },
     ...excludeSolved,
+    ...excludeContestOnly,
   })
     .select("slug title difficulty topic")
     .sort({ id: 1 })
@@ -36,6 +43,7 @@ export async function nextUnsolvedStrategy({ problem, solvedSlugs }) {
     (await Problem.findOne({
       id: { $ne: problem.id },
       ...excludeSolved,
+      ...excludeContestOnly,
     })
       .select("slug title difficulty topic")
       .sort({ id: 1 })

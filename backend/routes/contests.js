@@ -2,9 +2,11 @@ import { Router } from "express";
 import crypto from "crypto";
 import Contest from "../models/Contest.js";
 import Problem from "../models/Problem.js";
+import Submission from "../models/Submission.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireAuth } from "../middleware/auth.js";
 import { getOrSetCache } from "../utils/cache.js";
+import { awardContestSolve } from "../services/contestScoring.js";
 
 const router = Router();
 
@@ -47,13 +49,27 @@ router.get("/", async (req, res) => {
 
         // Sync status based on current time
         const now = new Date();
-        return contests.map(c => ({
-          ...c,
-          participantCount: c.participants?.length ?? 0,
-          problemCount:     c.problemSlugs?.length ?? 0,
-          participants:     undefined, // don't leak full participant list in index
-          isActive:         now >= new Date(c.startsAt) && now <= new Date(c.endsAt),
-        }));
+        return contests.map(c => {
+          const isUpcoming = now < new Date(c.startsAt);
+          return {
+            ...c,
+            participantCount: c.participants?.length ?? 0,
+            problemCount:     c.problemSlugs?.length ?? 0,
+            participants:     undefined, // don't leak full participant list in index
+            // Fest Readiness Audit, P0-2: this list is a single shared,
+            // unpersonalized cache (see cacheKey above) served to every
+            // caller regardless of who they are — there's no way to
+            // special-case "unless you're the organizer" here without
+            // breaking that sharing. An upcoming contest's problemSlugs
+            // (which, notably, `type=private` callers can request for
+            // EVERY private contest at once, not just ones they're
+            // involved in) must not be exposed here at all; problemCount
+            // above already covers "how many problems," which is the
+            // documented acceptable level of detail pre-start.
+            problemSlugs:     isUpcoming ? undefined : c.problemSlugs,
+            isActive:         now >= new Date(c.startsAt) && now <= new Date(c.endsAt),
+          };
+        });
       }
     );
 
@@ -201,28 +217,46 @@ router.post("/private", requireRole("student", "tpo", "admin"), async (req, res)
       return res.status(400).json({ error: "One or more problem slugs are invalid." });
     }
 
-    const inviteCode = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6-char e.g. "A3F9B2"
+    // Fest Readiness Audit, P1-5: retry once on the (astronomically
+    // unlikely — 1-in-16.7M) chance of a collision, now that inviteCode
+    // has a real uniqueness constraint (models/Contest.js) instead of
+    // silently allowing two contests to share one code. A single retry is
+    // enough — a second collision in a row is not worth engineering
+    // around for a collection this small.
+    const MAX_INVITE_CODE_ATTEMPTS = 2;
+    let contest;
+    for (let attempt = 1; attempt <= MAX_INVITE_CODE_ATTEMPTS; attempt++) {
+      const inviteCode = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6-char e.g. "A3F9B2"
+      try {
+        contest = await Contest.create({
+          title, description: description || "",
+          type: "private",
+          status: now < start ? "upcoming" : "active",
+          createdBy:    req.userDoc._id,
+          inviteCode,
+          // Bug fix: this previously read req.userDoc.collegeDomain, which
+          // doesn't exist at the top level — the real field is nested under
+          // tpoProfile, so this was always null regardless of the creator's
+          // college. Only meaningful for TPO-created contests; students don't
+          // have a verified college domain until Phase 12C.
+          collegeDomain: req.userDoc.tpoProfile?.collegeDomain || null,
+          startsAt: start, endsAt: end,
+          durationMs: end - start,
+          problemSlugs,
+          maxParticipants,
+          allowLateJoin,
+        });
+        break;
+      } catch (err) {
+        const isDuplicateInviteCode = err.code === 11000 && err.keyPattern?.inviteCode;
+        if (isDuplicateInviteCode && attempt < MAX_INVITE_CODE_ATTEMPTS) {
+          continue;
+        }
+        throw err;
+      }
+    }
 
-    const contest = await Contest.create({
-      title, description: description || "",
-      type: "private",
-      status: now < start ? "upcoming" : "active",
-      createdBy:    req.userDoc._id,
-      inviteCode,
-      // Bug fix: this previously read req.userDoc.collegeDomain, which
-      // doesn't exist at the top level — the real field is nested under
-      // tpoProfile, so this was always null regardless of the creator's
-      // college. Only meaningful for TPO-created contests; students don't
-      // have a verified college domain until Phase 12C.
-      collegeDomain: req.userDoc.tpoProfile?.collegeDomain || null,
-      startsAt: start, endsAt: end,
-      durationMs: end - start,
-      problemSlugs,
-      maxParticipants,
-      allowLateJoin,
-    });
-
-    return res.status(201).json({ ...contest.toObject(), inviteCode });
+    return res.status(201).json({ ...contest.toObject(), inviteCode: contest.inviteCode });
   } catch (err) {
     console.error("[Contest] create-private:", err.message);
     return res.status(500).json({ error: "Failed to create private contest." });
@@ -237,6 +271,20 @@ router.post("/join-private", async (req, res) => {
 
     const contest = await Contest.findOne({ inviteCode: inviteCode.toUpperCase(), type: "private" });
     if (!contest) return res.status(404).json({ error: "Invalid invite code." });
+
+    // Fest Readiness Audit implementation, found while writing contest
+    // lifecycle tests (P1-4): `contest.status` as stored is only ever set
+    // once, at creation time ("upcoming" or "active" — see POST /private
+    // above). It was never refreshed against the clock before these
+    // status checks ran, so a contest created as "upcoming" would still
+    // read as "upcoming" here forever, even long after it had actually
+    // gone active or ended — meaning the "contest has ended" and "late
+    // join disabled" checks just below could silently never fire.
+    // syncContestStatus() already existed for exactly this (defined at the
+    // top of this file) but was never actually called anywhere. Wiring it
+    // in here is the fix — not a new mechanism, just using the one that
+    // was already built.
+    syncContestStatus(contest);
     if (contest.status === "ended") return res.status(410).json({ error: "Contest has ended." });
 
     const alreadyJoined = contest.participants.some(
@@ -327,9 +375,19 @@ router.get("/:id", async (req, res) => {
     // Find requesting user's position
     const myEntry = ranked.find(p => p.userId?.toString() === req.userDoc?._id?.toString());
 
+    // ── Contest detail leak (Fest Readiness Audit, P0-2) ────────────────────
+    // Before start, only the organizer gets the real problemSlugs — even a
+    // joined participant must wait for the contest to actually go active.
+    // problemCount is always safe to return ("3 problems" is fine; the
+    // actual slugs, before anyone is meant to see them, are not).
+    const isOrganizer = contest.createdBy?.toString() === req.userDoc?._id?.toString();
+    const revealProblems = status !== "upcoming" || isOrganizer;
+
     return res.json({
       ...contest,
       status,
+      problemSlugs:  revealProblems ? contest.problemSlugs : undefined,
+      problemCount:  contest.problemSlugs?.length ?? 0,
       leaderboard: ranked.slice(0, 100),
       myRank:        myEntry?.rank ?? null,
       myScore:       myEntry?.score ?? 0,
@@ -347,6 +405,9 @@ router.post("/:id/join", async (req, res) => {
     const contest = await Contest.findById(req.params.id);
     if (!contest) return res.status(404).json({ error: "Contest not found." });
     if (contest.type === "private") return res.status(403).json({ error: "Use invite code to join private contests." });
+
+    // Same fix as POST /join-private above — see that route's comment.
+    syncContestStatus(contest);
     if (contest.status === "ended") return res.status(410).json({ error: "Contest has ended." });
 
     const alreadyJoined = contest.participants.some(
@@ -366,57 +427,63 @@ router.post("/:id/join", async (req, res) => {
   }
 });
 
-// ── POST /api/contests/:id/solve — mark problem solved in contest ─────────────
-// Called from ProblemDetailsPage when a submission is accepted during a contest.
+// ── POST /api/contests/:id/solve — legacy contest-solve endpoint ──────────────
+// Fest Readiness Audit, P0-1: this used to award contest credit purely on
+// the strength of a client-sent `{ slug }` — no proof the caller ever
+// actually solved anything was required. That is no longer true.
+//
+// The real, trusted scoring path is now controllers/judgeController.js's
+// submitHandler, which calls services/contestScoring.js's
+// awardContestSolve() itself, immediately after computing a real Accepted
+// verdict — see that file. This endpoint is kept only for any caller that
+// hasn't migrated to sending `contestId` directly on POST /api/judge/submit
+// (see src/hooks/useProblemSolver.js, which no longer calls this route as
+// of the same change). It is NOT a second, independent way to score:
+// before calling the same awardContestSolve(), it first requires proof —
+// a real Submission document, written by the judge itself, showing this
+// exact user was Accepted on this exact problem within this exact contest.
+// No such Submission exists → no credit, full stop.
 router.post("/:id/solve", async (req, res) => {
   try {
     const { slug } = req.body;
     if (!slug) return res.status(400).json({ error: "slug required." });
 
-    const contest = await Contest.findById(req.params.id);
-    if (!contest) return res.status(404).json({ error: "Contest not found." });
-    if (contest.status !== "active") return res.status(400).json({ error: "Contest is not active." });
-    if (!contest.problemSlugs.includes(slug)) return res.status(400).json({ error: "Problem not in contest." });
+    const proof = await Submission.exists({
+      userId: req.userDoc._id,
+      problemSlug: slug,
+      contestId: req.params.id,
+      status: "Accepted",
+    });
 
-    const participant = contest.participants.find(
-      p => p.userId.toString() === req.userDoc._id.toString()
-    );
-    if (!participant) return res.status(403).json({ error: "Not joined this contest." });
-
-    // Score: 100 points per problem (can extend with time-bonus later)
-    const SOLVE_SCORE = 100;
-
-    // Atomic update: the filter only matches this participant subdocument
-    // when they haven't already solved this slug, so two concurrent solve
-    // requests can't both push the slug or double-award points. Previously
-    // this was a load-mutate-save on the whole Contest document, which
-    // could race and lose an update under concurrent solves.
-    const updated = await Contest.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        participants: { $elemMatch: { userId: req.userDoc._id, solvedSlugs: { $ne: slug } } },
-      },
-      {
-        $push: { "participants.$.solvedSlugs": slug },
-        $inc: { "participants.$.score": SOLVE_SCORE },
-      },
-      { new: true }
-    );
-
-    if (!updated) {
-      // Lost the race to another concurrent solve for this slug, or it was
-      // already solved earlier — either way, "already solved" is correct.
-      const current = await Contest.findById(req.params.id).lean();
-      const currentParticipant = current?.participants.find(
-        p => p.userId.toString() === req.userDoc._id.toString()
-      );
-      return res.json({ alreadySolved: true, score: currentParticipant?.score ?? participant.score });
+    if (!proof) {
+      return res.status(403).json({
+        error: "No verified Accepted submission found for this problem in this contest.",
+      });
     }
 
-    const updatedParticipant = updated.participants.find(
-      p => p.userId.toString() === req.userDoc._id.toString()
-    );
-    return res.json({ success: true, score: updatedParticipant.score });
+    const result = await awardContestSolve({
+      contestId: req.params.id,
+      userId: req.userDoc._id,
+      slug,
+    });
+
+    if (!result.ok) {
+      const statusByReason = {
+        contest_not_found: 404,
+        contest_not_active: 400,
+        problem_not_in_contest: 400,
+        not_joined: 403,
+      };
+      return res
+        .status(statusByReason[result.reason] ?? 400)
+        .json({ error: "Unable to record contest solve.", reason: result.reason });
+    }
+
+    return res.json({
+      success: !result.alreadySolved,
+      alreadySolved: result.alreadySolved,
+      score: result.score,
+    });
   } catch (err) {
     return res.status(500).json({ error: "Failed to record solve." });
   }

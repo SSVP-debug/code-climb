@@ -33,7 +33,12 @@ function seededRandom(seed, max) {
 router.get("/current", async (req, res) => {
   try {
     const weekKey = getWeekKey();
-    const allProblems = await Problem.find({})
+    // Fest Readiness Audit, P0-2: weekly challenge selection is broadcast
+    // site-wide to every user, so a "contest" visibility problem must
+    // never be eligible for it — a random selection could otherwise blast
+    // a private contest's problem (title/topic/difficulty) to the whole
+    // platform before the contest even opens.
+    const allProblems = await Problem.find({ visibility: { $ne: "contest" } })
       .select("slug title difficulty topic companies")
       .lean();
 

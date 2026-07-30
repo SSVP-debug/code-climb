@@ -4,6 +4,7 @@ import Problem from "../models/Problem.js";
 import User from "../models/User.js";
 import { PREMIUM_FEATURES } from "../middleware/premiumGate.js";
 import { getOrSetCache } from "../utils/cache.js";
+import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 
 const router = Router({ mergeParams: true });
 const claude = new Anthropic();
@@ -32,6 +33,20 @@ router.post("/", async (req, res) => {
     const { slug }  = req.params;
     const level     = parseInt(req.body.level) || 1;
     const validLevel = Math.min(3, Math.max(1, level));
+
+    // ── Contest access gate (Fest Readiness Audit, P0-2) ────────────────────
+    // Checked before the (cached, per-slug-not-per-user) hint fetch below —
+    // an AI-generated hint reveals the problem's title/topic and an
+    // approach, which is exactly what shouldn't leak for a private contest
+    // problem before its window. Deliberately re-checked on every request
+    // (not folded into the cache below) since authorization can change
+    // over time (contest not started yet vs. now active) even though the
+    // hint content itself doesn't.
+    const gateProblem = await Problem.findOne({ slug }).select("visibility").lean();
+    if (gateProblem?.visibility === "contest") {
+      const allowed = await canAccessContestProblem(slug, req.userDoc);
+      if (!allowed) return res.status(404).json({ error: "Problem not found." });
+    }
 
     // ── Free tier limit: 3 hints/day (resets at midnight UTC) ───────────────
     // Premium users (or everyone, while MONETIZATION_ENABLED=false) skip this.

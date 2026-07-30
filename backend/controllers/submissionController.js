@@ -58,6 +58,13 @@ export async function recordVerifiedSubmission({
   executionTime,
   expectedOutput,
   actualOutput,
+  // Optional contest context (Fest Readiness Audit, P0-1) — null for
+  // ordinary practice submissions. Recorded as-is; this function does not
+  // validate contest membership/timing itself (see
+  // services/contestScoring.js for that) — it only persists the link so
+  // it's possible to prove, after the fact, that a given contest solve
+  // corresponds to a real server-graded submission.
+  contestId = null,
 }) {
   if (!SUBMISSION_STATUSES.includes(status)) {
     throw new Error(`recordVerifiedSubmission: invalid status "${status}"`);
@@ -108,6 +115,7 @@ export async function recordVerifiedSubmission({
     actualOutput,
     normalizedCodeHash,
     encouragementMessage,
+    contestId: contestId || null,
   });
 }
 

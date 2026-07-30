@@ -5,6 +5,12 @@ export const judgeSubmission = async ({
   code,
   language,
   onProgress,
+  // Fest Readiness Audit, P0-1: passed straight through to the server,
+  // which is the only place that decides whether it actually earns
+  // contest credit (see backend/controllers/judgeController.js
+  // submitHandler + backend/services/contestScoring.js). Sending this
+  // does not, by itself, grant anything.
+  contestId,
 }) => {
   // Signal to UI that judging has started
   if (onProgress) {
@@ -22,6 +28,7 @@ export const judgeSubmission = async ({
         // Visible testcases are NOT secret — safe to send from frontend.
         // Hidden testcases are loaded server-side by the backend.
         visibletestcases: problem.testcases || [],
+        ...(contestId ? { contestId } : {}),
       }),
     });
 

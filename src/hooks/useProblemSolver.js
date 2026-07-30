@@ -5,7 +5,6 @@ import { formatDate } from "../utils/formatters";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import { completeDailyChallenge } from "../services/dailyChallengeService";
-import { apiFetch } from "../services/api";
 import { useAppContext } from "./useAppContext";
 import { usePanelResize } from "./usePanelResize";
 import { useVerticalResize } from "./useVerticalResize";
@@ -132,7 +131,7 @@ export function useProblemSolver({ problem, slug, contestId }) {
       setRunResults(null);
       setSubmitInfo(null);
 
-      const judgeResult = await judgeSubmission({ problem, code, language, onProgress: () => { } });
+      const judgeResult = await judgeSubmission({ problem, code, language, contestId, onProgress: () => { } });
       const justAccepted = judgeResult.status === "Accepted";
 
       setSubmitInfo({
@@ -176,26 +175,26 @@ export function useProblemSolver({ problem, slug, contestId }) {
         }, 200);
       }
 
-      // Contest solve reporting — deliberately its own check, not folded into
-      // the `!wasAlreadySolved` branch above: a problem already solved
-      // outside this contest can still be the student's first solve *within*
-      // it. The backend endpoint is idempotent per-contest (only matches
-      // participants who haven't solved this slug yet in that contest), so
-      // calling it on every Accepted submission while contestId is set is
-      // safe even on repeat submissions.
-      if (judgeResult.status === "Accepted" && contestId) {
-        try {
-          await apiFetch(`/api/contests/${contestId}/solve`, {
-            method: "POST",
-            body: JSON.stringify({ slug: problem.slug }),
-          });
-          toast.success("Contest score updated!");
-        } catch (err) {
-          // Don't let a contest-scoring hiccup block the rest of the
-          // submission flow (XP, daily challenge, submission history all
-          // already succeeded above) — surface it, don't throw.
-          console.error("Contest solve reporting failed:", err.message);
-          toast.error("Solved! Couldn't update your contest score — " + err.message);
+      // ── Contest scoring feedback (Fest Readiness Audit, P0-1) ────────────
+      // There is no longer a separate "tell the contest API I solved it"
+      // request here. judgeSubmission() already sent `contestId` on the
+      // real /api/judge/submit call above, and the SERVER decided —
+      // server-side, from its own Accepted verdict — whether this earned
+      // contest credit (see backend/controllers/judgeController.js +
+      // backend/services/contestScoring.js). This block only reads that
+      // decision back to show the right toast; it cannot influence it.
+      if (contestId && judgeResult.contest) {
+        if (judgeResult.contest.scored) {
+          if (!judgeResult.contest.alreadySolved) {
+            toast.success("Contest score updated!");
+          }
+        } else {
+          // Genuinely Accepted code that, for some contest-side reason
+          // (contest ended mid-submission, not a recognized participant,
+          // etc.), didn't qualify for credit — surface it rather than
+          // silently saying nothing, since the student will otherwise
+          // wonder why their score didn't move.
+          toast.error("Solved, but this contest submission wasn't eligible for scoring.");
         }
       }
 

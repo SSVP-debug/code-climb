@@ -3,6 +3,7 @@ import Submission from "../models/Submission.js";
 import { getOrSetCache, invalidateCache } from "../utils/cache.js";
 import { XP_BY_DIFFICULTY } from "../utils/computeXP.js";
 import { getNextBestProblem } from "../utils/recommendNextProblem.js";
+import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 
 const PROBLEMS_CACHE_KEY = "problems:all";
 const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes — unchanged from the original TTL
@@ -45,7 +46,19 @@ export const getProblems = async (req, res) => {
       PROBLEMS_CACHE_KEY,
       CACHE_TTL_SECONDS,
       async () => {
-        const problems = await Problem.find({})
+        const problems = await Problem.find({
+          // Fest Readiness Audit, P0-2: contest-only problems must never
+          // appear in the general catalog. This is a shared, unpersonalized
+          // cache (see PROBLEMS_CACHE_KEY above) — the same response is
+          // served to every caller regardless of contest membership or
+          // timing, so there's no way to personalize this list per-user
+          // without breaking that. The simple, safe rule instead: a
+          // "contest" visibility problem is never in the browsable catalog
+          // at all, even after its contest ends (unlike the single-problem
+          // detail endpoint below, which does open up post-contest) — it's
+          // reachable only by direct slug/URL, gated by getProblemBySlug.
+          visibility: { $ne: "contest" },
+        })
           // editorial.content is gated (solve-to-unlock / premium — see
           // backend/routes/editorial.js) and must only ever be served through
           // that dedicated, gated endpoint. Excluding it here too, not just
@@ -89,6 +102,21 @@ export const getProblemBySlug = async (req, res) => {
       return res.status(404).json({
         message: "Problem not found",
       });
+    }
+
+    // ── Contest access gate (Fest Readiness Audit, P0-2) ──────────────────
+    // Deliberately the SAME 404 shape as "not found" above — a caller who
+    // isn't entitled to a private contest problem should not be able to
+    // tell the difference between "doesn't exist" and "exists but you
+    // can't see it yet." See services/contestProblemAccess.js for the
+    // full policy (including what happens once the contest ends).
+    if (problem.visibility === "contest") {
+      const allowed = await canAccessContestProblem(slug, req.userDoc);
+      if (!allowed) {
+        return res.status(404).json({
+          message: "Problem not found",
+        });
+      }
     }
 
     // `recommendedNext` also drives the Submission Experience's "Next Best
