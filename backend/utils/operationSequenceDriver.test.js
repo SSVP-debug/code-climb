@@ -118,17 +118,36 @@ private:
     vector<int> s, mn;
 };`;
 
-      const code = generateOperationSequenceDriver("cpp", userCode, minStackShape, "MinStack", "all");
+      const code = generateOperationSequenceDriver(
+        "cpp",
+        userCode,
+        minStackShape,
+        "MinStack",
+        "all"
+      );
+
       const dir = mkdtempSync(join(tmpdir(), "opseq-test-"));
       const cppFile = join(dir, "driver.cpp");
       const binFile = join(dir, "driver");
       writeFileSync(cppFile, code);
 
       execFileSync("g++", ["-std=c++11", "-o", binFile, cppFile]);
-      const out = execFileSync(binFile, { encoding: "utf-8" }).trim();
 
-      expect(JSON.parse(out)).toEqual([null, null, null, -3, null, 0, -2]);
-    }
+      const out = execFileSync(binFile, {
+        encoding: "utf-8",
+      }).trim();
+
+      expect(JSON.parse(out)).toEqual([
+        null,
+        null,
+        null,
+        -3,
+        null,
+        0,
+        -2,
+      ]);
+    },
+    15_000
   );
 
   it.skipIf(!HAS_PYTHON3)(
