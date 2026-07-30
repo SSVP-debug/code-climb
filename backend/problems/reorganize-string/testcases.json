@@ -22,15 +22,15 @@
   "hidden": [
     {
       "input": {
-        "s": "vvvlo"
+        "s": "aaabb"
       },
-      "expectedOutput": "vlvov"
+      "expectedOutput": "ababa"
     },
     {
       "input": {
-        "s": "aabc"
+        "s": "aaaabbb"
       },
-      "expectedOutput": "abac"
+      "expectedOutput": "abababa"
     }
   ]
 }

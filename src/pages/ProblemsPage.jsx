@@ -49,7 +49,10 @@ function ProblemsPage() {
   // since useCodeClubEdition() needs the campaign missions present to
   // join against.
   const standardProblems = useMemo(
-    () => problems.filter((p) => !p.campaignCode),
+    // `comingSoon` problems (e.g. random-pick-with-weight, id 158) have no
+    // working grading path yet — see docs/roadmap.md — so they're excluded
+    // from the standard catalog the same way Code Club Edition missions are.
+    () => problems.filter((p) => !p.campaignCode && !p.comingSoon),
     [problems]
   );
   const standardSlugSet = useMemo(

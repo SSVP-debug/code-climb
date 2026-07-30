@@ -1423,7 +1423,7 @@ const rawProblems = [
     ],
     hiddentestcases: [
       { input: { candidates: [3, 5, 7], target: 12 }, expectedOutput: 2 },
-      { input: { candidates: [1, 2], target: 4 }, expectedOutput: 4 },
+      { input: { candidates: [1, 2], target: 4 }, expectedOutput: 3 },
     ],
   },
 
@@ -3421,7 +3421,7 @@ const rawProblems = [
       { input: { nums: [0,0,0,0], target: 0 }, expectedOutput: [[0,0,0,0]] },
     ],
     hiddentestcases: [
-      { input: { nums: [-1,0,1,2,-1,-4], target: -1 }, expectedOutput: [[-4,1,1,1],[-1,-1,0,1]] },
+      { input: { nums: [-1,0,1,2,-1,-4], target: -1 }, expectedOutput: [[-4,0,1,2],[-1,-1,0,1]] },
     ],
   },
 
@@ -5063,7 +5063,7 @@ const rawProblems = [
     ],
     hiddentestcases: [
       { input: { nums: [1,1,1] }, expectedOutput: 1 },
-      { input: { nums: [3,24,4,380] }, expectedOutput: 1 },
+      { input: { nums: [3,24,4,380] }, expectedOutput: 0 },
     ],
   },
 
@@ -5162,7 +5162,7 @@ const rawProblems = [
 
   { id: 157, title: "Design Twitter", slug: "design-twitter", functionName: "Twitter", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Design", pattern: "heap + timestamp", companies: ["Amazon","Facebook"], description: "Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).", examples: [{ input: '["Twitter","postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"]\n[[],[1,5],[1],[1,2],[2,6],[1],[1,2],[1]]', output: "[null,null,[5],null,null,[6,5],null,[5]]" }], constraints: ["1 <= userId, followerId, followeeId <= 500", "0 <= tweetId <= 10^4", "At most 3 * 10^4 calls."], starterCode: { python: `class Twitter:\n    def __init__(self):\n        pass\n    def postTweet(self, userId, tweetId):\n        pass\n    def getNewsFeed(self, userId):\n        pass\n    def follow(self, followerId, followeeId):\n        pass\n    def unfollow(self, followerId, followeeId):\n        pass`, javascript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, java: `class Twitter {\n    public Twitter() {}\n    public void postTweet(int userId, int tweetId) {}\n    public List<Integer> getNewsFeed(int userId) { return new ArrayList<>(); }\n    public void follow(int followerId, int followeeId) {}\n    public void unfollow(int followerId, int followeeId) {}\n}`, cpp: `class Twitter {\npublic:\n    Twitter() {}\n    void postTweet(int userId, int tweetId) {}\n    vector<int> getNewsFeed(int userId) { return {}; }\n    void follow(int followerId, int followeeId) {}\n    void unfollow(int followerId, int followeeId) {}\n};` }, testcases: [{ input: { ops: ["postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"], vals: [[1,5],[1],[1,2],[2,6],[1],[1,2],[1]] }, expectedOutput: [null,[5],null,null,[6,5],null,[5]] }], hiddentestcases: [{ input: { ops: ["postTweet","follow","getNewsFeed"], vals: [[2,5],[1,2],[1]] }, expectedOutput: [null,null,[5]] }] },
 
-  { id: 158, title: "Random Pick with Weight", slug: "random-pick-with-weight", functionName: "Solution", difficulty: "Medium", topic: "Binary Search", pattern: "prefix sum + binary search", companies: ["Facebook","Google","Amazon"], description: "Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.", examples: [{ input: "w = [1,3], pickIndex called", output: "Returns 0 with 25% probability, 1 with 75% probability" }], constraints: ["1 <= w.length <= 10^4", "1 <= w[i] <= 10^5", "pickIndex called at most 10^4 times"], starterCode: { python: `class Solution:\n    def __init__(self, w):\n        pass\n    def pickIndex(self):\n        pass`, javascript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, java: `class Solution {\n    public Solution(int[] w) {}\n    public int pickIndex() { return 0; }\n}`, cpp: `class Solution {\npublic:\n    Solution(vector<int>& w) {}\n    int pickIndex() { return 0; }\n};` }, testcases: [{ input: { w: [1], ops: ["pickIndex"] }, expectedOutput: [0] }, { input: { w: [1,3], ops: ["pickIndex","pickIndex","pickIndex","pickIndex"] }, expectedOutput: "varies" }], hiddentestcases: [{ input: { w: [1,1,1,1], ops: ["pickIndex"] }, expectedOutput: "0-3" }] },
+  { id: 158, title: "Random Pick with Weight", slug: "random-pick-with-weight", functionName: "Solution", difficulty: "Medium", topic: "Binary Search", pattern: "prefix sum + binary search", comingSoon: true, companies: ["Facebook","Google","Amazon"], description: "Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.", examples: [{ input: "w = [1,3], pickIndex called", output: "Returns 0 with 25% probability, 1 with 75% probability" }], constraints: ["1 <= w.length <= 10^4", "1 <= w[i] <= 10^5", "pickIndex called at most 10^4 times"], starterCode: { python: `class Solution:\n    def __init__(self, w):\n        pass\n    def pickIndex(self):\n        pass`, javascript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, java: `class Solution {\n    public Solution(int[] w) {}\n    public int pickIndex() { return 0; }\n}`, cpp: `class Solution {\npublic:\n    Solution(vector<int>& w) {}\n    int pickIndex() { return 0; }\n};` }, testcases: [{ input: { w: [1], ops: ["pickIndex"] }, expectedOutput: [0] }, { input: { w: [1,3], ops: ["pickIndex","pickIndex","pickIndex","pickIndex"] }, expectedOutput: "varies" }], hiddentestcases: [{ input: { w: [1,1,1,1], ops: ["pickIndex"] }, expectedOutput: "0-3" }] },
 
   {
     id: 159,
@@ -5736,7 +5736,7 @@ const rawProblems = [
     ],
     hiddentestcases: [
       { input: { candidates: [1,1,1,1], target: 2 }, expectedOutput: [[1,1]] },
-      { input: { candidates: [3,1,3,5,1,1], target: 8 }, expectedOutput: [[1,1,1,5],[1,3,3],[3,5]] },
+      { input: { candidates: [3,1,3,5,1,1], target: 8 }, expectedOutput: [[1,1,1,5],[1,1,3,3],[3,5]] },
     ],
   },
 
@@ -6048,8 +6048,8 @@ const rawProblems = [
       { input: { s: "a" }, expectedOutput: "a" },
     ],
     hiddentestcases: [
-      { input: { s: "vvvlo" }, expectedOutput: "vlvov" },
-      { input: { s: "aabc" }, expectedOutput: "abac" },
+      { input: { s: "aaabb" }, expectedOutput: "ababa" },
+      { input: { s: "aaaabbb" }, expectedOutput: "abababa" },
     ],
   },
 
@@ -6256,7 +6256,7 @@ const rawProblems = [
 
   { id: 209, title: "Max Consecutive Ones III", slug: "max-consecutive-ones-iii", functionName: "longestOnes", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with flip budget", companies: ["Amazon","Google"], description: "Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's to 1's.", examples: [{ input: "nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2", output: "6", explanation: "Flip the two 0's at indices 3 and 4 to get [1,1,1,1,1,1,1,1,1,1,0], which has 6 consecutive 1's starting at index 5." }, { input: "nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k = 3", output: "10", explanation: "Flip the three 0's at indices 4,5,9 to get a run of 10 consecutive 1's." }, { input: "nums = [0], k = 0", output: "0", explanation: "No flips allowed and there are no 1's, so the longest run of 1's is 0." }], constraints: ["1 <= nums.length <= 10^5", "nums[i] is either 0 or 1", "0 <= k <= nums.length"], starterCode: { python: `class Solution:\n    def longestOnes(self, nums, k):\n        pass`, javascript: `function longestOnes(nums, k) {\n\n}`, java: `class Solution {\n    public int longestOnes(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int longestOnes(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [1,1,1,0,0,0,1,1,1,1,0], k: 2 }, expectedOutput: 6 }, { input: { nums: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k: 3 }, expectedOutput: 10 }, { input: { nums: [0], k: 0 }, expectedOutput: 0 }], hiddentestcases: [{ input: { nums: [1,1,1,1], k: 0 }, expectedOutput: 4 }, { input: { nums: [0,0,0,0], k: 2 }, expectedOutput: 2 }] },
 
-  { id: 210, title: "Course Schedule II", slug: "course-schedule-ii", functionName: "findOrder", difficulty: "Medium", topic: "Graphs", pattern: "topological sort DFS/BFS", companies: ["Amazon","Facebook","Microsoft","Google"], description: "Given numCourses and prerequisites where prerequisites[i] = [ai, bi] means you must take bi before ai, return an ordering of courses you can take to finish all courses. Return empty array if impossible.", examples: [{ input: "numCourses = 2, prerequisites = [[1,0]]", output: "[0,1]" }, { input: "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]", output: "[0,2,1,3]" }, { input: "numCourses = 1, prerequisites = []", output: "[0]" }], constraints: ["1 <= numCourses <= 2000", "0 <= prerequisites.length <= numCourses * (numCourses-1)"], starterCode: { python: `class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        pass`, javascript: `function findOrder(numCourses, prerequisites) {\n\n}`, java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) { return {}; }\n};` }, testcases: [{ input: { numCourses: 2, prerequisites: [[1,0]] }, expectedOutput: [0,1] }, { input: { numCourses: 4, prerequisites: [[1,0],[2,0],[3,1],[3,2]] }, expectedOutput: [0,1,2,3] }, { input: { numCourses: 1, prerequisites: [] }, expectedOutput: [0] }], hiddentestcases: [{ input: { numCourses: 2, prerequisites: [[1,0],[0,1]] }, expectedOutput: [] }, { input: { numCourses: 3, prerequisites: [[0,1],[0,2],[1,2]] }, expectedOutput: [2,1,0] }] },
+  { id: 210, title: "Course Schedule II", slug: "course-schedule-ii", functionName: "findOrder", difficulty: "Medium", topic: "Graphs", pattern: "topological sort DFS/BFS", companies: ["Amazon","Facebook","Microsoft","Google"], description: "Given numCourses and prerequisites where prerequisites[i] = [ai, bi] means you must take bi before ai, return an ordering of courses you can take to finish all courses. Return empty array if impossible.", examples: [{ input: "numCourses = 2, prerequisites = [[1,0]]", output: "[0,1]" }, { input: "numCourses = 4, prerequisites = [[1,0],[2,1],[3,2]]", output: "[0,1,2,3]", explanation: "A strict chain: 0 before 1, 1 before 2, 2 before 3 — only one valid order exists." }, { input: "numCourses = 1, prerequisites = []", output: "[0]" }], constraints: ["1 <= numCourses <= 2000", "0 <= prerequisites.length <= numCourses * (numCourses-1)"], starterCode: { python: `class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        pass`, javascript: `function findOrder(numCourses, prerequisites) {\n\n}`, java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) { return {}; }\n};` }, testcases: [{ input: { numCourses: 2, prerequisites: [[1,0]] }, expectedOutput: [0,1] }, { input: { numCourses: 4, prerequisites: [[1,0],[2,1],[3,2]] }, expectedOutput: [0,1,2,3] }, { input: { numCourses: 1, prerequisites: [] }, expectedOutput: [0] }], hiddentestcases: [{ input: { numCourses: 2, prerequisites: [[1,0],[0,1]] }, expectedOutput: [] }, { input: { numCourses: 3, prerequisites: [[0,1],[0,2],[1,2]] }, expectedOutput: [2,1,0] }] },
 
   // ── BATCH 047: Mixed Interview Favorites (IDs 211-220) ────────────────────
 
@@ -6798,7 +6798,7 @@ const rawProblems = [
     ],
     hiddentestcases: [
       { input: { words: ["z","z"] }, expectedOutput: "z" },
-      { input: { words: ["ab","adc"] }, expectedOutput: "abdc" },
+      { input: { words: ["a","b","c","d"] }, expectedOutput: "abcd" },
     ],
   },
 
@@ -6932,7 +6932,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 249, title: "Number of Longest Increasing Subsequence", slug: "number-of-lis", functionName: "findNumberOfLIS", difficulty: "Medium", topic: "Dynamic Programming", pattern: "DP length + count arrays", companies: ["Facebook","Amazon"], description: "Given an integer array nums, return the number of longest increasing subsequences. Notice that the sequence has to be strictly increasing.", examples: [{ input: "nums = [1,3,5,4,7]", output: "2", explanation: "Two LIS: [1,3,5,7] and [1,3,4,7]" }, { input: "nums = [2,2,2,2,2]", output: "5" }], constraints: ["1 <= nums.length <= 2000", "-10^6 <= nums[i] <= 10^6"], starterCode: { python: `class Solution:\n    def findNumberOfLIS(self, nums):\n        pass`, javascript: `function findNumberOfLIS(nums) {\n\n}`, java: `class Solution {\n    public int findNumberOfLIS(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int findNumberOfLIS(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [1,3,5,4,7] }, expectedOutput: 2 }, { input: { nums: [2,2,2,2,2] }, expectedOutput: 5 }, { input: { nums: [1,2,4,3,5,4,7,2] }, expectedOutput: 3 }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: 1 }, { input: { nums: [1,2,3,1,2,3] }, expectedOutput: 2 }] },
+  { id: 249, title: "Number of Longest Increasing Subsequence", slug: "number-of-lis", functionName: "findNumberOfLIS", difficulty: "Medium", topic: "Dynamic Programming", pattern: "DP length + count arrays", companies: ["Facebook","Amazon"], description: "Given an integer array nums, return the number of longest increasing subsequences. Notice that the sequence has to be strictly increasing.", examples: [{ input: "nums = [1,3,5,4,7]", output: "2", explanation: "Two LIS: [1,3,5,7] and [1,3,4,7]" }, { input: "nums = [2,2,2,2,2]", output: "5" }], constraints: ["1 <= nums.length <= 2000", "-10^6 <= nums[i] <= 10^6"], starterCode: { python: `class Solution:\n    def findNumberOfLIS(self, nums):\n        pass`, javascript: `function findNumberOfLIS(nums) {\n\n}`, java: `class Solution {\n    public int findNumberOfLIS(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int findNumberOfLIS(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [1,3,5,4,7] }, expectedOutput: 2 }, { input: { nums: [2,2,2,2,2] }, expectedOutput: 5 }, { input: { nums: [1,2,4,3,5,4,7,2] }, expectedOutput: 3 }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: 1 }, { input: { nums: [1,2,3,1,2,3] }, expectedOutput: 4 }] },
 
   {
     id: 250,

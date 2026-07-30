@@ -53,7 +53,7 @@
         ],
         "target": 4
       },
-      "expectedOutput": 4
+      "expectedOutput": 3
     }
   ]
 }
