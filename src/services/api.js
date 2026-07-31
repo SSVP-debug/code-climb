@@ -1,5 +1,6 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
+import { buildLoginRedirect } from "../utils/authRedirect";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -65,7 +66,13 @@ export async function apiFetch(path, options = {}) {
   if (response.status === 401) {
     console.warn("[apiFetch] 401 persisted after token refresh — signing out and redirecting.");
     await signOut(auth);
-    window.location.href = "/login?reason=session_expired";
+    // Gate 3 audit, P0-1: preserve the page the person was on (e.g. a
+    // contest they were mid-session on) so they land back on it after
+    // re-authenticating, instead of always on the role's generic default.
+    window.location.href = buildLoginRedirect(
+      window.location.pathname + window.location.search,
+      { reason: "session_expired" }
+    );
     // Throw anyway so any in-progress async operation stops cleanly
     throw new Error("Session expired. Please sign in again.");
   }

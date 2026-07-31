@@ -4,6 +4,7 @@ import { useAuth } from "../context/authContext";
 import { signInWithGoogle } from "../services/auth";
 import { apiFetch } from "../services/api";
 import { getPostLoginDestination, VALID_PORTAL_ROLES } from "../utils/roleRedirect";
+import { getSafeNextPath } from "../utils/authRedirect";
 
 // Copy tailored per portal intent — same Google sign-in either way, just a
 // headline that matches the card the person tapped on /portal.
@@ -45,11 +46,22 @@ function LoginPage() {
     } catch {}
   }
 
+  // Gate 3 audit, P0-1: if ProtectedRoute (or the api.js 401 handler) sent
+  // this person here with ?next=, that's a page they were actively trying
+  // to reach — e.g. a shared contest link — and takes priority over the
+  // role-based default below. Validated by getSafeNextPath so this can
+  // never become an open redirect via a crafted ?next= value.
+  const nextPath = getSafeNextPath(searchParams);
+
   // Figures out where this account actually belongs (real role, not the
   // card that was clicked) and navigates there. /api/init already returns
   // `role` on every boot, so no extra endpoint is needed for this.
   async function redirectAfterAuth() {
     await applyReferralIfPresent();
+    if (nextPath) {
+      navigate(nextPath);
+      return;
+    }
     try {
       const { user: bootUser } = await apiFetch("/api/init");
       navigate(getPostLoginDestination(bootUser?.role, roleIntent));
