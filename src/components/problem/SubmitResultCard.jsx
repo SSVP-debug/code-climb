@@ -1,3 +1,4 @@
+import { PartyPopper } from "lucide-react";
 import { getStatusMeta } from "../../utils/statusMessages";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -39,7 +40,9 @@ function VerdictBadge({ meta }) {
         ${meta.bg} ${meta.border} ${meta.color}
       `}
     >
-      <span className="text-base leading-none">{meta.icon}</span>
+      <span className="text-base leading-none">
+        <meta.icon size={16} strokeWidth={2.25} aria-hidden="true" />
+      </span>
       <span>{meta.label}</span>
     </div>
   );
@@ -188,8 +191,9 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
 
           {/* First-solve celebration line */}
           {isAccepted && isFirstSolve && (
-            <p className="text-xs text-green-500 font-mono pl-1 pt-0.5">
-              🎉 First solve — problem marked complete
+            <p className="text-xs text-green-500 font-mono pl-1 pt-0.5 flex items-center gap-1.5">
+              <PartyPopper size={13} strokeWidth={2.25} aria-hidden="true" />
+              First solve — problem marked complete
             </p>
           )}
 

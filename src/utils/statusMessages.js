@@ -1,8 +1,19 @@
+import {
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  Settings,
+  Clock,
+  HardDrive,
+  PlayCircle,
+  FileQuestion,
+} from "lucide-react";
+
 const STATUS_MAP = {
   // ── Judge verdicts ────────────────────────────────────────────────────
   "Accepted": {
     label: "Accepted",
-    icon: "✓",
+    icon: CheckCircle2,
     color: "text-green-400",
     border: "border-green-500/30",
     bg: "bg-green-500/10",
@@ -11,7 +22,7 @@ const STATUS_MAP = {
   },
   "Wrong Answer": {
     label: "Wrong Answer",
-    icon: "✗",
+    icon: XCircle,
     color: "text-red-400",
     border: "border-red-500/30",
     bg: "bg-red-500/10",
@@ -20,7 +31,7 @@ const STATUS_MAP = {
   },
   "Compilation Error": {
     label: "Compilation Error",
-    icon: "⚠",
+    icon: AlertTriangle,
     color: "text-yellow-400",
     border: "border-yellow-500/30",
     bg: "bg-yellow-500/10",
@@ -29,7 +40,7 @@ const STATUS_MAP = {
   },
   "Runtime Error": {
     label: "Runtime Error",
-    icon: "⚠",
+    icon: AlertTriangle,
     color: "text-orange-400",
     border: "border-orange-500/30",
     bg: "bg-orange-500/10",
@@ -38,7 +49,7 @@ const STATUS_MAP = {
   },
   "Judge Error": {
     label: "Judge Error",
-    icon: "⚙",
+    icon: Settings,
     color: "text-zinc-400",
     border: "border-zinc-500/30",
     bg: "bg-zinc-500/10",
@@ -47,7 +58,7 @@ const STATUS_MAP = {
   },
   "Time Limit Exceeded": {
     label: "Time Limit Exceeded",
-    icon: "⏱",
+    icon: Clock,
     color: "text-orange-400",
     border: "border-orange-500/30",
     bg: "bg-orange-500/10",
@@ -56,7 +67,7 @@ const STATUS_MAP = {
   },
   "Memory Limit Exceeded": {
     label: "Memory Limit Exceeded",
-    icon: "📦",
+    icon: HardDrive,
     color: "text-orange-400",
     border: "border-orange-500/30",
     bg: "bg-orange-500/10",
@@ -65,9 +76,9 @@ const STATUS_MAP = {
   },
 
   // ── Run-code verdicts ─────────────────────────────────────────────────
-  "Executed ✓": {
+  "Executed": {
     label: "Executed",
-    icon: "▶",
+    icon: PlayCircle,
     color: "text-blue-400",
     border: "border-blue-500/30",
     bg: "bg-blue-500/10",
@@ -76,7 +87,7 @@ const STATUS_MAP = {
   },
   "Execution Failed": {
     label: "Execution Failed",
-    icon: "✗",
+    icon: XCircle,
     color: "text-red-400",
     border: "border-red-500/30",
     bg: "bg-red-500/10",
@@ -85,7 +96,7 @@ const STATUS_MAP = {
   },
   "Runner Unavailable": {
     label: "Runner Unavailable",
-    icon: "⚙",
+    icon: Settings,
     color: "text-zinc-400",
     border: "border-zinc-500/30",
     bg: "bg-zinc-500/10",
@@ -94,7 +105,7 @@ const STATUS_MAP = {
   },
   "Submission Error": {
     label: "Submission Error",
-    icon: "✗",
+    icon: XCircle,
     color: "text-red-400",
     border: "border-red-500/30",
     bg: "bg-red-500/10",
@@ -106,7 +117,7 @@ const STATUS_MAP = {
 /** Fallback for any unknown status string. */
 const UNKNOWN_META = {
   label: "Unknown",
-  icon: "?",
+  icon: FileQuestion,
   color: "text-zinc-500",
   border: "border-zinc-700",
   bg: "bg-zinc-800/50",
@@ -118,12 +129,20 @@ const UNKNOWN_META = {
  * Returns display metadata for a verdict string.
  * Always returns a valid object — never throws or returns undefined.
  *
- * @param {string} status - e.g. "Accepted" | "Wrong Answer ❌" | "Executed ✓"
+ * `icon` is a lucide-react component reference (not a rendered element) —
+ * callers render it themselves, e.g. `<meta.icon size={16} strokeWidth={2} />`.
+ *
+ * Accepts status strings with or without a trailing glyph (legacy callers
+ * may still pass "Executed ✓" / "Submission Error ❌") so this stays a
+ * drop-in replacement while those call sites get cleaned up.
+ *
+ * @param {string} status - e.g. "Accepted" | "Wrong Answer" | "Executed"
  * @returns {{ label, icon, color, border, bg, dot, kind }}
  */
 export function getStatusMeta(status) {
   if (!status) return UNKNOWN_META;
-  return STATUS_MAP[status] ?? UNKNOWN_META;
+  const normalized = status.replace(/[\s]*[✓✗❌⚠⚙️]+\s*$/u, "").trim();
+  return STATUS_MAP[normalized] ?? STATUS_MAP[status] ?? UNKNOWN_META;
 }
 
 /**
@@ -139,5 +158,5 @@ export function isAccepted(status) {
  * Used by SubmissionResultBanner to decide which banner styling to show.
  */
 export function isCleanRun(status) {
-  return status === "Executed ✓";
+  return status === "Executed" || status === "Executed ✓";
 }

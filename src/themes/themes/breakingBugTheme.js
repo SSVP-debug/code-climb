@@ -1,3 +1,4 @@
+import { FlaskConical } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 export const breakingBugTheme = createTheme({
@@ -50,7 +51,7 @@ export const breakingBugTheme = createTheme({
         coachNote: "Notes from the Lab",
         achievements: "Research Milestones",
         noAchievements: "No research milestones unlocked yet.",
-        achievementIcon: "🧪",
+        achievementIcon: FlaskConical,
         publicProfile: "Research Profile",
         totalSolved: "Experiments Verified",
         easySolved: "Stable Reactions",

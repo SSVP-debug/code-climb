@@ -1,8 +1,10 @@
+import { LayoutGrid, Hash, ArrowLeftRight, AppWindow, Search, Layers, Link, Sprout, Share2, Zap } from "lucide-react";
+
 const patterns = [
   {
     id: "arrays",
     name: "Arrays",
-    icon: "📦",
+    icon: LayoutGrid,
     difficulty: "Beginner",
     estimatedHours: 3,
     color: "green",
@@ -12,7 +14,7 @@ const patterns = [
   {
     id: "hash-map",
     name: "Hash Maps",
-    icon: "#️⃣",
+    icon: Hash,
     difficulty: "Beginner",
     estimatedHours: 2,
     color: "blue",
@@ -22,7 +24,7 @@ const patterns = [
   {
     id: "two-pointers",
     name: "Two Pointers",
-    icon: "👉",
+    icon: ArrowLeftRight,
     difficulty: "Beginner",
     estimatedHours: 2,
     color: "cyan",
@@ -32,7 +34,7 @@ const patterns = [
   {
     id: "sliding-window",
     name: "Sliding Window",
-    icon: "🪟",
+    icon: AppWindow,
     difficulty: "Intermediate",
     estimatedHours: 3,
     color: "purple",
@@ -42,7 +44,7 @@ const patterns = [
   {
     id: "binary-search",
     name: "Binary Search",
-    icon: "🔍",
+    icon: Search,
     difficulty: "Intermediate",
     estimatedHours: 2,
     color: "orange",
@@ -52,7 +54,7 @@ const patterns = [
   {
     id: "stack",
     name: "Stack",
-    icon: "📚",
+    icon: Layers,
     difficulty: "Intermediate",
     estimatedHours: 2,
     color: "red",
@@ -62,7 +64,7 @@ const patterns = [
   {
     id: "linked-list",
     name: "Linked List",
-    icon: "🔗",
+    icon: Link,
     difficulty: "Intermediate",
     estimatedHours: 3,
     color: "emerald",
@@ -72,7 +74,7 @@ const patterns = [
   {
     id: "trees",
     name: "Trees",
-    icon: "🌳",
+    icon: Sprout,
     difficulty: "Intermediate",
     estimatedHours: 5,
     color: "lime",
@@ -82,7 +84,7 @@ const patterns = [
   {
     id: "graphs",
     name: "Graphs",
-    icon: "🕸",
+    icon: Share2,
     difficulty: "Advanced",
     estimatedHours: 6,
     color: "pink",
@@ -92,7 +94,7 @@ const patterns = [
   {
     id: "dynamic-programming",
     name: "Dynamic Programming",
-    icon: "⚡",
+    icon: Zap,
     difficulty: "Advanced",
     estimatedHours: 8,
     color: "yellow",

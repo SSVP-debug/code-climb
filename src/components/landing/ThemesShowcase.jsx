@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CheckCircle2, AlertTriangle, Bomb } from "lucide-react";
 import Reveal from "./Reveal";
 import { getTheme } from "../../themes";
 import { THEME_ICONS, withAlpha } from "../../themes/themeIcons";
@@ -19,8 +20,9 @@ const THEMES_PREVIEW = ["codeHeist", "breakingBug"].map((id) => {
     Icon: THEME_ICONS[id],
     colors,
     name: id === "codeHeist" ? "Code Heist" : "Breaking Bug",
-    accepted: id === "codeHeist" ? "Vault Breached ✅" : "Crystal Clear ✅",
-    error: id === "codeHeist" ? "Escape Failed 🚨" : "Lab Explosion 💥",
+    accepted: id === "codeHeist" ? "Vault Breached" : "Crystal Clear",
+    error: id === "codeHeist" ? "Escape Failed" : "Lab Explosion",
+    ErrorIcon: id === "codeHeist" ? AlertTriangle : Bomb,
     texture:
       id === "codeHeist"
         ? {
@@ -78,19 +80,21 @@ function ThemesShowcase({ user }) {
                 <div className="flex items-center gap-3">
                   <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Accepted</span>
                   <span
-                    className="border px-2.5 py-1 rounded-lg text-xs font-semibold"
+                    className="border px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5"
                     style={{
                       color: t.colors.primary,
                       borderColor: withAlpha(t.colors.primary, "40"),
                       backgroundColor: withAlpha(t.colors.primary, "1a"),
                     }}
                   >
+                    <CheckCircle2 size={13} strokeWidth={2.25} aria-hidden="true" />
                     {t.accepted}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Error</span>
-                  <span className="border border-verdict-reject/25 bg-verdict-reject/10 text-verdict-reject px-2.5 py-1 rounded-lg text-xs font-semibold">
+                  <span className="border border-verdict-reject/25 bg-verdict-reject/10 text-verdict-reject px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                    <t.ErrorIcon size={13} strokeWidth={2.25} aria-hidden="true" />
                     {t.error}
                   </span>
                 </div>

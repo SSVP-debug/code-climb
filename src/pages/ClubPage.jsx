@@ -6,9 +6,9 @@ import Button from "../components/ui/Button";
 import { apiFetch } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { withAlpha } from "../themes/themeIcons";
-import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap } from "lucide-react";
+import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap, Medal } from "lucide-react";
 
-const MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
+const MEDAL_COLOR = { 1: "text-yellow-400", 2: "text-zinc-400", 3: "text-orange-700" };
 
 /**
  * ClubPage — the community hub (Phase 12A).
@@ -88,8 +88,8 @@ function ClubPage() {
                   to={`/u/${user.username}`}
                   className="flex items-center gap-3 bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-2.5 transition"
                 >
-                  <span className="text-lg w-6 text-center flex-shrink-0">
-                    {MEDAL[user.rank]}
+                  <span className={`w-6 text-center flex-shrink-0 flex items-center justify-center ${MEDAL_COLOR[user.rank] || "text-zinc-600"}`}>
+                    <Medal size={16} strokeWidth={2} aria-hidden="true" />
                   </span>
                   <span className="font-medium text-sm truncate flex-1">
                     {user.displayName}

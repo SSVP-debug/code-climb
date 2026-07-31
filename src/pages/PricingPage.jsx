@@ -5,7 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
-import { Gift, Check } from "lucide-react";
+import { Gift, Check, PartyPopper } from "lucide-react";
 
 const PLAN_DETAILS = {
   free: {
@@ -106,7 +106,9 @@ export default function PricingPage() {
           });
           if (verify.success) {
             setCurrentPlan(planId);
-            toast.success("Welcome to Code Club Pro! 🎉");
+            toast.success("Welcome to Code Club Pro!", {
+              icon: <PartyPopper size={18} strokeWidth={2} />,
+            });
           } else {
             toast.error(verify.error || "Payment verification failed.");
           }

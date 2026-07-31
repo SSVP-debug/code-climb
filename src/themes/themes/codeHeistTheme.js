@@ -1,3 +1,4 @@
+import { Vault } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 export const codeHeistTheme = createTheme({
@@ -51,7 +52,7 @@ export const codeHeistTheme = createTheme({
         coachNote: "Handler's Note",
         achievements: "Heist Records",
         noAchievements: "No heist records unlocked yet.",
-        achievementIcon: "💰",
+        achievementIcon: Vault,
         publicProfile: "Criminal Record",
         totalSolved: "Vaults Breached",
         easySolved: "Low Security",

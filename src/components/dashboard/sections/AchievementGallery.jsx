@@ -1,4 +1,5 @@
 import { ACHIEVEMENTS_LIST } from "../../../config/achievementMetadata";
+import { ACHIEVEMENT_ICONS, DEFAULT_ACHIEVEMENT_ICON } from "../../../config/achievementIcons";
 import { useTheme } from "../../../context/ThemeContext";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
@@ -25,6 +26,8 @@ function AchievementGallery({ achievements: achievementsProp, showLocked = true 
     ? ACHIEVEMENTS_LIST
     : ACHIEVEMENTS_LIST.filter((a) => unlocked.has(a.key));
 
+  const AchievementIcon = theme.words.achievementIcon || Trophy;
+
   return (
     <SectionCard title={theme.words.achievements} icon={<Trophy size={18} strokeWidth={2} />} accented>
 
@@ -32,7 +35,7 @@ function AchievementGallery({ achievements: achievementsProp, showLocked = true 
 
       {achievements.length === 0 ? (
         <EmptyState
-          icon={theme.words.achievementIcon}
+          icon={<AchievementIcon size={28} strokeWidth={1.75} />}
           title={theme.words.noAchievements}
           description="Keep solving to unlock your first badge."
           compact
@@ -44,6 +47,8 @@ function AchievementGallery({ achievements: achievementsProp, showLocked = true 
             const isUnlocked =
               unlocked.has(achievement.key);
 
+            const Icon = ACHIEVEMENT_ICONS[achievement.key] || DEFAULT_ACHIEVEMENT_ICON;
+
             return (
               <div
                 key={achievement.key}
@@ -52,8 +57,8 @@ function AchievementGallery({ achievements: achievementsProp, showLocked = true 
                   : "bg-zinc-900 opacity-50"
                   }`}
               >
-                <h3 className="text-lg font-bold">
-                  {achievement.icon}{" "}
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <Icon size={18} strokeWidth={2} aria-hidden="true" />
                   {achievement.title}
                 </h3>
 

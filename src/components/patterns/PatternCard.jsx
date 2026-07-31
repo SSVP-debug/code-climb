@@ -42,7 +42,7 @@ function PatternCard({ pattern, solved, total, onClick }) {
       )}
 
       <div className="flex items-start justify-between gap-3">
-        <span className="text-3xl">{pattern.icon}</span>
+        <span className="text-3xl"><pattern.icon size={26} strokeWidth={1.75} className={colors.text} aria-hidden="true" /></span>
         {!hideDifficulty && (
           <span
             className={`text-[10px] font-semibold uppercase tracking-wide rounded-full border px-2 py-0.5 ${DIFFICULTY_BADGE[pattern.difficulty] || DIFFICULTY_BADGE.Beginner}`}

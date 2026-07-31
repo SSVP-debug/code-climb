@@ -84,7 +84,7 @@ function DebugPanel({
 
             return (
                 <div className="p-5 space-y-3">
-                    <ErrorHeader kind={kind} label={submitInfo.status.replace(" ❌", "")} theme={theme} />
+                    <ErrorHeader kind={kind} label={submitInfo.status} theme={theme} />
                     {submitInfo.error && <ErrorBlock text={submitInfo.error} color="reject" />}
                     {submitInfo.passed !== undefined && (
                         <p className="text-xs text-zinc-500 font-mono-ui">

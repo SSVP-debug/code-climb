@@ -211,7 +211,7 @@ export function useProblemSolver({ problem, slug, contestId }) {
     } catch (err) {
       console.error(err);
       setError("Submission failed. Please try again.");
-      setSubmitInfo({ status: "Submission Error ❌", error: err.message ?? "Unexpected error.", passed: 0, total: 0 });
+      setSubmitInfo({ status: "Submission Error", error: err.message ?? "Unexpected error.", passed: 0, total: 0 });
     } finally {
       setSubmitting(false);
     }

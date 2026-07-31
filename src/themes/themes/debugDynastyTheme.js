@@ -1,3 +1,4 @@
+import { Rocket } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 /**
@@ -22,10 +23,10 @@ export const debugDynastyTheme = createTheme({
   words: {
     run:                  "Compile & Ship",
     submit:               "Push to Prod",
-    accepted:             "Deployed ✅",
-    wrongAnswer:          "Build Failed ❌",
-    runtimeError:         "Server Crashed 💀",
-    compileError:         "Lint Error ❌",
+    accepted:             "Deployed",
+    wrongAnswer:          "Build Failed",
+    runtimeError:         "Server Crashed",
+    compileError:         "Lint Error",
     testcases:            "Test Suites",
     debug:                "Debug Console",
     dashboard:            "Founder Dashboard",
@@ -51,7 +52,7 @@ export const debugDynastyTheme = createTheme({
     coachNote:            "Manager's Note",
     achievements:         "Engineering Milestones",
     noAchievements:       "No milestones shipped yet. Start sprinting.",
-    achievementIcon:      "🚀",
+    achievementIcon:      Rocket,
     publicProfile:        "Dev Profile",
     totalSolved:          "Tickets Closed",
     easySolved:           "Junior Tasks",

@@ -6,7 +6,6 @@
 export const THEME_OPTIONS = [
   {
     id: "codeHeist",
-    icon: "💰",
     name: "Code Heist",
     description: "Crack digital vaults and become a legendary hacker.",
     acceptedPreview: "Vault Breached",
@@ -17,7 +16,6 @@ export const THEME_OPTIONS = [
   },
   {
     id: "breakingBug",
-    icon: "🧪",
     name: "Breaking Bug",
     description: "Every bug is a reaction. Every solution is a discovery.",
     acceptedPreview: "Crystal Clear",
@@ -28,10 +26,9 @@ export const THEME_OPTIONS = [
   },
   {
     id: "ghostProtocol",
-    icon: "🔓",
     name: "Ghost Protocol",
     description: "Hack the system. Leave no trace. Root access is the only goal.",
-    acceptedPreview: "Root Access ✅",
+    acceptedPreview: "Root Access",
     runtimePreview:  "Kernel Panic",
     unlockXP: 500,   // unlock at 500 XP (~level 6)
     onboardingTitle:   "Welcome to the grid.",
@@ -39,10 +36,9 @@ export const THEME_OPTIONS = [
   },
   {
     id: "survivalCode",
-    icon: "🦑",
     name: "Survival Code",
     description: "456 players. One winner. Your code decides your fate.",
-    acceptedPreview: "Survive ✅",
+    acceptedPreview: "Survive",
     runtimePreview:  "Eliminated",
     unlockXP: 1000,  // unlock at 1000 XP (~level 11)
     onboardingTitle:   "The game has begun.",
@@ -50,10 +46,9 @@ export const THEME_OPTIONS = [
   },
   {
     id: "debugDynasty",
-    icon: "🚀",
     name: "Debug Dynasty",
     description: "Build the next big thing. One algorithm at a time.",
-    acceptedPreview: "Deployed ✅",
+    acceptedPreview: "Deployed",
     runtimePreview:  "Server Crashed",
     unlockXP: 2000,  // unlock at 2000 XP (~level 21)
     onboardingTitle:   "Welcome to the startup.",

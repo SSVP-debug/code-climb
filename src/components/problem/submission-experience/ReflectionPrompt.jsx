@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { Sprout, Zap, Flame, Bomb } from "lucide-react";
 import { saveReflection } from "../../../services/reflectionService";
 
 // Order matters — rendered left to right, easy → hardest.
 const OPTIONS = [
-  { value: "easy", emoji: "😀", label: "Easy" },
-  { value: "manageable", emoji: "🙂", label: "Manageable" },
-  { value: "challenging", emoji: "😓", label: "Challenging" },
-  { value: "reallyDifficult", emoji: "😵", label: "Really Difficult" },
+  { value: "easy", Icon: Sprout, label: "Easy" },
+  { value: "manageable", Icon: Zap, label: "Manageable" },
+  { value: "challenging", Icon: Flame, label: "Challenging" },
+  { value: "reallyDifficult", Icon: Bomb, label: "Really Difficult" },
 ];
 
 /**
@@ -64,7 +65,7 @@ function ReflectionPrompt({ submissionId }) {
               className="group flex flex-col items-center gap-1 rounded-xl px-2.5 py-2 border border-transparent hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none"
             >
               <span className="text-xl leading-none group-hover:scale-110 transition-transform">
-                {opt.emoji}
+                <opt.Icon size={20} strokeWidth={1.75} aria-hidden="true" />
               </span>
             </button>
           ))}

@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom";
+import { Terminal, Target, Building2 } from "lucide-react";
 
 const VIEW_AS = [
   {
     id: "student",
     label: "Student",
     accent: "border-green-500/30 hover:border-green-500/60",
-    icon: "🧑‍💻",
+    icon: Terminal,
     pages: [{ label: "Dashboard", path: "/dashboard" }],
   },
   {
     id: "recruiter",
     label: "Recruiter",
     accent: "border-sky-500/30 hover:border-sky-500/60",
-    icon: "🎯",
+    icon: Target,
     pages: [
       { label: "Candidates", path: "/recruiter/dashboard?tab=candidates" },
       { label: "Sent Tests", path: "/recruiter/dashboard?tab=tests" },
@@ -22,7 +23,7 @@ const VIEW_AS = [
     id: "tpo",
     label: "TPO",
     accent: "border-violet-500/30 hover:border-violet-500/60",
-    icon: "🏫",
+    icon: Building2,
     pages: [
       { label: "Overview", path: "/tpo/dashboard?tab=overview" },
       { label: "Students", path: "/tpo/dashboard?tab=students" },
@@ -44,7 +45,7 @@ function ViewAsSection() {
             className={`bg-zinc-900/60 border rounded-xl px-4 py-3 transition ${v.accent}`}
           >
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl" aria-hidden="true">{v.icon}</span>
+              <span className="text-2xl" aria-hidden="true"><v.icon size={22} strokeWidth={1.75} /></span>
               <p className="text-white text-sm font-semibold">{v.label} portal</p>
             </div>
             <div className="flex flex-col gap-1.5">

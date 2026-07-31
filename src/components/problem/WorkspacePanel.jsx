@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AlertTriangle, XCircle, Settings, Bug } from "lucide-react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -83,7 +84,7 @@ function DebugPanel({
 
             return (
                 <div className="p-5 space-y-3">
-                    <ErrorHeader kind={kind} label={submitInfo.status.replace(" ❌", "")} theme={theme} />
+                    <ErrorHeader kind={kind} label={submitInfo.status} theme={theme} />
                     {submitInfo.error && <ErrorBlock text={submitInfo.error} color="red" />}
                     {submitInfo.passed !== undefined && (
                         <p className="text-xs text-zinc-500 font-mono">
@@ -98,7 +99,7 @@ function DebugPanel({
     return (
         <div className="flex items-center justify-center h-full min-h-[160px]">
             <div className="text-center space-y-2">
-                <div className="text-2xl">🐛</div>
+                <Bug size={28} strokeWidth={1.75} className="mx-auto text-zinc-700" aria-hidden="true" />
                 <p className="text-zinc-600 text-sm font-mono">No errors to show</p>
                 <p className="text-zinc-700 text-xs font-mono">
                     Runtime errors and compile errors appear here
@@ -115,25 +116,25 @@ function getKindMeta(theme) {
         compile: {
             label: theme.words.compileError,
             color: "text-yellow-400",
-            icon: "⚠",
+            icon: AlertTriangle,
         },
 
         runtime: {
             label: theme.words.runtimeError,
             color: "text-red-400",
-            icon: "✗",
+            icon: XCircle,
         },
 
         judge: {
             label: theme.words.judgeError,
             color: "text-zinc-400",
-            icon: "⚙",
+            icon: Settings,
         },
 
         infra: {
             label: "Runner Unavailable",
             color: "text-zinc-400",
-            icon: "⚙",
+            icon: Settings,
         },
     };
 }
@@ -143,8 +144,9 @@ function ErrorHeader({ kind, label, theme }) {
     const meta = KIND_META[kind] ?? KIND_META.judge;
     return (
         <div className="flex items-center gap-2">
-            <span className={`text-sm font-semibold font-mono ${meta.color}`}>
-                {meta.icon} {label ?? meta.label}
+            <span className={`flex items-center gap-1.5 text-sm font-semibold font-mono ${meta.color}`}>
+                <meta.icon size={14} strokeWidth={2.25} aria-hidden="true" />
+                {label ?? meta.label}
             </span>
         </div>
     );

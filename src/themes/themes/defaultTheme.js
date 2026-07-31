@@ -1,3 +1,4 @@
+import { Trophy } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 /**
@@ -60,7 +61,7 @@ export const defaultTheme = createTheme({
         coachNote: "Coach's Note",
         achievements: "Achievements",
         noAchievements: "No achievements unlocked yet.",
-        achievementIcon: "🏆",
+        achievementIcon: Trophy,
         publicProfile: "Public Profile",
         totalSolved: "Total Solved",
         easySolved: "Easy Solved",

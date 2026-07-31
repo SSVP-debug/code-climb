@@ -6,7 +6,7 @@ import { getTimeRemaining } from "../utils/countdown";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
 import { useTheme } from "../context/ThemeContext";
-import { Check, Trophy, Target, Users2 } from "lucide-react";
+import { Check, Trophy, Target, Users2, Medal } from "lucide-react";
 
 function formatTime(endsAt) {
   const { isEnded, days, hours, minutes, seconds } = getTimeRemaining(endsAt);
@@ -117,7 +117,7 @@ export default function ContestDetailPage() {
                 )}
                 <div>
                   <p className="font-bold text-lg">
-                    {isMvp ? "MVP — Top Performer 🏆" : "Your Results"}
+                    {isMvp ? "MVP — Top Performer" : "Your Results"}
                   </p>
                   {percentile !== null && (
                     <p className="text-sm text-zinc-400">
@@ -215,10 +215,10 @@ export default function ContestDetailPage() {
                     className="grid grid-cols-12 items-center px-4 py-3"
                     style={p.rank === myRank ? { backgroundColor: `${theme.colors.primary}0d` } : undefined}
                   >
-                    <span className={`col-span-1 text-sm font-bold ${
+                    <span className={`col-span-1 text-sm font-bold flex items-center ${
                       i === 0 ? "text-yellow-400" : i === 1 ? "text-zinc-400" : i === 2 ? "text-orange-700" : "text-zinc-600"
                     }`}>
-                      {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${p.rank}`}
+                      {i < 3 ? <Medal size={16} strokeWidth={2} aria-hidden="true" /> : `#${p.rank}`}
                     </span>
                     <span className="col-span-6 text-sm text-white truncate">{p.displayName || p.username}</span>
                     <span className="col-span-2 text-center text-sm text-zinc-400">{p.solvedSlugs?.length ?? 0}</span>

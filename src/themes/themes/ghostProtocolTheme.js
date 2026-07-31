@@ -1,3 +1,4 @@
+import { Terminal } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 /**
@@ -22,10 +23,10 @@ export const ghostProtocolTheme = createTheme({
   words: {
     run:                  "Probe System",
     submit:               "Deploy Exploit",
-    accepted:             "Root Access ✅",
-    wrongAnswer:          "Firewall Blocked ❌",
-    runtimeError:         "Kernel Panic 💀",
-    compileError:         "Syntax Breach ❌",
+    accepted:             "Root Access",
+    wrongAnswer:          "Firewall Blocked",
+    runtimeError:         "Kernel Panic",
+    compileError:         "Syntax Breach",
     testcases:            "Payloads",
     debug:                "System Logs",
     dashboard:            "Command Center",
@@ -51,7 +52,7 @@ export const ghostProtocolTheme = createTheme({
     coachNote:            "Handler's Note",
     achievements:         "Breach Records",
     noAchievements:       "No breaches logged yet.",
-    achievementIcon:      "🔓",
+    achievementIcon:      Terminal,
     publicProfile:        "Ghost File",
     totalSolved:          "Targets Breached",
     easySolved:           "Script Kiddie",

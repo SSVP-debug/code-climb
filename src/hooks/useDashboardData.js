@@ -15,19 +15,19 @@ function useDashboardData() {
     const list = [];
 
     if ((solvedDifficulty.easy ?? 0) > 0) {
-      list.push("Beginner 🟢");
+      list.push("Beginner");
     }
 
     if ((solvedDifficulty.medium ?? 0) > 0) {
-      list.push("Intermediate 🟡");
+      list.push("Intermediate");
     }
 
     if ((solvedDifficulty.hard ?? 0) > 0) {
-      list.push("Advanced 🔴");
+      list.push("Advanced");
     }
 
     if (currentStreak >= 7) {
-      list.push("7 Day Streak 🔥");
+      list.push("7 Day Streak");
     }
 
     return list;

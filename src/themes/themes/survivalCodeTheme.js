@@ -1,3 +1,4 @@
+import { Triangle } from "lucide-react";
 import { createTheme } from "../themeSchema";
 
 /**
@@ -22,10 +23,10 @@ export const survivalCodeTheme = createTheme({
   words: {
     run:                  "Green Light",
     submit:               "Stake Your Life",
-    accepted:             "Survive ✅",
-    wrongAnswer:          "Eliminated ❌",
-    runtimeError:         "Game Over 💀",
-    compileError:         "Invalid Move ❌",
+    accepted:             "Survive",
+    wrongAnswer:          "Eliminated",
+    runtimeError:         "Game Over",
+    compileError:         "Invalid Move",
     testcases:            "Games",
     debug:                "Guard Review",
     dashboard:            "Arena",
@@ -51,7 +52,7 @@ export const survivalCodeTheme = createTheme({
     coachNote:            "Survivor's Note",
     achievements:         "Survival Records",
     noAchievements:       "No games survived yet. Step in.",
-    achievementIcon:      "🦑",
+    achievementIcon:      Triangle,
     publicProfile:        "Player Profile",
     totalSolved:          "Games Survived",
     easySolved:           "Red Light",
