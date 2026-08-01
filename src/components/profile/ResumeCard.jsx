@@ -59,6 +59,9 @@ function ResumeCard() {
       title="Resume"
       subtitle="Your resume, shared on your terms."
       accented
+      collapsible
+      defaultOpen
+      storageKey="profile-collapse-resume"
     >
       {editing ? (
         <div className="space-y-3">

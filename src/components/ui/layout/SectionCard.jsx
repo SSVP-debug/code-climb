@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { getStorageData, setStorageData } from "../../../services/storageService";
+
 function SectionCard({
   title,
   subtitle,
@@ -6,8 +10,22 @@ function SectionCard({
   children,
   className = "",
   accented = false,
+  collapsible = false,
+  defaultOpen = true,
+  storageKey = null,
 }) {
   const hasHeader = title || action;
+
+  const [open, setOpen] = useState(() => {
+    if (!collapsible) return true;
+    return storageKey ? getStorageData(storageKey, defaultOpen) : defaultOpen;
+  });
+
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (storageKey) setStorageData(storageKey, next);
+  }
 
   return (
     <div
@@ -25,7 +43,25 @@ function SectionCard({
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       {hasHeader && (
-        <div className="flex items-start justify-between gap-3 mb-4">
+        <div
+          className={`flex items-start justify-between gap-3 mb-4 ${
+            collapsible ? "cursor-pointer select-none -m-1 p-1 rounded-lg hover:bg-white/[0.03] transition" : ""
+          }`}
+          onClick={collapsible ? toggle : undefined}
+          role={collapsible ? "button" : undefined}
+          tabIndex={collapsible ? 0 : undefined}
+          aria-expanded={collapsible ? open : undefined}
+          onKeyDown={
+            collapsible
+              ? (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggle();
+                  }
+                }
+              : undefined
+          }
+        >
           {/* Title group */}
           <div className="min-w-0 flex items-start gap-2.5">
             {icon && (
@@ -49,15 +85,34 @@ function SectionCard({
             </div>
           </div>
 
-          {/* Right-aligned action slot */}
-          {action && (
-            <div className="flex-shrink-0">{action}</div>
-          )}
+          {/* Right-aligned action slot + collapse chevron */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {action && (
+              <div onClick={(e) => e.stopPropagation()}>{action}</div>
+            )}
+            {collapsible && (
+              <ChevronDown
+                size={18}
+                strokeWidth={2}
+                className={`text-zinc-500 transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
+                aria-hidden="true"
+              />
+            )}
+          </div>
         </div>
       )}
 
       {/* ── Body ───────────────────────────────────────────────────────── */}
-      {children}
+      {/* Grid-rows trick (0fr ↔ 1fr) gives a smooth height transition
+          without measuring scrollHeight in JS. Body stays mounted while
+          collapsed (not unmounted) so toggling is instant, no re-fetch. */}
+      {collapsible ? (
+        <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+          <div className="overflow-hidden">{children}</div>
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }

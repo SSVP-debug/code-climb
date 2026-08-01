@@ -20,6 +20,9 @@ function ProfessionalPresence() {
       title="Professional Presence"
       subtitle="Connect the profiles that represent your work."
       accented
+      collapsible
+      defaultOpen
+      storageKey="profile-collapse-professional-presence"
     >
       <div className="space-y-3">
         <LinkRow

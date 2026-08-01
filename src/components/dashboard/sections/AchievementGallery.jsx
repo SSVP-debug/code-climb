@@ -6,7 +6,13 @@ import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
 import { Trophy, CheckCircle2, Lock } from "lucide-react";
 
-function AchievementGallery({ achievements: achievementsProp, showLocked = true } = {}) {
+function AchievementGallery({
+  achievements: achievementsProp,
+  showLocked = true,
+  collapsible = false,
+  defaultOpen = true,
+  storageKey = null,
+} = {}) {
   const { theme } = useTheme();
 
   const { achievements: contextAchievements } = useAppContext();
@@ -29,7 +35,14 @@ function AchievementGallery({ achievements: achievementsProp, showLocked = true 
   const AchievementIcon = theme.words.achievementIcon || Trophy;
 
   return (
-    <SectionCard title={theme.words.achievements} icon={<Trophy size={18} strokeWidth={2} />} accented>
+    <SectionCard
+      title={theme.words.achievements}
+      icon={<Trophy size={18} strokeWidth={2} />}
+      accented
+      collapsible={collapsible}
+      defaultOpen={defaultOpen}
+      storageKey={storageKey}
+    >
 
 
 

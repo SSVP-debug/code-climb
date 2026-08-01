@@ -28,6 +28,9 @@
  * ─────
  * id          string      — unique slot identifier, e.g. "profile-achievements"
  *                           Snake/kebab-case, scoped to the page: "page-section"
+ *                           Also set as the DOM `id` attribute, so a slot
+ *                           doubles as a scroll-anchor target (`href="#id"`)
+ *                           at no extra cost — see ProfileQuickNav.jsx.
  * children    ReactNode   — the real content this slot wraps
  *
  * Usage
@@ -44,8 +47,10 @@
 function ContentSlot({ id, children }) {
   // `data-slot` attribute makes slots discoverable in DevTools and
   // future slot-registry queries without adding any runtime cost.
+  // `id` is set to the same value so a slot can also be used as a
+  // scroll-anchor target — inert unless something links to `#id`.
   return (
-    <div data-slot={id}>
+    <div id={id} data-slot={id}>
       {children}
     </div>
   );

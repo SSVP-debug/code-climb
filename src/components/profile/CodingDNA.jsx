@@ -72,7 +72,14 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
   ];
 
   return (
-    <SectionCard title="Coding DNA" icon={<Dna size={18} strokeWidth={2} />} accented>
+    <SectionCard
+      title="Coding DNA"
+      icon={<Dna size={18} strokeWidth={2} />}
+      accented
+      collapsible
+      defaultOpen={false}
+      storageKey="profile-collapse-coding-dna"
+    >
       <div className="grid grid-cols-2 gap-4">
         {dnaItems.map((item) => (
           <div key={item.label} className="bg-zinc-800 rounded-xl p-4">

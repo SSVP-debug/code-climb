@@ -61,6 +61,9 @@ export default function EducationSection() {
       subtitle="Verify your college to unlock the College Leaderboard"
       icon={<GraduationCap size={18} strokeWidth={2} />}
       accented
+      collapsible
+      defaultOpen={false}
+      storageKey="profile-collapse-education"
     >
       {education === undefined ? (
         <div className="h-16 bg-zinc-800 rounded-xl animate-pulse" />

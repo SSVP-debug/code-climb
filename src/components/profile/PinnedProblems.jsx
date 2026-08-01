@@ -80,6 +80,9 @@ function PinnedProblems() {
       icon={<Pin size={18} strokeWidth={2} />}
       subtitle="Showcase your best solves — shown on your public profile."
       accented
+      collapsible
+      defaultOpen={false}
+      storageKey="profile-collapse-pinned"
     >
       {pinnedProblems.length === 0 && !pickerOpen ? (
         <EmptyState

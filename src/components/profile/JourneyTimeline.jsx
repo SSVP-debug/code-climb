@@ -45,7 +45,14 @@ function JourneyTimeline({ joinedDate, achievements = [] }) {
   }, [joinedDate, achievements]);
 
   return (
-    <SectionCard title="Journey Timeline" icon={<Compass size={18} strokeWidth={2} />} accented>
+    <SectionCard
+      title="Journey Timeline"
+      icon={<Compass size={18} strokeWidth={2} />}
+      accented
+      collapsible
+      defaultOpen={false}
+      storageKey="profile-collapse-journey"
+    >
       {events.length === 0 ? (
         <EmptyState
           icon={<Compass size={28} strokeWidth={1.75} />}

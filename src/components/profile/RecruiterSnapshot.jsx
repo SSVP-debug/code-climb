@@ -74,6 +74,9 @@ function RecruiterSnapshot() {
       icon={<Target size={18} strokeWidth={2} />}
       subtitle="Shown to recruiters and TPOs viewing your public profile."
       accented
+      collapsible
+      defaultOpen
+      storageKey="profile-collapse-recruiter-snapshot"
     >
       <div className="space-y-5">
         <div className="flex items-center justify-between bg-zinc-800 rounded-xl p-4">

@@ -62,6 +62,9 @@ function FeaturedProject() {
       subtitle="Showcase the project you're most proud of."
       icon={<Sparkles size={18} strokeWidth={2} />}
       accented
+      collapsible
+      defaultOpen
+      storageKey="profile-collapse-featured-project"
       action={
         !editing && project ? (
           <div className="flex items-center gap-3">

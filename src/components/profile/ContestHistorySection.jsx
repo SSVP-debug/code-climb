@@ -27,6 +27,9 @@ export default function ContestHistorySection() {
       subtitle="Every contest you've taken part in"
       icon={<Swords size={18} strokeWidth={2} />}
       accented
+      collapsible
+      defaultOpen={false}
+      storageKey="profile-collapse-contest-history"
     >
       {contests === undefined ? (
         <div className="space-y-2">

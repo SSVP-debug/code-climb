@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppContext } from "../hooks/useAppContext";
 import { useTheme } from "../context/ThemeContext";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { getLevel, getLevelProgress } from "../utils/xpLevel";
-import { Flame, BarChart3, Award, Zap, Inbox, FileText } from "lucide-react";
+import { Flame, BarChart3, Award, Zap, Inbox, FileText, ChevronDown } from "lucide-react";
 
 // ── UI foundation ──────────────────────────────────────────────────────────────
 import SectionCard from "../components/ui/layout/SectionCard";
+import CollapsibleGroup from "../components/ui/layout/CollapsibleGroup";
 import EmptyState from "../components/ui/feedback/EmptyState";
 import ContentSlot from "../components/ui/slots/ContentSlot";
+import ProfileQuickNav from "../components/profile/ProfileQuickNav";
 import AchievementGallery from "../components/dashboard/sections/AchievementGallery";
 import ActivityHeatmap from "../components/profile/ActivityHeatmap";
 import SkillRadar from "../components/profile/SkillRadar";
@@ -51,7 +54,21 @@ function Profile() {
     role,
   } = useAppContext();
 
-  const recentSubmissions = submissions.slice(0, 5);
+  const [showAllActivity, setShowAllActivity] = useState(false);
+  const [showAllSubmissions, setShowAllSubmissions] = useState(false);
+
+  const ACTIVITY_PREVIEW_COUNT = 5;
+  const SUBMISSIONS_PREVIEW_COUNT = 5;
+  const SUBMISSIONS_EXPANDED_COUNT = 15; // capped even when "expanded" — full history isn't paginated here
+
+  const visibleActivity = showAllActivity
+    ? recentActivity
+    : recentActivity.slice(0, ACTIVITY_PREVIEW_COUNT);
+
+  const recentSubmissions = submissions.slice(
+    0,
+    showAllSubmissions ? SUBMISSIONS_EXPANDED_COUNT : SUBMISSIONS_PREVIEW_COUNT
+  );
 
   const level = getLevel(totalXP);
   const { current, needed, percent } = getLevelProgress(totalXP);
@@ -66,6 +83,18 @@ function Profile() {
     ? new Date(joinedDate).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
     : "Recently";
 
+  // Quick-jump nav — mirrors the ContentSlot ids below, with the same
+  // role gating so a link never points at a section that isn't rendered.
+  const quickNavItems = [
+    { id: "profile-identity", label: "Overview" },
+    { id: "profile-professional-presence", label: "Presence" },
+    ...(role === "student" ? [{ id: "profile-recruiter-snapshot", label: "Recruiter" }] : []),
+    { id: "profile-heatmap-radar", label: "Activity & Skills" },
+    { id: "profile-achievements", label: "Achievements" },
+    { id: "profile-journey", label: "Journey" },
+    { id: "profile-submissions", label: "Submissions" },
+  ];
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -73,6 +102,8 @@ function Profile() {
       <div className="max-w-3xl space-y-8">
 
         <h1 className="text-4xl font-bold">Profile</h1>
+
+        <ProfileQuickNav items={quickNavItems} />
 
         {/* ── 1. Hero ──────────────────────────────────────────────────── */}
         <ContentSlot id="profile-identity">
@@ -212,10 +243,17 @@ function Profile() {
         {/* Both components already existed and already worked — ActivityHeatmap
             was mounted only on the public /u/:username page, never here. */}
         <ContentSlot id="profile-heatmap-radar">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <ActivityHeatmap activityDates={activityDates} accentColor={theme.colors.primary} />
-            <SkillRadar topicStats={topicStats} accentColor={theme.colors.primary} />
-          </div>
+          <CollapsibleGroup
+            title="Activity & Skills"
+            icon={<BarChart3 size={15} strokeWidth={2} />}
+            defaultOpen
+            storageKey="profile-collapse-heatmap-radar"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <ActivityHeatmap activityDates={activityDates} accentColor={theme.colors.primary} />
+              <SkillRadar topicStats={topicStats} accentColor={theme.colors.primary} />
+            </div>
+          </CollapsibleGroup>
         </ContentSlot>
 
         {/* ── 5. Coding DNA ────────────────────────────────────────────── */}
@@ -238,46 +276,57 @@ function Profile() {
             items. They live here now — personal, deep-dive detail belongs
             on the Profile page, not in the main navbar. */}
         <ContentSlot id="profile-insights">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link
-              to="/analytics"
-              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
-            >
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+          <CollapsibleGroup
+            title="Insights & Certifications"
+            icon={<Award size={15} strokeWidth={2} />}
+            defaultOpen={false}
+            storageKey="profile-collapse-insights"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link
+                to="/analytics"
+                className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
               >
-                <BarChart3 size={20} strokeWidth={2} aria-hidden="true" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold">{theme.words.analytics}</p>
-                <p className="text-zinc-500 text-sm">Deep dive into your solving patterns.</p>
-              </div>
-              <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
-            </Link>
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+                >
+                  <BarChart3 size={20} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold">{theme.words.analytics}</p>
+                  <p className="text-zinc-500 text-sm">Deep dive into your solving patterns.</p>
+                </div>
+                <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
+              </Link>
 
-            <Link
-              to="/certifications"
-              className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
-            >
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+              <Link
+                to="/certifications"
+                className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-4 hover:border-[var(--theme-primary,#2dd4bf)] transition"
               >
-                <Award size={20} strokeWidth={2} aria-hidden="true" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold">Certifications</p>
-                <p className="text-zinc-500 text-sm">View and share what you've earned.</p>
-              </div>
-              <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
-            </Link>
-          </div>
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${theme.colors.primary}1f`, color: theme.colors.primary }}
+                >
+                  <Award size={20} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold">Certifications</p>
+                  <p className="text-zinc-500 text-sm">View and share what you've earned.</p>
+                </div>
+                <span className="ml-auto text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">→</span>
+              </Link>
+            </div>
+          </CollapsibleGroup>
         </ContentSlot>
 
         {/* ── 8. Achievements ──────────────────────────────────────────── */}
         <ContentSlot id="profile-achievements">
-          <AchievementGallery />
+          <AchievementGallery
+            collapsible
+            defaultOpen
+            storageKey="profile-collapse-achievements"
+          />
         </ContentSlot>
 
         {/* ── 9. Journey Timeline ──────────────────────────────────────── */}
@@ -287,7 +336,14 @@ function Profile() {
 
         {/* ── 10. Recent Activity ────────────────────────────────────────── */}
         <ContentSlot id="profile-activity">
-          <SectionCard title="Recent Activity" icon={<Zap size={18} strokeWidth={2} />} accented>
+          <SectionCard
+            title="Recent Activity"
+            icon={<Zap size={18} strokeWidth={2} />}
+            accented
+            collapsible
+            defaultOpen
+            storageKey="profile-collapse-activity"
+          >
             {recentActivity.length === 0 ? (
               <EmptyState
                 icon={<Inbox size={28} strokeWidth={1.75} />}
@@ -298,34 +354,61 @@ function Profile() {
                 compact
               />
             ) : (
-              <div className="space-y-3">
-                {recentActivity.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted")
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                          }`}
-                      />
-                      <span className="text-sm">{item.title}</span>
+              <>
+                <div className="space-y-3">
+                  {visibleActivity.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-zinc-800 px-4 py-3 rounded-xl flex justify-between items-center"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status?.includes("Accepted")
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                            }`}
+                        />
+                        <span className="text-sm">{item.title}</span>
+                      </div>
+                      <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
+                        {item.time}
+                      </span>
                     </div>
-                    <span className="text-zinc-500 text-sm flex-shrink-0 ml-4">
-                      {item.time}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+
+                {recentActivity.length > ACTIVITY_PREVIEW_COUNT && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllActivity((v) => !v)}
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
+                  >
+                    {showAllActivity
+                      ? "Show less"
+                      : `Show ${recentActivity.length - ACTIVITY_PREVIEW_COUNT} more`}
+                    <ChevronDown
+                      size={15}
+                      strokeWidth={2}
+                      className={`transition-transform duration-200 ${showAllActivity ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                )}
+              </>
             )}
           </SectionCard>
         </ContentSlot>
 
         {/* ── 11. Recent Submissions ─────────────────────────────────────── */}
         <ContentSlot id="profile-submissions">
-          <SectionCard title="Recent Submissions" icon={<FileText size={18} strokeWidth={2} />} accented>
+          <SectionCard
+            title="Recent Submissions"
+            icon={<FileText size={18} strokeWidth={2} />}
+            accented
+            collapsible
+            defaultOpen={false}
+            storageKey="profile-collapse-submissions"
+          >
             {recentSubmissions.length === 0 ? (
               <EmptyState
                 icon={<FileText size={28} strokeWidth={1.75} />}
@@ -336,31 +419,51 @@ function Profile() {
                 compact
               />
             ) : (
-              <div className="space-y-3">
-                {recentSubmissions.map((submission) => (
-                  <div
-                    key={submission.id || submission.createdAt || Math.random()}
-                    className="flex justify-between items-center border-b border-zinc-800 pb-2 last:border-0"
+              <>
+                <div className="space-y-3">
+                  {recentSubmissions.map((submission) => (
+                    <div
+                      key={submission.id || submission.createdAt || Math.random()}
+                      className="flex justify-between items-center border-b border-zinc-800 pb-2 last:border-0"
+                    >
+                      <div>
+                        <p className="font-medium">{submission.problemTitle}</p>
+                        <p className="text-xs text-zinc-500">{submission.language}</p>
+                      </div>
+                      <div className="text-right">
+                        <p
+                          className={
+                            submission.status?.includes("Accepted")
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {submission.status}
+                        </p>
+                        <p className="text-xs text-zinc-500">{submission.date}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {submissions.length > SUBMISSIONS_PREVIEW_COUNT && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSubmissions((v) => !v)}
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
                   >
-                    <div>
-                      <p className="font-medium">{submission.problemTitle}</p>
-                      <p className="text-xs text-zinc-500">{submission.language}</p>
-                    </div>
-                    <div className="text-right">
-                      <p
-                        className={
-                          submission.status?.includes("Accepted")
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }
-                      >
-                        {submission.status}
-                      </p>
-                      <p className="text-xs text-zinc-500">{submission.date}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {showAllSubmissions
+                      ? "Show less"
+                      : `Show ${Math.min(submissions.length, SUBMISSIONS_EXPANDED_COUNT) - SUBMISSIONS_PREVIEW_COUNT} more`}
+                    <ChevronDown
+                      size={15}
+                      strokeWidth={2}
+                      className={`transition-transform duration-200 ${showAllSubmissions ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                )}
+              </>
             )}
           </SectionCard>
         </ContentSlot>
