@@ -1,29 +1,80 @@
+import { useState } from "react";
+import { FileText, ChevronDown } from "lucide-react";
+import SectionCard from "../ui/layout/SectionCard";
+import EmptyState from "../ui/feedback/EmptyState";
+import { getStatusMeta } from "../../utils/statusMessages";
+
+const PREVIEW_COUNT = 5;
+const EXPANDED_COUNT = 15; // capped even when "expanded" — no pagination here
+
 function RecentSubmissionsCard({ submissions }) {
+  const [showAll, setShowAll] = useState(false);
+
+  const visible = submissions.slice(0, showAll ? EXPANDED_COUNT : PREVIEW_COUNT);
+
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h2 className="text-xl font-semibold mb-4">Recent Submissions</h2>
-
-      <div className="space-y-3">
-        {submissions.slice(0, 10).map((submission) => (
-          <div
-            key={submission._id || submission.id}
-            className="bg-zinc-800 px-4 py-3 rounded-xl flex items-center justify-between"
-          >
-            <div>
-              <p className="font-semibold">
-                {submission.problemTitle || submission.problemSlug}
-              </p>
-              <p className="text-zinc-400 text-sm">{submission.language}</p>
-            </div>
-            <span className="text-sm">{submission.status}</span>
+    <SectionCard
+      title="Recent Submissions"
+      icon={<FileText size={18} strokeWidth={2} />}
+      accented
+      collapsible
+      defaultOpen
+      storageKey="analytics-collapse-submissions"
+    >
+      {submissions.length === 0 ? (
+        <EmptyState
+          icon={<FileText size={28} strokeWidth={1.75} />}
+          title="No submissions yet"
+          description="Submit your first solution to see your history here."
+          actionLabel="Start solving"
+          actionHref="/problems"
+          compact
+        />
+      ) : (
+        <>
+          <div className="space-y-2.5">
+            {visible.map((submission) => {
+              const meta = getStatusMeta(submission.status);
+              return (
+                <div
+                  key={submission._id || submission.id}
+                  className="bg-zinc-800 px-4 py-3 rounded-xl flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">
+                      {submission.problemTitle || submission.problemSlug}
+                    </p>
+                    <p className="text-zinc-500 text-xs">{submission.language}</p>
+                  </div>
+                  <span className={`flex items-center gap-1.5 text-sm font-medium flex-shrink-0 ${meta.color}`}>
+                    <meta.icon size={14} strokeWidth={2.25} aria-hidden="true" />
+                    {meta.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-        ))}
 
-        {submissions.length === 0 && (
-          <p className="text-zinc-400">No submissions yet.</p>
-        )}
-      </div>
-    </div>
+          {submissions.length > PREVIEW_COUNT && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
+            >
+              {showAll
+                ? "Show less"
+                : `Show ${Math.min(submissions.length, EXPANDED_COUNT) - PREVIEW_COUNT} more`}
+              <ChevronDown
+                size={15}
+                strokeWidth={2}
+                className={`transition-transform duration-200 ${showAll ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+          )}
+        </>
+      )}
+    </SectionCard>
   );
 }
 

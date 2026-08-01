@@ -1,26 +1,60 @@
+import { Code2 } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
+import SectionCard from "../ui/layout/SectionCard";
+import EmptyState from "../ui/feedback/EmptyState";
+
 function LanguageUsageCard({ languageStats, favoriteLanguage }) {
+  const { theme } = useTheme();
+
+  const entries = Object.entries(languageStats).sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((sum, [, count]) => sum + count, 0);
+  const max = entries.length > 0 ? entries[0][1] : 0;
+
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h2 className="text-xl font-semibold mb-4">Language Usage</h2>
-
-      <p className="text-zinc-400 text-sm mb-4">Favorite: {favoriteLanguage}</p>
-
-      <div className="space-y-3">
-        {Object.entries(languageStats).map(([lang, count]) => (
-          <div
-            key={lang}
-            className="flex items-center justify-between bg-zinc-800 px-4 py-3 rounded-xl"
-          >
-            <span className="capitalize">{lang}</span>
-            <span>{count} submissions</span>
-          </div>
-        ))}
-
-        {Object.keys(languageStats).length === 0 && (
-          <p className="text-zinc-400">No submissions yet.</p>
-        )}
-      </div>
-    </div>
+    <SectionCard
+      title="Language Usage"
+      subtitle={total > 0 ? `${theme.words.favoriteLanguage}: ${favoriteLanguage}` : undefined}
+      icon={<Code2 size={18} strokeWidth={2} />}
+      accented
+    >
+      {entries.length === 0 ? (
+        <EmptyState
+          icon={<Code2 size={28} strokeWidth={1.75} />}
+          title="No submissions yet"
+          description="Your language mix will appear here once you start submitting."
+          compact
+        />
+      ) : (
+        <div className="space-y-3.5">
+          {entries.map(([lang, count]) => {
+            const widthPercent = max > 0 ? Math.max((count / max) * 100, 4) : 0;
+            const isFavorite = lang === favoriteLanguage;
+            const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+            return (
+              <div key={lang}>
+                <div className="flex items-baseline justify-between mb-1">
+                  <span className={`text-sm capitalize ${isFavorite ? "text-white font-medium" : "text-zinc-300"}`}>
+                    {lang}
+                  </span>
+                  <span className="text-xs text-zinc-500 flex-shrink-0 ml-2">
+                    {count} · {percent}%
+                  </span>
+                </div>
+                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${widthPercent}%`,
+                      backgroundColor: isFavorite ? theme.colors.primary : `${theme.colors.primary}66`,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </SectionCard>
   );
 }
 

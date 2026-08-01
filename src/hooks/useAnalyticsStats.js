@@ -10,7 +10,7 @@
  * returns plain values out; no side effects, no fetching.
  */
 import { useMemo } from "react";
-import { getLevel } from "../utils/xpLevel";
+import { getLevel, getLevelProgress } from "../utils/xpLevel";
 import { getStatusMeta } from "../utils/statusMessages";
 
 export function useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity, totalXP = 0 }) {
@@ -22,6 +22,11 @@ export function useAnalyticsStats({ solvedProblems, submissions, topicStats, rec
   // levels. Now both pages derive `level` from the same xpLevel.js curve
   // the backend also uses, so rank/level agree everywhere.
   const level = getLevel(totalXP);
+
+  // Same curve Profile.jsx's hero XP bar reads from — kept here too so
+  // Analytics' identity card can show "X / Y XP to next level" without
+  // Profile and Analytics silently drifting onto two different formulas.
+  const { current: xpCurrent, needed: xpNeeded, percent: xpPercent } = getLevelProgress(totalXP);
 
   const rank = useMemo(() => {
     if (level < 5) return "Beginner";
@@ -106,6 +111,8 @@ export function useAnalyticsStats({ solvedProblems, submissions, topicStats, rec
     }));
   }, [topicStats]);
 
+  const totalSubmissions = submissions.length;
+
   return {
     level,
     rank,
@@ -116,5 +123,9 @@ export function useAnalyticsStats({ solvedProblems, submissions, topicStats, rec
     strongestTopic,
     velocityData,
     radarData,
+    totalSubmissions,
+    xpCurrent,
+    xpNeeded,
+    xpPercent,
   };
 }

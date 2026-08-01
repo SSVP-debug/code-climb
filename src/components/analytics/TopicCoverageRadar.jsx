@@ -1,13 +1,15 @@
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
+import { Radar as RadarIcon } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
+import SectionCard from "../ui/layout/SectionCard";
 
 function TopicCoverageRadar({ radarData }) {
+  const { theme } = useTheme();
+
   if (radarData.length < 3) return null;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
-        Topic Coverage
-      </h3>
+    <SectionCard title="Topic Coverage" icon={<RadarIcon size={18} strokeWidth={2} />} accented>
       <ResponsiveContainer width="100%" height={260}>
         <RadarChart data={radarData}>
           <PolarGrid stroke="#27272a" />
@@ -15,14 +17,14 @@ function TopicCoverageRadar({ radarData }) {
           <Radar
             name="Solved"
             dataKey="count"
-            stroke="#22c55e"
-            fill="#22c55e"
-            fillOpacity={0.15}
+            stroke={theme.colors.primary}
+            fill={theme.colors.primary}
+            fillOpacity={0.18}
             strokeWidth={2}
           />
         </RadarChart>
       </ResponsiveContainer>
-    </div>
+    </SectionCard>
   );
 }
 
