@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { logger } from "../config/logger.js";
 import User from "../models/User.js";
 import { B2B_ENABLED } from "../config/featureFlags.js";
 import Assignment from "../models/Assignment.js";
@@ -115,7 +116,7 @@ router.post("/register", async (req, res) => {
         : "Your college registration request has been submitted for verification.",
     });
   } catch (err) {
-    console.error("[TPO] register error:", err.message);
+    (req.log || logger).error({ err }, "[TPO] register error");
     return res.status(500).json({ error: "Failed to register as TPO." });
   }
 });
@@ -179,7 +180,7 @@ router.get("/students", requireRole("tpo", "admin"),
       });
 
     } catch (err) {
-      console.error("[TPO] students error:", err.message);
+      (req.log || logger).error({ err }, "[TPO] students error");
       return res.status(500).json({ error: "Failed to load students." });
     }
   });
@@ -287,7 +288,7 @@ router.get("/dashboard", requireRole("tpo", "admin"),
       });
 
     } catch (err) {
-      console.error("[TPO] dashboard error:", err.message);
+      (req.log || logger).error({ err }, "[TPO] dashboard error");
       return res.status(500).json({ error: "Failed to load dashboard." });
     }
   });
@@ -339,12 +340,12 @@ router.post("/assignments", requireRole("tpo", "admin"), async (req, res) => {
             }
           )
         )
-        .catch((err) => console.error("[TPO] Assignment notification fan-out failed:", err.message));
+        .catch((err) => (req.log || logger).error({ err }, "[TPO] Assignment notification fan-out failed"));
     }
 
     return res.status(201).json(assignment);
   } catch (err) {
-    console.error("[TPO] create assignment error:", err.message);
+    (req.log || logger).error({ err }, "[TPO] create assignment error");
     return res.status(500).json({ error: "Failed to create assignment." });
   }
 });
@@ -389,7 +390,7 @@ router.get("/assignments", requireRole("tpo", "admin"), async (req, res) => {
 
     return res.json({ assignments: enriched });
   } catch (err) {
-    console.error("[TPO] list assignments error:", err.message);
+    (req.log || logger).error({ err }, "[TPO] list assignments error");
     return res.status(500).json({ error: "Failed to load assignments." });
   }
 });
@@ -439,7 +440,7 @@ export async function handleRemindAssignment(req, res) {
 
     return res.json({ remindedCount: incomplete.length });
   } catch (err) {
-    console.error("[TPO] assignment remind:", err.message);
+    (req.log || logger).error({ err }, "[TPO] assignment remind");
     return res.status(500).json({ error: "Failed to send reminder." });
   }
 }
@@ -577,7 +578,7 @@ router.get("/report/pdf", requireRole("tpo", "admin"),
 
       doc.end();
     } catch (err) {
-      console.error("[TPO] report PDF error:", err.message);
+      (req.log || logger).error({ err }, "[TPO] report PDF error");
       if (!res.headersSent) res.status(500).json({ error: "Failed to generate report." });
     }
   });

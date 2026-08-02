@@ -49,9 +49,9 @@ removes the rate-limit ceiling and the per-request cost of a third-party API.
 
 3. Leave `JUDGE0_API_KEY` and `JUDGE0_RAPIDAPI_KEY` blank — self-hosted
    instances don't require an API key by default. If you've configured
-   Judge0's own `AUTHN_TOKEN` (see Judge0's `docker-compose.yml`), you'll
-   need to add header support to `fetchJudge0()` — this isn't wired up yet
-   (see "Known gaps" below).
+   Judge0's own `AUTHN_TOKEN` (see Judge0's `docker-compose.yml`), set
+   `JUDGE0_API_KEY` to that token — `fetchJudge0()` sends it as
+   `X-Auth-Token` automatically, no code change needed.
 
 4. Put the instance behind HTTPS (a reverse proxy like Caddy or nginx, or
    Railway's own TLS termination) before using it in production — Judge0
@@ -69,14 +69,12 @@ Good for getting to production quickly without managing a Docker host.
    JUDGE0_RAPIDAPI_KEY=<your RapidAPI key>
    ```
 
-3. **Known gap:** `fetchJudge0()` in `backend/controllers/compilerController.js`
-   only sends a `Content-Type: application/json` header today — it does not
-   yet read `JUDGE0_RAPIDAPI_KEY` and attach the `X-RapidAPI-Key` /
-   `X-RapidAPI-Host` headers RapidAPI requires. Setting the env var alone
-   will not work until that's added. This is a small, isolated change (a
-   couple of conditional header lines in `fetchJudge0()`), tracked as a
-   follow-up in `docs/phase8-progress.md` rather than done as part of this
-   docs pass.
+3. ~~**Known gap:** `fetchJudge0()` didn't read `JUDGE0_RAPIDAPI_KEY`~~ —
+   resolved. `fetchJudge0()` now attaches `X-RapidAPI-Key` (from
+   `JUDGE0_RAPIDAPI_KEY`) and `X-RapidAPI-Host` (derived from
+   `JUDGE0_API_URL`'s hostname, so it tracks RapidAPI's own domain rather
+   than a hardcoded one) whenever `JUDGE0_RAPIDAPI_KEY` is set. Setting the
+   env var above is now sufficient on its own.
 
 ## Reliability behavior (already built)
 
@@ -104,8 +102,10 @@ Good for getting to production quickly without managing a Docker host.
 
 ## Known gaps
 
-- RapidAPI auth headers aren't implemented yet (see Option B above) — env
-  vars exist as placeholders in `.env.example` but aren't read anywhere.
+- ~~RapidAPI auth headers aren't implemented yet~~ — resolved (see Option B
+  above). `fetchJudge0()` also now sends `X-Auth-Token` from `JUDGE0_API_KEY`
+  for a self-hosted instance with `AUTHN_TOKEN` configured (see Option A,
+  step 3) — the same fix covered both.
 - No circuit breaker / health-based fallback between a self-hosted instance
   and a backup — if the configured instance is down, requests fail (after
   retries) rather than failing over to a secondary URL.

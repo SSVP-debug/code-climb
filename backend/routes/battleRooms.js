@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { logger } from "../config/logger.js";
 import crypto from "crypto";
 import BattleRoom from "../models/BattleRoom.js";
 import Problem from "../models/Problem.js";
@@ -88,7 +89,7 @@ router.post("/", requireRole("student", "tpo", "admin"), async (req, res) => {
 
     return res.status(201).json(room.toObject());
   } catch (err) {
-    console.error("[BattleRoom] create:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] create");
     return res.status(500).json({ error: "Failed to create Battle Room." });
   }
 });
@@ -125,7 +126,7 @@ router.post("/join", requireAuth, async (req, res) => {
 
     return res.json({ success: true, roomId: room._id, title: room.title });
   } catch (err) {
-    console.error("[BattleRoom] join:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] join");
     return res.status(500).json({ error: "Failed to join Battle Room." });
   }
 });
@@ -182,7 +183,7 @@ router.post("/:id/assign-teams", requireAuth, async (req, res) => {
     await room.save();
     return res.json(room.toObject());
   } catch (err) {
-    console.error("[BattleRoom] assign-teams:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] assign-teams");
     return res.status(500).json({ error: "Failed to assign teams." });
   }
 });
@@ -212,7 +213,7 @@ router.post("/:id/start", requireAuth, async (req, res) => {
 
     return res.json(room.toObject());
   } catch (err) {
-    console.error("[BattleRoom] start:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] start");
     return res.status(500).json({ error: "Failed to start match." });
   }
 });
@@ -244,7 +245,7 @@ router.get("/mine", requireAuth, async (req, res) => {
 
     return res.json({ rooms: mine });
   } catch (err) {
-    console.error("[BattleRoom] mine:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] mine");
     return res.status(500).json({ error: "Failed to load your Battle Rooms." });
   }
 });
@@ -276,7 +277,7 @@ router.get("/:id", async (req, res) => {
       isJoined: Boolean(myEntry),
     });
   } catch (err) {
-    console.error("[BattleRoom] detail:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] detail");
     return res.status(500).json({ error: "Failed to load Battle Room." });
   }
 });
@@ -346,7 +347,7 @@ router.post("/:id/solve", requireAuth, async (req, res) => {
 
     return res.json({ success: true, countedForTeam, teamScore, teamIndex });
   } catch (err) {
-    console.error("[BattleRoom] solve:", err.message);
+    (req.log || logger).error({ err }, "[BattleRoom] solve");
     return res.status(500).json({ error: "Failed to record solve." });
   }
 });

@@ -60,6 +60,30 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
     }
     const judge0Url = url.toString();
 
+    // ── Auth headers ──────────────────────────────────────────────────────
+    // Previously only Content-Type was ever sent, so JUDGE0_RAPIDAPI_KEY and
+    // JUDGE0_API_KEY were dead env vars (declared in .env.example, read
+    // nowhere) — see "Known gaps" in docs/judge0-setup.md. Both deployment
+    // options (Option A: self-hosted with AUTHN_TOKEN, Option B: RapidAPI)
+    // are supported here; neither is required, so an unset key is simply
+    // omitted rather than sent empty.
+    const requestHeaders = { "Content-Type": "application/json" };
+
+    if (process.env.JUDGE0_RAPIDAPI_KEY) {
+      requestHeaders["X-RapidAPI-Key"] = process.env.JUDGE0_RAPIDAPI_KEY;
+      // RapidAPI requires the host it issued the key for, not just any
+      // Judge0 host — derived from the configured URL so this doesn't
+      // silently break if RapidAPI ever changes their Judge0 CE hostname.
+      requestHeaders["X-RapidAPI-Host"] = url.hostname;
+    }
+
+    if (process.env.JUDGE0_API_KEY) {
+      // Self-hosted Judge0's own AUTHN_TOKEN convention (see Judge0's
+      // docker-compose.yml / ENVIRONMENT-VARIABLES docs) — unrelated to
+      // RapidAPI, safe to set alongside or instead of it.
+      requestHeaders["X-Auth-Token"] = process.env.JUDGE0_API_KEY;
+    }
+
     const requestBody = JSON.stringify({
       source_code: b64Encode(sourceCode),
       language_id: languageId,
@@ -95,7 +119,7 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
       try {
         const response = await fetch(judge0Url, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: requestHeaders,
           body: requestBody,
           signal: AbortSignal.timeout(20000),
         });

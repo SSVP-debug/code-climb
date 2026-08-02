@@ -14,12 +14,18 @@ export function validateJudge0Config() {
   const rawUrl = process.env.JUDGE0_API_URL;
 
   if (!rawUrl) {
-    logger.warn(
+    const log = process.env.NODE_ENV === "production" ? logger.error : logger.warn;
+    log.call(
+      logger,
       "[Judge0] JUDGE0_API_URL not set — defaulting to the public " +
         "ce.judge0.com instance. That instance is rate-limited and shared " +
         "with everyone else using it; fine for local dev, not for " +
         "production. See docs/judge0-setup.md for self-hosted (Docker) " +
-        "and RapidAPI setup."
+        "and RapidAPI setup." +
+        (process.env.NODE_ENV === "production"
+          ? " THIS IS PRODUCTION — real user code runs will queue behind " +
+            "every other ce.judge0.com user and start failing under load."
+          : "")
     );
     return;
   }
@@ -39,7 +45,7 @@ export function validateJudge0Config() {
     process.env.NODE_ENV === "production" &&
     parsed.hostname === "ce.judge0.com"
   ) {
-    logger.warn(
+    logger.error(
       "[Judge0] Running in production against the public ce.judge0.com " +
         "instance. This is the single biggest scale bottleneck in the " +
         "stack — it's rate-limited and shared. Migrate to a dedicated " +

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { logger } from "../config/logger.js";
 import crypto from "crypto";
 import User from "../models/User.js";
 import College from "../models/College.js";
@@ -60,7 +61,7 @@ async function sendVerificationEmail(userDoc, collegeEmail, token) {
   });
 
   if (result.error) {
-    console.error("[CollegeVerification] Resend error:", result.error.message);
+    logger.error({ err: result.error }, "[CollegeVerification] Resend error");
     // Don't fail the caller over an email-delivery hiccup — the token is
     // already saved, so the student can request a fresh link via /resend if
     // this one never arrives. Surface it as a soft warning instead.
@@ -189,7 +190,7 @@ router.post("/request", requireAuth, async (req, res) => {
         // case without a separate round-trip
     });
   } catch (err) {
-    console.error("[CollegeVerification] request:", err.message);
+    (req.log || logger).error({ err }, "[CollegeVerification] request");
     return res.status(500).json({ error: "Failed to start verification." });
   }
 });
@@ -213,7 +214,7 @@ router.post("/resend", requireAuth, collegeVerificationResendLimiter, async (req
     const sendResult = await sendVerificationEmail(req.userDoc, edu.collegeEmail, token);
     return res.json({ success: true, emailSent: sendResult.emailSent });
   } catch (err) {
-    console.error("[CollegeVerification] resend:", err.message);
+    (req.log || logger).error({ err }, "[CollegeVerification] resend");
     return res.status(500).json({ error: "Failed to resend verification." });
   }
 });
@@ -260,7 +261,7 @@ router.get("/confirm", requireAuth, async (req, res) => {
       collegeStatus: user.education.collegeStatus,
     });
   } catch (err) {
-    console.error("[CollegeVerification] confirm:", err.message);
+    (req.log || logger).error({ err }, "[CollegeVerification] confirm");
     return res.status(500).json({ error: "Failed to confirm verification." });
   }
 });

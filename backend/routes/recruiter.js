@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { logger } from "../config/logger.js";
 import crypto from "crypto";
 import User from "../models/User.js";
 import { getProfileSignSecret } from "../config/env.js";
@@ -81,7 +82,7 @@ router.post("/register", async (req, res) => {
       status: autoVerified ? "verified" : "pending",
     });
   } catch (err) {
-    console.error("[Recruiter] register:", err.message);
+    (req.log || logger).error({ err }, "[Recruiter] register");
     return res.status(500).json({ error: "Failed to register recruiter." });
   }
 });
@@ -219,7 +220,7 @@ router.get(
       res.set("X-Cache", cacheStatus);
       return res.json(payload);
     } catch (err) {
-      console.error("[Recruiter] candidates:", err.message);
+      (req.log || logger).error({ err }, "[Recruiter] candidates");
       return res.status(500).json({ error: "Failed to search candidates." });
     }
   });
@@ -310,7 +311,7 @@ router.post(
           : `A recruiter sent you a ${problemSlugs.length}-problem skills test.`,
         link: "/candidate/tests",
         meta: { testId: test._id },
-      }).catch((err) => console.error("[Recruiter] Skills-test notification failed:", err.message));
+      }).catch((err) => (req.log || logger).error({ err }, "[Recruiter] Skills-test notification failed"));
 
       return res.status(201).json({
         testId: test._id,
@@ -319,7 +320,7 @@ router.post(
         expiresInHours: 72, // candidate has 72h to start it
       });
     } catch (err) {
-      console.error("[Recruiter] skills-test:", err.message);
+      (req.log || logger).error({ err }, "[Recruiter] skills-test");
       return res.status(500).json({ error: "Failed to create skills test." });
     }
   });
@@ -372,11 +373,11 @@ export async function handleCreateInterest(req, res) {
         : `A recruiter left you a note: "${note.trim().slice(0, 120)}"`,
       link: "/profile",
       meta: { interestId: interest._id },
-    }).catch((err) => console.error("[Recruiter] Interest notification failed:", err.message));
+    }).catch((err) => (req.log || logger).error({ err }, "[Recruiter] Interest notification failed"));
 
     return res.status(201).json({ interestId: interest._id, createdAt: interest.createdAt });
   } catch (err) {
-    console.error("[Recruiter] interest:", err.message);
+    (req.log || logger).error({ err }, "[Recruiter] interest");
     return res.status(500).json({ error: "Failed to send interest." });
   }
 }
@@ -404,7 +405,7 @@ router.get(
         })),
       });
     } catch (err) {
-      console.error("[Recruiter] interests list:", err.message);
+      (req.log || logger).error({ err }, "[Recruiter] interests list");
       return res.status(500).json({ error: "Failed to fetch sent interests." });
     }
   }
@@ -440,7 +441,7 @@ router.get(
         })),
       });
     } catch (err) {
-      console.error("[Recruiter] skills-tests list:", err.message);
+      (req.log || logger).error({ err }, "[Recruiter] skills-tests list");
       return res.status(500).json({ error: "Failed to fetch sent tests." });
     }
   }

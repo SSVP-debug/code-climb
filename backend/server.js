@@ -202,13 +202,13 @@ app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 app.use("/api/tpo", requireAuth, apiLimiter, tpoRoutes);
 app.use("/api/admin", requireAuth, apiLimiter, adminRoutes);
 app.use("/api/assignments/student", requireAuth, apiLimiter, studentAssignmentsRouter);
-// Billing (Razorpay) — gated internally by MONETIZATION_ENABLED. NOTE: /plans
-// (meant public) and /webhook (meant no-auth, raw-body signature check) both
-// sit behind requireAuth here, which only matches how the app is used today
-// (PricingPage only calls the authed /subscription, /create-order, /verify
-// routes). Splitting the webhook out with express.raw() ahead of the global
-// express.json() middleware is a real prerequisite before Razorpay webhooks
-// go live — tracked in docs/phase8-progress.md, not done in this pass.
+// Billing (Razorpay) — gated internally by MONETIZATION_ENABLED. The webhook
+// is NOT part of billingRoutes below — it's mounted separately above
+// (`/api/billing/webhook`, express.raw() ahead of the global express.json(),
+// no requireAuth) with its own HMAC signature check in
+// routes/billingWebhook.js. This mount only carries /plans (public),
+// /subscription, /create-order, /verify, /cancel — each of those applies
+// requireAuth per-route inside routes/billing.js itself, not here.
 app.use("/api/billing", apiLimiter, billingRoutes);
 // Interview Mode — premium AI feature, shares the AI rate limiter with hints/insights.
 app.use("/api/interview", requireAuth, aiLimiter, interviewRoutes);
