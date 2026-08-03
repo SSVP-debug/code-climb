@@ -48,18 +48,45 @@ describe("LoginPage — post-login redirect (Gate 3 P0-1)", () => {
     expect(apiFetchMock).not.toHaveBeenCalledWith("/api/init");
   });
 
-  it("rejects an unsafe ?next= value and falls back to the role-based destination", async () => {
+  it("rejects an unsafe ?next= value and falls back to /dashboard without calling /api/init", async () => {
     searchParamsValue = new URLSearchParams({ next: "https://evil.example/phish" });
     authValue = { user: { uid: "1" } };
-    apiFetchMock.mockResolvedValueOnce({ user: { role: "student" } });
 
     render(<LoginPage />);
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalledWith("/dashboard"));
     expect(navigateMock).not.toHaveBeenCalledWith("https://evil.example/phish");
+    // No ?role= intent here either, so this hits the same non-blocking
+    // path as the plain-login test below — nothing should be queued on
+    // apiFetchMock for this scenario.
+    expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it("falls back to the role-based destination when no ?next= is present", async () => {
+  // Plan 002 key finding: redirectAfterAuth() used to always await
+  // /api/init before navigating anywhere, which stalled the plain student
+  // login path on a cold Render backend (15-30s) for no reason —
+  // AppContext already fires its own independent /api/init the instant
+  // `user` is set. The plain-login path (no ?next=, no ?role= intent) now
+  // navigates straight to /dashboard without waiting; a returning
+  // recruiter/TPO gets bounced to their real dashboard by OnboardingGate
+  // once AppContext's role has hydrated, instead of being resolved here.
+  it("navigates straight to /dashboard without waiting on /api/init when there is no ?next= or ?role= intent", async () => {
+    authValue = { user: { uid: "1" } };
+
+    render(<LoginPage />);
+
+    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith("/dashboard"));
+    expect(apiFetchMock).not.toHaveBeenCalledWith("/api/init");
+  });
+
+  // The portal-intent path (?role=recruiter|tpo) is different: it must
+  // distinguish "already has this role, go to their dashboard" from
+  // "doesn't have it yet, go to the signup form", so it still needs the
+  // real role and keeps awaiting /api/init here (OnboardingGate only
+  // wraps /dashboard, so it can't correct a wrong signup-vs-dashboard
+  // guess after the fact).
+  it("still awaits /api/init on the portal-intent path, so a returning recruiter lands on their dashboard, not the signup form", async () => {
+    searchParamsValue = new URLSearchParams({ role: "recruiter" });
     authValue = { user: { uid: "1" } };
     apiFetchMock.mockResolvedValueOnce({ user: { role: "recruiter" } });
 

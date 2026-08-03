@@ -43,7 +43,9 @@ function LoginPage() {
         method: "POST",
         body: JSON.stringify({ code: refCode }),
       });
-    } catch {}
+    } catch {
+      // Best-effort only — a failed referral apply shouldn't block login.
+    }
   }
 
   // Gate 3 audit, P0-1: if ProtectedRoute (or the api.js 401 handler) sent
@@ -54,14 +56,40 @@ function LoginPage() {
   const nextPath = getSafeNextPath(searchParams);
 
   // Figures out where this account actually belongs (real role, not the
-  // card that was clicked) and navigates there. /api/init already returns
-  // `role` on every boot, so no extra endpoint is needed for this.
+  // card that was clicked) and navigates there.
+  //
+  // Audit fix (Plan 002 key finding): this used to always await /api/init
+  // here just to read `role` before navigating anywhere — on a cold Render
+  // backend (15-30s) that stalled every plain student login on this static
+  // login card the whole time, even though AppContext
+  // (src/context/appContext.jsx) already fires its own independent
+  // /api/init the instant `user` is set, so the backend was already
+  // loading in the background regardless. For the plain-login path (no
+  // ?role= intent) we now navigate straight to /dashboard without waiting;
+  // if this turns out to be a returning recruiter/TPO, OnboardingGate
+  // (src/routes/OnboardingGate.jsx) bounces them to their real dashboard
+  // once AppContext's role has hydrated.
+  //
+  // The portal-intent path (?role=recruiter|tpo) still waits: unlike the
+  // plain path, getPostLoginDestination() there must distinguish "already
+  // has this role, go to their dashboard" from "doesn't have it yet, go to
+  // the signup form" — guessing wrong would send an existing recruiter to
+  // the signup flow instead of their dashboard, a correctness bug, not
+  // just a slow redirect. OnboardingGate can't fix that after the fact
+  // because it only wraps /dashboard, not /recruiter/signup or
+  // /tpo/signup.
   async function redirectAfterAuth() {
     await applyReferralIfPresent();
     if (nextPath) {
       navigate(nextPath);
       return;
     }
+
+    if (!roleIntent) {
+      navigate("/dashboard");
+      return;
+    }
+
     try {
       const { user: bootUser } = await apiFetch("/api/init");
       navigate(getPostLoginDestination(bootUser?.role, roleIntent));

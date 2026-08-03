@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
 import PremiumRoute from "./components/auth/PremiumRoute";
 import ThemeGate from "./routes/ThemeGate";
+import OnboardingGate from "./routes/OnboardingGate";
 
 // ── Eagerly loaded ─────────────────────────────────────────────────────────
 // These are tiny and needed immediately on first paint.
@@ -95,7 +96,9 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <ThemeGate><Dashboard /></ThemeGate>
+              <ThemeGate>
+                <OnboardingGate><Dashboard /></OnboardingGate>
+              </ThemeGate>
             </ProtectedRoute>
           }
         />
