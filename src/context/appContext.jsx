@@ -96,6 +96,18 @@ function AppContextProvider({ children }) {
   const [lastActivityDate, setLastActivityDate] =
     useState(null);
 
+  // Readiness signal for the "no route ever shows fake/empty data while
+  // the backend is still cold-starting" requirement (see OnboardingGate's
+  // readiness step and Dashboard's skeleton fallback). Distinct from
+  // services/api.js's warmBackend(), which just nudges Render awake early
+  // and doesn't tell the UI anything — this is set to true once /api/init
+  // has actually resolved below, whether that resolution succeeded or
+  // failed. A failure still counts as "ready": the alternative is hanging
+  // the UI forever on a genuine error, which is worse than briefly showing
+  // real (if degraded/empty) data. Resets to false whenever `user` changes
+  // (fresh login / logout-then-login), since a new hydrate() cycle starts.
+  const [isBackendReady, setIsBackendReady] = useState(false);
+
   const [submissions, setSubmissions] =
     useState([]);
   const [achievements, setAchievements] =
@@ -179,6 +191,8 @@ function AppContextProvider({ children }) {
     if (!user) return;
 
     async function hydrate() {
+      setIsBackendReady(false);
+
       try {
         // Single boot call — replaces 3 sequential API calls:
         // initProgress() + getProgress() + getSubmissions()
@@ -315,6 +329,8 @@ function AppContextProvider({ children }) {
           "[AppContext] Hydration failed:",
           err
         );
+      } finally {
+        setIsBackendReady(true);
       }
     }
 
@@ -627,6 +643,7 @@ function AppContextProvider({ children }) {
   // --------------------------------------------------
 
   const value = {
+    isBackendReady,
     solvedProblems,
     topicStats,
     achievements,

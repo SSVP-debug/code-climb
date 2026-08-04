@@ -3,9 +3,13 @@ import { useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { PROGRESS_KEYS } from "../constants/progressKeys";
 import DashboardSections from "../components/dashboard/DashboardSections";
+import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 import OnboardingTour from "../components/onboarding/OnboardingTour";
+import { useAppContext } from "../hooks/useAppContext";
 
 function Dashboard() {
+  const { isBackendReady } = useAppContext();
+
   useEffect(() => {
     // Save joined date once on first ever visit.
     if (!localStorage.getItem(PROGRESS_KEYS.joinedDate)) {
@@ -21,7 +25,7 @@ function Dashboard() {
     <DashboardLayout>
       <OnboardingTour />
       <LevelUpModal />
-      <DashboardSections />
+      {isBackendReady ? <DashboardSections /> : <DashboardSkeleton />}
     </DashboardLayout>
   );
 }

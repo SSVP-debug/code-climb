@@ -17,7 +17,7 @@ vi.mock("../firebase/firebase", () => ({
   },
 }));
 
-import { apiFetch } from "./api";
+import { apiFetch, warmBackend } from "./api";
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -110,5 +110,37 @@ describe("apiFetch", () => {
 
     const result = await apiFetch("/api/things", { method: "DELETE" });
     expect(result).toBeNull();
+  });
+});
+
+describe("warmBackend", () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
+
+  it("fires an unauthenticated GET to /api/health without waiting for the response", () => {
+    global.fetch.mockReturnValueOnce(new Promise(() => {})); // never resolves
+
+    warmBackend();
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [url, options] = global.fetch.mock.calls[0];
+    expect(url).toContain("/api/health");
+    // Unlike apiFetch's doRequest, no Authorization header — this must
+    // work with no signed-in user at all.
+    expect(options).toBeUndefined();
+  });
+
+  it("swallows fetch errors instead of throwing — a failed warm-up ping is never surfaced to the user", () => {
+    global.fetch.mockRejectedValueOnce(new Error("network down"));
+
+    expect(() => warmBackend()).not.toThrow();
+  });
+
+  it("does not require a signed-in user (unlike apiFetch)", () => {
+    currentUserRef = null;
+    global.fetch.mockResolvedValueOnce(new Response("ok"));
+
+    expect(() => warmBackend()).not.toThrow();
   });
 });

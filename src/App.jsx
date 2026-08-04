@@ -1,10 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
 import PremiumRoute from "./components/auth/PremiumRoute";
 import ThemeGate from "./routes/ThemeGate";
 import OnboardingGate from "./routes/OnboardingGate";
+import { warmBackend } from "./services/api";
 
 // ── Eagerly loaded ─────────────────────────────────────────────────────────
 // These are tiny and needed immediately on first paint.
@@ -76,6 +77,12 @@ function RedirectToContestDetail() {
 }
 
 function App() {
+  // Fire-and-forget — see warmBackend's own comment in services/api.js for
+  // why this can't just be part of AppContext's existing hydrate() call.
+  useEffect(() => {
+    warmBackend();
+  }, []);
+
   return (
     <Suspense fallback={<PageLoader />}>
       <AdminPreviewBanner />

@@ -32,3 +32,24 @@ export function hasCompletedQuizToday() {
 export function markQuizCompletedToday() {
   setStorageData(LAST_COMPLETED_KEY, todayKey());
 }
+
+// ── Per-session onboarding flow tracking ────────────────────────────────
+// The onboarding flow (Welcome -> [Quiz] -> Mission -> Focus -> Readiness)
+// now runs once per session rather than once per day (Plan: refine-first-
+// session-experience) — the quiz step alone stays day-gated via the
+// functions above, but Welcome/Mission/Focus/Readiness should reappear
+// every fresh login without re-showing on every in-app navigation back to
+// /dashboard. sessionStorage (not storageService's localStorage wrapper)
+// is the right tool here: it clears automatically on tab close, matching
+// "every login" without needing to invent our own session-boundary logic.
+const SHOWN_THIS_SESSION_KEY = "codeclubOnboardingShownThisSession";
+
+/** Has the onboarding flow already been shown once this browser session? */
+export function hasShownOnboardingThisSession() {
+  return sessionStorage.getItem(SHOWN_THIS_SESSION_KEY) === "true";
+}
+
+/** Marks the onboarding flow as shown for the remainder of this session. */
+export function markOnboardingShownThisSession() {
+  sessionStorage.setItem(SHOWN_THIS_SESSION_KEY, "true");
+}

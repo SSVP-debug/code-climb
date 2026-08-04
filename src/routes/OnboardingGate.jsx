@@ -3,47 +3,47 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import OnboardingContainer from "../components/onboarding/OnboardingContainer";
 import { useAppContext } from "../hooks/useAppContext";
-import { hasCompletedQuizToday, markQuizCompletedToday } from "../utils/dailyQuizStorage";
+import {
+  hasShownOnboardingThisSession,
+  markOnboardingShownThisSession,
+} from "../utils/dailyQuizStorage";
 import { getPostLoginDestination } from "../utils/roleRedirect";
 
 /**
- * OnboardingGate — shows the full first-session onboarding flow (Welcome ->
- * Daily Quick Quiz -> Quiz Result -> Today's Mission -> Today's Focus) once
- * per day before the Dashboard, per the first-session-experience spec.
+ * OnboardingGate — shows the first-session onboarding flow (Welcome ->
+ * [Daily Quick Quiz -> Quiz Result] -> Today's Mission -> Today's Focus ->
+ * Workspace Preparation) once per SESSION before the Dashboard, per the
+ * "refine first-session experience" plan. This replaced the original
+ * once-per-DAY gate: the onboarding is no longer a Render cold-start
+ * workaround, it's a permanent product feature, so it now reappears every
+ * login rather than once per calendar day. The Quiz step specifically
+ * stays day-gated internally by OnboardingContainer — see its own comment.
  * Scoped to /dashboard only (unlike ThemeGate, which wraps every protected
- * route) — the spec's flow diagram ends at Dashboard, and gating every
- * route would force the flow in front of pages it has nothing to do with.
+ * route) — the flow ends at Dashboard, and gating every route would force
+ * it in front of pages it has nothing to do with.
  *
  * Renders the flow inline (like PremiumRoute renders UpgradePrompt inline)
  * rather than redirecting to a separate route — there's nothing to deep-link
  * to and no reason to leave /dashboard's URL.
  *
  * OnboardingContainer owns all step-to-step state internally and only calls
- * back here once, when the whole flow (including the quiz result screen,
- * shown once by DailyQuickQuiz mid-flow) is complete — so this gate only
- * needs to know whether today's flow is done, not what happened during it.
- *
- * Role redirect: LoginPage.jsx no longer waits on /api/init before
- * navigating on the plain student login path (see its redirectAfterAuth),
- * so a returning recruiter/TPO can land here before AppContext's role has
- * hydrated. Rather than guess, this gate reads the eventually-consistent
- * `role` at the END of the onboarding flow (once all five screens —
- * which take meaningfully longer than a network round trip — are done)
- * and bounces them to their real dashboard then, instead of showing them
- * a student-framed flow all the way through. Known edge case: if
- * hydration is still unresolved even at that point (very slow backend),
- * the person completes the flow as a "student" and only gets bounced on
- * their next /dashboard visit — this is a soft UX gate, not a security
- * boundary, so that's an acceptable fallback rather than something worth
- * adding a loading flag to AppContext for right now.
+ * back here once, when the whole flow — including its own readiness gate
+ * (WorkspacePreparationScreen, the final step) — is complete. That means by
+ * the time handleOnboardingComplete fires, AppContext's isBackendReady is
+ * guaranteed true, which also resolves what used to be a known edge case
+ * here: role redirect below now always sees a hydrated `role` rather than
+ * racing hydration, since the flow itself no longer ends until hydration
+ * has settled.
  */
 export default function OnboardingGate({ children }) {
-  const [completedToday, setCompletedToday] = useState(() => hasCompletedQuizToday());
+  const [shownThisSession, setShownThisSession] = useState(() =>
+    hasShownOnboardingThisSession()
+  );
   const { role } = useAppContext();
   const navigate = useNavigate();
 
   function handleOnboardingComplete() {
-    markQuizCompletedToday();
+    markOnboardingShownThisSession();
 
     const destination = getPostLoginDestination(role, null);
     if (destination !== "/dashboard") {
@@ -51,10 +51,10 @@ export default function OnboardingGate({ children }) {
       return;
     }
 
-    setCompletedToday(true);
+    setShownThisSession(true);
   }
 
-  if (completedToday) {
+  if (shownThisSession) {
     return children;
   }
 

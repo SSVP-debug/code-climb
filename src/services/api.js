@@ -5,6 +5,24 @@ import { buildLoginRedirect } from "../utils/authRedirect";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+/**
+ * warmBackend — fire-and-forget ping to start Render's cold-start clock as
+ * early as possible: at app mount (see App.jsx), before Firebase auth has
+ * resolved and regardless of which route the user lands on. Deliberately
+ * NOT apiFetch, which requires `auth.currentUser` and throws otherwise —
+ * this needs to work with no user at all. /api/health is genuinely public
+ * (see backend/server.js), so no token is needed either way.
+ *
+ * This only nudges the backend awake sooner; it is not what the UI waits
+ * on. AppContext's `isBackendReady` (driven by the real /api/init call
+ * once a user exists) is the actual readiness signal — see its comment for
+ * why. Errors here are swallowed on purpose: a failed warm-up ping isn't
+ * something the user should ever see.
+ */
+export function warmBackend() {
+  fetch(`${API_URL}/api/health`).catch(() => {});
+}
+
 function doRequest(path, options, token) {
   return fetch(`${API_URL}${path}`, {
     ...options,
