@@ -11,12 +11,13 @@ vi.mock("../layouts/DashboardLayout", () => ({
   default: ({ children }) => <div data-testid="dashboard-layout">{children}</div>,
 }));
 
-// Real DailyQuickQuiz selects random questions and runs timers — irrelevant
-// to this gate's own logic (once-per-day gating + role redirect), which is
-// what this file tests. Stub it down to just its `onComplete` contract.
-vi.mock("../components/onboarding/DailyQuickQuiz", () => ({
+// OnboardingContainer owns the real Welcome -> Quiz -> Mission -> Focus
+// sequencing (covered by its own tests); this file only cares about
+// OnboardingGate's own logic (once-per-day gating + role redirect), so the
+// container is stubbed down to a single button that calls its `onComplete`.
+vi.mock("../components/onboarding/OnboardingContainer", () => ({
   default: ({ onComplete }) => (
-    <button onClick={onComplete}>finish quiz</button>
+    <button onClick={onComplete}>finish onboarding</button>
   ),
 }));
 
@@ -38,7 +39,7 @@ describe("OnboardingGate", () => {
     appContextValue = { role: "student" };
   });
 
-  it("renders children directly when the quiz was already completed today", () => {
+  it("renders children directly when today's onboarding was already completed", () => {
     hasCompletedQuizTodayMock.mockReturnValue(true);
 
     render(
@@ -48,10 +49,10 @@ describe("OnboardingGate", () => {
     );
 
     expect(screen.getByText("Dashboard content")).toBeInTheDocument();
-    expect(screen.queryByText("finish quiz")).not.toBeInTheDocument();
+    expect(screen.queryByText("finish onboarding")).not.toBeInTheDocument();
   });
 
-  it("shows the Daily Quick Quiz instead of children when not completed today", () => {
+  it("shows the onboarding flow instead of children when not completed today", () => {
     hasCompletedQuizTodayMock.mockReturnValue(false);
 
     render(
@@ -60,11 +61,11 @@ describe("OnboardingGate", () => {
       </OnboardingGate>
     );
 
-    expect(screen.getByText("finish quiz")).toBeInTheDocument();
+    expect(screen.getByText("finish onboarding")).toBeInTheDocument();
     expect(screen.queryByText("Dashboard content")).not.toBeInTheDocument();
   });
 
-  it("marks the quiz complete and reveals the dashboard for a student", () => {
+  it("marks onboarding complete and reveals the dashboard for a student", () => {
     hasCompletedQuizTodayMock.mockReturnValue(false);
     appContextValue = { role: "student" };
 
@@ -74,7 +75,7 @@ describe("OnboardingGate", () => {
       </OnboardingGate>
     );
 
-    fireEvent.click(screen.getByText("finish quiz"));
+    fireEvent.click(screen.getByText("finish onboarding"));
 
     expect(markQuizCompletedTodayMock).toHaveBeenCalled();
     expect(screen.getByText("Dashboard content")).toBeInTheDocument();
@@ -91,7 +92,7 @@ describe("OnboardingGate", () => {
       </OnboardingGate>
     );
 
-    fireEvent.click(screen.getByText("finish quiz"));
+    fireEvent.click(screen.getByText("finish onboarding"));
 
     expect(markQuizCompletedTodayMock).toHaveBeenCalled();
     expect(navigateMock).toHaveBeenCalledWith("/recruiter/dashboard?tab=candidates", { replace: true });
@@ -108,7 +109,7 @@ describe("OnboardingGate", () => {
       </OnboardingGate>
     );
 
-    fireEvent.click(screen.getByText("finish quiz"));
+    fireEvent.click(screen.getByText("finish onboarding"));
 
     expect(navigateMock).toHaveBeenCalledWith("/tpo/dashboard?tab=overview", { replace: true });
   });
