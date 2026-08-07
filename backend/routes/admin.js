@@ -10,6 +10,7 @@ import {
   rejectStudentCollege,
   listUsers,
   getAuditLogs,
+  getDashboardMetrics,
   suspendUser,
   activateUser,
   deleteUser,
@@ -44,5 +45,8 @@ router.post("/users/:id/role", requireAdmin, changeUserRole);
 
 // ── Audit log ────────────────────────────────────────────────────────────────
 router.get("/audit-logs", requireAdmin, getAuditLogs);
+
+// ── Dashboard metrics ────────────────────────────────────────────────────────
+router.get("/dashboard-metrics", requireAdmin, getDashboardMetrics);
 
 export default router;

@@ -5,6 +5,7 @@ vi.mock("../models/College.js", () => ({
         find: vi.fn(),
         findById: vi.fn(),
         deleteOne: vi.fn(),
+        countDocuments: vi.fn(),
     },
 }));
 vi.mock("../models/User.js", () => ({
@@ -23,10 +24,13 @@ vi.mock("../models/AdminAuditLog.js", () => ({
     default: { find: vi.fn(), countDocuments: vi.fn(), create: vi.fn() },
 }));
 vi.mock("../models/Submission.js", () => ({
-    default: { deleteMany: vi.fn() },
+    default: { deleteMany: vi.fn(), countDocuments: vi.fn() },
 }));
 vi.mock("../models/Notification.js", () => ({
     default: { deleteMany: vi.fn() },
+}));
+vi.mock("../models/Problem.js", () => ({
+    default: { countDocuments: vi.fn() },
 }));
 vi.mock("../services/notificationService.js", () => ({
     createNotification: vi.fn().mockResolvedValue(undefined),
@@ -47,6 +51,7 @@ import ImpersonationLog from "../models/ImpersonationLog.js";
 import AdminAuditLog from "../models/AdminAuditLog.js";
 import Submission from "../models/Submission.js";
 import Notification from "../models/Notification.js";
+import Problem from "../models/Problem.js";
 import { createNotification } from "../services/notificationService.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
@@ -60,6 +65,7 @@ import {
     rejectStudentCollege,
     listUsers,
     getAuditLogs,
+    getDashboardMetrics,
     suspendUser,
     activateUser,
     deleteUser,
@@ -744,6 +750,111 @@ describe("adminController", () => {
             );
 
             expect(res.status).toHaveBeenCalledWith(400);
+        });
+    });
+
+    describe("getDashboardMetrics", () => {
+        it("returns every documented metric field, grouped, in one response", async () => {
+            User.countDocuments
+                .mockResolvedValueOnce(100) // totalStudents
+                .mockResolvedValueOnce(20) // totalRecruiters
+                .mockResolvedValueOnce(5) // totalTpos
+                .mockResolvedValueOnce(80) // activeStudents
+                .mockResolvedValueOnce(15) // activeRecruiters
+                .mockResolvedValueOnce(4) // activeTpos
+                .mockResolvedValueOnce(3) // newRegistrationsToday
+                .mockResolvedValueOnce(2); // pendingRecruiterApprovals
+            Problem.countDocuments.mockResolvedValueOnce(50);
+            Submission.countDocuments
+                .mockResolvedValueOnce(1000) // totalSubmissions
+                .mockResolvedValueOnce(650); // acceptedSubmissions
+            College.countDocuments.mockResolvedValueOnce(1); // pendingTpoApprovals
+
+            await getDashboardMetrics({}, res);
+
+            expect(res.json).toHaveBeenCalledWith({
+                users: {
+                    totalStudents: 100,
+                    totalRecruiters: 20,
+                    totalTpos: 5,
+                    activeStudents: 80,
+                    activeRecruiters: 15,
+                    activeTpos: 4,
+                    newRegistrationsToday: 3,
+                },
+                content: {
+                    totalProblems: 50,
+                    totalSubmissions: 1000,
+                    acceptanceRate: 65,
+                },
+                approvals: {
+                    pendingRecruiterApprovals: 2,
+                    pendingTpoApprovals: 1,
+                },
+            });
+        });
+
+        it("matches getProblems' catalog visibility filter (excludes contest-only problems)", async () => {
+            User.countDocuments.mockResolvedValue(0);
+            Problem.countDocuments.mockResolvedValueOnce(0);
+            Submission.countDocuments.mockResolvedValue(0);
+            College.countDocuments.mockResolvedValueOnce(0);
+
+            await getDashboardMetrics({}, res);
+
+            expect(Problem.countDocuments).toHaveBeenCalledWith({ visibility: { $ne: "contest" } });
+        });
+
+        it("matches getPendingQueue's exact filter shape for pending recruiters/TPOs", async () => {
+            User.countDocuments.mockResolvedValue(0);
+            Problem.countDocuments.mockResolvedValueOnce(0);
+            Submission.countDocuments.mockResolvedValue(0);
+            College.countDocuments.mockResolvedValueOnce(0);
+
+            await getDashboardMetrics({}, res);
+
+            expect(User.countDocuments).toHaveBeenCalledWith({
+                role: "recruiter",
+                "recruiterProfile.verified": false,
+            });
+            expect(College.countDocuments).toHaveBeenCalledWith({
+                status: "pending",
+                submittedByRole: "tpo",
+            });
+        });
+
+        it("uses the same Accepted-status semantics as getAcceptanceRates for the platform-wide rate", async () => {
+            User.countDocuments.mockResolvedValue(0);
+            Problem.countDocuments.mockResolvedValueOnce(0);
+            Submission.countDocuments.mockResolvedValue(0);
+            College.countDocuments.mockResolvedValueOnce(0);
+
+            await getDashboardMetrics({}, res);
+
+            expect(Submission.countDocuments).toHaveBeenCalledWith({ status: "Accepted" });
+        });
+
+        it("returns 0% acceptance rate (not NaN) when there are zero submissions", async () => {
+            User.countDocuments.mockResolvedValue(0);
+            Problem.countDocuments.mockResolvedValueOnce(0);
+            Submission.countDocuments.mockResolvedValue(0);
+            College.countDocuments.mockResolvedValueOnce(0);
+
+            await getDashboardMetrics({}, res);
+
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({ content: expect.objectContaining({ acceptanceRate: 0 }) })
+            );
+        });
+
+        it("returns 500 if a query fails", async () => {
+            User.countDocuments.mockImplementationOnce(() => {
+                throw new Error("db down");
+            });
+
+            await getDashboardMetrics({}, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
         });
     });
 });

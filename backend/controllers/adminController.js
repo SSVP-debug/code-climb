@@ -29,6 +29,7 @@ import ImpersonationLog from "../models/ImpersonationLog.js";
 import AdminAuditLog from "../models/AdminAuditLog.js";
 import Submission from "../models/Submission.js";
 import Notification from "../models/Notification.js";
+import Problem from "../models/Problem.js";
 import { createNotification } from "../services/notificationService.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
@@ -494,6 +495,92 @@ export async function getAuditLogs(req, res) {
   } catch (err) {
     logger.error({ err }, "[Admin] audit logs error");
     return res.status(500).json({ error: "Failed to load audit logs." });
+  }
+}
+
+// ── GET /api/admin/dashboard-metrics ─────────────────────────────────────────
+// Single response, all metrics — the frontend renders them together as a
+// grid of stat cards (plan 004), no reason to round-trip once per card.
+// Current-state snapshot only (no time-series/trends — that's plan 007).
+//
+// "Active" per role uses status: "active" (plan 003's User.status field,
+// already landed by the time this was written — no fallback needed).
+//
+// Total Problems mirrors getProblems' (problemController.js) own catalog
+// visibility filter exactly (`visibility: { $ne: "contest" }`) so this
+// number always matches what the public problem list would show, not an
+// internal total that includes contest-only problems.
+//
+// Submission counts / acceptance rate read the same Submission collection
+// and "status === 'Accepted'" semantics as getAcceptanceRates
+// (problemController.js) — same source of truth, collapsed to a single
+// platform-wide number instead of per-problem. This is a plain
+// Submission collection with a flat status field (not denormalized
+// per-problem stats), so a platform-wide count is cheap and accurate —
+// no escape-hatch situation here.
+//
+// Pending recruiter/TPO approvals mirror getPendingQueue's two query
+// branches above, collapsed to countDocuments instead of find + full
+// document fetch.
+export async function getDashboardMetrics(req, res) {
+  try {
+    const startOfToday = new Date();
+    startOfToday.setUTCHours(0, 0, 0, 0);
+
+    const [
+      totalStudents,
+      totalRecruiters,
+      totalTpos,
+      activeStudents,
+      activeRecruiters,
+      activeTpos,
+      newRegistrationsToday,
+      totalProblems,
+      totalSubmissions,
+      acceptedSubmissions,
+      pendingRecruiterApprovals,
+      pendingTpoApprovals,
+    ] = await Promise.all([
+      User.countDocuments({ role: "student" }),
+      User.countDocuments({ role: "recruiter" }),
+      User.countDocuments({ role: "tpo" }),
+      User.countDocuments({ role: "student", status: "active" }),
+      User.countDocuments({ role: "recruiter", status: "active" }),
+      User.countDocuments({ role: "tpo", status: "active" }),
+      User.countDocuments({ createdAt: { $gte: startOfToday } }),
+      Problem.countDocuments({ visibility: { $ne: "contest" } }),
+      Submission.countDocuments({}),
+      Submission.countDocuments({ status: "Accepted" }),
+      User.countDocuments({ role: "recruiter", "recruiterProfile.verified": false }),
+      College.countDocuments({ status: "pending", submittedByRole: "tpo" }),
+    ]);
+
+    const acceptanceRate =
+      totalSubmissions > 0 ? Math.round((acceptedSubmissions / totalSubmissions) * 100) : 0;
+
+    return res.json({
+      users: {
+        totalStudents,
+        totalRecruiters,
+        totalTpos,
+        activeStudents,
+        activeRecruiters,
+        activeTpos,
+        newRegistrationsToday,
+      },
+      content: {
+        totalProblems,
+        totalSubmissions,
+        acceptanceRate,
+      },
+      approvals: {
+        pendingRecruiterApprovals,
+        pendingTpoApprovals,
+      },
+    });
+  } catch (err) {
+    logger.error({ err }, "[Admin] dashboard metrics error");
+    return res.status(500).json({ error: "Failed to load dashboard metrics." });
   }
 }
 
