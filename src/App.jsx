@@ -53,7 +53,15 @@ const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
 const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
 const TpoDashboardPage = lazy(() => import("./pages/TpoDashboardPage"));
-const AdminConsolePage = lazy(() => import("./pages/AdminConsolePage"));
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const AdminOverviewPage = lazy(() => import("./pages/admin/AdminOverviewPage"));
+const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
+const AdminCollegesPage = lazy(() => import("./pages/admin/AdminCollegesPage"));
+const AdminProblemsPage = lazy(() => import("./pages/admin/AdminProblemsPage"));
+const AdminAnalyticsPage = lazy(() => import("./pages/admin/AdminAnalyticsPage"));
+const AdminSystemHealthPage = lazy(() => import("./pages/admin/AdminSystemHealthPage"));
+const AdminAuditLogsPage = lazy(() => import("./pages/admin/AdminAuditLogsPage"));
+const AdminSettingsPage = lazy(() => import("./pages/admin/AdminSettingsPage"));
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
 // so there's no white flash during navigation.
@@ -269,16 +277,29 @@ function App() {
         />
 
         {/* ── Phase C: Admin Console + View-As God Mode ────────────────── */}
+        {/* Plan 001: dedicated layout/nav via nested routes. Guard stays on
+            the parent only — RoleRoute renders AdminLayout, whose <Outlet />
+            resolves to whichever child route below matched. Every /admin/*
+            path inherits this guard automatically; nothing below repeats it. */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute>
               <RoleRoute allowedRoles={["admin"]}>
-                <AdminConsolePage />
+                <AdminLayout />
               </RoleRoute>
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<AdminOverviewPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="colleges" element={<AdminCollegesPage />} />
+          <Route path="problems" element={<AdminProblemsPage />} />
+          <Route path="analytics" element={<AdminAnalyticsPage />} />
+          <Route path="system-health" element={<AdminSystemHealthPage />} />
+          <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
+        </Route>
 
         <Route path="*" element={<NotFoundPage />} />
 
