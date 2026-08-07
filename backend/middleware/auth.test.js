@@ -213,4 +213,67 @@ describe("requireAuth", () => {
     expect(next).toHaveBeenCalledOnce();
     expect(res.status).not.toHaveBeenCalled();
   });
+
+  // ── Suspension enforcement (plan 003) ─────────────────────────────────
+  describe("suspended-account enforcement", () => {
+    it("rejects a suspended non-admin user's own request with 403", async () => {
+      verifyIdToken.mockResolvedValueOnce({ uid: "fb-1", email: "a@b.com" });
+      const userDoc = makeUserDoc({ role: "student", status: "suspended" });
+      User.findOne.mockResolvedValueOnce(userDoc);
+
+      const req = mockReq();
+      await requireAuth(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("does not block an active (non-suspended) user", async () => {
+      verifyIdToken.mockResolvedValueOnce({ uid: "fb-1", email: "a@b.com" });
+      const userDoc = makeUserDoc({ role: "student", status: "active" });
+      User.findOne.mockResolvedValueOnce(userDoc);
+
+      const req = mockReq();
+      await requireAuth(req, res, next);
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledOnce();
+    });
+
+    it("never blocks an admin account, even if status were somehow 'suspended'", async () => {
+      verifyIdToken.mockResolvedValueOnce({ uid: "fb-admin", email: "admin@b.com" });
+      const adminDoc = makeUserDoc({ _id: "admin1", role: "admin", status: "suspended" });
+      User.findOne.mockResolvedValueOnce(adminDoc);
+
+      const req = mockReq();
+      await requireAuth(req, res, next);
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledOnce();
+    });
+
+    it("does not lock an admin out of their own impersonation session, even if the impersonated target is suspended", async () => {
+      verifyIdToken.mockResolvedValueOnce({ uid: "fb-admin", email: "admin@b.com" });
+      const adminDoc = makeUserDoc({
+        _id: "admin1",
+        role: "admin",
+        impersonating: { targetUserId: "target1", startedAt: new Date() },
+      });
+      const suspendedTarget = makeUserDoc({ _id: "target1", role: "student", status: "suspended" });
+
+      User.findOne.mockResolvedValueOnce(adminDoc);
+      User.findById.mockResolvedValueOnce(suspendedTarget);
+
+      const req = mockReq();
+      await requireAuth(req, res, next);
+
+      // req.actingAdminDoc is set (this is an impersonation request), so the
+      // suspension check is skipped — see auth.js's comment for why: without
+      // this, the admin could never call stop-impersonate on this target again.
+      expect(req.actingAdminDoc).toBe(adminDoc);
+      expect(req.userDoc).toBe(suspendedTarget);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledOnce();
+    });
+  });
 });

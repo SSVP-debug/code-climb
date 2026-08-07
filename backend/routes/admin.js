@@ -10,6 +10,11 @@ import {
   rejectStudentCollege,
   listUsers,
   getAuditLogs,
+  suspendUser,
+  activateUser,
+  deleteUser,
+  resetUserProgress,
+  changeUserRole,
   startImpersonation,
   stopImpersonation,
 } from "../controllers/adminController.js";
@@ -29,6 +34,13 @@ router.post("/student-colleges/:collegeId/reject", requireAdmin, rejectStudentCo
 router.get("/users", requireAdmin, listUsers);
 router.post("/impersonate/:userId", requireAdmin, startImpersonation);
 router.post("/impersonate/stop", requireAdmin, stopImpersonation);
+
+// ── User management actions ─────────────────────────────────────────────────
+router.post("/users/:id/suspend", requireAdmin, suspendUser);
+router.post("/users/:id/activate", requireAdmin, activateUser);
+router.delete("/users/:id", requireAdmin, deleteUser);
+router.post("/users/:id/reset-progress", requireAdmin, resetUserProgress);
+router.post("/users/:id/role", requireAdmin, changeUserRole);
 
 // ── Audit log ────────────────────────────────────────────────────────────────
 router.get("/audit-logs", requireAdmin, getAuditLogs);

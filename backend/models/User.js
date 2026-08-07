@@ -228,6 +228,19 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
 
+    // ── Account status (Admin console — plan 003) ───────────────────────
+    // Only "active"/"suspended" — deliberately NOT "deleted": a suspended
+    // user should still resolve to a real account and see "your account
+    // is suspended," while a deleted user shouldn't exist for lookups at
+    // all. Delete is a real User.deleteOne(), not a status value — see
+    // adminController.js's deleteUser for the cascade-decision notes.
+    // Enforced in middleware/auth.js's requireAuth (rejects with 403).
+    status: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
+    },
+
     // ── Admin impersonation ("Login As") ──────────────────────────────────
     // Only ever meaningful on an admin account. When set, requireAuth
     // transparently swaps req.userDoc to the target user for the duration

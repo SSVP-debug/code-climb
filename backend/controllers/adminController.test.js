@@ -13,6 +13,7 @@ vi.mock("../models/User.js", () => ({
         findById: vi.fn(),
         updateMany: vi.fn(),
         countDocuments: vi.fn(),
+        deleteOne: vi.fn(),
     },
 }));
 vi.mock("../models/ImpersonationLog.js", () => ({
@@ -20,6 +21,12 @@ vi.mock("../models/ImpersonationLog.js", () => ({
 }));
 vi.mock("../models/AdminAuditLog.js", () => ({
     default: { find: vi.fn(), countDocuments: vi.fn(), create: vi.fn() },
+}));
+vi.mock("../models/Submission.js", () => ({
+    default: { deleteMany: vi.fn() },
+}));
+vi.mock("../models/Notification.js", () => ({
+    default: { deleteMany: vi.fn() },
 }));
 vi.mock("../services/notificationService.js", () => ({
     createNotification: vi.fn().mockResolvedValue(undefined),
@@ -38,6 +45,8 @@ import College from "../models/College.js";
 import User from "../models/User.js";
 import ImpersonationLog from "../models/ImpersonationLog.js";
 import AdminAuditLog from "../models/AdminAuditLog.js";
+import Submission from "../models/Submission.js";
+import Notification from "../models/Notification.js";
 import { createNotification } from "../services/notificationService.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
@@ -51,6 +60,11 @@ import {
     rejectStudentCollege,
     listUsers,
     getAuditLogs,
+    suspendUser,
+    activateUser,
+    deleteUser,
+    resetUserProgress,
+    changeUserRole,
     startImpersonation,
     stopImpersonation,
 } from "./adminController.js";
@@ -493,6 +507,243 @@ describe("adminController", () => {
             expect(ImpersonationLog.updateOne).toHaveBeenCalledOnce();
             expect(admin.impersonating).toEqual({ targetUserId: null, startedAt: null });
             expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+    });
+
+    describe("suspendUser", () => {
+        it("sets status to suspended, invalidates the auth cache, and audit-logs it", async () => {
+            const target = makeUser({ _id: "u1", role: "student", status: "active" });
+            const admin = makeAdmin();
+            User.findById.mockResolvedValueOnce(target);
+
+            await suspendUser({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
+
+            expect(target.status).toBe("suspended");
+            expect(target.save).toHaveBeenCalledOnce();
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "user.suspend", targetType: "User", targetId: "u1" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the target doesn't exist", async () => {
+            User.findById.mockResolvedValueOnce(null);
+
+            await suspendUser({ params: { id: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        it("400s when the target is an admin", async () => {
+            User.findById.mockResolvedValueOnce(makeUser({ role: "admin" }));
+
+            await suspendUser({ params: { id: "u1" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+        });
+    });
+
+    describe("activateUser", () => {
+        it("sets status to active, invalidates the auth cache, and audit-logs it", async () => {
+            const target = makeUser({ _id: "u1", role: "student", status: "suspended" });
+            const admin = makeAdmin();
+            User.findById.mockResolvedValueOnce(target);
+
+            await activateUser({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
+
+            expect(target.status).toBe("active");
+            expect(target.save).toHaveBeenCalledOnce();
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "user.activate", targetType: "User", targetId: "u1" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the target doesn't exist", async () => {
+            User.findById.mockResolvedValueOnce(null);
+
+            await activateUser({ params: { id: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        it("400s when the target is an admin", async () => {
+            User.findById.mockResolvedValueOnce(makeUser({ role: "admin" }));
+
+            await activateUser({ params: { id: "u1" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+        });
+    });
+
+    describe("deleteUser", () => {
+        it("cascade-deletes Submissions/Notifications, deletes the user, invalidates cache, and audit-logs it", async () => {
+            const target = makeUser({ _id: "u1", role: "student" });
+            const admin = makeAdmin();
+            User.findById.mockResolvedValueOnce(target);
+            Submission.deleteMany.mockResolvedValueOnce({ deletedCount: 3 });
+            Notification.deleteMany.mockResolvedValueOnce({ deletedCount: 5 });
+            User.deleteOne.mockResolvedValueOnce({ deletedCount: 1 });
+
+            await deleteUser({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
+
+            expect(Submission.deleteMany).toHaveBeenCalledWith({ userId: "u1" });
+            expect(Notification.deleteMany).toHaveBeenCalledWith({ userId: "u1" });
+            expect(User.deleteOne).toHaveBeenCalledWith({ _id: "u1" });
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "user.delete", targetType: "User", targetId: "u1" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the target doesn't exist", async () => {
+            User.findById.mockResolvedValueOnce(null);
+
+            await deleteUser({ params: { id: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        it("400s when the target is an admin", async () => {
+            User.findById.mockResolvedValueOnce(makeUser({ role: "admin" }));
+
+            await deleteUser({ params: { id: "u1" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(User.deleteOne).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("resetUserProgress", () => {
+        it("zeroes progress fields but leaves role/profile/verification state untouched", async () => {
+            const target = makeUser({
+                _id: "u1",
+                role: "student",
+                currentStreak: 10,
+                longestStreak: 20,
+                lastActivityDate: "2026-08-01",
+                totalXP: 500,
+                solvedSlugs: ["two-sum"],
+                solvedDifficulty: { easy: 1, medium: 0, hard: 0 },
+                topicStats: { arrays: 1 },
+                activityDates: ["2026-08-01"],
+                recentActivity: [{ title: "Two Sum" }],
+                achievements: [{ key: "first-blood" }],
+                dailyChallengeHistory: [{ date: "2026-08-01", slug: "two-sum" }],
+                education: { collegeName: "MIT", verified: true },
+            });
+            const admin = makeAdmin();
+            User.findById.mockResolvedValueOnce(target);
+
+            await resetUserProgress({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
+
+            expect(target.currentStreak).toBe(0);
+            expect(target.longestStreak).toBe(0);
+            expect(target.lastActivityDate).toBeNull();
+            expect(target.totalXP).toBe(0);
+            expect(target.solvedSlugs).toEqual([]);
+            expect(target.solvedDifficulty).toEqual({ easy: 0, medium: 0, hard: 0 });
+            expect(target.topicStats).toEqual({});
+            expect(target.activityDates).toEqual([]);
+            expect(target.recentActivity).toEqual([]);
+            expect(target.achievements).toEqual([]);
+            expect(target.dailyChallengeHistory).toEqual([]);
+            // Untouched — plan 003 explicitly excludes role/profile/education state.
+            expect(target.role).toBe("student");
+            expect(target.education).toEqual({ collegeName: "MIT", verified: true });
+            expect(target.save).toHaveBeenCalledOnce();
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "user.reset_progress", targetType: "User", targetId: "u1" })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("404s when the target doesn't exist", async () => {
+            User.findById.mockResolvedValueOnce(null);
+
+            await resetUserProgress({ params: { id: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        it("400s when the target is an admin", async () => {
+            User.findById.mockResolvedValueOnce(makeUser({ role: "admin" }));
+
+            await resetUserProgress({ params: { id: "u1" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
+
+            expect(res.status).toHaveBeenCalledWith(400);
+        });
+    });
+
+    describe("changeUserRole", () => {
+        it("changes the role, invalidates the auth cache, and audit-logs before/after state", async () => {
+            const target = makeUser({ _id: "u1", role: "student" });
+            const admin = makeAdmin();
+            User.findById.mockResolvedValueOnce(target);
+
+            await changeUserRole(
+                { params: { id: "u1" }, body: { role: "recruiter" }, userDoc: admin, actingAdminDoc: null },
+                res
+            );
+
+            expect(target.role).toBe("recruiter");
+            expect(target.save).toHaveBeenCalledOnce();
+            expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    adminDoc: admin,
+                    action: "user.change_role",
+                    targetType: "User",
+                    targetId: "u1",
+                    details: { previousRole: "student", newRole: "recruiter" },
+                })
+            );
+            expect(res.json).toHaveBeenCalledWith({ success: true });
+        });
+
+        it("400s when the requested role is admin — no path to mint a second admin", async () => {
+            await changeUserRole(
+                { params: { id: "u1" }, body: { role: "admin" }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(User.findById).not.toHaveBeenCalled();
+        });
+
+        it("400s on an unrecognized role value", async () => {
+            await changeUserRole(
+                { params: { id: "u1" }, body: { role: "superuser" }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
+        });
+
+        it("404s when the target doesn't exist", async () => {
+            User.findById.mockResolvedValueOnce(null);
+
+            await changeUserRole(
+                { params: { id: "missing" }, body: { role: "tpo" }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(404);
+        });
+
+        it("400s when the target is already an admin", async () => {
+            User.findById.mockResolvedValueOnce(makeUser({ role: "admin" }));
+
+            await changeUserRole(
+                { params: { id: "u1" }, body: { role: "tpo" }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
         });
     });
 });

@@ -27,6 +27,8 @@ import College from "../models/College.js";
 import User from "../models/User.js";
 import ImpersonationLog from "../models/ImpersonationLog.js";
 import AdminAuditLog from "../models/AdminAuditLog.js";
+import Submission from "../models/Submission.js";
+import Notification from "../models/Notification.js";
 import { createNotification } from "../services/notificationService.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
@@ -413,7 +415,7 @@ export async function listUsers(req, res) {
     const [users, total] = await Promise.all([
       User.find(
         filter,
-        "displayName email username role recruiterProfile.companyName recruiterProfile.verified tpoProfile.collegeName tpoProfile.verified createdAt"
+        "displayName email username role status recruiterProfile.companyName recruiterProfile.verified tpoProfile.collegeName tpoProfile.verified createdAt"
       )
         .sort({ createdAt: -1 })
         .skip((pageNum - 1) * limitNum)
@@ -429,6 +431,7 @@ export async function listUsers(req, res) {
         email: u.email,
         username: u.username,
         role: u.role,
+        status: u.status || "active",
         label:
           u.role === "recruiter"
             ? u.recruiterProfile?.companyName
@@ -491,6 +494,214 @@ export async function getAuditLogs(req, res) {
   } catch (err) {
     logger.error({ err }, "[Admin] audit logs error");
     return res.status(500).json({ error: "Failed to load audit logs." });
+  }
+}
+
+// ── User management actions (plan 003) ───────────────────────────────────────
+// Every action below: validates target exists and isn't an admin, performs
+// its mutation, invalidates the auth cache so it takes effect immediately
+// (not after the cache TTL), and audit-logs via recordAdminAction (plan 002).
+
+// The "progress" field list for resetUserProgress, enumerated from the full
+// User schema (backend/models/User.js) per plan 003's instruction not to
+// guess field names. Split into what's unambiguously progress (reset) vs.
+// what's ambiguous enough that this plan deliberately leaves untouched
+// rather than guess — see the comment above PROGRESS_RESET_FIELDS below.
+const PROGRESS_RESET_FIELDS = {
+  currentStreak: 0,
+  longestStreak: 0,
+  lastActivityDate: null,
+  totalXP: 0,
+  solvedSlugs: [],
+  solvedDifficulty: { easy: 0, medium: 0, hard: 0 },
+  topicStats: {},
+  activityDates: [],
+  recentActivity: [],
+  achievements: [],
+  dailyChallengeHistory: [],
+};
+// Deliberately NOT included above, flagged as ambiguous rather than guessed
+// (escape hatch, plan 003): profileSignature (derived hash OF solvedCount —
+// resetting solved data without it leaves a stale/inconsistent signature,
+// but it's arguably a "profile" artifact, not progress itself); certificates
+// (earned via completing tracks — progress-shaped, but the plan named only
+// "achievements" explicitly, not this); pinnedProblems (user's curated
+// showcase of solved problems — a curation choice, but references solved
+// data); leetcodeStats (explicitly documented elsewhere in this file's model
+// as NOT fed into totalXP/solvedSlugs, manually-entered supplementary
+// content — leans profile); problemNotes (personal annotations on problems —
+// could be either). None of these are touched by resetUserProgress below.
+export async function suspendUser(req, res) {
+  try {
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Admins can't be suspended." });
+    }
+
+    target.status = "suspended";
+    await target.save();
+    invalidateCachedUserByFirebaseUid(target.firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "user.suspend",
+      targetType: "User",
+      targetId: target._id,
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] suspendUser error");
+    return res.status(500).json({ error: "Failed to suspend user." });
+  }
+}
+
+export async function activateUser(req, res) {
+  try {
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Admins don't have a status to activate." });
+    }
+
+    target.status = "active";
+    await target.save();
+    invalidateCachedUserByFirebaseUid(target.firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "user.activate",
+      targetType: "User",
+      targetId: target._id,
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] activateUser error");
+    return res.status(500).json({ error: "Failed to activate user." });
+  }
+}
+
+// Cascade decisions (grep -rn 'ref: "User"' backend/models/, done at
+// planning time — see plan 003's maintenance note: revisit this if a new
+// model starts referencing User):
+//   - Submission, Notification: cascade-deleted below. Both are meaningless
+//     without the owning user and, for Submission especially, leaving them
+//     orphaned would pollute leaderboards/analytics with phantom entries.
+//   - Everything else (Playlist, SkillsTest, RecruiterInterest, College,
+//     Contest, Reflection, Assignment, Ambassador, ImpersonationLog,
+//     AdminAuditLog, BattleRoom): left orphaned-but-harmless on purpose.
+//     Several of these are audit/historical records (ImpersonationLog,
+//     AdminAuditLog, SkillsTest) that should arguably survive their
+//     subject's deletion for accountability reasons, not be scrubbed by it.
+//     User.impersonating.targetUserId pointing at a deleted user is already
+//     self-healing — see middleware/auth.js's stale-pointer cleanup, which
+//     runs lazily on the admin's next request and needs no extra handling
+//     here.
+export async function deleteUser(req, res) {
+  try {
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Admins can't be deleted." });
+    }
+
+    const { firebaseUid, _id } = target;
+
+    await Promise.all([
+      Submission.deleteMany({ userId: _id }),
+      Notification.deleteMany({ userId: _id }),
+    ]);
+    await User.deleteOne({ _id });
+
+    invalidateCachedUserByFirebaseUid(firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "user.delete",
+      targetType: "User",
+      targetId: _id,
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] deleteUser error");
+    return res.status(500).json({ error: "Failed to delete user." });
+  }
+}
+
+export async function resetUserProgress(req, res) {
+  try {
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Admins don't have progress to reset." });
+    }
+
+    Object.assign(target, PROGRESS_RESET_FIELDS);
+    await target.save();
+    invalidateCachedUserByFirebaseUid(target.firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "user.reset_progress",
+      targetType: "User",
+      targetId: target._id,
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] resetUserProgress error");
+    return res.status(500).json({ error: "Failed to reset user progress." });
+  }
+}
+
+const CHANGEABLE_ROLES = ["student", "recruiter", "tpo"];
+
+export async function changeUserRole(req, res) {
+  try {
+    const { role: newRole } = req.body || {};
+
+    if (!CHANGEABLE_ROLES.includes(newRole)) {
+      return res.status(400).json({
+        error: `Role must be one of: ${CHANGEABLE_ROLES.join(", ")}.`,
+      });
+    }
+
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (target.role === "admin") {
+      return res.status(400).json({ error: "Admins' roles can't be changed here." });
+    }
+
+    const previousRole = target.role;
+    target.role = newRole;
+    await target.save();
+    invalidateCachedUserByFirebaseUid(target.firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "user.change_role",
+      targetType: "User",
+      targetId: target._id,
+      details: { previousRole, newRole },
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "[Admin] changeUserRole error");
+    return res.status(500).json({ error: "Failed to change user role." });
   }
 }
 

@@ -1,4 +1,5 @@
 import Button from "../ui/Button";
+import UserActionsMenu from "./UserActionsMenu";
 import { USERS_PAGE_SIZE } from "../../hooks/useAdminUsers";
 
 const ROLE_FILTERS = [
@@ -21,6 +22,12 @@ function UsersLoginAsSection({ adminUsers }) {
     setSearchInput,
     impersonatingId,
     loginAs,
+    busyIds,
+    suspendUser,
+    activateUser,
+    deleteUser,
+    resetUserProgress,
+    changeUserRole,
   } = adminUsers;
 
   return (
@@ -78,21 +85,37 @@ function UsersLoginAsSection({ adminUsers }) {
                       {u.verified ? "verified" : "pending"}
                     </span>
                   )}
+                  {u.status === "suspended" && (
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded align-middle bg-red-500/10 text-red-400">
+                      suspended
+                    </span>
+                  )}
                 </p>
                 <p className="text-zinc-500 text-xs truncate">
                   {u.email}
                   {u.label && ` · ${u.label}`}
                 </p>
               </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                disabled={impersonatingId === u.id}
-                loading={impersonatingId === u.id}
-                onClick={() => loginAs(u)}
-              >
-                Login As
-              </Button>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={impersonatingId === u.id}
+                  loading={impersonatingId === u.id}
+                  onClick={() => loginAs(u)}
+                >
+                  Login As
+                </Button>
+                <UserActionsMenu
+                  user={u}
+                  busy={busyIds[u.id]}
+                  onSuspend={suspendUser}
+                  onActivate={activateUser}
+                  onDelete={deleteUser}
+                  onResetProgress={resetUserProgress}
+                  onChangeRole={changeUserRole}
+                />
+              </div>
             </div>
           ))}
         </div>

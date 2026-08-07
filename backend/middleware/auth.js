@@ -105,6 +105,39 @@ async function resolveAuthenticatedUser(req) {
 export async function requireAuth(req, res, next) {
   try {
     await resolveAuthenticatedUser(req);
+
+    // ── Suspension enforcement (plan 003) ───────────────────────────────
+    // req.userDoc is already the FINAL resolved identity here — if this
+    // request is an admin impersonating someone, resolveAuthenticatedUser
+    // already swapped req.userDoc to the target above, so this check
+    // covers both "a suspended user making their own request" and "an
+    // admin impersonating a suspended user" identically, which is the
+    // safer default (impersonation shouldn't be a way to route around a
+    // suspension). The `role !== "admin"` guard exists purely so a real
+    // admin account can never lock itself out via this check, matching
+    // roleGuard.js's requireAdmin's own reasoning for treating admin
+    // specially. req.actingAdminDoc is excluded from this check entirely
+    // (only req.userDoc's status matters) — admin-only routes still need
+    // requireAdmin downstream to actually authorize anything, this check
+    // only ever rejects, never grants.
+    //
+    // Deliberately skipped when req.actingAdminDoc is set: without this,
+    // an admin who impersonates a suspended user would be 403'd on their
+    // *next* request too — including the request to call stop-impersonate
+    // — permanently trapping them in that impersonation. The suspended
+    // target's own, non-impersonated requests are still rejected below;
+    // this only exempts the admin's use of "Login As".
+    if (
+      req.userDoc &&
+      req.userDoc.status === "suspended" &&
+      req.userDoc.role !== "admin" &&
+      !req.actingAdminDoc
+    ) {
+      return res.status(403).json({
+        error: "Your account has been suspended. Contact support if you believe this is a mistake.",
+      });
+    }
+
     return next();
   } catch (error) {
     (req.log || logger).error({ err: error }, "[Auth] Token verification failed");

@@ -5,6 +5,10 @@
  * for the admin console's user-management section.
  *
  * Extracted from src/pages/AdminConsolePage.jsx (Staff review §4/§9/#12).
+ * Extended (plan 003) with the five row-level management actions:
+ * suspend/activate/delete/reset-progress/change-role. Follows the same
+ * busyIds-per-row pattern as useAdminVerificationQueue.js's approve/reject
+ * actions, for consistency with the rest of the admin console.
  */
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -22,6 +26,10 @@ export function useAdminUsers() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState(""); // debounced value actually sent
   const [impersonatingId, setImpersonatingId] = useState(null);
+  // Tracks which row is mid-request for the five management actions below,
+  // so its own row shows a spinner without disabling the rest of the table:
+  // { [id]: "suspend" | "activate" | "delete" | "reset-progress" | "role" }
+  const [busyIds, setBusyIds] = useState({});
 
   // Debounce free-text search so every keystroke doesn't fire a request.
   useEffect(() => {
@@ -76,6 +84,66 @@ export function useAdminUsers() {
     }
   }
 
+  function withBusy(id, busyLabel, fn) {
+    return async () => {
+      setBusyIds((b) => ({ ...b, [id]: busyLabel }));
+      try {
+        await fn();
+      } catch (err) {
+        toast.error(err.message || "Action failed.");
+      } finally {
+        setBusyIds((b) => {
+          const next = { ...b };
+          delete next[id];
+          return next;
+        });
+      }
+    };
+  }
+
+  async function suspendUser(id) {
+    return withBusy(id, "suspend", async () => {
+      await apiFetch(`/api/admin/users/${id}/suspend`, { method: "POST" });
+      setUsers((list) => list.map((u) => (u.id === id ? { ...u, status: "suspended" } : u)));
+      toast.success("User suspended.");
+    })();
+  }
+
+  async function activateUser(id) {
+    return withBusy(id, "activate", async () => {
+      await apiFetch(`/api/admin/users/${id}/activate`, { method: "POST" });
+      setUsers((list) => list.map((u) => (u.id === id ? { ...u, status: "active" } : u)));
+      toast.success("User activated.");
+    })();
+  }
+
+  async function deleteUser(id) {
+    return withBusy(id, "delete", async () => {
+      await apiFetch(`/api/admin/users/${id}`, { method: "DELETE" });
+      setUsers((list) => list.filter((u) => u.id !== id));
+      setUsersTotal((t) => Math.max(0, t - 1));
+      toast.success("User deleted.");
+    })();
+  }
+
+  async function resetUserProgress(id) {
+    return withBusy(id, "reset-progress", async () => {
+      await apiFetch(`/api/admin/users/${id}/reset-progress`, { method: "POST" });
+      toast.success("Progress reset.");
+    })();
+  }
+
+  async function changeUserRole(id, newRole) {
+    return withBusy(id, "role", async () => {
+      await apiFetch(`/api/admin/users/${id}/role`, {
+        method: "POST",
+        body: JSON.stringify({ role: newRole }),
+      });
+      setUsers((list) => list.map((u) => (u.id === id ? { ...u, role: newRole, label: null } : u)));
+      toast.success(`Role changed to ${newRole}.`);
+    })();
+  }
+
   return {
     users,
     usersTotal,
@@ -88,5 +156,11 @@ export function useAdminUsers() {
     setSearchInput,
     impersonatingId,
     loginAs,
+    busyIds,
+    suspendUser,
+    activateUser,
+    deleteUser,
+    resetUserProgress,
+    changeUserRole,
   };
 }
