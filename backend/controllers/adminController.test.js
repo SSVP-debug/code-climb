@@ -18,8 +18,14 @@ vi.mock("../models/User.js", () => ({
 vi.mock("../models/ImpersonationLog.js", () => ({
     default: { updateOne: vi.fn(), create: vi.fn() },
 }));
+vi.mock("../models/AdminAuditLog.js", () => ({
+    default: { find: vi.fn(), countDocuments: vi.fn(), create: vi.fn() },
+}));
 vi.mock("../services/notificationService.js", () => ({
     createNotification: vi.fn().mockResolvedValue(undefined),
+}));
+vi.mock("../services/adminAuditLog.js", () => ({
+    recordAdminAction: vi.fn(),
 }));
 vi.mock("../utils/userAuthCache.js", () => ({
     invalidateCachedUserByFirebaseUid: vi.fn(),
@@ -31,7 +37,9 @@ vi.mock("../config/logger.js", () => ({
 import College from "../models/College.js";
 import User from "../models/User.js";
 import ImpersonationLog from "../models/ImpersonationLog.js";
+import AdminAuditLog from "../models/AdminAuditLog.js";
 import { createNotification } from "../services/notificationService.js";
+import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
 import {
     getPendingQueue,
@@ -42,6 +50,7 @@ import {
     approveStudentCollege,
     rejectStudentCollege,
     listUsers,
+    getAuditLogs,
     startImpersonation,
     stopImpersonation,
 } from "./adminController.js";
@@ -77,6 +86,13 @@ function makeUser(overrides = {}) {
         save: vi.fn().mockResolvedValue(true),
         ...overrides,
     };
+}
+
+// The acting admin identity every mutating admin route reads via
+// req.actingAdminDoc || req.userDoc (see startImpersonation/stopImpersonation,
+// now also recordAdminAction call sites added by plan 002).
+function makeAdmin(overrides = {}) {
+    return makeUser({ _id: "admin1", role: "admin", email: "admin@codeclub.dev", ...overrides });
 }
 
 describe("adminController", () => {
@@ -138,15 +154,19 @@ describe("adminController", () => {
     });
 
     describe("approveRecruiter", () => {
-        it("verifies the recruiter, invalidates their auth cache, and notifies them", async () => {
+        it("verifies the recruiter, invalidates their auth cache, notifies them, and audit-logs it", async () => {
             const user = makeUser();
+            const admin = makeAdmin();
             User.findById.mockResolvedValueOnce(user);
 
-            await approveRecruiter({ params: { id: "u1" } }, res);
+            await approveRecruiter({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(user.recruiterProfile.verified).toBe(true);
             expect(user.save).toHaveBeenCalledOnce();
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "recruiter.approve", targetType: "User", targetId: "u1" })
+            );
             expect(createNotification).toHaveBeenCalledWith(
                 expect.objectContaining({ userId: "u1", type: "recruiter_verified" })
             );
@@ -156,28 +176,32 @@ describe("adminController", () => {
         it("404s when the target isn't a recruiter", async () => {
             User.findById.mockResolvedValueOnce(makeUser({ role: "student" }));
 
-            await approveRecruiter({ params: { id: "u1" } }, res);
+            await approveRecruiter({ params: { id: "u1" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
     });
 
     describe("rejectRecruiter", () => {
-        it("demotes the user back to student and invalidates their auth cache", async () => {
+        it("demotes the user back to student, invalidates their auth cache, and audit-logs it", async () => {
             const user = makeUser();
+            const admin = makeAdmin();
             User.findById.mockResolvedValueOnce(user);
 
-            await rejectRecruiter({ params: { id: "u1" } }, res);
+            await rejectRecruiter({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(user.role).toBe("student");
             expect(user.recruiterProfile.verified).toBe(false);
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "recruiter.reject", targetType: "User", targetId: "u1" })
+            );
             expect(res.json).toHaveBeenCalledWith({ success: true });
         });
     });
 
     describe("approveTpo", () => {
-        it("verifies the college and bulk-verifies matching pending TPO profiles", async () => {
+        it("verifies the college, bulk-verifies matching pending TPO profiles, and audit-logs it", async () => {
             const college = {
                 _id: "c1",
                 domains: ["mit.edu"],
@@ -186,15 +210,19 @@ describe("adminController", () => {
                 status: "pending",
                 save: vi.fn().mockResolvedValue(true),
             };
+            const admin = makeAdmin();
             College.findById.mockResolvedValueOnce(college);
             User.updateMany.mockResolvedValueOnce({ modifiedCount: 3 });
 
-            await approveTpo({ params: { collegeId: "c1" } }, res);
+            await approveTpo({ params: { collegeId: "c1" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(college.status).toBe("verified");
             expect(User.updateMany).toHaveBeenCalledWith(
                 { role: "tpo", "tpoProfile.collegeDomain": { $in: ["mit.edu"] }, "tpoProfile.verified": false },
                 expect.objectContaining({ $set: expect.any(Object) })
+            );
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "tpo.approve", targetType: "College", targetId: "c1" })
             );
             expect(createNotification).toHaveBeenCalledWith(
                 expect.objectContaining({ userId: "admin-user-1", type: "tpo_verified" })
@@ -205,25 +233,29 @@ describe("adminController", () => {
         it("404s when the college request doesn't exist", async () => {
             College.findById.mockResolvedValueOnce(null);
 
-            await approveTpo({ params: { collegeId: "missing" } }, res);
+            await approveTpo({ params: { collegeId: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
     });
 
     describe("rejectTpo", () => {
-        it("deletes the college and demotes the requester if still a TPO", async () => {
+        it("deletes the college, demotes the requester if still a TPO, and audit-logs it", async () => {
             const college = { _id: "c1", name: "MIT", submittedBy: "req1" };
             const requester = makeUser({ _id: "req1", role: "tpo", firebaseUid: "fb-req1" });
+            const admin = makeAdmin();
 
             College.findById.mockResolvedValueOnce(college);
             User.findById.mockResolvedValueOnce(requester);
 
-            await rejectTpo({ params: { collegeId: "c1" } }, res);
+            await rejectTpo({ params: { collegeId: "c1" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(College.deleteOne).toHaveBeenCalledWith({ _id: "c1" });
             expect(requester.role).toBe("student");
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-req1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "tpo.reject", targetType: "College", targetId: "c1" })
+            );
             expect(res.json).toHaveBeenCalledWith({ success: true });
         });
     });
@@ -246,7 +278,8 @@ describe("adminController", () => {
             College.findById.mockResolvedValueOnce(college);
             User.find.mockResolvedValueOnce([linkedUser]);
 
-            await approveStudentCollege({ params: { collegeId: "c2" } }, res);
+            const admin = makeAdmin();
+            await approveStudentCollege({ params: { collegeId: "c2" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(college.status).toBe("verified");
             expect(User.find).toHaveBeenCalledWith({
@@ -256,6 +289,9 @@ describe("adminController", () => {
             expect(linkedUser.education.collegeStatus).toBe("verified");
             expect(linkedUser.save).toHaveBeenCalledOnce();
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-stu1");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "studentCollege.approve", targetType: "College", targetId: "c2" })
+            );
             expect(createNotification).toHaveBeenCalledWith(
                 expect.objectContaining({ userId: "stu1", type: "college_verified" })
             );
@@ -265,14 +301,14 @@ describe("adminController", () => {
         it("404s when the college request doesn't exist", async () => {
             College.findById.mockResolvedValueOnce(null);
 
-            await approveStudentCollege({ params: { collegeId: "missing" } }, res);
+            await approveStudentCollege({ params: { collegeId: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
     });
 
     describe("rejectStudentCollege", () => {
-        it("does NOT delete the college doc — marks it rejected and updates linked users", async () => {
+        it("does NOT delete the college doc — marks it rejected, updates linked users, and audit-logs it", async () => {
             const college = {
                 _id: "c2",
                 domains: ["xyz.ac.in"],
@@ -289,11 +325,15 @@ describe("adminController", () => {
             College.findById.mockResolvedValueOnce(college);
             User.find.mockResolvedValueOnce([linkedUser]);
 
-            await rejectStudentCollege({ params: { collegeId: "c2" } }, res);
+            const admin = makeAdmin();
+            await rejectStudentCollege({ params: { collegeId: "c2" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(college.status).toBe("rejected");
             expect(College.deleteOne).not.toHaveBeenCalled();
             expect(linkedUser.education.collegeStatus).toBe("rejected");
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ adminDoc: admin, action: "studentCollege.reject", targetType: "College", targetId: "c2" })
+            );
             expect(createNotification).toHaveBeenCalledWith(
                 expect.objectContaining({ userId: "stu1", type: "college_rejected" })
             );
@@ -303,7 +343,7 @@ describe("adminController", () => {
         it("404s when the college request doesn't exist", async () => {
             College.findById.mockResolvedValueOnce(null);
 
-            await rejectStudentCollege({ params: { collegeId: "missing" } }, res);
+            await rejectStudentCollege({ params: { collegeId: "missing" }, userDoc: makeAdmin(), actingAdminDoc: null }, res);
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
@@ -325,6 +365,67 @@ describe("adminController", () => {
             expect(res.json).toHaveBeenCalledWith(
                 expect.objectContaining({ total: 1, page: 1, limit: 20 })
             );
+        });
+    });
+
+    describe("getAuditLogs", () => {
+        it("returns paginated logs sorted newest-first", async () => {
+            const entries = [
+                { _id: "l1", adminEmail: "admin@codeclub.dev", action: "recruiter.approve", targetType: "User", targetId: "u1", createdAt: "t2" },
+            ];
+            AdminAuditLog.find.mockReturnValueOnce(chainableQuery(entries));
+            AdminAuditLog.countDocuments.mockResolvedValueOnce(1);
+
+            await getAuditLogs({ query: {} }, res);
+
+            expect(AdminAuditLog.find).toHaveBeenCalledWith({});
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({ logs: entries, total: 1, page: 1, limit: 20 })
+            );
+        });
+
+        it("filters by action, adminId, and date range", async () => {
+            AdminAuditLog.find.mockReturnValueOnce(chainableQuery([]));
+            AdminAuditLog.countDocuments.mockResolvedValueOnce(0);
+
+            await getAuditLogs(
+                {
+                    query: {
+                        action: "recruiter.approve",
+                        adminId: "admin1",
+                        startDate: "2026-01-01",
+                        endDate: "2026-01-31",
+                    },
+                },
+                res
+            );
+
+            expect(AdminAuditLog.find).toHaveBeenCalledWith({
+                action: "recruiter.approve",
+                adminId: "admin1",
+                createdAt: { $gte: new Date("2026-01-01"), $lte: new Date("2026-01-31") },
+            });
+        });
+
+        it("clamps page/limit the same way listUsers does", async () => {
+            AdminAuditLog.find.mockReturnValueOnce(chainableQuery([]));
+            AdminAuditLog.countDocuments.mockResolvedValueOnce(0);
+
+            await getAuditLogs({ query: { page: "0", limit: "500" } }, res);
+
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({ page: 1, limit: 50 })
+            );
+        });
+
+        it("returns 500 if the query fails", async () => {
+            AdminAuditLog.find.mockImplementationOnce(() => {
+                throw new Error("db down");
+            });
+
+            await getAuditLogs({ query: {} }, res);
+
+            expect(res.status).toHaveBeenCalledWith(500);
         });
     });
 

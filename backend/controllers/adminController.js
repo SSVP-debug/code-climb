@@ -26,7 +26,9 @@
 import College from "../models/College.js";
 import User from "../models/User.js";
 import ImpersonationLog from "../models/ImpersonationLog.js";
+import AdminAuditLog from "../models/AdminAuditLog.js";
 import { createNotification } from "../services/notificationService.js";
+import { recordAdminAction } from "../services/adminAuditLog.js";
 import { invalidateCachedUserByFirebaseUid } from "../utils/userAuthCache.js";
 import { logger } from "../config/logger.js";
 
@@ -109,6 +111,13 @@ export async function approveRecruiter(req, res) {
     // that happens to land here sees the fresh doc immediately.
     invalidateCachedUserByFirebaseUid(user.firebaseUid);
 
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "recruiter.approve",
+      targetType: "User",
+      targetId: user._id,
+    });
+
     createNotification({
       userId: user._id,
       type: "recruiter_verified",
@@ -145,6 +154,13 @@ export async function rejectRecruiter(req, res) {
     };
     await user.save();
     invalidateCachedUserByFirebaseUid(user.firebaseUid);
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "recruiter.reject",
+      targetType: "User",
+      targetId: user._id,
+    });
 
     createNotification({
       userId: user._id,
@@ -190,6 +206,13 @@ export async function approveTpo(req, res) {
       { $set: { "tpoProfile.verified": true, "tpoProfile.verifiedAt": college.verifiedAt } }
     );
 
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "tpo.approve",
+      targetType: "College",
+      targetId: college._id,
+    });
+
     if (college.submittedBy) {
       createNotification({
         userId: college.submittedBy,
@@ -223,6 +246,13 @@ export async function rejectTpo(req, res) {
     // rejected TPO signup has no other purpose for the record, so the
     // College doc itself is deleted here — unchanged from prior behavior.
     await College.deleteOne({ _id: college._id });
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "tpo.reject",
+      targetType: "College",
+      targetId: college._id,
+    });
 
     if (requesterId) {
       const user = await User.findById(requesterId);
@@ -282,6 +312,13 @@ export async function approveStudentCollege(req, res) {
 
     affected.forEach((u) => invalidateCachedUserByFirebaseUid(u.firebaseUid));
 
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "studentCollege.approve",
+      targetType: "College",
+      targetId: college._id,
+    });
+
     affected.forEach((u) =>
       createNotification({
         userId: u._id,
@@ -325,6 +362,13 @@ export async function rejectStudentCollege(req, res) {
     );
 
     affected.forEach((u) => invalidateCachedUserByFirebaseUid(u.firebaseUid));
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "studentCollege.reject",
+      targetType: "College",
+      targetId: college._id,
+    });
 
     affected.forEach((u) =>
       createNotification({
@@ -406,6 +450,47 @@ export async function listUsers(req, res) {
   } catch (err) {
     logger.error({ err }, "[Admin] users list error");
     return res.status(500).json({ error: "Failed to load users." });
+  }
+}
+
+// ── GET /api/admin/audit-logs ────────────────────────────────────────────────
+// Paginated, filterable read of the durable admin-action trail written by
+// services/adminAuditLog.js's recordAdminAction(...). Append-only — there is
+// no corresponding update/delete route.
+export async function getAuditLogs(req, res) {
+  try {
+    const { action, adminId, startDate, endDate, page = 1, limit = 20 } = req.query;
+
+    const filter = {};
+    if (action) filter.action = action;
+    if (adminId) filter.adminId = adminId;
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) filter.createdAt.$lte = new Date(endDate);
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(50, parseInt(limit));
+
+    const [logs, total] = await Promise.all([
+      AdminAuditLog.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
+        .lean(),
+      AdminAuditLog.countDocuments(filter),
+    ]);
+
+    return res.json({
+      logs,
+      total,
+      page: pageNum,
+      limit: limitNum,
+    });
+  } catch (err) {
+    logger.error({ err }, "[Admin] audit logs error");
+    return res.status(500).json({ error: "Failed to load audit logs." });
   }
 }
 

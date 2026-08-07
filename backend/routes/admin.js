@@ -9,6 +9,7 @@ import {
   approveStudentCollege,
   rejectStudentCollege,
   listUsers,
+  getAuditLogs,
   startImpersonation,
   stopImpersonation,
 } from "../controllers/adminController.js";
@@ -28,5 +29,8 @@ router.post("/student-colleges/:collegeId/reject", requireAdmin, rejectStudentCo
 router.get("/users", requireAdmin, listUsers);
 router.post("/impersonate/:userId", requireAdmin, startImpersonation);
 router.post("/impersonate/stop", requireAdmin, stopImpersonation);
+
+// ── Audit log ────────────────────────────────────────────────────────────────
+router.get("/audit-logs", requireAdmin, getAuditLogs);
 
 export default router;
