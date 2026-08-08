@@ -396,19 +396,41 @@ export async function rejectStudentCollege(req, res) {
 // supported flow (see the guard in startImpersonation too).
 export async function listUsers(req, res) {
   try {
-    const { role, search, page = 1, limit = 20 } = req.query;
+    const { role, search, college, page = 1, limit = 20 } = req.query;
 
-    const filter = { role: { $ne: "admin" } };
+    const andClauses = [{ role: { $ne: "admin" } }];
     if (role && ["student", "recruiter", "tpo"].includes(role)) {
-      filter.role = role;
+      andClauses.push({ role });
     }
     if (search) {
-      filter.$or = [
-        { displayName: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { username: { $regex: search, $options: "i" } },
-      ];
+      andClauses.push({
+        $or: [
+          { displayName: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { username: { $regex: search, $options: "i" } },
+        ],
+      });
     }
+    // Plan 005's "View students" deep-link: ?college=<collegeId>. Matches
+    // either linkage mechanism (see collegeController.js's getColleges for
+    // the same two-mechanism reasoning) — a student via education.collegeId,
+    // or a TPO via tpoProfile.collegeDomain against this college's domains.
+    // Recruiters/admins can never match either branch, so they're naturally
+    // excluded without a separate role check.
+    if (college) {
+      const collegeDoc = await College.findById(college).lean();
+      if (!collegeDoc) {
+        return res.status(404).json({ error: "College not found." });
+      }
+      andClauses.push({
+        $or: [
+          { "education.collegeId": collegeDoc._id },
+          { "tpoProfile.collegeDomain": { $in: collegeDoc.domains } },
+        ],
+      });
+    }
+
+    const filter = andClauses.length > 1 ? { $and: andClauses } : andClauses[0];
 
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(50, parseInt(limit));

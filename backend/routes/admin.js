@@ -19,6 +19,7 @@ import {
   startImpersonation,
   stopImpersonation,
 } from "../controllers/adminController.js";
+import { getColleges } from "../controllers/collegeController.js";
 
 const router = Router();
 
@@ -33,6 +34,9 @@ router.post("/student-colleges/:collegeId/reject", requireAdmin, rejectStudentCo
 
 // ── Impersonation — "Login As" ──────────────────────────────────────────────
 router.get("/users", requireAdmin, listUsers);
+
+// ── Colleges ─────────────────────────────────────────────────────────────────
+router.get("/colleges", requireAdmin, getColleges);
 router.post("/impersonate/:userId", requireAdmin, startImpersonation);
 router.post("/impersonate/stop", requireAdmin, stopImpersonation);
 

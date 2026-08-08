@@ -276,14 +276,53 @@ const userSchema = new mongoose.Schema(
     // deliberately separate from the account's login email: a student may
     // have signed up with a personal address and only later add/verify
     // their official college one.
+    //
+    // Schema-drift fix (plan 005 prerequisite, 2026-08): this sub-schema
+    // previously declared the PRE-migration field names (`verified`,
+    // `verifiedAt`) and never added the POST-migration ones
+    // (`collegeId`, `emailVerified`, `emailVerifiedAt`, `collegeStatus`)
+    // that scripts/migrateCollegeSchema.js's own header comment describes
+    // migrating TO, and that every live route
+    // (routes/collegeVerification.js, adminController.js's
+    // approveStudentCollege/rejectStudentCollege) has been reading/writing
+    // via direct Mongoose document property access ever since. Under
+    // Mongoose's default `strict: true`, assigning an undeclared
+    // subdocument path is silently dropped from the `$set` on `.save()` —
+    // confirmed against a real (unsaved) Mongoose Document via
+    // `doc.$__delta()`, not inferred from a mock. Net effect: every
+    // student's `collegeId`/`emailVerified`/`emailVerifiedAt`/
+    // `collegeStatus` write since this drift began was silently discarded,
+    // meaning approveStudentCollege/rejectStudentCollege's
+    // `User.find({ "education.collegeId": ... })` query always matched
+    // zero students, and /confirm's `if (user.education.collegeId)` branch
+    // always took the "recognized domain, already verified" path — for
+    // every student, including ones who submitted an unrecognized-domain
+    // college pending admin review. See backend/models/User.integration.test.js
+    // for the regression test covering this specific class of bug.
     education: {
       collegeName:    { type: String, default: null, trim: true, maxlength: 120 },
       degree:         { type: String, default: null, trim: true, maxlength: 60 },
       branch:         { type: String, default: null, trim: true, maxlength: 60 },
       graduationYear: { type: Number, default: null },
       collegeEmail:   { type: String, default: null, trim: true, lowercase: true },
-      verified:       { type: Boolean, default: false },
-      verifiedAt:     { type: Date, default: null },
+      // Links to a College document (backend/models/College.js) ONLY when
+      // the student's domain required manual/TPO-driven review — the
+      // auto-verified-domain path (see utils/domainVerification.js's
+      // VerifiedDomain allowlist) never creates or links a College doc at
+      // all, by design, so collegeId legitimately stays null even for a
+      // fully verified student. See plan 005's Design decision notes for
+      // why a per-college student count built on this field alone can't
+      // capture auto-verified-domain students.
+      collegeId:        { type: mongoose.Schema.Types.ObjectId, ref: "College", default: null },
+      emailVerified:    { type: Boolean, default: false },
+      emailVerifiedAt:  { type: Date, default: null },
+      // "unset" (never requested) | "pending" (unrecognized domain,
+      // awaiting admin review) | "verified" | "rejected".
+      collegeStatus: {
+        type: String,
+        enum: ["unset", "pending", "verified", "rejected"],
+        default: "unset",
+      },
       // Verification link token — cleared once used or replaced by a new
       // request. Not select()-ed by default so a stray `res.json(user)`
       // elsewhere in the app can't leak it.

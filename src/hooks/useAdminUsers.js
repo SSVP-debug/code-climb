@@ -17,7 +17,7 @@ import { getPostLoginDestination } from "../utils/roleRedirect";
 
 export const USERS_PAGE_SIZE = 10;
 
-export function useAdminUsers() {
+export function useAdminUsers({ initialCollege = null, initialCollegeName = null } = {}) {
   const [users, setUsers] = useState([]);
   const [usersTotal, setUsersTotal] = useState(0);
   const [usersLoading, setUsersLoading] = useState(true);
@@ -26,6 +26,12 @@ export function useAdminUsers() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState(""); // debounced value actually sent
   const [impersonatingId, setImpersonatingId] = useState(null);
+  // Plan 005's "View students" deep-link from the Colleges page — arrives
+  // as ?college=<id>&collegeName=<display name> (the id is what the API
+  // filter needs; the name is just so this page can show a "Filtered to:
+  // MIT ×" badge without a second round-trip to look it up).
+  const [collegeFilter, setCollegeFilter] = useState(initialCollege);
+  const [collegeName, setCollegeName] = useState(initialCollegeName);
   // Tracks which row is mid-request for the five management actions below,
   // so its own row shows a spinner without disabling the rest of the table:
   // { [id]: "suspend" | "activate" | "delete" | "reset-progress" | "role" }
@@ -49,6 +55,7 @@ export function useAdminUsers() {
       });
       if (roleFilter) params.set("role", roleFilter);
       if (search) params.set("search", search);
+      if (collegeFilter) params.set("college", collegeFilter);
 
       const data = await apiFetch(`/api/admin/users?${params.toString()}`);
       setUsers(data.users || []);
@@ -58,7 +65,7 @@ export function useAdminUsers() {
     } finally {
       setUsersLoading(false);
     }
-  }, [usersPage, roleFilter, search]);
+  }, [usersPage, roleFilter, search, collegeFilter]);
 
   useEffect(() => {
     loadUsers();
@@ -66,6 +73,12 @@ export function useAdminUsers() {
 
   function setRoleFilterAndResetPage(nextRole) {
     setRoleFilter(nextRole);
+    setUsersPage(1);
+  }
+
+  function clearCollegeFilter() {
+    setCollegeFilter(null);
+    setCollegeName(null);
     setUsersPage(1);
   }
 
@@ -154,6 +167,9 @@ export function useAdminUsers() {
     setRoleFilter: setRoleFilterAndResetPage,
     searchInput,
     setSearchInput,
+    collegeFilter,
+    collegeName,
+    clearCollegeFilter,
     impersonatingId,
     loginAs,
     busyIds,

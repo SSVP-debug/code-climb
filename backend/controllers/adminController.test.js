@@ -386,6 +386,87 @@ describe("adminController", () => {
                 expect.objectContaining({ total: 1, page: 1, limit: 20 })
             );
         });
+
+        it("filters by role", async () => {
+            User.find.mockReturnValueOnce(chainableQuery([]));
+            User.countDocuments.mockResolvedValueOnce(0);
+
+            await listUsers({ query: { role: "recruiter" } }, res);
+
+            expect(User.find).toHaveBeenCalledWith(
+                { $and: [{ role: { $ne: "admin" } }, { role: "recruiter" }] },
+                expect.any(String)
+            );
+        });
+
+        it("ignores an unrecognized role value rather than erroring", async () => {
+            User.find.mockReturnValueOnce(chainableQuery([]));
+            User.countDocuments.mockResolvedValueOnce(0);
+
+            await listUsers({ query: { role: "superuser" } }, res);
+
+            expect(User.find).toHaveBeenCalledWith(
+                expect.objectContaining({ role: { $ne: "admin" } }),
+                expect.any(String)
+            );
+        });
+
+        // Plan 005's "View students" deep-link.
+        describe("college filter", () => {
+            it("matches students via education.collegeId OR TPOs via tpoProfile.collegeDomain", async () => {
+                College.findById.mockReturnValueOnce({
+                    lean: vi.fn().mockResolvedValue({ _id: "c1", domains: ["mit.edu", "old-mit.edu"] }),
+                });
+                User.find.mockReturnValueOnce(chainableQuery([]));
+                User.countDocuments.mockResolvedValueOnce(0);
+
+                await listUsers({ query: { college: "c1" } }, res);
+
+                expect(User.find).toHaveBeenCalledWith(
+                    {
+                        $and: [
+                            { role: { $ne: "admin" } },
+                            {
+                                $or: [
+                                    { "education.collegeId": "c1" },
+                                    { "tpoProfile.collegeDomain": { $in: ["mit.edu", "old-mit.edu"] } },
+                                ],
+                            },
+                        ],
+                    },
+                    expect.any(String)
+                );
+            });
+
+            it("combines with role/search filters via $and rather than clobbering them", async () => {
+                College.findById.mockReturnValueOnce({
+                    lean: vi.fn().mockResolvedValue({ _id: "c1", domains: ["mit.edu"] }),
+                });
+                User.find.mockReturnValueOnce(chainableQuery([]));
+                User.countDocuments.mockResolvedValueOnce(0);
+
+                await listUsers({ query: { college: "c1", role: "student", search: "ann" } }, res);
+
+                const [filter] = User.find.mock.calls[0];
+                expect(filter.$and).toEqual(
+                    expect.arrayContaining([
+                        { role: { $ne: "admin" } },
+                        { role: "student" },
+                        expect.objectContaining({ $or: expect.any(Array) }), // search clause
+                        expect.objectContaining({ $or: expect.any(Array) }), // college clause
+                    ])
+                );
+            });
+
+            it("404s when the college doesn't exist", async () => {
+                College.findById.mockReturnValueOnce({ lean: vi.fn().mockResolvedValue(null) });
+
+                await listUsers({ query: { college: "missing" } }, res);
+
+                expect(res.status).toHaveBeenCalledWith(404);
+                expect(User.find).not.toHaveBeenCalled();
+            });
+        });
     });
 
     describe("getAuditLogs", () => {
@@ -639,7 +720,7 @@ describe("adminController", () => {
                 recentActivity: [{ title: "Two Sum" }],
                 achievements: [{ key: "first-blood" }],
                 dailyChallengeHistory: [{ date: "2026-08-01", slug: "two-sum" }],
-                education: { collegeName: "MIT", verified: true },
+                education: { collegeName: "MIT", emailVerified: true, collegeStatus: "verified" },
             });
             const admin = makeAdmin();
             User.findById.mockResolvedValueOnce(target);
@@ -659,7 +740,7 @@ describe("adminController", () => {
             expect(target.dailyChallengeHistory).toEqual([]);
             // Untouched — plan 003 explicitly excludes role/profile/education state.
             expect(target.role).toBe("student");
-            expect(target.education).toEqual({ collegeName: "MIT", verified: true });
+            expect(target.education).toEqual({ collegeName: "MIT", emailVerified: true, collegeStatus: "verified" });
             expect(target.save).toHaveBeenCalledOnce();
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
             expect(recordAdminAction).toHaveBeenCalledWith(
