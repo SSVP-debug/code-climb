@@ -27,6 +27,14 @@ import {
   updateProblem,
   deleteProblem,
 } from "../controllers/adminProblemController.js";
+import {
+  getRegistrationTrends,
+  getSubmissionTrends,
+  getActiveUserTrends,
+  getRetentionMetric,
+  getProblemPopularity,
+  getLanguagePopularity,
+} from "../controllers/adminAnalyticsController.js";
 
 const router = Router();
 
@@ -66,5 +74,13 @@ router.get("/problems/:slug", requireAdmin, getProblemForAdmin);
 router.post("/problems", requireAdmin, createProblem);
 router.patch("/problems/:slug", requireAdmin, updateProblem);
 router.delete("/problems/:slug", requireAdmin, deleteProblem);
+
+// ── Analytics ────────────────────────────────────────────────────────────────
+router.get("/analytics/registrations", requireAdmin, getRegistrationTrends);
+router.get("/analytics/submissions", requireAdmin, getSubmissionTrends);
+router.get("/analytics/active-users", requireAdmin, getActiveUserTrends);
+router.get("/analytics/retention", requireAdmin, getRetentionMetric);
+router.get("/analytics/problems", requireAdmin, getProblemPopularity);
+router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
 
 export default router;

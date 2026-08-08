@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import Button from "../ui/Button";
 import UserActionsMenu from "./UserActionsMenu";
 import { USERS_PAGE_SIZE } from "../../hooks/useAdminUsers";
@@ -20,6 +21,9 @@ function UsersLoginAsSection({ adminUsers }) {
     setRoleFilter,
     searchInput,
     setSearchInput,
+    collegeFilter,
+    collegeName,
+    clearCollegeFilter,
     impersonatingId,
     loginAs,
     busyIds,
@@ -35,6 +39,26 @@ function UsersLoginAsSection({ adminUsers }) {
       <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
         Users {usersTotal > 0 && `(${usersTotal})`}
       </h2>
+
+      {/* Plan 005's "View students" deep-link from the Colleges page —
+          collegeFilter/collegeName come from useAdminUsers' initialCollege/
+          initialCollegeName (fed from ?college=&collegeName= by
+          AdminUsersPage.jsx). Clearing the badge just removes the filter,
+          it doesn't navigate away. */}
+      {collegeFilter && (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="inline-flex items-center gap-1.5 text-xs bg-zinc-800 text-zinc-200 rounded-full pl-3 pr-1.5 py-1">
+            Filtered to: {collegeName || "selected college"}
+            <button
+              onClick={clearCollegeFilter}
+              aria-label="Clear college filter"
+              className="p-0.5 rounded-full hover:bg-zinc-700 transition"
+            >
+              <X size={12} />
+            </button>
+          </span>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
         <input

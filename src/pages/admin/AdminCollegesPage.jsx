@@ -1,14 +1,181 @@
+import { useNavigate } from "react-router-dom";
+import { Search, GraduationCap, Users2, ExternalLink } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
+import { useAdminColleges, COLLEGES_PAGE_SIZE } from "../../hooks/useAdminColleges";
 
-// Placeholder — plan 001 scope. Replaced with a real implementation by its
-// corresponding plan (see admin-console-plans/plans/README.md).
+// Same badge palette AdminConsolePage/CollegeVerifyConfirmPage already use
+// for this exact status enum (pending/verified/rejected) — kept consistent
+// rather than inventing a fourth color scheme for the same three states.
+const STATUS_STYLES = {
+  pending: "bg-amber-500/10 text-amber-400",
+  verified: "bg-green-500/10 text-green-400",
+  rejected: "bg-red-500/10 text-red-400",
+};
+
+const STATUS_FILTERS = [
+  { id: "", label: "All statuses" },
+  { id: "pending", label: "Pending" },
+  { id: "verified", label: "Verified" },
+  { id: "rejected", label: "Rejected" },
+];
+
+function StatusBadge({ status }) {
+  return (
+    <span
+      className={`text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide font-semibold ${
+        STATUS_STYLES[status] || "bg-zinc-500/10 text-zinc-400"
+      }`}
+    >
+      {status}
+    </span>
+  );
+}
+
+// Plan 005: real Colleges page, replacing the plan-001 placeholder. The
+// backend (collegeController.js) and this page's data hook
+// (useAdminColleges.js) already existed and were fully wired — only this
+// component itself was still "Coming soon." (found during the plan 007
+// pre-flight audit; fixed here as a prerequisite, same pattern as the
+// plan 005 education-schema prerequisite bugfix in PROGRESS.md).
 export default function AdminCollegesPage() {
+  const navigate = useNavigate();
+  const {
+    colleges,
+    collegesTotal,
+    collegesLoading,
+    collegesPage,
+    setCollegesPage,
+    statusFilter,
+    setStatusFilter,
+    searchInput,
+    setSearchInput,
+  } = useAdminColleges();
+
+  function viewStudents(college) {
+    // Deep-link into the Users page (plan 001/003), pre-filtered to this
+    // college — the id is what listUsers' `college` filter needs, the name
+    // is just so that page can show a "Filtered to: X" badge without a
+    // second round-trip. See useAdminUsers.js's collegeFilter/collegeName.
+    const params = new URLSearchParams({ college: college.id, collegeName: college.name });
+    navigate(`/admin/users?${params.toString()}`);
+  }
+
   return (
     <>
-      <PageMeta title="Colleges — Admin Console — Code Club" />
+      <PageMeta title="Colleges — Admin Console — Code Club" description="Every college, with per-college aggregate stats." />
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-black text-white mb-2">Colleges</h1>
-        <p className="text-zinc-500 text-sm">Coming soon.</p>
+        <div className="mb-8">
+          <h1 className="text-2xl font-black text-white">Colleges</h1>
+          <p className="text-zinc-500 text-sm">
+            {collegesTotal > 0 ? `${collegesTotal} college${collegesTotal === 1 ? "" : "s"}` : "No colleges yet."}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 mb-4">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+            <input
+              type="text"
+              placeholder="Search name or domain…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+          >
+            {STATUS_FILTERS.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {collegesLoading ? (
+          <p className="text-zinc-600 text-sm">Loading…</p>
+        ) : colleges.length === 0 ? (
+          <p className="text-zinc-600 text-sm">No colleges match that search.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {colleges.map((college) => (
+              <div
+                key={college.id}
+                className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-sm truncate">{college.name}</p>
+                    <p className="text-zinc-500 text-xs truncate">{college.domains?.join(", ")}</p>
+                  </div>
+                  <StatusBadge status={college.status} />
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <p className="text-white text-lg font-black">{college.studentCount}</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Students</p>
+                  </div>
+                  <div>
+                    <p className="text-white text-lg font-black">{college.activeStudentCount}</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Active</p>
+                  </div>
+                  <div>
+                    <p className="text-white text-lg font-black">{college.tpoCount}</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">TPOs</p>
+                  </div>
+                </div>
+
+                <p className="text-zinc-500 text-xs flex items-center gap-1">
+                  <GraduationCap size={12} />
+                  {college.totalSolvedProblems} problems solved by this college's students
+                </p>
+
+                {/* studentCount is a documented lower bound (see
+                    studentCountCaveat) — surfaced here rather than
+                    presented as an exact figure. */}
+                <p className="text-zinc-600 text-[11px] italic">{college.studentCountCaveat}</p>
+                {/* recruiterCount is explicit null + a note (not 0) — see
+                    collegeController.js's Design decision. */}
+                <p className="text-zinc-600 text-[11px] italic">{college.recruiterCountNote}</p>
+
+                <button
+                  onClick={() => viewStudents(college)}
+                  className="mt-1 self-start flex items-center gap-1 text-xs text-zinc-300 hover:text-white transition"
+                >
+                  <Users2 size={13} />
+                  View students
+                  <ExternalLink size={11} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {collegesTotal > COLLEGES_PAGE_SIZE && (
+          <div className="flex items-center justify-between mt-4 text-xs text-zinc-500">
+            <button
+              disabled={collegesPage <= 1}
+              onClick={() => setCollegesPage((p) => Math.max(1, p - 1))}
+              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+            >
+              ← Prev
+            </button>
+            <span>
+              Page {collegesPage} of {Math.ceil(collegesTotal / COLLEGES_PAGE_SIZE)}
+            </span>
+            <button
+              disabled={collegesPage >= Math.ceil(collegesTotal / COLLEGES_PAGE_SIZE)}
+              onClick={() => setCollegesPage((p) => p + 1)}
+              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+            >
+              Next →
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

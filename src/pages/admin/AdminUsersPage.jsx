@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import PageMeta from "../../components/seo/PageMeta";
 import UsersLoginAsSection from "../../components/admin/UsersLoginAsSection";
 import { useAdminUsers } from "../../hooks/useAdminUsers";
@@ -8,7 +9,16 @@ import { useAdminUsers } from "../../hooks/useAdminUsers";
 // the already-extracted section component/hook), no behavior change.
 // Plan 003 (user management actions) extends this page next.
 export default function AdminUsersPage() {
-  const adminUsers = useAdminUsers();
+  // Plan 005's "View students" deep-link from the Colleges page arrives as
+  // ?college=<id>&collegeName=<name> — useAdminUsers already accepted
+  // initialCollege/initialCollegeName, it just wasn't being fed from the
+  // URL here (found during the plan 007 pre-flight audit; fixed as a
+  // prerequisite, same as AdminCollegesPage.jsx).
+  const [searchParams] = useSearchParams();
+  const adminUsers = useAdminUsers({
+    initialCollege: searchParams.get("college"),
+    initialCollegeName: searchParams.get("collegeName"),
+  });
 
   return (
     <>
