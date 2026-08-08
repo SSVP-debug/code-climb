@@ -20,6 +20,13 @@ import {
   stopImpersonation,
 } from "../controllers/adminController.js";
 import { getColleges } from "../controllers/collegeController.js";
+import {
+  listProblemsForAdmin,
+  getProblemForAdmin,
+  createProblem,
+  updateProblem,
+  deleteProblem,
+} from "../controllers/adminProblemController.js";
 
 const router = Router();
 
@@ -52,5 +59,12 @@ router.get("/audit-logs", requireAdmin, getAuditLogs);
 
 // ── Dashboard metrics ────────────────────────────────────────────────────────
 router.get("/dashboard-metrics", requireAdmin, getDashboardMetrics);
+
+// ── Problems ─────────────────────────────────────────────────────────────────
+router.get("/problems", requireAdmin, listProblemsForAdmin);
+router.get("/problems/:slug", requireAdmin, getProblemForAdmin);
+router.post("/problems", requireAdmin, createProblem);
+router.patch("/problems/:slug", requireAdmin, updateProblem);
+router.delete("/problems/:slug", requireAdmin, deleteProblem);
 
 export default router;

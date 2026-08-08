@@ -120,6 +120,27 @@ const problemSchema = new mongoose.Schema(
       default: "core",
     },
 
+    // ── Admin console content-pipeline tag (plan 006) ──────────────────────
+    // Distinguishes problems that originate from the JS/folder content
+    // pipeline (src/data/problems.js → seedProblems.js / importProblems.js)
+    // from problems created directly through the admin console. "catalog"
+    // problems are overwritten on every seed run by design — never allow
+    // full edits to them from the admin UI, only the small safelisted set
+    // (topic/pattern/sourceType — see adminProblemController.js). New
+    // problems created via the admin UI explicitly set this to "admin".
+    // seedProblems.js never sets this field itself (it only $sets whatever
+    // fields are present in each problems.js entry, and this isn't one of
+    // them), so it correctly defaults to "catalog" for everything seeded
+    // that way — verified by reading seedProblems.js; needed zero changes.
+    // See admin-console-plans/plans/006-problem-management-ui.md for the
+    // full rationale.
+    adminSource: {
+      type: String,
+      enum: ["catalog", "admin"],
+      default: "catalog",
+      index: true,
+    },
+
     // Content-library identifier for problems that belong to a separate,
     // independently-versioned collection (e.g. Code Club Edition missions:
     // "CCE-001", "CCE-002", …). null/absent for the standard interview
