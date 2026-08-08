@@ -35,6 +35,7 @@ import {
   getProblemPopularity,
   getLanguagePopularity,
 } from "../controllers/adminAnalyticsController.js";
+import { getSystemHealth } from "../controllers/adminHealthController.js";
 
 const router = Router();
 
@@ -82,5 +83,8 @@ router.get("/analytics/active-users", requireAdmin, getActiveUserTrends);
 router.get("/analytics/retention", requireAdmin, getRetentionMetric);
 router.get("/analytics/problems", requireAdmin, getProblemPopularity);
 router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
+
+// ── System health ────────────────────────────────────────────────────────────
+router.get("/system-health", requireAdmin, getSystemHealth);
 
 export default router;
