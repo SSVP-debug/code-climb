@@ -54,8 +54,16 @@ router.get("/users", requireAdmin, listUsers);
 
 // ── Colleges ─────────────────────────────────────────────────────────────────
 router.get("/colleges", requireAdmin, getColleges);
-router.post("/impersonate/:userId", requireAdmin, startImpersonation);
+// NOTE: order matters here. "/impersonate/stop" must be registered before
+// the parameterized "/impersonate/:userId" — Express matches routes in
+// registration order, and :userId matches the literal segment "stop" too.
+// With the old order, POST /impersonate/stop was being swallowed by the
+// :userId route (startImpersonation ran with userId="stop", which always
+// 404/500'd on User.findById("stop") — stopImpersonation was never called,
+// so "Exit Impersonation" never actually cleared the admin's impersonating
+// state; it just reloaded back into the still-impersonated session).
 router.post("/impersonate/stop", requireAdmin, stopImpersonation);
+router.post("/impersonate/:userId", requireAdmin, startImpersonation);
 
 // ── User management actions ─────────────────────────────────────────────────
 router.post("/users/:id/suspend", requireAdmin, suspendUser);
