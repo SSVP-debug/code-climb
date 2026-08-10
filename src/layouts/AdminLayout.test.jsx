@@ -34,7 +34,7 @@ function renderAdmin({ user, loading = false, role }, initialEntries) {
     <HelmetProvider>
       <ThemeProvider>
       <AuthContext.Provider value={{ user, loading }}>
-        <AppContext.Provider value={{ role }}>
+        <AppContext.Provider value={{ role, isBackendReady: true }}>
           <MemoryRouter initialEntries={initialEntries}>
             <Routes>
               <Route
