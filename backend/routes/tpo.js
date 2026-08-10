@@ -12,6 +12,7 @@ import { getOrSetCache } from "../utils/cache.js";
 import { invalidateTpoCache } from "../controllers/tpoController.js";
 import { createNotificationBulk } from "../services/notificationService.js";
 import { isDomainAutoVerified, isConsumerEmailDomain } from "../utils/domainVerification.js";
+import { getSettings } from "../services/settingsService.js";
 
 const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
 const TPO_CACHE_PREFIX = "tpo:";
@@ -38,12 +39,29 @@ function b2bGate(req, res) {
   return false;
 }
 
+// Plan 009: gates NEW TPO registrations only — never blocks an existing
+// TPO from logging in or using any other /api/tpo route (b2bGate above
+// already runs first anyway; this only ever runs inside /register).
+// Exported for direct unit testing, same pattern as this file's own
+// handleRemindAssignment.
+export async function tpoRegistrationGate(req, res) {
+  const settings = await getSettings();
+  if (settings.tpoRegistrationEnabled === false) {
+    res.status(403).json({
+      error: "TPO registration is temporarily disabled. Please check back later.",
+    });
+    return true;
+  }
+  return false;
+}
+
 // ── POST /api/tpo/register ──────────────────────────────────────────────────
 // A regular user converts their account into a TPO account.
 // In practice: a separate signup page asks for college name + verifies the
 // email domain matches an institutional domain (not gmail.com etc).
 router.post("/register", async (req, res) => {
   if (b2bGate(req, res)) return;
+  if (await tpoRegistrationGate(req, res)) return;
 
   try {
     const { collegeName } = req.body;

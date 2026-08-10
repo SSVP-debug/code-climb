@@ -9,11 +9,15 @@ vi.mock("../models/RecruiterInterest.js", () => ({
 vi.mock("../services/notificationService.js", () => ({
   createNotification: vi.fn().mockResolvedValue(undefined),
 }));
+vi.mock("../services/settingsService.js", () => ({
+  getSettings: vi.fn(),
+}));
 
 import User from "../models/User.js";
 import RecruiterInterest from "../models/RecruiterInterest.js";
 import { createNotification } from "../services/notificationService.js";
-import { handleCreateInterest } from "./recruiter.js";
+import { getSettings } from "../services/settingsService.js";
+import { handleCreateInterest, recruiterRegistrationGate } from "./recruiter.js";
 
 function mockRes() {
   const res = {};
@@ -133,5 +137,41 @@ describe("handleCreateInterest", () => {
     await handleCreateInterest(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+  });
+});
+
+// Plan 009: registration-toggle enforcement (test plan's explicit
+// requirement — "disabling recruiterRegistrationEnabled rejects new
+// recruiter signups but does not affect an existing recruiter's ability
+// to log in/use the app").
+describe("recruiterRegistrationGate", () => {
+  let res;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    res = mockRes();
+  });
+
+  it("blocks a new registration with 403 when recruiterRegistrationEnabled is false", async () => {
+    getSettings.mockResolvedValueOnce({ recruiterRegistrationEnabled: false });
+
+    const blocked = await recruiterRegistrationGate({}, res);
+
+    expect(blocked).toBe(true);
+    expect(res.status).toHaveBeenCalledWith(403);
+  });
+
+  it("allows registration through when recruiterRegistrationEnabled is true (the default)", async () => {
+    getSettings.mockResolvedValueOnce({ recruiterRegistrationEnabled: true });
+
+    const blocked = await recruiterRegistrationGate({}, res);
+
+    expect(blocked).toBe(false);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+
+  it("takes no dependency on req.userDoc — an existing recruiter's other routes never call this gate", async () => {
+    getSettings.mockResolvedValueOnce({ recruiterRegistrationEnabled: false });
+    await expect(recruiterRegistrationGate({}, res)).resolves.toBe(true);
   });
 });

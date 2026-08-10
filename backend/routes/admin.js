@@ -36,6 +36,7 @@ import {
   getLanguagePopularity,
 } from "../controllers/adminAnalyticsController.js";
 import { getSystemHealth } from "../controllers/adminHealthController.js";
+import { getSettingsAdmin, updateSettingsAdmin } from "../controllers/adminSettingsController.js";
 
 const router = Router();
 
@@ -86,5 +87,9 @@ router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
 
 // ── System health ────────────────────────────────────────────────────────────
 router.get("/system-health", requireAdmin, getSystemHealth);
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+router.get("/settings", requireAdmin, getSettingsAdmin);
+router.patch("/settings", requireAdmin, updateSettingsAdmin);
 
 export default router;

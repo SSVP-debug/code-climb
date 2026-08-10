@@ -13,6 +13,7 @@ import { getLevel } from "../utils/xpLevel.js";
 import { createNotification } from "../services/notificationService.js";
 import { isDomainAutoVerified } from "../utils/domainVerification.js";
 import { topicStatsToObject } from "../utils/topicStats.js";
+import { getSettings } from "../services/settingsService.js";
 
 const router = Router();
 
@@ -25,8 +26,26 @@ const router = Router();
 // pass/fail decision surface.
 const CANDIDATES_CACHE_TTL_SECONDS = 60;
 
+// Plan 009: gates NEW recruiter registrations only — never blocks an
+// existing recruiter from logging in or using any other /api/recruiter
+// route (this only ever runs inside /register). Same shape as
+// tpo.js's tpoRegistrationGate. Exported for direct unit testing, same
+// pattern as this file's own handleCreateInterest.
+export async function recruiterRegistrationGate(req, res) {
+  const settings = await getSettings();
+  if (settings.recruiterRegistrationEnabled === false) {
+    res.status(403).json({
+      error: "Recruiter registration is temporarily disabled. Please check back later.",
+    });
+    return true;
+  }
+  return false;
+}
+
 // ── 083: POST /api/recruiter/register ────────────────────────────────────────
 router.post("/register", async (req, res) => {
+  if (await recruiterRegistrationGate(req, res)) return;
+
   try {
     const { companyName, designation } = req.body;
     if (!companyName || !designation) {

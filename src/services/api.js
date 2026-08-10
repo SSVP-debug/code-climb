@@ -23,6 +23,25 @@ export function warmBackend() {
   fetch(`${API_URL}/api/health`).catch(() => {});
 }
 
+/**
+ * fetchAnnouncement — public, no-auth-required call to
+ * GET /api/announcement (plan 009). Deliberately plain `fetch`, not
+ * apiFetch, for the same reason warmBackend() above is: this needs to
+ * work for logged-out visitors too, and apiFetch throws without a
+ * signed-in Firebase user. Swallows errors to `{ active: false }` — a
+ * failed announcement fetch should never be visible to the user, it
+ * should just mean no banner shows.
+ */
+export async function fetchAnnouncement() {
+  try {
+    const res = await fetch(`${API_URL}/api/announcement`);
+    if (!res.ok) return { text: "", active: false };
+    return await res.json();
+  } catch {
+    return { text: "", active: false };
+  }
+}
+
 function doRequest(path, options, token) {
   return fetch(`${API_URL}${path}`, {
     ...options,

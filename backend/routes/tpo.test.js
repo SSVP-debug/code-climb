@@ -12,11 +12,15 @@ vi.mock("../models/Assignment.js", () => ({
 vi.mock("../services/notificationService.js", () => ({
   createNotificationBulk: vi.fn().mockResolvedValue(undefined),
 }));
+vi.mock("../services/settingsService.js", () => ({
+  getSettings: vi.fn(),
+}));
 
 import User from "../models/User.js";
 import Assignment from "../models/Assignment.js";
 import { createNotificationBulk } from "../services/notificationService.js";
-import { handleRemindAssignment } from "./tpo.js";
+import { getSettings } from "../services/settingsService.js";
+import { handleRemindAssignment, tpoRegistrationGate } from "./tpo.js";
 
 function mockRes() {
   const res = {};
@@ -109,5 +113,40 @@ describe("handleRemindAssignment", () => {
     await handleRemindAssignment(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+  });
+});
+
+// Plan 009: registration-toggle enforcement (test plan's explicit
+// requirement — "disabling tpoRegistrationEnabled rejects new TPO signups
+// but does not affect an existing TPO's ability to log in/use the app").
+describe("tpoRegistrationGate", () => {
+  let res;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    res = mockRes();
+  });
+
+  it("blocks a new registration with 403 when tpoRegistrationEnabled is false", async () => {
+    getSettings.mockResolvedValueOnce({ tpoRegistrationEnabled: false });
+
+    const blocked = await tpoRegistrationGate({}, res);
+
+    expect(blocked).toBe(true);
+    expect(res.status).toHaveBeenCalledWith(403);
+  });
+
+  it("allows registration through when tpoRegistrationEnabled is true (the default)", async () => {
+    getSettings.mockResolvedValueOnce({ tpoRegistrationEnabled: true });
+
+    const blocked = await tpoRegistrationGate({}, res);
+
+    expect(blocked).toBe(false);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+
+  it("takes no dependency on req.userDoc — an existing TPO's other routes never call this gate", async () => {
+    getSettings.mockResolvedValueOnce({ tpoRegistrationEnabled: false });
+    await expect(tpoRegistrationGate({}, res)).resolves.toBe(true);
   });
 });

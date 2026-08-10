@@ -31,6 +31,8 @@ import problemRoutes from "./routes/problemRoutes.js";
 import publicProfileRoutes from "./routes/publicProfile.js";
 import billingWebhookRoutes from "./routes/billingWebhook.js";
 import healthRoutes from "./routes/health.js";
+import announcementRoutes from "./routes/announcement.js";
+import { maintenanceModeMiddleware } from "./middleware/maintenanceMode.js";
 
 // These now work correctly (ES module import, not require)
 import { requireAuth } from "./middleware/auth.js";
@@ -150,6 +152,21 @@ app.get("/api/health", (req, res) => {
 // state instead of always reporting zeros.
 app.use("/api/health", healthRoutes);
 
+// GET /api/announcement — public, no auth (plan 009). Mounted here,
+// alongside the other pre-maintenance-mode public routes, so it's always
+// reachable even while maintenance mode is active (also explicitly
+// allowlisted in maintenanceMode.js itself — see that file's header for
+// why the allowlist doesn't rely on mount order).
+app.use("/api/announcement", announcementRoutes);
+
+// ── Maintenance mode (plan 009) ─────────────────────────────────────────────
+// Mounted here — after /api/health and /api/announcement above, before
+// every protected/business route below — so a maintenanceMode=true 503
+// covers everything else. Uses an explicit path allowlist internally
+// (not mount-order reliance) to keep /api/admin/* reachable regardless of
+// where admin routes happen to be mounted further down; see
+// middleware/maintenanceMode.js's header comment for the full reasoning.
+app.use(maintenanceModeMiddleware);
 
 // ─── Protected routes (Firebase token required for ALL of these) ────────────
 app.use("/api/users", requireAuth, apiLimiter, userRoutes);
