@@ -6,21 +6,34 @@ import { useSystemHealth } from "../../hooks/useSystemHealth";
 // Same status vocabulary the backend uses (adminHealthController.js) — up
 // is fine, degraded is worth a look, down needs attention, unknown means
 // "no evidence yet either way" (e.g. Judge0 with zero traffic so far).
+// Command Center design system: same verdict-accept/pending/reject tokens
+// used everywhere else in the app (see PatternCard.jsx, SystemStatusPill.jsx)
+// instead of one-off green/amber/red utility classes, so this page reads as
+// part of the same product rather than a bolted-on admin skin.
 const STATUS_STYLES = {
-  up: "bg-green-500/10 text-green-400 border-green-500/20",
-  degraded: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  down: "bg-red-500/10 text-red-400 border-red-500/20",
+  up: "bg-verdict-accept/10 text-verdict-accept border-verdict-accept/20",
+  degraded: "bg-verdict-pending/10 text-verdict-pending border-verdict-pending/20",
+  down: "bg-verdict-reject/10 text-verdict-reject border-verdict-reject/20",
   unknown: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
   unavailable: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
+};
+
+const STATUS_DOT = {
+  up: "bg-verdict-accept",
+  degraded: "bg-verdict-pending",
+  down: "bg-verdict-reject",
+  unknown: "bg-zinc-500",
+  unavailable: "bg-zinc-500",
 };
 
 function StatusPill({ status }) {
   return (
     <span
-      className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide font-semibold border ${
+      className={`inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide font-semibold border ${
         STATUS_STYLES[status] || STATUS_STYLES.unknown
       }`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status] || STATUS_DOT.unknown}`} />
       {status}
     </span>
   );
@@ -41,7 +54,7 @@ function formatBytes(bytes) {
 
 function HealthCard({ icon: Icon, title, status, children }) {
   return (
-    <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3.5 hover:border-zinc-700 transition">
       <div className="flex items-center justify-between mb-2">
         <span className="flex items-center gap-1.5 text-zinc-300 text-sm font-semibold">
           <Icon size={14} className="text-zinc-500" />

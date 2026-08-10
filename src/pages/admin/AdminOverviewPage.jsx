@@ -3,6 +3,7 @@ import DashboardMetricsSection from "../../components/admin/DashboardMetricsSect
 import ViewAsSection from "../../components/admin/ViewAsSection";
 import DemoDatasetSection from "../../components/admin/DemoDatasetSection";
 import VerificationQueueSection, { formatDate } from "../../components/admin/VerificationQueueSection";
+import CommandCenterHero from "../../components/admin/command/CommandCenterHero";
 import { useAdminVerificationQueue } from "../../hooks/useAdminVerificationQueue";
 
 // Plan 001, migration decision (a): AdminConsolePage.jsx split so the
@@ -32,16 +33,9 @@ export default function AdminOverviewPage() {
 
   return (
     <>
-      <PageMeta title="Admin Console — Code Club" description="Verification queue and role preview." />
+      <PageMeta title="Command Center — Code Club Admin" description="Live operational overview, verification queue, and role preview." />
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Admin Console</h1>
-          <p className="text-zinc-500 text-sm">
-            {pendingCount > 0
-              ? `${pendingCount} request${pendingCount === 1 ? "" : "s"} awaiting review`
-              : "Nothing waiting on you right now."}
-          </p>
-        </div>
+        <CommandCenterHero pendingCount={pendingCount} />
 
         <DashboardMetricsSection />
 

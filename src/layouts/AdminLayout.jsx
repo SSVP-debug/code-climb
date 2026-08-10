@@ -1,6 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ThemeSkin from "../themes/ThemeSkin";
+import SystemStatusPill from "../components/admin/command/SystemStatusPill";
+import CommandPalette from "../components/admin/command/CommandPalette";
+import { useAdminDashboardMetrics } from "../hooks/useAdminDashboardMetrics";
 import {
   LayoutDashboard,
   Users,
@@ -10,6 +14,8 @@ import {
   Activity,
   ScrollText,
   Settings,
+  Search,
+  Command,
 } from "lucide-react";
 
 // Plan 001: dedicated admin layout — own sidebar/nav, distinct from the
@@ -17,41 +23,200 @@ import {
 // premium-feature gating that have nothing to do with admin work).
 // "Isolated" per the confirmed decision means its own layout/nav, not a
 // separate auth system — Navbar (and its role-aware admin menu) stays.
-const NAV_ITEMS = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/colleges", label: "Colleges", icon: Building2 },
-  { to: "/admin/problems", label: "Problems", icon: ListChecks },
-  { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/admin/system-health", label: "System Health", icon: Activity },
-  { to: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
+//
+// Command Center redesign: NAV_GROUPS replaces the old flat NAV_ITEMS list.
+// The grouping mirrors the spec's proposed IA (§7) but only for pages that
+// actually exist — Recruiters/Contests/Revenue/Ambassadors aren't listed
+// because there's no backend/page behind them yet (spec §33: an honest
+// empty state beats a fake nav item). Recruiter + TPO + college
+// verification already live on the Overview page's queues.
+const NAV_GROUPS = [
+  {
+    label: "Command",
+    items: [
+      { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
+      { to: "/admin/system-health", label: "System Health", icon: Activity },
+    ],
+  },
+  {
+    label: "Users",
+    items: [
+      { to: "/admin/users", label: "Users", icon: Users },
+      { to: "/admin/colleges", label: "Colleges", icon: Building2 },
+    ],
+  },
+  {
+    label: "Platform",
+    items: [
+      { to: "/admin/problems", label: "Problems", icon: ListChecks },
+      { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { to: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
+      { to: "/admin/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ];
 
+const ALL_NAV_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
+
+const PAGE_TITLES = {
+  "/admin": "Overview",
+  "/admin/users": "Users",
+  "/admin/colleges": "Colleges",
+  "/admin/problems": "Problems",
+  "/admin/analytics": "Analytics",
+  "/admin/system-health": "System Health",
+  "/admin/audit-logs": "Audit Logs",
+  "/admin/settings": "Settings",
+};
+
+function NavGroup({ group }) {
+  return (
+    <div className="mb-5 last:mb-0">
+      <p className="px-3 mb-1.5 text-[10px] uppercase tracking-widest text-zinc-600 font-semibold lg:block hidden">
+        {group.label}
+      </p>
+      <div className="flex lg:flex-col gap-1">
+        {group.items.map(({ to, label, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
+                isActive
+                  ? "bg-zinc-800 text-white shadow-[inset_0_0_0_1px_rgba(45,212,191,0.15)]"
+                  : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+              }`
+            }
+          >
+            <Icon size={16} strokeWidth={2} aria-hidden="true" />
+            {label}
+          </NavLink>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function AdminLayout() {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { metrics } = useAdminDashboardMetrics();
+
+  const pendingApprovals =
+    (metrics?.approvals?.pendingRecruiterApprovals || 0) + (metrics?.approvals?.pendingTpoApprovals || 0);
+
+  // Spec §8: CMD/CTRL+K anywhere inside the command center opens the palette.
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
+
+  const commands = useMemo(() => {
+    const navCommands = ALL_NAV_ITEMS.map((item) => ({
+      id: `nav-${item.to}`,
+      group: "Go to",
+      label: item.label,
+      icon: item.icon,
+      to: item.to,
+      keywords: item.label,
+    }));
+
+    const actionCommands = [
+      {
+        id: "action-recruiter-queue",
+        group: "Actions",
+        label: "Review pending recruiters",
+        icon: Users,
+        hint: pendingApprovals > 0 ? `${pendingApprovals} pending` : undefined,
+        keywords: "recruiter verification approve",
+        action: () => navigate("/admin#recruiter-queue"),
+      },
+      {
+        id: "action-tpo-queue",
+        group: "Actions",
+        label: "Review pending colleges / TPOs",
+        icon: Building2,
+        keywords: "tpo college verification approve",
+        action: () => navigate("/admin#tpo-queue"),
+      },
+      {
+        id: "action-system-health",
+        group: "Actions",
+        label: "Open live system status",
+        icon: Activity,
+        keywords: "health status uptime incident",
+        to: "/admin/system-health",
+      },
+    ];
+
+    return [...navCommands, ...actionCommands];
+  }, [navigate, pendingApprovals]);
+
+  const pageTitle = PAGE_TITLES[location.pathname] || "Command Center";
+
   return (
     <ThemeSkin>
       <div className="min-h-screen bg-ink-950 text-white font-display">
         <Navbar />
+
+        {/* Command bar — page context + global search/palette trigger + live
+            system status. Sits below the shared Navbar rather than replacing
+            it, so account/logout stays exactly where it already works. */}
+        <div className="sticky top-0 z-30 border-b border-zinc-800 bg-ink-950/90 backdrop-blur-xl">
+          <div className="px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-verdict-accept shrink-0" aria-hidden="true" />
+              <span className="text-xs font-mono-ui uppercase tracking-widest text-zinc-500 truncate">
+                Command Center / {pageTitle}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900/60 text-zinc-500 hover:text-white hover:border-zinc-700 transition text-xs"
+              >
+                <Search size={13} />
+                Search
+                <span className="flex items-center gap-0.5 ml-1 text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
+                  <Command size={9} />K
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                className="sm:hidden p-2 rounded-full border border-zinc-800 text-zinc-400"
+                aria-label="Open search"
+              >
+                <Search size={15} />
+              </button>
+
+              <SystemStatusPill />
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row">
           <aside className="lg:w-56 shrink-0 border-b lg:border-b-0 lg:border-r border-zinc-800 bg-zinc-950/60">
-            <nav className="p-3 lg:p-4 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
-              {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end={end}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
-                      isActive
-                        ? "bg-zinc-800 text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900"
-                    }`
-                  }
-                >
-                  <Icon size={16} strokeWidth={2} aria-hidden="true" />
-                  {label}
-                </NavLink>
+            <nav className="p-3 lg:p-4 overflow-x-auto lg:overflow-visible">
+              {NAV_GROUPS.map((group) => (
+                <NavGroup key={group.label} group={group} />
               ))}
             </nav>
           </aside>
@@ -60,6 +225,8 @@ function AdminLayout() {
           </main>
         </div>
       </div>
+
+      {paletteOpen && <CommandPalette onClose={closePalette} commands={commands} />}
     </ThemeSkin>
   );
 }
