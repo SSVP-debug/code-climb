@@ -12,13 +12,21 @@ import { apiFetch } from "../services/api";
 export function useAdminDashboardMetrics() {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Command Center data-contract fix: loading, a real API failure, and a
+  // genuine zero from the backend must never collapse into the same "0"
+  // on screen (see DashboardMetricsSection.jsx). `error` is the third
+  // state consumers need — cleared on every fresh attempt (including
+  // manual retry) so a successful reload always clears a stale failure.
+  const [error, setError] = useState(null);
 
   const loadMetrics = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await apiFetch("/api/admin/dashboard-metrics");
       setMetrics(data);
     } catch (err) {
+      setError(err.message || "Failed to load dashboard metrics.");
       toast.error(err.message || "Failed to load dashboard metrics.");
     } finally {
       setLoading(false);
@@ -32,5 +40,5 @@ export function useAdminDashboardMetrics() {
     loadMetrics();
   }, [loadMetrics]);
 
-  return { metrics, loading };
+  return { metrics, loading, error, retry: loadMetrics };
 }

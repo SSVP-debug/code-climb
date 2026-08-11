@@ -40,7 +40,7 @@ import { requireAuth } from "./middleware/auth.js";
 import recruiterRoutes, { candidateTestsRouter } from "./routes/recruiter.js";
 import certificationRoutes from "./routes/certification.js";
 import contestRoutes from "./routes/contests.js";
-import playlistRoutes from "./routes/playlists.js";
+import playlistRoutes from "./routes/Playlists.js";
 import profileSignRoutes from "./routes/profileSign.js";
 import { requireRole } from "./middleware/roleGuard.js";
 
