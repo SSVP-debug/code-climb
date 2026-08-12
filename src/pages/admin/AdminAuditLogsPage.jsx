@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { ChevronDown, Shield } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import { apiFetch } from "../../services/api";
+import { formatAuditAction, formatAuditTarget } from "../../utils/auditLogFormat";
 
 const LOGS_PAGE_SIZE = 20;
 
@@ -16,10 +18,68 @@ function formatTimestamp(d) {
   });
 }
 
-// Plan 002: real Audit Logs page, replacing the plan-001 placeholder.
-// Follows AdminConsolePage's original data-fetching convention (useCallback
-// + useEffect + apiFetch) rather than inventing a new one — see
-// src/hooks/useAdminUsers.js for the same shape this mirrors.
+function formatDay(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function dayKey(d) {
+  if (!d) return "unknown";
+  const date = new Date(d);
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+// Command Center transformation, Phase 9: "operational audit trail", not a
+// database dump. Same data-fetching logic as before (filters, pagination,
+// GET /api/admin/audit-logs) — only the presentation changes, from a flat
+// <table> to a day-grouped vertical timeline. `details` (already recorded
+// by services/adminAuditLog.js on every write, previously never rendered
+// anywhere in the UI) is now shown inline per entry when present.
+function AuditLogEntry({ log }) {
+  const [expanded, setExpanded] = useState(false);
+  const hasDetails = log.details && Object.keys(log.details).length > 0;
+  const target = formatAuditTarget(log);
+
+  return (
+    <div className="relative pl-5">
+      <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-700 border-2 border-ink-950" aria-hidden="true" />
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="min-w-0">
+            <p className="text-sm text-white font-medium">
+              <span className="text-zinc-400 font-normal">{log.adminEmail}</span>
+              {" — "}
+              {formatAuditAction(log.action)}
+            </p>
+            {target && <p className="text-zinc-500 text-xs mt-0.5">{target}</p>}
+          </div>
+          <span className="text-zinc-600 text-xs whitespace-nowrap shrink-0 font-mono-ui">
+            {formatTimestamp(log.createdAt)}
+          </span>
+        </div>
+
+        {hasDetails && (
+          <div className="mt-2 pt-2 border-t border-zinc-800/80">
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300 transition"
+            >
+              <ChevronDown size={11} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
+              {expanded ? "Hide metadata" : "Show metadata"}
+            </button>
+            {expanded && (
+              <pre className="mt-2 text-[11px] text-zinc-400 bg-black/30 rounded-lg px-3 py-2 overflow-x-auto">
+                {JSON.stringify(log.details, null, 2)}
+              </pre>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminAuditLogsPage() {
   const [logs, setLogs] = useState([]);
   const [total, setTotal] = useState(0);
@@ -73,18 +133,37 @@ export default function AdminAuditLogsPage() {
     setPage(1);
   }
 
+  // Group into day buckets for the timeline headers — purely a display
+  // grouping over the same page of results the API already returned, no
+  // extra request.
+  const dayGroups = [];
+  for (const log of logs) {
+    const key = dayKey(log.createdAt);
+    let group = dayGroups.find((g) => g.key === key);
+    if (!group) {
+      group = { key, label: formatDay(log.createdAt), logs: [] };
+      dayGroups.push(group);
+    }
+    group.logs.push(log);
+  }
+
   return (
     <>
-      <PageMeta title="Audit Logs — Admin Console — Code Club" description="Durable trail of admin actions." />
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Audit Logs</h1>
-          <p className="text-zinc-500 text-sm">
-            {total > 0 ? `${total} recorded action${total === 1 ? "" : "s"}` : "No admin actions recorded yet."}
-          </p>
+      <PageMeta title="Audit Logs — Admin Console — Code Club" description="Operational audit trail of admin actions." />
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-start gap-3 mb-8">
+          <div className="mt-0.5 flex items-center justify-center h-9 w-9 rounded-lg bg-zinc-900 border border-zinc-800 shrink-0">
+            <Shield size={16} className="text-zinc-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white">Operational Audit Trail</h1>
+            <p className="text-zinc-500 text-sm">
+              {total > 0 ? `${total} recorded action${total === 1 ? "" : "s"}` : "No admin actions recorded yet."}
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
           <input
             type="text"
             placeholder="Filter by action, e.g. recruiter.approve…"
@@ -109,40 +188,35 @@ export default function AdminAuditLogsPage() {
         </div>
 
         {loading ? (
-          <p className="text-zinc-600 text-sm">Loading…</p>
+          <div className="flex flex-col gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-16 rounded-xl bg-zinc-900/60 border border-zinc-800 animate-pulse" />
+            ))}
+          </div>
         ) : logs.length === 0 ? (
           <p className="text-zinc-600 text-sm">No matching audit log entries.</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-zinc-800">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-zinc-900/60 text-left text-zinc-500 text-xs uppercase tracking-widest">
-                  <th className="px-4 py-2 font-semibold">Admin</th>
-                  <th className="px-4 py-2 font-semibold">Action</th>
-                  <th className="px-4 py-2 font-semibold">Target</th>
-                  <th className="px-4 py-2 font-semibold">When</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr key={log._id} className="border-t border-zinc-800">
-                    <td className="px-4 py-2 text-zinc-300">{log.adminEmail}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-zinc-400">{log.action}</td>
-                    <td className="px-4 py-2 text-zinc-500 text-xs">
-                      {log.targetType ? `${log.targetType} · ${log.targetId}` : "—"}
-                    </td>
-                    <td className="px-4 py-2 text-zinc-500 text-xs whitespace-nowrap">
-                      {formatTimestamp(log.createdAt)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex flex-col gap-6">
+            {dayGroups.map((group) => (
+              <div key={group.key}>
+                <p className="text-[11px] uppercase tracking-widest text-zinc-600 font-semibold mb-3">
+                  {group.label}
+                </p>
+                <div className="relative pl-1">
+                  <div className="absolute left-[4px] top-2 bottom-2 w-px bg-zinc-800" aria-hidden="true" />
+                  <div className="flex flex-col gap-3">
+                    {group.logs.map((log) => (
+                      <AuditLogEntry key={log._id} log={log} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {total > LOGS_PAGE_SIZE && (
-          <div className="flex items-center justify-between mt-3 text-xs text-zinc-500">
+          <div className="flex items-center justify-between mt-6 text-xs text-zinc-500">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}

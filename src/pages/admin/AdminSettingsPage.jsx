@@ -79,7 +79,7 @@ export default function AdminSettingsPage() {
       />
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Settings</h1>
+          <h1 className="text-2xl font-black text-white">Control Configuration</h1>
           <p className="text-zinc-500 text-sm">
             Changes take effect within a few seconds, no redeploy needed.
           </p>
@@ -101,7 +101,7 @@ export default function AdminSettingsPage() {
 
             <section className="mb-8">
               <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Site
+                Platform availability
               </h2>
               <ToggleRow
                 label="Maintenance mode"
@@ -114,7 +114,7 @@ export default function AdminSettingsPage() {
 
             <section className="mb-8">
               <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Registration
+                Registration access
               </h2>
               <div className="flex flex-col gap-3">
                 <ToggleRow
@@ -145,7 +145,7 @@ export default function AdminSettingsPage() {
 
             <section className="mb-8">
               <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Global announcement
+                Notifications
               </h2>
               <div className="flex flex-col gap-3">
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-2">
@@ -191,7 +191,7 @@ export default function AdminSettingsPage() {
 
             <section>
               <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Environment flags
+                System flags
               </h2>
               <p className="text-zinc-600 text-xs mb-3">
                 {settings.envFlags?.note ||

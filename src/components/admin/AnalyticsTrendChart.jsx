@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 const BUCKET_OPTIONS = [
   { id: "daily", label: "Daily" },
@@ -11,8 +12,13 @@ const BUCKET_OPTIONS = [
 // ({ bucket, trend: [{ label, count }] }), same recharts usage pattern
 // already established by SolveVelocityChart.jsx (student-facing Analytics),
 // reused here rather than a second bespoke chart implementation.
+//
+// Command Center audit fix: a failed fetch (data stays null → trend = [])
+// and a genuinely empty trend both used to render the same "No data in
+// this window yet." — indistinguishable, same anti-pattern as the
+// dashboard-metrics "0 on failure" bug. `error` now renders its own state.
 function AnalyticsTrendChart({ title, description, metric }) {
-  const { data, loading, bucket, setBucket } = metric;
+  const { data, loading, error, bucket, setBucket, retry } = metric;
   const trend = data?.trend || [];
   const total = trend.reduce((sum, b) => sum + b.count, 0);
 
@@ -23,23 +29,40 @@ function AnalyticsTrendChart({ title, description, metric }) {
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">{title}</h2>
           <p className="text-zinc-600 text-xs mt-0.5">{description}</p>
         </div>
-        <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
-          {BUCKET_OPTIONS.map((opt) => (
+        <div className="flex items-center gap-2">
+          {error && (
             <button
-              key={opt.id}
-              onClick={() => setBucket(opt.id)}
-              className={`text-xs px-2.5 py-1 rounded-md transition ${
-                bucket === opt.id ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
-              }`}
+              type="button"
+              onClick={retry}
+              className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-full px-3 py-1 transition"
             >
-              {opt.label}
+              <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
+              Retry
             </button>
-          ))}
+          )}
+          <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+            {BUCKET_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setBucket(opt.id)}
+                className={`text-xs px-2.5 py-1 rounded-md transition ${
+                  bucket === opt.id ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
-        {loading ? (
+        {error ? (
+          <p className="flex items-center justify-center gap-2 text-verdict-reject text-sm py-8 text-center">
+            <AlertTriangle size={14} />
+            Couldn't load this trend.
+          </p>
+        ) : loading ? (
           <p className="text-zinc-600 text-sm py-8 text-center">Loading…</p>
         ) : trend.every((b) => b.count === 0) ? (
           <p className="text-zinc-600 text-sm py-8 text-center">No data in this window yet.</p>

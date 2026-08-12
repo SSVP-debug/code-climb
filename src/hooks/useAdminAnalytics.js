@@ -16,13 +16,20 @@ function useTrendMetric(endpoint, label) {
   const [bucket, setBucket] = useState("daily");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Same data-contract fix as useAdminDashboardMetrics.js: a section that
+  // failed to load must be distinguishable from one that genuinely has no
+  // data yet, so the Analytics page can render "couldn't load" instead of
+  // an empty chart that looks identical to "nothing happened."
+  const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const result = await apiFetch(`${endpoint}?bucket=${bucket}`);
       setData(result);
     } catch (err) {
+      setError(err.message || `Failed to load ${label}.`);
       toast.error(err.message || `Failed to load ${label}.`);
     } finally {
       setLoading(false);
@@ -36,19 +43,22 @@ function useTrendMetric(endpoint, label) {
     load();
   }, [load]);
 
-  return { data, loading, bucket, setBucket };
+  return { data, loading, error, bucket, setBucket, retry: load };
 }
 
 function useSimpleMetric(endpoint, label) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const load = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const result = await apiFetch(endpoint);
       setData(result);
     } catch (err) {
+      setError(err.message || `Failed to load ${label}.`);
       toast.error(err.message || `Failed to load ${label}.`);
     } finally {
       setLoading(false);
@@ -59,7 +69,7 @@ function useSimpleMetric(endpoint, label) {
     load();
   }, [load]);
 
-  return { data, loading };
+  return { data, loading, error, retry: load };
 }
 
 export function useAdminAnalytics() {

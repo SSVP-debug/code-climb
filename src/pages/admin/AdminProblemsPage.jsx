@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Plus, Trash2, Pencil, Eye, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Trash2, Pencil, Eye } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ProblemForm from "../../components/admin/ProblemForm";
 import ProblemPreview from "../../components/admin/ProblemPreview";
+import SideDrawer from "../../components/admin/command/SideDrawer";
+import { apiFetch } from "../../services/api";
 import { useAdminProblems, PROBLEMS_PAGE_SIZE } from "../../hooks/useAdminProblems";
 
 const DIFFICULTY_BADGE = {
@@ -26,25 +28,6 @@ const CLI_COMMANDS = [
   { label: "Export catalog problems to folders", command: "npm run problems:export-to-folders" },
   { label: "Import problems from folders", command: "npm run problems:import-from-folders" },
 ];
-
-function Panel({ title, onClose, children }) {
-  return (
-    <div className="fixed inset-0 bg-black/70 flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={onClose}>
-      <div
-        className="w-full max-w-3xl bg-zinc-950 border border-zinc-800 rounded-2xl p-6 my-8"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-white font-bold text-lg">{title}</h2>
-          <button type="button" onClick={onClose} className="p-1 rounded text-zinc-500 hover:text-white hover:bg-zinc-900">
-            <X size={18} />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
 
 // Plan 006: replaces the plan-001 placeholder. Full CRUD for admin-created
 // problems; catalog problems (from src/data/problems.js) are edit-limited
@@ -78,6 +61,30 @@ export default function AdminProblemsPage() {
   const [serverIssues, setServerIssues] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null); // slug pending delete confirmation
   const [rowLoading, setRowLoading] = useState(null); // slug currently fetching for edit
+
+  // Real difficulty distribution across the WHOLE catalog, not just this
+  // page — three lightweight calls to the same GET /api/admin/problems
+  // endpoint (limit=1, only `total` is read), fetched once on mount, not
+  // on every filter/page change. No new backend endpoint.
+  const [difficultyCounts, setDifficultyCounts] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [easy, medium, hard] = await Promise.all(
+          ["Easy", "Medium", "Hard"].map((d) =>
+            apiFetch(`/api/admin/problems?difficulty=${d}&limit=1`).then((r) => r.total || 0)
+          )
+        );
+        if (!cancelled) setDifficultyCounts({ Easy: easy, Medium: medium, Hard: hard });
+      } catch {
+        if (!cancelled) setDifficultyCounts(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const totalPages = Math.max(1, Math.ceil(problemsTotal / PROBLEMS_PAGE_SIZE));
 
@@ -143,6 +150,19 @@ export default function AdminProblemsPage() {
             <Plus size={14} className="mr-1" /> Create problem
           </Button>
         </div>
+
+        {difficultyCounts && (
+          <div className="flex items-center gap-2 mb-4">
+            {["Easy", "Medium", "Hard"].map((d) => (
+              <div
+                key={d}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${DIFFICULTY_BADGE[d]}`}
+              >
+                {difficultyCounts[d]} {d}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Persistent notice — plan 006's explicit requirement, so an admin
             doesn't discover the seed-overwrite tension the hard way. */}
@@ -211,7 +231,11 @@ export default function AdminProblemsPage() {
               </thead>
               <tbody>
                 {problems.map((p) => (
-                  <tr key={p.slug} className="border-t border-zinc-800">
+                  <tr
+                    key={p.slug}
+                    onClick={() => openEdit(p.slug)}
+                    className="border-t border-zinc-800 cursor-pointer hover:bg-zinc-900/40 transition"
+                  >
                     <td className="px-4 py-2 text-white font-medium">{p.title}</td>
                     <td className="px-4 py-2">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded ${DIFFICULTY_BADGE[p.difficulty] || ""}`}>
@@ -224,7 +248,7 @@ export default function AdminProblemsPage() {
                         {p.adminSource}
                       </span>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
@@ -278,7 +302,13 @@ export default function AdminProblemsPage() {
       </div>
 
       {panelMode !== "closed" && (
-        <Panel title={panelMode === "create" ? "Create problem" : `Edit: ${editingProblem?.title}`} onClose={closePanel}>
+        <SideDrawer
+          size="lg"
+          open={panelMode !== "closed"}
+          onClose={closePanel}
+          eyebrow="Problem catalog"
+          title={panelMode === "create" ? "Create problem" : editingProblem?.title || "Edit problem"}
+        >
           {panelMode === "edit" && (
             <div className="flex items-center gap-1 mb-4 bg-zinc-900 rounded-lg p-1 w-fit">
               <button
@@ -314,7 +344,7 @@ export default function AdminProblemsPage() {
               serverIssues={serverIssues}
             />
           )}
-        </Panel>
+        </SideDrawer>
       )}
 
       {deleteTarget && (

@@ -1,7 +1,10 @@
-import { X } from "lucide-react";
+import { useState } from "react";
+import { X, Users as UsersIcon, ShieldAlert } from "lucide-react";
 import Button from "../ui/Button";
 import UserActionsMenu from "./UserActionsMenu";
+import UserDetailDrawer from "./UserDetailDrawer";
 import { USERS_PAGE_SIZE } from "../../hooks/useAdminUsers";
+import { useAdminDashboardMetrics } from "../../hooks/useAdminDashboardMetrics";
 
 const ROLE_FILTERS = [
   { id: "", label: "All roles" },
@@ -10,6 +13,19 @@ const ROLE_FILTERS = [
   { id: "tpo", label: "TPO" },
 ];
 
+function formatDate(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+// Command Center transformation, Phase 4 ("USER INTELLIGENCE"): the table
+// itself and its data (useAdminUsers) are unchanged — search, role filter,
+// pagination, the five row actions all still work exactly as before. What
+// changed is the interaction: rows are now click targets that open
+// UserDetailDrawer (a real intelligence panel built only from fields the
+// API actually returns — see that file's header comment for the honest
+// scope note on what's deliberately NOT in there), and a small header
+// strip surfaces two real, already-available numbers instead of zero.
 function UsersLoginAsSection({ adminUsers }) {
   const {
     users,
@@ -34,17 +50,33 @@ function UsersLoginAsSection({ adminUsers }) {
     changeUserRole,
   } = adminUsers;
 
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const selectedUser = users.find((u) => u.id === selectedUserId) || null;
+
+  // Reuses the same GET /api/admin/dashboard-metrics response Overview's
+  // Attention Required section reads — no second endpoint for what's
+  // already a platform-wide, non-paginated count.
+  const { metrics } = useAdminDashboardMetrics();
+  const pendingVerification =
+    (metrics?.approvals?.pendingRecruiterApprovals || 0) + (metrics?.approvals?.pendingTpoApprovals || 0);
+
   return (
     <section className="mb-10">
-      <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-        Users {usersTotal > 0 && `(${usersTotal})`}
-      </h2>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-lg px-3 py-2">
+          <UsersIcon size={14} className="text-zinc-500" />
+          <span className="text-white text-sm font-bold">{usersTotal}</span>
+          <span className="text-zinc-500 text-xs">total users</span>
+        </div>
+        {pendingVerification > 0 && (
+          <div className="flex items-center gap-2 bg-verdict-pending/5 border border-verdict-pending/25 rounded-lg px-3 py-2">
+            <ShieldAlert size={14} className="text-verdict-pending" />
+            <span className="text-verdict-pending text-sm font-bold">{pendingVerification}</span>
+            <span className="text-verdict-pending/80 text-xs">pending verification</span>
+          </div>
+        )}
+      </div>
 
-      {/* Plan 005's "View students" deep-link from the Colleges page —
-          collegeFilter/collegeName come from useAdminUsers' initialCollege/
-          initialCollegeName (fed from ?college=&collegeName= by
-          AdminUsersPage.jsx). Clearing the badge just removes the filter,
-          it doesn't navigate away. */}
       {collegeFilter && (
         <div className="flex items-center gap-2 mb-3">
           <span className="inline-flex items-center gap-1.5 text-xs bg-zinc-800 text-zinc-200 rounded-full pl-3 pr-1.5 py-1">
@@ -90,7 +122,11 @@ function UsersLoginAsSection({ adminUsers }) {
           {users.map((u) => (
             <div
               key={u.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3"
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedUserId(u.id)}
+              onKeyDown={(e) => e.key === "Enter" && setSelectedUserId(u.id)}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 cursor-pointer transition hover:border-zinc-700"
             >
               <div className="min-w-0">
                 <p className="text-white font-semibold text-sm truncate">
@@ -118,9 +154,10 @@ function UsersLoginAsSection({ adminUsers }) {
                 <p className="text-zinc-500 text-xs truncate">
                   {u.email}
                   {u.label && ` · ${u.label}`}
+                  {u.joinedAt && ` · joined ${formatDate(u.joinedAt)}`}
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                 <Button
                   size="sm"
                   variant="secondary"
@@ -166,6 +203,13 @@ function UsersLoginAsSection({ adminUsers }) {
           </button>
         </div>
       )}
+
+      <UserDetailDrawer
+        user={selectedUser}
+        open={Boolean(selectedUser)}
+        onClose={() => setSelectedUserId(null)}
+        actions={{ impersonatingId, loginAs, busyIds, suspendUser, activateUser, deleteUser, resetUserProgress, changeUserRole }}
+      />
     </section>
   );
 }

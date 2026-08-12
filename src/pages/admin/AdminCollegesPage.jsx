@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, GraduationCap, Users2, ExternalLink } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import { useAdminColleges, COLLEGES_PAGE_SIZE } from "../../hooks/useAdminColleges";
+import CollegeDetailDrawer from "../../components/admin/CollegeDetailDrawer";
 
 // Same badge palette AdminConsolePage/CollegeVerifyConfirmPage already use
 // for this exact status enum (pending/verified/rejected) — kept consistent
@@ -39,6 +41,7 @@ function StatusBadge({ status }) {
 // plan 005 education-schema prerequisite bugfix in PROGRESS.md).
 export default function AdminCollegesPage() {
   const navigate = useNavigate();
+  const [selectedCollegeId, setSelectedCollegeId] = useState(null);
   const {
     colleges,
     collegesTotal,
@@ -50,6 +53,8 @@ export default function AdminCollegesPage() {
     searchInput,
     setSearchInput,
   } = useAdminColleges();
+
+  const selectedCollege = colleges.find((c) => c.id === selectedCollegeId) || null;
 
   function viewStudents(college) {
     // Deep-link into the Users page (plan 001/003), pre-filtered to this
@@ -104,7 +109,11 @@ export default function AdminCollegesPage() {
             {colleges.map((college) => (
               <div
                 key={college.id}
-                className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-3"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedCollegeId(college.id)}
+                onKeyDown={(e) => e.key === "Enter" && setSelectedCollegeId(college.id)}
+                className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-3 cursor-pointer transition hover:border-zinc-700"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -114,17 +123,17 @@ export default function AdminCollegesPage() {
                   <StatusBadge status={college.status} />
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="grid grid-cols-3 gap-2 text-center bg-black/20 rounded-lg py-2.5">
                   <div>
-                    <p className="text-white text-lg font-black">{college.studentCount}</p>
+                    <p className="text-white text-xl font-black">{college.studentCount}</p>
                     <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Students</p>
                   </div>
                   <div>
-                    <p className="text-white text-lg font-black">{college.activeStudentCount}</p>
+                    <p className="text-white text-xl font-black">{college.activeStudentCount}</p>
                     <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Active</p>
                   </div>
                   <div>
-                    <p className="text-white text-lg font-black">{college.tpoCount}</p>
+                    <p className="text-white text-xl font-black">{college.tpoCount}</p>
                     <p className="text-zinc-500 text-[10px] uppercase tracking-wide">TPOs</p>
                   </div>
                 </div>
@@ -134,16 +143,11 @@ export default function AdminCollegesPage() {
                   {college.totalSolvedProblems} problems solved by this college's students
                 </p>
 
-                {/* studentCount is a documented lower bound (see
-                    studentCountCaveat) — surfaced here rather than
-                    presented as an exact figure. */}
-                <p className="text-zinc-600 text-[11px] italic">{college.studentCountCaveat}</p>
-                {/* recruiterCount is explicit null + a note (not 0) — see
-                    collegeController.js's Design decision. */}
-                <p className="text-zinc-600 text-[11px] italic">{college.recruiterCountNote}</p>
-
                 <button
-                  onClick={() => viewStudents(college)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    viewStudents(college);
+                  }}
                   className="mt-1 self-start flex items-center gap-1 text-xs text-zinc-300 hover:text-white transition"
                 >
                   <Users2 size={13} />
@@ -177,6 +181,13 @@ export default function AdminCollegesPage() {
           </div>
         )}
       </div>
+
+      <CollegeDetailDrawer
+        college={selectedCollege}
+        open={Boolean(selectedCollege)}
+        onClose={() => setSelectedCollegeId(null)}
+        onViewStudents={viewStudents}
+      />
     </>
   );
 }

@@ -68,7 +68,7 @@ describe("Admin nested routes — role guard", () => {
       ["/admin/settings"]
     );
 
-    expect(screen.queryByRole("heading", { name: "Settings" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Control Configuration" })).not.toBeInTheDocument();
     expect(screen.getByText("Dashboard: /dashboard")).toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe("Admin nested routes — role guard", () => {
       ["/admin/settings"]
     );
 
-    expect(screen.queryByRole("heading", { name: "Settings" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Control Configuration" })).not.toBeInTheDocument();
     expect(screen.getByText("Login Page")).toBeInTheDocument();
   });
 
@@ -102,7 +102,7 @@ describe("Admin nested routes — role guard", () => {
     // findBy*-over-getBy* treatment as the colleges case below, and for
     // the same reason: the hook's async apiFetch rejection (no server in
     // this test env) needs to settle inside act() before the test ends.
-    expect(await screen.findByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Control Configuration" })).toBeInTheDocument();
   });
 
   it("allows an admin account to reach /admin/colleges", async () => {
