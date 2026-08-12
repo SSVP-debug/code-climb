@@ -27,7 +27,12 @@ function Navbar() {
 
   const handleLogout = async () => {
     await logoutUser();
-    navigate("/login");
+    // JARVIS pass, spec §19: "provide subtle session-ended feedback" —
+    // real feedback tied to the actual completed logout (this line only
+    // runs after logoutUser() resolves), not a fabricated shutdown
+    // animation. LoginPage reads this flag to show a one-line confirmation,
+    // same treatment as its existing sessionExpired banner.
+    navigate("/login?loggedOut=1");
   };
 
   const navigation = {

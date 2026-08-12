@@ -2,9 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Activity, ArrowRight } from "lucide-react";
 import { apiFetch } from "../../../services/api";
-import { formatAuditAction } from "../../../utils/auditLogFormat";
+import { formatAuditAction, getAuditActionTone } from "../../../utils/auditLogFormat";
 
 const ACTIVITY_LIMIT = 6;
+
+const TONE_DOT = {
+  destructive: "bg-verdict-reject",
+  positive: "bg-verdict-accept",
+  neutral: "bg-zinc-600",
+};
 
 function formatTime(d) {
   if (!d) return "—";
@@ -75,7 +81,10 @@ export default function PlatformActivitySection() {
           <div className="flex flex-col gap-3.5">
             {logs.map((log) => (
               <div key={log._id} className="relative">
-                <span className="absolute -left-4 top-1 h-1.5 w-1.5 rounded-full bg-zinc-600" aria-hidden="true" />
+                <span
+                  className={`absolute -left-4 top-1 h-1.5 w-1.5 rounded-full ${TONE_DOT[getAuditActionTone(log.action)]}`}
+                  aria-hidden="true"
+                />
                 <p className="text-sm text-zinc-200">
                   <span className="text-zinc-500">{log.adminEmail}</span> · {formatAuditAction(log.action)}
                 </p>

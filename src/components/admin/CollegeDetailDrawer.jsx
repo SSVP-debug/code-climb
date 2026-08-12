@@ -45,7 +45,7 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
             <p className="text-zinc-500 text-[10px] uppercase tracking-wide">TPOs</p>
           </div>
         </div>
-        <DrawerField label="Domains" value={college.domains?.join(", ")} />
+        <DrawerField label="Domains" value={college.domains?.join(", ")} copyable />
       </DrawerSection>
 
       <DrawerSection label="Activity">

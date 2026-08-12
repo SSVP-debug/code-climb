@@ -3,9 +3,21 @@ import toast from "react-hot-toast";
 import { ChevronDown, Shield } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import { apiFetch } from "../../services/api";
-import { formatAuditAction, formatAuditTarget } from "../../utils/auditLogFormat";
+import { formatAuditAction, formatAuditTarget, getAuditActionTone } from "../../utils/auditLogFormat";
 
 const LOGS_PAGE_SIZE = 20;
+
+const TONE_DOT = {
+  destructive: "bg-verdict-reject",
+  positive: "bg-verdict-accept",
+  neutral: "bg-zinc-600",
+};
+
+const TONE_TEXT = {
+  destructive: "text-verdict-reject",
+  positive: "text-verdict-accept",
+  neutral: "text-white",
+};
 
 function formatTimestamp(d) {
   if (!d) return "—";
@@ -35,23 +47,30 @@ function dayKey(d) {
 // <table> to a day-grouped vertical timeline. `details` (already recorded
 // by services/adminAuditLog.js on every write, previously never rendered
 // anywhere in the UI) is now shown inline per entry when present.
+//
+// JARVIS pass, spec §13: WHO/WHAT/TARGET/WHEN now sit in their own visual
+// slots (actor line, tone-colored action verb, monospace target, and a
+// right-aligned timestamp) instead of one prose sentence — reads like an
+// event stream, not a table row wrapped in a card. Metadata stays
+// secondary (collapsed) until expanded, exactly as before.
 function AuditLogEntry({ log }) {
   const [expanded, setExpanded] = useState(false);
   const hasDetails = log.details && Object.keys(log.details).length > 0;
   const target = formatAuditTarget(log);
+  const tone = getAuditActionTone(log.action);
 
   return (
     <div className="relative pl-5">
-      <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-700 border-2 border-ink-950" aria-hidden="true" />
+      <span
+        className={`absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-ink-950 ${TONE_DOT[tone]}`}
+        aria-hidden="true"
+      />
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <p className="text-sm text-white font-medium">
-              <span className="text-zinc-400 font-normal">{log.adminEmail}</span>
-              {" — "}
-              {formatAuditAction(log.action)}
-            </p>
-            {target && <p className="text-zinc-500 text-xs mt-0.5">{target}</p>}
+            <p className="text-[11px] font-mono-ui text-zinc-500 truncate">{log.adminEmail}</p>
+            <p className={`text-sm font-semibold mt-0.5 ${TONE_TEXT[tone]}`}>{formatAuditAction(log.action)}</p>
+            {target && <p className="text-zinc-500 text-xs font-mono-ui mt-0.5">{target}</p>}
           </div>
           <span className="text-zinc-600 text-xs whitespace-nowrap shrink-0 font-mono-ui">
             {formatTimestamp(log.createdAt)}

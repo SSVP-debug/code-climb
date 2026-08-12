@@ -57,7 +57,7 @@ export default function UserDetailDrawer({ user, open, onClose, actions }) {
 
       <DrawerSection label="Identity">
         <DrawerField label="Username" value={user.username ? `@${user.username}` : null} />
-        <DrawerField label="Email" value={user.email} />
+        <DrawerField label="Email" value={user.email} copyable />
         {user.label && (
           <DrawerField label={user.role === "recruiter" ? "Company" : "College"} value={user.label} />
         )}

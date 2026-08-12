@@ -1,67 +1,19 @@
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowRight, CheckCircle2, ShieldAlert, UserCheck } from "lucide-react";
-import { useAggregatePlatformStatus } from "../../../hooks/useAggregatePlatformStatus";
-import { useAdminDashboardMetrics } from "../../../hooks/useAdminDashboardMetrics";
-
-const SERVICE_TONE = {
-  down: { icon: ShieldAlert, cls: "border-verdict-reject/25 bg-verdict-reject/5 text-verdict-reject" },
-  degraded: { icon: AlertTriangle, cls: "border-verdict-pending/25 bg-verdict-pending/5 text-verdict-pending" },
-};
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useAdminAttentionItems } from "../../../hooks/useAdminAttentionItems";
 
 /**
  * AttentionRequiredSection — Command Center transformation, Overview
  * Phase 3. Distinct from CommandCenterHero's alert chips (which live in
  * the top status strip): this is a dedicated "what do I need to act on"
- * list, each row a real actionable item with a real destination. Built
- * entirely from data already fetched elsewhere on this page
- * (useAggregatePlatformStatus over /api/admin/system-health,
- * useAdminDashboardMetrics over /api/admin/dashboard-metrics) — no new
- * endpoint, no synthetic incident feed.
+ * list, each row a real actionable item with a real destination.
+ *
+ * JARVIS pass: item-building logic now lives in useAdminAttentionItems
+ * (shared with the global AttentionCenter in the command bar) rather than
+ * duplicated here — single source of truth, see that hook's header comment.
  */
 export default function AttentionRequiredSection() {
-  const { summary } = useAggregatePlatformStatus();
-  const { metrics } = useAdminDashboardMetrics();
-
-  const items = [];
-
-  if (summary) {
-    for (const s of summary.services) {
-      if (s.status === "down" || s.status === "degraded") {
-        items.push({
-          id: `service-${s.key}`,
-          tone: s.status,
-          icon: SERVICE_TONE[s.status].icon,
-          label: `${s.label} is ${s.status}`,
-          to: "/admin/system-health",
-          cta: "Investigate",
-        });
-      }
-    }
-  }
-
-  const pendingRecruiters = metrics?.approvals?.pendingRecruiterApprovals || 0;
-  if (pendingRecruiters > 0) {
-    items.push({
-      id: "recruiter-approvals",
-      tone: "pending",
-      icon: UserCheck,
-      label: `${pendingRecruiters} recruiter application${pendingRecruiters === 1 ? "" : "s"} pending`,
-      to: "#recruiter-queue",
-      cta: "Review",
-    });
-  }
-
-  const pendingTpos = metrics?.approvals?.pendingTpoApprovals || 0;
-  if (pendingTpos > 0) {
-    items.push({
-      id: "tpo-approvals",
-      tone: "pending",
-      icon: UserCheck,
-      label: `${pendingTpos} college/TPO request${pendingTpos === 1 ? "" : "s"} pending`,
-      to: "#tpo-queue",
-      cta: "Review",
-    });
-  }
+  const { items } = useAdminAttentionItems();
 
   return (
     <section className="mb-10">

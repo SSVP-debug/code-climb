@@ -31,6 +31,29 @@ const SUBJECT_LABELS = {
   settings: "settings",
 };
 
+// JARVIS pass, spec §13: "make the timeline visually communicate WHO/WHAT/
+// TARGET/WHEN... resemble an operational/security event stream." Tone is
+// derived from the same real verb vocabulary above, not a separate guess —
+// so an unrecognized future verb still falls through to "neutral" rather
+// than mis-coloring itself as safe or dangerous.
+const VERB_TONE = {
+  approve: "positive",
+  activate: "positive",
+  reject: "destructive",
+  suspend: "destructive",
+  delete: "destructive",
+  reset_progress: "destructive",
+  update: "neutral",
+  update_safelisted: "neutral",
+  change_role: "neutral",
+};
+
+export function getAuditActionTone(action) {
+  if (!action) return "neutral";
+  const verb = action.split(".").slice(1).join(".");
+  return VERB_TONE[verb] || "neutral";
+}
+
 export function formatAuditAction(action) {
   if (!action) return "Admin action";
   const [subject, ...verbParts] = action.split(".");

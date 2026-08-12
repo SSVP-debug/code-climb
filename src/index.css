@@ -222,4 +222,19 @@
   .lp-ticker-track {
     animation: none;
   }
+
+  /* JARVIS pass, spec §21: the Command Center's dropdowns (SystemStatusPill,
+     AttentionCenter), the ⌘K palette, and the "live" status dot's expanding
+     ring all use these two utility classes for genuinely decorative motion
+     — dropped to an instant state under reduced motion. Deliberately NOT
+     touching .animate-pulse/.animate-spin here: those drive loading
+     skeletons and spinners app-wide (not admin-specific, not decorative —
+     they're the only signal a fetch is in flight), so disabling them would
+     be a much broader behavior change than this pass is scoped to make. */
+  .animate-fadeIn,
+  .animate-ping {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
 }

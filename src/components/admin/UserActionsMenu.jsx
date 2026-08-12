@@ -91,13 +91,19 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
               )}
             </div>
 
+            {/* Irreversible actions get their own visually separated,
+                color-coded group (JARVIS spec §11: "dangerous actions must
+                look dangerous") rather than sitting flush with the
+                reversible ones above. */}
+            <div className="my-1 border-t border-zinc-800" role="separator" />
+
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
                 setConfirming("reset-progress");
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-zinc-200 hover:bg-zinc-900"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-amber-400 hover:bg-amber-500/10"
             >
               <RotateCcw size={14} /> Reset progress
             </button>

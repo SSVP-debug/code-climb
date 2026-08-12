@@ -19,11 +19,42 @@ import { Search, ArrowRight, CornerDownLeft } from "lucide-react";
  * with fresh useState defaults — no "reset internal state when a prop
  * flips" effect/ref juggling required.
  */
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export default function CommandPalette({ onClose, commands }) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef(null);
+  const panelRef = useRef(null);
+  const triggerRef = useRef(null);
   const navigate = useNavigate();
+
+  // JARVIS pass, spec §21: trap focus inside the palette while open and
+  // restore it to whatever opened the palette (search button / ⌘K target)
+  // on close — same pattern as SideDrawer, so keyboard users never lose
+  // their place behind the overlay.
+  useEffect(() => {
+    triggerRef.current = document.activeElement;
+    return () => {
+      if (triggerRef.current instanceof HTMLElement) triggerRef.current.focus();
+    };
+  }, []);
+
+  function handleTabTrap(e) {
+    if (e.key !== "Tab" || !panelRef.current) return;
+    const focusable = panelRef.current.querySelectorAll(FOCUSABLE_SELECTOR);
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -89,7 +120,14 @@ export default function CommandPalette({ onClose, commands }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4">
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-fadeIn" onClick={onClose} />
-      <div className="relative w-full max-w-xl rounded-2xl border border-zinc-800 bg-ink-900/95 backdrop-blur-xl shadow-2xl shadow-black/60 overflow-hidden animate-fadeIn">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        onKeyDown={handleTabTrap}
+        className="relative w-full max-w-xl rounded-2xl border border-zinc-800 bg-ink-900/95 backdrop-blur-xl shadow-2xl shadow-black/60 overflow-hidden animate-fadeIn"
+      >
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-zinc-800">
           <Search size={16} className="text-zinc-500 shrink-0" />
           <input

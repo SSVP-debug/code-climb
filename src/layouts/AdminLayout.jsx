@@ -4,6 +4,8 @@ import Navbar from "../components/Navbar";
 import ThemeSkin from "../themes/ThemeSkin";
 import SystemStatusPill from "../components/admin/command/SystemStatusPill";
 import CommandPalette from "../components/admin/command/CommandPalette";
+import AttentionCenter from "../components/admin/command/AttentionCenter";
+import CommandCenterEntry from "../components/admin/command/CommandCenterEntry";
 import { useAdminDashboardMetrics } from "../hooks/useAdminDashboardMetrics";
 import {
   LayoutDashboard,
@@ -207,6 +209,7 @@ function AdminLayout() {
                 <Search size={15} />
               </button>
 
+              <AttentionCenter />
               <SystemStatusPill />
             </div>
           </div>
@@ -227,6 +230,7 @@ function AdminLayout() {
       </div>
 
       {paletteOpen && <CommandPalette onClose={closePalette} commands={commands} />}
+      <CommandCenterEntry />
     </ThemeSkin>
   );
 }
