@@ -108,6 +108,26 @@ function AppContextProvider({ children }) {
   // (fresh login / logout-then-login), since a new hydrate() cycle starts.
   const [isBackendReady, setIsBackendReady] = useState(false);
 
+  // hydrationError — the gap flagged in the state-coverage audit: hydrate()
+  // below always set isBackendReady(true) even when the boot call failed,
+  // by design (so the UI never hangs forever on a genuine error — see the
+  // comment above isBackendReady). What was missing is any user-visible
+  // trace of that failure: it only ever reached console.error, so the app
+  // silently rendered real (if degraded/empty) data with no way for the
+  // person to know their stats might be stale, or to retry. This makes
+  // that failure visible and recoverable — see Dashboard.jsx's usage via
+  // AsyncState. Cleared at the start of every hydrate() attempt, including
+  // retries via retryHydration.
+  const [hydrationError, setHydrationError] = useState(null);
+
+  // Bumped by retryHydration() to force the hydrate effect below to run
+  // again without waiting for `user` itself to change.
+  const [hydrationAttempt, setHydrationAttempt] = useState(0);
+
+  function retryHydration() {
+    setHydrationAttempt((n) => n + 1);
+  }
+
   const [submissions, setSubmissions] =
     useState([]);
   const [achievements, setAchievements] =
@@ -192,6 +212,7 @@ function AppContextProvider({ children }) {
 
     async function hydrate() {
       setIsBackendReady(false);
+      setHydrationError(null);
 
       try {
         // Single boot call — replaces 3 sequential API calls:
@@ -329,13 +350,16 @@ function AppContextProvider({ children }) {
           "[AppContext] Hydration failed:",
           err
         );
+        setHydrationError(
+          err?.message || "Couldn't load your data. Please try again."
+        );
       } finally {
         setIsBackendReady(true);
       }
     }
 
     hydrate();
-  }, [user]);
+  }, [user, hydrationAttempt]);
 
   // --------------------------------------------------
   // SUBMISSIONS
@@ -644,6 +668,8 @@ function AppContextProvider({ children }) {
 
   const value = {
     isBackendReady,
+    hydrationError,
+    retryHydration,
     solvedProblems,
     topicStats,
     achievements,

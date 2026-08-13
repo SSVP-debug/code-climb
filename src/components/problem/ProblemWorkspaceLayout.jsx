@@ -238,7 +238,10 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
                       : "hidden"
                 }
               >
-                <ErrorBanner message={error} />
+                <ErrorBanner
+                  message={error}
+                  onRetry={!running && !submitting ? handleRunCode : undefined}
+                />
               </div>
             )}
 

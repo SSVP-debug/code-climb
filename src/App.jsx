@@ -19,6 +19,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminPreviewBanner from "./components/admin/AdminPreviewBanner";
 import AnnouncementBanner from "./components/admin/AnnouncementBanner";
+import OfflineBanner from "./components/OfflineBanner";
 
 // ── Lazily loaded ──────────────────────────────────────────────────────────
 // Each lazy() call creates a separate JS chunk.
@@ -94,6 +95,7 @@ function App() {
 
   return (
     <Suspense fallback={<PageLoader />}>
+      <OfflineBanner />
       <AnnouncementBanner />
       <AdminPreviewBanner />
       <Routes>

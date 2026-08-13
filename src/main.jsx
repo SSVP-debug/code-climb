@@ -4,6 +4,7 @@ import { ErrorBoundary } from "@sentry/react";
 import { ThemeProvider } from "./context/ThemeContext";
 
 import AchievementToastContainer from "./components/ui/AchievementToastContainer";
+import GlobalErrorFallback from "./components/GlobalErrorFallback";
 import React from "react";
 import { HelmetProvider } from "react-helmet-async";
 import ReactDOM from "react-dom/client";
@@ -68,13 +69,7 @@ ReactDOM.createRoot(
           <AppContextProvider>
 
             <ErrorBoundary
-              fallback={
-                <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                  <p>
-                    Something went wrong. Our team has been notified.
-                  </p>
-                </div>
-              }
+              fallback={<GlobalErrorFallback />}
             >
               <Toaster
                 position="bottom-right"
