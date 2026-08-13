@@ -16,3 +16,37 @@ export const SUPPORT_EMAIL = "hello@codeclub.in";
 
 // Domain only, no protocol — for display copy like "share your profile at ___".
 export const SITE_DOMAIN = SITE_URL.replace(/^https?:\/\//, "");
+
+/**
+ * Official Code Club community/contact channels (WhatsApp, Discord, email
+ * for general inquiries) — shown in the landing footer and the Club
+ * community hub.
+ *
+ * Deliberately separate from SUPPORT_EMAIL above: SUPPORT_EMAIL is the
+ * legal/support inbox referenced in Privacy/Terms and TPO messaging, while
+ * CONTACT_EMAIL here is the public "get in touch" channel alongside
+ * WhatsApp/Discord. They may end up pointing at the same inbox one day,
+ * but that's an operational decision, not a code one — keeping them as
+ * separate env vars means changing one doesn't silently change the other.
+ *
+ * Every value here is read from an env var with no hardcoded fallback, on
+ * purpose: unlike SITE_URL/SUPPORT_EMAIL (which have a real deployed
+ * default), these three are genuinely optional. Consumers (ContactChannels
+ * component) treat a missing value as "channel not configured" and hide
+ * that option rather than rendering a dead link — see the null checks
+ * below and the *_CONFIGURED flags.
+ */
+const rawWhatsapp = import.meta.env.VITE_CODECLUB_WHATSAPP || null;
+
+// wa.me needs digits only (country code + number, no "+", spaces, or
+// dashes) — normalize once here so every consumer gets a working link
+// regardless of how the number is formatted in the env var.
+export const WHATSAPP_NUMBER = rawWhatsapp;
+export const WHATSAPP_LINK = rawWhatsapp
+  ? `https://wa.me/${rawWhatsapp.replace(/[^\d]/g, "")}`
+  : null;
+
+export const DISCORD_INVITE_URL = import.meta.env.VITE_CODECLUB_DISCORD || null;
+
+export const CONTACT_EMAIL = import.meta.env.VITE_CODECLUB_EMAIL || null;
+export const CONTACT_EMAIL_LINK = CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : null;

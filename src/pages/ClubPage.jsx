@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import SectionCard from "../components/ui/layout/SectionCard";
 import Button from "../components/ui/Button";
+import ContactChannels from "../components/common/ContactChannels";
+import { WHATSAPP_LINK, DISCORD_INVITE_URL, CONTACT_EMAIL_LINK } from "../config/site.js";
 import { apiFetch } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { withAlpha } from "../themes/themeIcons";
-import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap, Medal } from "lucide-react";
+import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap, Medal, MessageCircle } from "lucide-react";
 
 const MEDAL_COLOR = { 1: "text-yellow-400", 2: "text-zinc-400", 3: "text-orange-700" };
 
@@ -181,6 +183,21 @@ function ClubPage() {
             Create or Join a Room
           </Button>
         </SectionCard>
+
+        {/* ── Get in touch ─────────────────────────────────────────────── */}
+        {/* Whole section is skipped, not just the cards inside it, when no
+            channel env vars are configured (see config/site.js) — an
+            "accented" SectionCard with an empty body would look broken. */}
+        {(WHATSAPP_LINK || DISCORD_INVITE_URL || CONTACT_EMAIL_LINK) && (
+          <SectionCard
+            title="Get in Touch"
+            subtitle="Talk to the Code Club team"
+            icon={<MessageCircle size={18} strokeWidth={2} />}
+            accented
+          >
+            <ContactChannels variant="panel" />
+          </SectionCard>
+        )}
 
         {/* ── Ambassador ───────────────────────────────────────────────── */}
         <Link
