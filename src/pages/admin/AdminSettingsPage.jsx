@@ -35,6 +35,32 @@ function ToggleRow({ label, description, checked, disabled, onToggle }) {
   );
 }
 
+// Shared "console panel" wrapper — JARVIS pass, spec §14: "make the layout
+// feel like a configuration console" rather than headers floating loose in
+// whitespace. Every real settings group (Platform availability, Registration
+// access, Notifications, System flags) gets the same bordered panel
+// treatment so the page reads as discrete control surfaces, not a form.
+function ConsolePanel({ label, note, readOnly, children }) {
+  return (
+    <section
+      className={`mb-6 rounded-2xl border p-5 ${
+        readOnly ? "border-dashed border-zinc-800/70 bg-transparent" : "border-zinc-800 bg-zinc-900/30"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">{label}</h2>
+        {readOnly && (
+          <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-mono-ui border border-zinc-800 rounded px-1.5 py-0.5">
+            Read-only
+          </span>
+        )}
+      </div>
+      {note && <p className="text-zinc-600 text-xs mb-3">{note}</p>}
+      {children}
+    </section>
+  );
+}
+
 // Plan 009: real Settings page, replacing the plan-001 placeholder.
 export default function AdminSettingsPage() {
   const { settings, loading, saving, updateSettings } = useAdminSettings();
@@ -99,10 +125,7 @@ export default function AdminSettingsPage() {
               </div>
             )}
 
-            <section className="mb-8">
-              <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Platform availability
-              </h2>
+            <ConsolePanel label="Platform availability">
               <ToggleRow
                 label="Maintenance mode"
                 description="Returns 503 for all non-admin, non-health-check traffic."
@@ -110,12 +133,9 @@ export default function AdminSettingsPage() {
                 disabled={saving}
                 onToggle={handleMaintenanceToggle}
               />
-            </section>
+            </ConsolePanel>
 
-            <section className="mb-8">
-              <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Registration access
-              </h2>
+            <ConsolePanel label="Registration access">
               <div className="flex flex-col gap-3">
                 <ToggleRow
                   label="Recruiter registration"
@@ -141,12 +161,9 @@ export default function AdminSettingsPage() {
                   }
                 />
               </div>
-            </section>
+            </ConsolePanel>
 
-            <section className="mb-8">
-              <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                Notifications
-              </h2>
+            <ConsolePanel label="Notifications">
               <div className="flex flex-col gap-3">
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-2">
                   <textarea
@@ -187,16 +204,16 @@ export default function AdminSettingsPage() {
                   }
                 />
               </div>
-            </section>
+            </ConsolePanel>
 
-            <section>
-              <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
-                System flags
-              </h2>
-              <p className="text-zinc-600 text-xs mb-3">
-                {settings.envFlags?.note ||
-                  "Set via environment variable — changing requires a redeploy, not this page."}
-              </p>
+            <ConsolePanel
+              label="System flags"
+              readOnly
+              note={
+                settings.envFlags?.note ||
+                "Set via environment variable — changing requires a redeploy, not this page."
+              }
+            >
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between bg-zinc-900/40 border border-zinc-800/60 rounded-xl px-4 py-3">
                   <span className="text-zinc-300 text-sm">Monetization</span>
@@ -219,7 +236,7 @@ export default function AdminSettingsPage() {
                   </span>
                 </div>
               </div>
-            </section>
+            </ConsolePanel>
           </>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button from "../ui/Button";
+import { DrawerSection } from "./command/SideDrawer";
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 const SOURCE_TYPES = ["core", "variant", "original"];
@@ -163,165 +164,174 @@ export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, 
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-        <Field label="Title" error={issueFor("title")}>
-          <input
-            className={inputClass}
-            value={values.title}
-            onChange={(e) => set("title", e.target.value)}
-            disabled={isCatalog}
-            required={!isCatalog}
-          />
-        </Field>
-        <Field label="Slug" error={issueFor("slug")} hint="Lowercase, hyphenated — this becomes the URL.">
-          <input
-            className={inputClass}
-            value={values.slug}
-            onChange={(e) => set("slug", e.target.value)}
-            disabled={isCatalog || mode === "edit"}
-            required={!isCatalog}
-          />
-        </Field>
-        <Field label="Function name" error={issueFor("functionName")}>
-          <input
-            className={inputClass}
-            value={values.functionName}
-            onChange={(e) => set("functionName", e.target.value)}
-            disabled={isCatalog}
-            required={!isCatalog}
-          />
-        </Field>
-        <Field label="Difficulty" error={issueFor("difficulty")}>
-          <select
-            className={inputClass}
-            value={values.difficulty}
-            onChange={(e) => set("difficulty", e.target.value)}
-            disabled={isCatalog}
-          >
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Topic" error={issueFor("topic")}>
-          <input className={inputClass} value={values.topic} onChange={(e) => set("topic", e.target.value)} required />
-        </Field>
-        <Field label="Pattern" error={issueFor("pattern")}>
-          <input className={inputClass} value={values.pattern} onChange={(e) => set("pattern", e.target.value)} />
-        </Field>
-        <Field label="Source type" error={issueFor("sourceType")}>
-          <select className={inputClass} value={values.sourceType} onChange={(e) => set("sourceType", e.target.value)}>
-            {SOURCE_TYPES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Estimated time" error={issueFor("estimatedTime")} hint='e.g. "10–15 min"'>
-          <input
-            className={inputClass}
-            value={values.estimatedTime}
-            onChange={(e) => set("estimatedTime", e.target.value)}
-            disabled={isCatalog}
-          />
-        </Field>
-      </div>
-
-      <Field label="Description" error={issueFor("description")}>
-        <textarea
-          className={`${inputClass} min-h-[120px] font-mono`}
-          value={values.description}
-          onChange={(e) => set("description", e.target.value)}
-          disabled={isCatalog}
-          required={!isCatalog}
-        />
-      </Field>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-        <Field label="Companies" hint="Comma or newline separated.">
-          <textarea
-            className={`${inputClass} min-h-[70px]`}
-            value={values.companies}
-            onChange={(e) => set("companies", e.target.value)}
-            disabled={isCatalog}
-          />
-        </Field>
-        <Field label="Constraints" hint="One per line.">
-          <textarea
-            className={`${inputClass} min-h-[70px]`}
-            value={values.constraints}
-            onChange={(e) => set("constraints", e.target.value)}
-            disabled={isCatalog}
-          />
-        </Field>
-      </div>
-
-      <Field label="Examples (JSON array)" error={issueFor("examples")} hint='[{ "input": "...", "output": "...", "explanation": "..." }]'>
-        <textarea
-          className={`${inputClass} min-h-[100px] font-mono`}
-          value={values.examples}
-          onChange={(e) => set("examples", e.target.value)}
-          disabled={isCatalog}
-        />
-      </Field>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-        <Field label="Visible testcases (JSON array)" error={issueFor("testcases")}>
-          <textarea
-            className={`${inputClass} min-h-[100px] font-mono`}
-            value={values.testcases}
-            onChange={(e) => set("testcases", e.target.value)}
-            disabled={isCatalog}
-          />
-        </Field>
-        <Field label="Hidden testcases (JSON array)" error={issueFor("hiddentestcases")} hint="Never sent to the client.">
-          <textarea
-            className={`${inputClass} min-h-[100px] font-mono`}
-            value={values.hiddentestcases}
-            onChange={(e) => set("hiddentestcases", e.target.value)}
-            disabled={isCatalog}
-          />
-        </Field>
-      </div>
-
-      <Field label="Starter code" error={issueFor("starterCode")}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {LANGUAGES.map((lang) => (
-            <div key={lang}>
-              <span className="block text-[11px] text-zinc-500 mb-1 capitalize">{lang}</span>
-              <textarea
-                className={`${inputClass} min-h-[80px] font-mono text-xs`}
-                value={values.starterCode[lang]}
-                onChange={(e) => setStarterCode(lang, e.target.value)}
-                disabled={isCatalog}
-              />
-            </div>
-          ))}
+      <DrawerSection label="Problem identity">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <Field label="Title" error={issueFor("title")}>
+            <input
+              className={inputClass}
+              value={values.title}
+              onChange={(e) => set("title", e.target.value)}
+              disabled={isCatalog}
+              required={!isCatalog}
+            />
+          </Field>
+          <Field label="Slug" error={issueFor("slug")} hint="Lowercase, hyphenated — this becomes the URL.">
+            <input
+              className={`${inputClass} font-mono text-xs`}
+              value={values.slug}
+              onChange={(e) => set("slug", e.target.value)}
+              disabled={isCatalog || mode === "edit"}
+              required={!isCatalog}
+            />
+          </Field>
+          <Field label="Function name" error={issueFor("functionName")}>
+            <input
+              className={`${inputClass} font-mono text-xs`}
+              value={values.functionName}
+              onChange={(e) => set("functionName", e.target.value)}
+              disabled={isCatalog}
+              required={!isCatalog}
+            />
+          </Field>
         </div>
-      </Field>
+      </DrawerSection>
 
-      <Field label="Hints (JSON array)" error={issueFor("hints")} hint='[{ "level": 1, "text": "..." }]'>
-        <textarea
-          className={`${inputClass} min-h-[80px] font-mono`}
-          value={values.hints}
-          onChange={(e) => set("hints", e.target.value)}
-          disabled={isCatalog}
-        />
-      </Field>
+      <DrawerSection label="Difficulty & source">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <Field label="Difficulty" error={issueFor("difficulty")}>
+            <select
+              className={inputClass}
+              value={values.difficulty}
+              onChange={(e) => set("difficulty", e.target.value)}
+              disabled={isCatalog}
+            >
+              {DIFFICULTIES.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Topic" error={issueFor("topic")}>
+            <input className={inputClass} value={values.topic} onChange={(e) => set("topic", e.target.value)} required />
+          </Field>
+          <Field label="Pattern" error={issueFor("pattern")}>
+            <input className={inputClass} value={values.pattern} onChange={(e) => set("pattern", e.target.value)} />
+          </Field>
+          <Field label="Source type" error={issueFor("sourceType")}>
+            <select className={inputClass} value={values.sourceType} onChange={(e) => set("sourceType", e.target.value)}>
+              {SOURCE_TYPES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Estimated time" error={issueFor("estimatedTime")} hint='e.g. "10–15 min"'>
+            <input
+              className={inputClass}
+              value={values.estimatedTime}
+              onChange={(e) => set("estimatedTime", e.target.value)}
+              disabled={isCatalog}
+            />
+          </Field>
+        </div>
+      </DrawerSection>
 
-      <Field label="Editorial">
-        <textarea
-          className={`${inputClass} min-h-[100px] font-mono`}
-          value={values.editorial}
-          onChange={(e) => set("editorial", e.target.value)}
-          disabled={isCatalog}
-        />
-      </Field>
+      <DrawerSection label="Content">
+        <Field label="Description" error={issueFor("description")}>
+          <textarea
+            className={`${inputClass} min-h-[120px] font-mono`}
+            value={values.description}
+            onChange={(e) => set("description", e.target.value)}
+            disabled={isCatalog}
+            required={!isCatalog}
+          />
+        </Field>
 
-      <div className="flex items-center justify-end gap-2 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <Field label="Companies" hint="Comma or newline separated.">
+            <textarea
+              className={`${inputClass} min-h-[70px]`}
+              value={values.companies}
+              onChange={(e) => set("companies", e.target.value)}
+              disabled={isCatalog}
+            />
+          </Field>
+          <Field label="Constraints" hint="One per line.">
+            <textarea
+              className={`${inputClass} min-h-[70px]`}
+              value={values.constraints}
+              onChange={(e) => set("constraints", e.target.value)}
+              disabled={isCatalog}
+            />
+          </Field>
+        </div>
+
+        <Field label="Examples (JSON array)" error={issueFor("examples")} hint='[{ "input": "...", "output": "...", "explanation": "..." }]'>
+          <textarea
+            className={`${inputClass} min-h-[100px] font-mono`}
+            value={values.examples}
+            onChange={(e) => set("examples", e.target.value)}
+            disabled={isCatalog}
+          />
+        </Field>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+          <Field label="Visible testcases (JSON array)" error={issueFor("testcases")}>
+            <textarea
+              className={`${inputClass} min-h-[100px] font-mono`}
+              value={values.testcases}
+              onChange={(e) => set("testcases", e.target.value)}
+              disabled={isCatalog}
+            />
+          </Field>
+          <Field label="Hidden testcases (JSON array)" error={issueFor("hiddentestcases")} hint="Never sent to the client.">
+            <textarea
+              className={`${inputClass} min-h-[100px] font-mono`}
+              value={values.hiddentestcases}
+              onChange={(e) => set("hiddentestcases", e.target.value)}
+              disabled={isCatalog}
+            />
+          </Field>
+        </div>
+
+        <Field label="Starter code" error={issueFor("starterCode")}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {LANGUAGES.map((lang) => (
+              <div key={lang}>
+                <span className="block text-[11px] text-zinc-500 mb-1 capitalize font-mono">{lang}</span>
+                <textarea
+                  className={`${inputClass} min-h-[80px] font-mono text-xs`}
+                  value={values.starterCode[lang]}
+                  onChange={(e) => setStarterCode(lang, e.target.value)}
+                  disabled={isCatalog}
+                />
+              </div>
+            ))}
+          </div>
+        </Field>
+
+        <Field label="Hints (JSON array)" error={issueFor("hints")} hint='[{ "level": 1, "text": "..." }]'>
+          <textarea
+            className={`${inputClass} min-h-[80px] font-mono`}
+            value={values.hints}
+            onChange={(e) => set("hints", e.target.value)}
+            disabled={isCatalog}
+          />
+        </Field>
+
+        <Field label="Editorial">
+          <textarea
+            className={`${inputClass} min-h-[100px] font-mono`}
+            value={values.editorial}
+            onChange={(e) => set("editorial", e.target.value)}
+            disabled={isCatalog}
+          />
+        </Field>
+      </DrawerSection>
+
+      <div className="flex items-center justify-end gap-2 mt-2 pt-4 border-t border-zinc-900">
         <Button type="button" size="sm" variant="secondary" onClick={onCancel} disabled={saving}>
           Cancel
         </Button>

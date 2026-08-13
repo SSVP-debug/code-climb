@@ -236,9 +236,13 @@ export default function AdminProblemsPage() {
                     onClick={() => openEdit(p.slug)}
                     className="border-t border-zinc-800 cursor-pointer hover:bg-zinc-900/40 transition"
                   >
-                    <td className="px-4 py-2 text-white font-medium">{p.title}</td>
                     <td className="px-4 py-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${DIFFICULTY_BADGE[p.difficulty] || ""}`}>
+                      <p className="text-white font-medium">{p.title}</p>
+                      <p className="text-zinc-600 text-[11px] font-mono">{p.slug}</p>
+                    </td>
+                    <td className="px-4 py-2">
+                      <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded ${DIFFICULTY_BADGE[p.difficulty] || ""}`}>
+                        <span className="h-1 w-1 rounded-full bg-current" aria-hidden="true" />
                         {p.difficulty}
                       </span>
                     </td>
