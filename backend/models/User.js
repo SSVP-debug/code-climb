@@ -13,6 +13,31 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+
+    // ── emailDomain (state-coverage audit fix) ──────────────────────────
+    // Documentation had claimed this was indexed on User for a while, but
+    // the field, index, backfill script, and signup-time setter were all
+    // actually absent — so every TPO/recruiter query filtering by college
+    // domain (routes/tpo.js, routes/recruiter.js) was matching against a
+    // field no document had ever had a value for, silently returning zero
+    // results. Root-caused and confirmed against the live schema before
+    // this fix (see the state-coverage remediation notes).
+    //
+    // Kept in sync via the pre-save hook below rather than only set once
+    // at account creation (middleware/auth.js), so it can never drift out
+    // of sync with `email` the way education.collegeId/emailVerified
+    // above once did under a similar "declared in docs, not in schema"
+    // failure mode — any future code path that sets/changes `email`
+    // automatically gets the derived domain for free, with no separate
+    // call site to remember.
+    emailDomain: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: null,
+      index: true,
+    },
+
     displayName: {
       type: String,
       trim: true,
@@ -395,6 +420,18 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Keeps emailDomain derived from email on every save, not just at account
+// creation — see the emailDomain field comment above for why this exists
+// as a hook rather than a one-off setter in middleware/auth.js. Runs on
+// every save() regardless of whether email actually changed (cheap: a
+// single string split), so there's no isModified("email") branch to
+// accidentally get wrong or forget to update if `email`'s validation
+// changes later.
+userSchema.pre("save", function setEmailDomain(next) {
+  this.emailDomain = this.email ? this.email.split("@")[1]?.toLowerCase() || null : null;
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 
