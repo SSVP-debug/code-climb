@@ -431,7 +431,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", function setEmailDomain() {
   this.emailDomain = this.email
     ? this.email.split("@")[1]?.toLowerCase()
-    : undefined;
+    : null;
 });
 
 const User = mongoose.model("User", userSchema);
