@@ -81,10 +81,12 @@ describe("judgeSubmission", () => {
     expect(res.status).toBe("Runtime Error");
   });
 
-  it("returns Judge Error when API throws", async () => {
-    apiFetch.mockRejectedValue(
-      new Error("Network error")
-    );
+  it("returns Judge Error with a generic infra message when apiFetch throws a network-level error (no status)", async () => {
+    // No `.status` on this error (matches what apiFetch throws for a
+    // genuine network failure, as opposed to a non-2xx HTTP response —
+    // see src/utils/judgeErrorTaxonomy.js) → classified as infra, not a
+    // raw passthrough of error.message anymore.
+    apiFetch.mockRejectedValue(new Error("Network error"));
 
     const res = await judgeSubmission({
       problem,
@@ -93,8 +95,35 @@ describe("judgeSubmission", () => {
     });
 
     expect(res.status).toBe("Judge Error");
-    expect(res.error).toBe("Network error");
+    expect(res.error).toBe("Execution service temporarily unavailable. Please try again in a moment.");
     expect(res.passed).toBe(0);
+  });
+
+  it("returns Judge Error with a configuration-specific message when apiFetch throws a 400", async () => {
+    const err = new Error("problemSlug is required");
+    err.status = 400;
+    apiFetch.mockRejectedValue(err);
+
+    const res = await judgeSubmission({
+      problem,
+      code: "dummy code",
+      language: "python",
+    });
+
+    expect(res.status).toBe("Judge Error");
+    expect(res.error).toBe("Execution configuration error: problemSlug is required");
+  });
+
+  it("does not call apiFetch and returns a config error when no problem is loaded (frontend guardrail, item #5)", async () => {
+    const res = await judgeSubmission({
+      problem: null,
+      code: "dummy code",
+      language: "python",
+    });
+
+    expect(apiFetch).not.toHaveBeenCalled();
+    expect(res.status).toBe("Judge Error");
+    expect(res.error).toMatch(/no problem is loaded/i);
   });
 });
 
@@ -141,5 +170,88 @@ describe("runTestcases", () => {
     expect(sentBody.code).toBe("dummy code");
     expect(sentBody.language).toBe("python");
     expect(sentBody.testcases).toEqual([{ input: { nums: [1] }, expectedOutput: 1 }]);
+  });
+
+  // ── REGRESSION: the exact "single-number" incident ────────────────────────
+  // Asserts the actual request payload — not just that a request was
+  // sent — reproducing the production bug report verbatim.
+  it("REGRESSION: for the single-number problem, sends problemSlug but does NOT send functionName", async () => {
+    apiFetch.mockResolvedValue({ results: [], compileFailed: false });
+
+    const { runTestcases } = await import("./judgeService");
+    await runTestcases({
+      problem: {
+        slug: "single-number",
+        functionName: "singleNumber",
+        testcases: [{ input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 }],
+      },
+      code: "class Solution:\n    def singleNumber(self, nums):\n        pass",
+      language: "python",
+    });
+
+    const sentBody = JSON.parse(apiFetch.mock.calls[0][1].body);
+    expect(sentBody.problemSlug).toBe("single-number");
+    expect(sentBody.functionName).toBeUndefined();
+    expect(sentBody.code).toContain("singleNumber");
+    expect(sentBody.language).toBe("python");
+    expect(sentBody.testcases).toEqual([{ input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 }]);
+  });
+
+  it("does not call apiFetch and returns a config error (not a generic/infra one) when no problem is loaded", async () => {
+    const { runTestcases } = await import("./judgeService");
+    const res = await runTestcases({ problem: null, code: "x", language: "python" });
+
+    expect(apiFetch).not.toHaveBeenCalled();
+    expect(res.errorKind).toBe("config");
+    expect(res.error).toMatch(/no problem is loaded/i);
+    expect(res.compileFailed).toBe(false);
+    expect(res.results).toEqual([]);
+  });
+
+  it("classifies a 400 response as errorKind 'config', distinct from infra unavailability", async () => {
+    const err = new Error("functionName is required when problemSlug is not provided");
+    err.status = 400;
+    apiFetch.mockRejectedValue(err);
+
+    const { runTestcases } = await import("./judgeService");
+    const res = await runTestcases({
+      problem: { slug: "single-number", testcases: [] },
+      code: "x",
+      language: "python",
+    });
+
+    expect(res.errorKind).toBe("config");
+    expect(res.error).toBe(
+      "Execution configuration error: functionName is required when problemSlug is not provided"
+    );
+  });
+
+  it("classifies a network-level failure (no status) as errorKind 'infra'", async () => {
+    apiFetch.mockRejectedValue(new Error("Failed to fetch"));
+
+    const { runTestcases } = await import("./judgeService");
+    const res = await runTestcases({
+      problem: { slug: "single-number", testcases: [] },
+      code: "x",
+      language: "python",
+    });
+
+    expect(res.errorKind).toBe("infra");
+    expect(res.error).toBe("Execution service temporarily unavailable. Please try again in a moment.");
+  });
+
+  it("classifies a 401 response as errorKind 'auth'", async () => {
+    const err = new Error("You are not logged in. Please refresh the page and try again.");
+    err.status = 401;
+    apiFetch.mockRejectedValue(err);
+
+    const { runTestcases } = await import("./judgeService");
+    const res = await runTestcases({
+      problem: { slug: "single-number", testcases: [] },
+      code: "x",
+      language: "python",
+    });
+
+    expect(res.errorKind).toBe("auth");
   });
 });

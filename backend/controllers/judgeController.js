@@ -258,7 +258,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
 // matters. Every `finish()` call below persists the actual, just-computed
 // grading result before responding; nothing here is client-supplied.
 export async function submitHandler(req, res) {
-  const { problemSlug, code, language, functionName, visibletestcases, contestId } = req.body;
+  const { problemSlug, code, language, visibletestcases, contestId } = req.body;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
   const problem = await Problem.findOne({
@@ -295,6 +295,20 @@ export async function submitHandler(req, res) {
 
   const languageId = languageIdMap[language];
   const alltestcases = [...visibletestcases, ...hidden];
+
+  // functionName — resolved from the problem's own record, never trusted
+  // from the client, exactly like returnType/comparisonMode/
+  // operationSequence just below. Brings Submit's trust model in line
+  // with Run's (see runHandler above and its `problemSlug` doc comment):
+  // previously this was the one execution-contract field Submit still
+  // read from req.body, which meant a stale/mismatched client value
+  // could theoretically drive grading even though the client already
+  // has no ability to influence returnType/comparisonMode/
+  // operationSequence. functionName itself was never client-writable in
+  // practice (the frontend always sends problem.functionName from the
+  // same record this resolves to), so this is a defense-in-depth/
+  // consistency fix, not a fix for an observed bad-data incident.
+  const functionName = problem.functionName;
 
   // Declared return type for this language, from the problem's own contract
   // (never from the client — submit-mode grading only trusts what's stored

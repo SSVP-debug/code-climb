@@ -41,6 +41,23 @@ import { identifyOperationSequence } from "../utils/operationSequenceShape.js";
 
 const JAVA_RETURN_RE = /public\s+([\w<>[\],]+(?:\s*<[\w<>[\],\s]*>)?)\s+\w+\s*\(/;
 
+// Execution-contract audit (Fri Aug 13 "single-number" postmortem, item
+// #9): every problem that reaches Run/Submit needs a non-empty
+// functionName — runHandler/submitHandler both resolve it exclusively
+// from Problem.functionName (see judgeController.js) and neither has any
+// fallback if it's missing. A problem with no functionName isn't a
+// contract *mismatch* like the checks below catch — it's a contract
+// that was never written at all, so it gets its own check rather than
+// silently producing an "undefined" driver invocation the first time a
+// student clicks Run.
+function checkFunctionName(problem) {
+  const fn = problem.functionName;
+  if (typeof fn !== "string" || fn.trim() === "") {
+    return `${problem.slug}: missing functionName (required for Run/Submit to resolve an execution contract)`;
+  }
+  return null;
+}
+
 function checkJava(problem) {
   const code = problem.starterCode?.java;
   const declared = problem.returnType?.java;
@@ -201,6 +218,7 @@ function checkOperationSequenceGeneration(problem) {
 
 export function validateProblems(problemList) {
   return problemList.flatMap((p) => [
+    checkFunctionName(p),
     checkJava(p),
     checkCpp(p),
     ...checkArgumentGeneration(p),

@@ -79,10 +79,27 @@ describe("findDrift", () => {
     expect(issues[0]).toContain("missing on disk");
   });
 
-  it("the real backend/problems/* folders have zero drift against src/data/problems.js", async () => {
-    const { default: problems } = await import("../../src/data/problems.js");
-    const realProblemsDir = path.join(process.cwd(), "problems");
-    const issues = await findDrift(problems, realProblemsDir);
-    expect(issues).toEqual([]);
-  });
+  it(
+    "the real backend/problems/* folders have zero drift against src/data/problems.js",
+    async () => {
+      const { default: problems } = await import("../../src/data/problems.js");
+      const realProblemsDir = path.join(process.cwd(), "problems");
+      const issues = await findDrift(problems, realProblemsDir);
+      expect(issues).toEqual([]);
+    },
+    // This test does real disk I/O across every problem folder (257
+    // problems / 2300+ files as of this writing) to compare against
+    // what src/data/problems.js would generate — genuinely slower than
+    // the 5000ms Vitest default, especially when run alongside the rest
+    // of the suite in parallel (CPU/IO contention from other test
+    // files). Confirmed via isolated run: ~900ms in practice, well
+    // under this ceiling — this is headroom for parallel-run
+    // contention, not a sign the check itself is expected to be slow.
+    // Surfaced during the execution-contract audit (Fri Aug 13) when
+    // full-suite runs started intermittently timing out here after two
+    // new test files were added elsewhere in the suite; the assertion
+    // itself was never in question — every run of this test, isolated
+    // or not, has found zero drift.
+    30_000
+  );
 });

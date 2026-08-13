@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, XCircle, Settings, Bug } from "lucide-react";
+import { AlertTriangle, XCircle, Settings, Bug, Clock } from "lucide-react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -61,9 +61,13 @@ function DebugPanel({
     }
 
     if (runResults?.error && !runResults?.compileFailed) {
+        // errorKind comes from src/utils/judgeErrorTaxonomy.js (set in
+        // src/services/judgeService.js's runTestcases()) — falls back to
+        // "infra" for any response that predates this field, so nothing
+        // regresses for callers that don't set it.
         return (
             <div className="p-5 space-y-3">
-                <ErrorHeader kind="infra" theme={theme} />
+                <ErrorHeader kind={runResults.errorKind ?? "infra"} theme={theme} />
                 <ErrorBlock text={runResults.error} color="zinc" />
             </div>
         );
@@ -135,6 +139,29 @@ function getKindMeta(theme) {
             label: "Runner Unavailable",
             color: "text-zinc-400",
             icon: Settings,
+        },
+
+        // ── Added during the execution-contract audit ───────────────────────
+        // Previously every runTestcases() failure — a 400 contract/
+        // validation error included — rendered under "infra"/"Runner
+        // Unavailable", which is misleading: a malformed request is a
+        // frontend/backend bug, not Judge0 being down. See
+        // src/utils/judgeErrorTaxonomy.js for how `runResults.errorKind`
+        // (read below) is derived.
+        config: {
+            label: "Execution configuration error",
+            color: "text-yellow-400",
+            icon: AlertTriangle,
+        },
+        auth: {
+            label: "Authentication required",
+            color: "text-orange-400",
+            icon: AlertTriangle,
+        },
+        rate_limit: {
+            label: "Rate limited",
+            color: "text-orange-400",
+            icon: Clock,
         },
     };
 }

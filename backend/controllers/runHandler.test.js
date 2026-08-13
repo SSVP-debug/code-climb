@@ -176,6 +176,46 @@ describe("runHandler", () => {
     });
   });
 
+  // ── "single-number" incident regression — execution-contract audit ───────
+  // The bug itself was a schema-level rejection (see
+  // backend/routes/judge.contract.test.js and judge.test.js), so it
+  // never actually reached this handler in production. This test proves
+  // the OTHER half of the fix: once a request like this one legally
+  // reaches runHandler (i.e. after the schema fix), it resolves and
+  // executes correctly end-to-end using the real problem slug/function
+  // name from the incident.
+  it("resolves functionName from the problem and executes correctly for a request shaped like the single-number incident (problemSlug present, functionName omitted)", async () => {
+    Problem.findOne.mockResolvedValue({
+      slug: "single-number",
+      functionName: "singleNumber",
+      returnType: {},
+      comparisonMode: "exact",
+      operationSequence: { enabled: false },
+    });
+    callJudge0.mockResolvedValue({ stdout: "4", stderr: null, compile_output: null });
+
+    const req = {
+      body: {
+        problemSlug: "single-number",
+        code: "class Solution:\n    def singleNumber(self, nums):\n        pass",
+        language: "python",
+        testcases: [{ input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 }],
+        // functionName intentionally absent — exactly the incident's
+        // request shape, now legal per the schema fix.
+      },
+      log: mockLog(),
+    };
+
+    await runHandler(req, res);
+
+    expect(res.status).not.toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        results: [expect.objectContaining({ passed: true })],
+      })
+    );
+  });
+
   // ── Empty testcases guard — audit finding P2-2 ────────────────────────────
   it("returns an empty result set immediately for an empty testcases array, without calling Judge0 or looking up the problem", async () => {
     const req = {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
 import { useTheme } from "../../context/ThemeContext";
-import { FileWarning, Bomb, Settings, Bug } from "lucide-react";
+import { FileWarning, Bomb, Settings, Bug, AlertTriangle, Clock } from "lucide-react";
 
 // ── DebugPanel ────────────────────────────────────────────────────────────────
 
@@ -61,9 +61,11 @@ function DebugPanel({
     }
 
     if (runResults?.error && !runResults?.compileFailed) {
+        // errorKind comes from src/utils/judgeErrorTaxonomy.js — falls
+        // back to "infra" for any response that predates this field.
         return (
             <div className="p-5 space-y-3">
-                <ErrorHeader kind="infra" theme={theme} />
+                <ErrorHeader kind={runResults.errorKind ?? "infra"} theme={theme} />
                 <ErrorBlock text={runResults.error} color="neutral" />
             </div>
         );
@@ -135,6 +137,27 @@ function getKindMeta(theme) {
             label: "Runner Unavailable",
             color: "text-zinc-400",
             Icon: Settings,
+        },
+
+        // ── Added during the execution-contract audit ───────────────────────
+        // See the identical block in ../WorkspacePanel.jsx (this file
+        // duplicates that component intentionally — see its own header
+        // comment) for why "config"/"auth"/"rate_limit" are split out
+        // from "infra" here.
+        config: {
+            label: "Execution configuration error",
+            color: "text-verdict-pending",
+            Icon: AlertTriangle,
+        },
+        auth: {
+            label: "Authentication required",
+            color: "text-verdict-reject",
+            Icon: AlertTriangle,
+        },
+        rate_limit: {
+            label: "Rate limited",
+            color: "text-verdict-reject",
+            Icon: Clock,
         },
     };
 }

@@ -16,22 +16,31 @@ const router = Router();
 
 const submitSchema = z.object({
   problemSlug: z
-    .string({ required_error: "problemSlug is required" })
+    .string({ error: "problemSlug is required" })
     .min(1).max(200)
     .regex(/^[a-z0-9-]+$/, "Invalid problemSlug format"),
 
   code: z
-    .string({ required_error: "code is required" })
+    .string({ error: "code is required" })
     .min(1, "Code cannot be empty")
     .max(50_000, "Code exceeds the 50,000 character limit"),
 
   language: z.enum(["python", "javascript", "java", "cpp"], {
-    errorMap: () => ({ message: "language must be: python, javascript, java, or cpp" }),
+    error: () => "language must be: python, javascript, java, or cpp",
   }),
 
+  // Accepted but IGNORED server-side once the problem is loaded —
+  // submitHandler always overwrites this with problem.functionName, the
+  // same "never trust the client for the execution contract" model
+  // already used for returnType/comparisonMode/operationSequence below
+  // in this file (see judgeController.js submitHandler). Kept optional
+  // (not required) so an old/mismatched client value can never itself
+  // cause a 400 here — the contract that actually matters is resolved
+  // from Problem, not from this field.
   functionName: z
-    .string({ required_error: "functionName is required" })
-    .min(1).max(100),
+    .string()
+    .min(1).max(100)
+    .optional(),
 
   visibletestcases: z
     .array(z.object({
@@ -57,16 +66,35 @@ const submitSchema = z.object({
 
 const runSchema = z.object({
   code: z
-    .string({ required_error: "code is required" })
+    .string({ error: "code is required" })
     .min(1).max(50_000),
 
   language: z.enum(["python", "javascript", "java", "cpp"], {
-    errorMap: () => ({ message: "language must be: python, javascript, java, or cpp" }),
+    error: () => "language must be: python, javascript, java, or cpp",
   }),
 
+  // Optional as of the P1-1 server-side-resolution fix below: when
+  // `problemSlug` is provided, runHandler resolves functionName itself
+  // from the problem's own record and never looks at this field (see
+  // problemSlug's doc comment). It's only actually REQUIRED for the
+  // "no problemSlug" fallback path — enforced below by the
+  // `.refine(...)`, not here, because a plain `z.string()` can't express
+  // "required unless this other field is present."
+  //
+  // Root cause of the "single-number" incident (Fri Aug 13 postmortem):
+  // src/services/judgeService.js's runTestcases() was deliberately
+  // changed to stop sending functionName once problemSlug-based
+  // server-side resolution shipped, but this field was left REQUIRED
+  // here — so validateBody(runSchema) rejected every real Run request
+  // with a 400 before runHandler's resolution logic ever ran. The
+  // schema and the handler had silently drifted apart. See
+  // docs/execution-contract.md for the full writeup and the contract
+  // test (judge.contract.test.js) added to prevent this class of bug
+  // from recurring.
   functionName: z
-    .string({ required_error: "functionName is required" })
-    .min(1).max(100),
+    .string()
+    .min(1).max(100)
+    .optional(),
 
   testcases: z
     .array(z.object({
@@ -98,7 +126,18 @@ const runSchema = z.object({
     .min(1).max(200)
     .regex(/^[a-z0-9-]+$/, "Invalid problemSlug format")
     .optional(),
-});
+}).refine(
+  (data) => Boolean(data.problemSlug) || Boolean(data.functionName),
+  {
+    // Mirrors runHandler's own fallback logic exactly: functionName is
+    // only actually needed here when there's no problemSlug for the
+    // server to resolve it from. Attached to the `functionName` path so
+    // validateBody's "first error" surfaces a field the client can
+    // actually act on, instead of a bare object-level error.
+    message: "functionName is required when problemSlug is not provided",
+    path: ["functionName"],
+  }
+);
 
 // Fest Readiness Audit, P1-2: Run gets its own tighter limiter on top of the
 // apiLimiter already applied to the whole /api/judge router (see
@@ -106,5 +145,13 @@ const runSchema = z.object({
 // one. See middleware/rateLimiter.js's judgeRunLimiter doc comment.
 router.post("/run", judgeRunLimiter, validateBody(runSchema), runHandler);
 router.post("/submit", validateBody(submitSchema), submitHandler);
+
+// Exported (not just used internally) so tests can assert directly
+// against the real validation contract instead of only against
+// runHandler/submitHandler in isolation — see judge.contract.test.js.
+// Named exports for schema objects follow the same testability
+// convention already used for route handlers (judgeController.js's
+// runHandler/submitHandler) — see judge.test.js / runHandler.test.js.
+export { runSchema, submitSchema };
 
 export default router;

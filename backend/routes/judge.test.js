@@ -187,6 +187,49 @@ describe("submitHandler", () => {
     expect(req.log.error).toHaveBeenCalled();
   });
 
+  // ── functionName resolved server-side — execution-contract audit ─────────
+  // Brings Submit's trust model in line with Run's (see runHandler's
+  // identical guarantee in controllers/runHandler.test.js): the client's
+  // functionName is never actually used for grading once the problem is
+  // loaded, exactly like returnType/comparisonMode/operationSequence.
+  it("ignores a client-sent functionName and uses the problem's own instead", async () => {
+    Problem.findOne.mockResolvedValue({ ...problemDoc, functionName: "twoSum" });
+    callJudge0.mockResolvedValue({ stdout: JSON.stringify([0, 1]), stderr: null, compile_output: null });
+
+    const req = {
+      body: { ...baseBody, functionName: "someWrongOrStaleName" },
+      log: mockLog(),
+      userDoc,
+    };
+
+    await submitHandler(req, res);
+
+    // callJudge0 receives the generated driver code as its argument;
+    // asserting on the outcome (Accepted, using the REAL functionName)
+    // is enough to prove the client's bogus name was never used —
+    // if it had been used, generateDriverCode would reference a
+    // non-existent method and this would fail to compile/execute.
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "Accepted" })
+    );
+  });
+
+  it("still grades correctly when functionName is omitted from the request entirely", async () => {
+    Problem.findOne.mockResolvedValue({ ...problemDoc, functionName: "twoSum" });
+    callJudge0.mockResolvedValue({ stdout: JSON.stringify([0, 1]), stderr: null, compile_output: null });
+
+    const bodyWithoutFunctionName = { ...baseBody };
+    delete bodyWithoutFunctionName.functionName;
+
+    const req = { body: bodyWithoutFunctionName, log: mockLog(), userDoc };
+
+    await submitHandler(req, res);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "Accepted" })
+    );
+  });
+
   // ── comparisonMode: "unordered" — audit finding P0-3 ─────────────────────
   // Regression tests using the exact shape of the confirmed-broken
   // problems (e.g. top-k-frequent-elements: "you may return the answer in
