@@ -6,7 +6,17 @@ import { AuthContext } from "../context/authContext";
 /**
  * Slim topbar for the problem detail page.
  * Height: h-10 (40px) — tight, coding-platform style.
- * Contains: ← back | problem title + prev/next | avatar + logout
+ * Contains: Code Club mark | ← back | problem title + prev/next | avatar + logout
+ *
+ * Navbar transformation, Phase B: this used to be the one shell in the
+ * whole app on the "ink" border/surface palette (ink-900/ink-700) while
+ * every other role's shell (Navbar, ProblemsTopbar) is on zinc — and it
+ * carried no "Code Club" mark at all, so landing here from anywhere else
+ * in the product genuinely looked like a different site. Both fixed below.
+ * Height and the minimal avatar+logout (vs the full AvatarDropdown menu)
+ * stay as-is on purpose — this page's whole point is a focused,
+ * low-distraction workspace while solving, not another surface for XP/
+ * streak/quick-action chrome.
  *
  * Props:
  *   title      — current problem title string
@@ -19,14 +29,21 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
 
   const handleLogout = async () => {
     await logoutUser();
-    navigate("/login");
+    // Matches Navbar's handleLogout: real, honest post-logout feedback on
+    // the login page (not fabricated), driven by a flag LoginPage already
+    // reads — this page just wasn't setting it before.
+    navigate("/login?loggedOut=1");
   };
 
   return (
-    <header className="h-10 flex-shrink-0 flex items-center justify-between px-3 bg-ink-900 border-b border-ink-700 z-50">
+    <header className="h-10 flex-shrink-0 flex items-center justify-between px-3 bg-zinc-900 border-b border-zinc-800 z-50">
 
-      {/* Left: back */}
+      {/* Left: brand + back */}
       <div className="flex items-center gap-2 min-w-0">
+        <span className="text-white text-xs font-bold tracking-tight shrink-0 hidden sm:inline">
+          Code Club
+        </span>
+        <span className="text-zinc-700 text-xs shrink-0 hidden sm:inline">·</span>
         <Link
           to="/problems"
           className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition text-xs font-mono-ui shrink-0"
@@ -51,7 +68,7 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           aria-disabled={!prevSlug}
           className={`p-1.5 rounded-lg transition ${
             prevSlug
-              ? "text-zinc-400 hover:text-white hover:bg-ink-800"
+              ? "text-zinc-400 hover:text-white hover:bg-zinc-800"
               : "text-zinc-700 pointer-events-none"
           }`}
           title="Previous problem"
@@ -65,7 +82,7 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           aria-disabled={!nextSlug}
           className={`p-1.5 rounded-lg transition ${
             nextSlug
-              ? "text-zinc-400 hover:text-white hover:bg-ink-800"
+              ? "text-zinc-400 hover:text-white hover:bg-zinc-800"
               : "text-zinc-700 pointer-events-none"
           }`}
           title="Next problem"
@@ -82,10 +99,10 @@ function ProblemTopbar({ title, prevSlug, nextSlug }) {
           <img
             src={user.photoURL}
             alt="avatar"
-            className="w-6 h-6 rounded-full border border-ink-700"
+            className="w-6 h-6 rounded-full border border-zinc-700"
           />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-ink-700 flex items-center justify-center text-[10px] font-bold">
+          <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-[10px] font-bold">
             {user?.displayName?.charAt(0)}
           </div>
         )}
