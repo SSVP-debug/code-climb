@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ThemeProvider } from "../context/ThemeContext";
 import TpoDashboardPage from "./TpoDashboardPage";
 
 const apiFetch = vi.fn();
@@ -10,6 +11,15 @@ vi.mock("../services/api", () => ({
 
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
+}));
+
+// Navbar transformation: TpoDashboardPage now renders inside DashboardLayout
+// (previously it had no shared shell at all). Same reasoning as
+// RecruiterDashboardPage.test.jsx — ThemeProvider for ThemeSkin, Navbar
+// stubbed since it has its own dedicated test file and its apiFetch calls
+// would otherwise interleave with this file's assertions.
+vi.mock("../components/Navbar", () => ({
+  default: () => <div data-testid="navbar-stub" />,
 }));
 
 const dashboardData = {
@@ -34,9 +44,11 @@ const studentsData = {
 
 function renderDashboard() {
   return render(
-    <MemoryRouter initialEntries={["/tpo/dashboard?tab=students"]}>
-      <TpoDashboardPage />
-    </MemoryRouter>
+    <ThemeProvider>
+      <MemoryRouter initialEntries={["/tpo/dashboard?tab=students"]}>
+        <TpoDashboardPage />
+      </MemoryRouter>
+    </ThemeProvider>
   );
 }
 
@@ -141,9 +153,11 @@ describe("TpoDashboardPage — assignments tab reminder", () => {
       return Promise.reject(new Error(`Unexpected apiFetch call: ${url}`));
     });
     render(
-      <MemoryRouter initialEntries={["/tpo/dashboard?tab=assignments"]}>
-        <TpoDashboardPage />
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/tpo/dashboard?tab=assignments"]}>
+          <TpoDashboardPage />
+        </MemoryRouter>
+      </ThemeProvider>
     );
     await waitFor(() => screen.getByText("Week 3 — Arrays"));
   }

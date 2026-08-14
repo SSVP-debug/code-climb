@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
 import { ClipboardList } from "lucide-react";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const STATUS_STYLES = {
   pending:     "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -46,21 +47,25 @@ export default function CandidateTestsPage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-    </div>
+    <DashboardLayout>
+      <div className="flex items-center justify-center py-24">
+        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    </DashboardLayout>
   );
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
-        <p className="text-red-400 text-sm">{loadError}</p>
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center px-6 py-16">
+          <p className="text-red-400 text-sm">{loadError}</p>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <DashboardLayout>
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-black text-white mb-2">Skills Tests</h1>
         <p className="text-zinc-500 text-sm mb-8">Tests sent to you by recruiters. Complete before the deadline.</p>
@@ -116,6 +121,6 @@ export default function CandidateTestsPage() {
           </div>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

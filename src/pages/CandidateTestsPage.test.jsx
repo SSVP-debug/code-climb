@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { ThemeProvider } from "../context/ThemeContext";
 import CandidateTestsPage from "./CandidateTestsPage";
 
 const navigate = vi.fn();
@@ -17,6 +18,19 @@ vi.mock("react-hot-toast", () => ({
   default: { error: (...args) => toastError(...args), success: vi.fn() },
 }));
 
+// Navbar transformation: CandidateTestsPage now renders inside
+// DashboardLayout (previously it had no shared shell at all). This file
+// mocks react-router-dom down to just useNavigate, which would break
+// Navbar's own Link/useLocation usage — stub it out (it has its own
+// dedicated test file) and wrap in ThemeProvider for ThemeSkin.
+vi.mock("../components/Navbar", () => ({
+  default: () => <div data-testid="navbar-stub" />,
+}));
+
+function renderPage(ui) {
+  return render(<ThemeProvider>{ui}</ThemeProvider>);
+}
+
 const pendingTest = {
   _id: "t1",
   status: "pending",
@@ -33,7 +47,7 @@ describe("CandidateTestsPage", () => {
 
   it("shows an error state (not an infinite spinner) when the initial load fails", async () => {
     apiFetch.mockRejectedValueOnce(new Error("Network error"));
-    render(<CandidateTestsPage />);
+    renderPage(<CandidateTestsPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Network error")).toBeInTheDocument();
@@ -45,7 +59,7 @@ describe("CandidateTestsPage", () => {
 
   it("falls back to a generic load-error message if the thrown error has no message", async () => {
     apiFetch.mockRejectedValueOnce(new Error());
-    render(<CandidateTestsPage />);
+    renderPage(<CandidateTestsPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Failed to load your tests.")).toBeInTheDocument();
@@ -54,7 +68,7 @@ describe("CandidateTestsPage", () => {
 
   it("renders tests normally when the load succeeds", async () => {
     apiFetch.mockResolvedValueOnce({ tests: [pendingTest] });
-    render(<CandidateTestsPage />);
+    renderPage(<CandidateTestsPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Acme Corp Skills Test")).toBeInTheDocument();
@@ -63,7 +77,7 @@ describe("CandidateTestsPage", () => {
 
   it("shows a toast and re-enables the row's button when starting a test fails", async () => {
     apiFetch.mockResolvedValueOnce({ tests: [pendingTest] });
-    render(<CandidateTestsPage />);
+    renderPage(<CandidateTestsPage />);
     await waitFor(() => screen.getByText("Acme Corp Skills Test"));
 
     apiFetch.mockRejectedValueOnce(new Error("Test already started"));
@@ -80,7 +94,7 @@ describe("CandidateTestsPage", () => {
 
   it("navigates to the test on a successful start", async () => {
     apiFetch.mockResolvedValueOnce({ tests: [pendingTest] });
-    render(<CandidateTestsPage />);
+    renderPage(<CandidateTestsPage />);
     await waitFor(() => screen.getByText("Acme Corp Skills Test"));
 
     apiFetch.mockResolvedValueOnce({});

@@ -6,6 +6,7 @@ import PageMeta from "../components/seo/PageMeta";
 import { SUPPORT_EMAIL } from "../config/site.js";
 import Button from "../components/ui/Button";
 import { GraduationCap, Users, Flame } from "lucide-react";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -227,68 +228,81 @@ export default function TpoDashboardPage() {
 
   if (pendingVerification) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
-        <div className="max-w-lg text-center">
-          <h1 className="text-3xl font-black text-white">
-            College Verification Pending
-          </h1>
+      <DashboardLayout>
+        <div className="flex items-center justify-center px-6 py-12">
+          <div className="max-w-lg text-center">
+            <h1 className="text-3xl font-black text-white">
+              College Verification Pending
+            </h1>
 
-          <p className="mt-4 text-zinc-400">
-            Your college registration request has been submitted successfully.
-          </p>
+            <p className="mt-4 text-zinc-400">
+              Your college registration request has been submitted successfully.
+            </p>
 
-          <p className="text-zinc-500">
-            Access will be enabled after an administrator verifies your institution.
-          </p>
+            <p className="text-zinc-500">
+              Access will be enabled after an administrator verifies your institution.
+            </p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-24">
+          <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   if (enabled === false) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-4">
-            <GraduationCap size={30} strokeWidth={2} aria-hidden="true" />
+      <DashboardLayout>
+        {/* Navbar transformation, spec §24: this was the literal "Coming
+            Soon" screen with no shell at all — build the shell even when
+            the feature behind it isn't ready. Content unchanged; still
+            honest that the dashboard isn't live yet, just no longer a
+            dead-end page. */}
+        <div className="flex items-center justify-center px-4 py-16">
+          <div className="text-center max-w-md">
+            <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-4">
+              <GraduationCap size={30} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-3">College Dashboard Coming Soon</h1>
+            <p className="text-zinc-400 text-sm">
+              We're rolling out the College Admin dashboard gradually. Reach out to
+              {" "}{SUPPORT_EMAIL} to get early access for your institution.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">College Dashboard Coming Soon</h1>
-          <p className="text-zinc-400 text-sm">
-            We're rolling out the College Admin dashboard gradually. Reach out to
-            {" "}{SUPPORT_EMAIL} to get early access for your institution.
-          </p>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (!dashboard || dashboard.totalStudents === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-ink-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
-            <Users size={30} strokeWidth={2} aria-hidden="true" />
+      <DashboardLayout>
+        <div className="flex items-center justify-center px-4 py-16">
+          <div className="text-center max-w-md">
+            <div className="w-16 h-16 rounded-2xl bg-ink-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+              <Users size={30} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-3">No students yet</h1>
+            <p className="text-zinc-400 text-sm">
+              Once students from {dashboard?.domain || "your college"} sign up with their
+              institutional email, you'll see their stats here.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">No students yet</h1>
-          <p className="text-zinc-400 text-sm">
-            Once students from {dashboard?.domain || "your college"} sign up with their
-            institutional email, you'll see their stats here.
-          </p>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <DashboardLayout>
       <PageMeta title="College Dashboard · Code Club" path="/tpo/dashboard" />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -443,6 +457,6 @@ export default function TpoDashboardPage() {
       {showModal && (
         <CreateAssignmentModal onClose={() => setShowModal(false)} onCreated={fetchAll} />
       )}
-    </div>
+    </DashboardLayout>
   );
 }

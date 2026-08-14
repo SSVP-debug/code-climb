@@ -228,7 +228,7 @@ function SettingsPage() {
         <DashboardLayout>
         <div className="max-w-4xl mx-auto text-white">
             <div className="flex items-start justify-between gap-4 mb-8">
-                <h1 className="text-3xl font-bold">Settings</h1>
+                <h1 className="text-2xl font-black text-white">Settings</h1>
                 <Link
                     to="/profile"
                     className="flex-shrink-0 text-sm text-zinc-400 hover:text-white transition whitespace-nowrap mt-1"

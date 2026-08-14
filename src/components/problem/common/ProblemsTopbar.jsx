@@ -14,7 +14,10 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
 
   const handleLogout = async () => {
     await logoutUser();
-    navigate("/login");
+    // Consistency fix: Navbar/ProblemLayout's logout already redirects with
+    // ?loggedOut=1 so LoginPage shows its real post-logout confirmation —
+    // this was the one remaining topbar missing that flag.
+    navigate("/login?loggedOut=1");
   };
 
   const navLinks = [

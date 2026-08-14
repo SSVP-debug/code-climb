@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ThemeProvider } from "../context/ThemeContext";
 import RecruiterDashboardPage from "./RecruiterDashboardPage";
 
 const apiFetch = vi.fn();
@@ -12,11 +13,25 @@ vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
 }));
 
+// Navbar transformation: RecruiterDashboardPage now renders inside
+// DashboardLayout (previously it had no shared shell at all). DashboardLayout
+// wraps children in ThemeSkin (needs ThemeProvider) and renders the full
+// Navbar — stubbed here, same reasoning Navbar.test.jsx and
+// AdminLayout.test.jsx already give: Navbar's own apiFetch calls
+// (NotificationBell, AvatarDropdown's premium check) would otherwise
+// interleave with this file's apiFetch assertions and it has its own
+// dedicated test file already.
+vi.mock("../components/Navbar", () => ({
+  default: () => <div data-testid="navbar-stub" />,
+}));
+
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={["/recruiter/dashboard"]}>
-      <RecruiterDashboardPage />
-    </MemoryRouter>
+    <ThemeProvider>
+      <MemoryRouter initialEntries={["/recruiter/dashboard"]}>
+        <RecruiterDashboardPage />
+      </MemoryRouter>
+    </ThemeProvider>
   );
 }
 

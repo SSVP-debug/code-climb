@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
 import { CheckCircle2, Info } from "lucide-react";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const VALID_TABS = ["candidates", "tests"];
@@ -315,26 +316,31 @@ export default function RecruiterDashboardPage() {
 
   if (pendingVerification) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
-        <div className="max-w-lg text-center">
-          <h1 className="text-3xl font-black text-white">
-            Recruiter Verification Pending
-          </h1>
+      <DashboardLayout>
+        {/* Navbar transformation: this screen had no shell at all before —
+            meaning a pending recruiter had no logout button and no "Code
+            Club" branding, a real dead end, not just a visual mismatch. */}
+        <div className="flex items-center justify-center px-6 py-12">
+          <div className="max-w-lg text-center">
+            <h1 className="text-3xl font-black text-white">
+              Recruiter Verification Pending
+            </h1>
 
-          <p className="mt-4 text-zinc-400">
-            Your recruiter account has been created successfully.
-          </p>
+            <p className="mt-4 text-zinc-400">
+              Your recruiter account has been created successfully.
+            </p>
 
-          <p className="text-zinc-500">
-            Access will be enabled after an administrator verifies your account.
-          </p>
+            <p className="text-zinc-500">
+              Access will be enabled after an administrator verifies your account.
+            </p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <DashboardLayout>
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-black text-white">Recruiter Portal</h1>
@@ -446,6 +452,6 @@ export default function RecruiterDashboardPage() {
           onSent={() => toast.success("Interest sent.")}
         />
       )}
-    </div>
+    </DashboardLayout>
   );
 }

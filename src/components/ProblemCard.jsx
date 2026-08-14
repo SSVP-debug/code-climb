@@ -137,7 +137,7 @@ function ProblemCard({ problem }) {
         )}
 
         {typeof xp === "number" && (
-          <span className="hidden sm:inline text-xs text-purple-400 font-medium whitespace-nowrap">
+          <span className="hidden sm:inline text-xs text-[var(--theme-primary,#2dd4bf)] font-medium whitespace-nowrap">
             +{xp} XP
           </span>
         )}

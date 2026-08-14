@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
 import { CheckCircle2, Trophy } from "lucide-react";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -89,16 +90,18 @@ export default function CertificationsPage() {
   const enriched = tracks; // verifyCode already in track if certified
 
   if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-    </div>
+    <DashboardLayout>
+      <div className="flex items-center justify-center py-24">
+        <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    </DashboardLayout>
   );
 
   const certified = tracks.filter(t => t.certified).length;
   const complete  = tracks.filter(t => t.complete && !t.certified).length;
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <DashboardLayout>
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-black text-white mb-1">Certifications</h1>
@@ -110,6 +113,6 @@ export default function CertificationsPage() {
           {tracks.map(t => <TrackCard key={t.id} track={t} onClaim={fetchTracks} />)}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

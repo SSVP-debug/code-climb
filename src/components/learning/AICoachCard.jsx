@@ -15,7 +15,7 @@ function AICoachCard({ problems, topicStats, onPracticeTopic }) {
   return (
     <SectionCard
       title="AI Coach"
-      icon={<Sparkles size={16} className="text-purple-400" />}
+      icon={<Sparkles size={16} className="text-[var(--theme-primary,#2dd4bf)]" />}
     >
       <p className="text-zinc-500 text-xs mb-3">You could use more reps in:</p>
 
@@ -24,7 +24,7 @@ function AICoachCard({ problems, topicStats, onPracticeTopic }) {
           <button
             key={row.topic}
             onClick={() => onPracticeTopic(row.topic)}
-            className="flex items-center justify-between gap-3 w-full text-left rounded-xl border border-zinc-800 px-3 py-2.5 hover:border-purple-500/40 hover:bg-purple-500/5 transition"
+            className="flex items-center justify-between gap-3 w-full text-left rounded-xl border border-zinc-800 px-3 py-2.5 hover:border-[var(--theme-primary,#2dd4bf)]/40 hover:bg-[var(--theme-primary,#2dd4bf)]/5 transition"
           >
             <div className="min-w-0">
               <p className="text-sm font-semibold text-white">{row.topic}</p>
@@ -32,7 +32,7 @@ function AICoachCard({ problems, topicStats, onPracticeTopic }) {
                 {row.solved}/{row.total} solved
               </p>
             </div>
-            <span className="text-xs font-semibold text-purple-400 whitespace-nowrap flex-shrink-0">
+            <span className="text-xs font-semibold text-[var(--theme-primary,#2dd4bf)] whitespace-nowrap flex-shrink-0">
               Practice →
             </span>
           </button>
