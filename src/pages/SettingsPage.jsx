@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { useAppContext } from "../hooks/useAppContext";
 import { DEFAULT_THEME } from "../themes";
 import { apiFetch } from "../services/api";
@@ -139,10 +139,16 @@ function SettingsPage() {
     const [savingUsername, setSavingUsername] = useState(false);
     const [savingBlankEditor, setSavingBlankEditor] = useState(false);
     const [savingHideDifficulty, setSavingHideDifficulty] = useState(false);
+    // Tracks which currentUsername the draft was last seeded from — the
+    // "adjusting state when a prop changes" pattern, so a fresh value
+    // (e.g. once appContext finishes hydrating) re-seeds the input during
+    // render rather than via a useEffect that calls setState synchronously.
+    const [trackedUsername, setTrackedUsername] = useState(currentUsername);
 
-    useEffect(() => {
+    if (currentUsername !== trackedUsername) {
+        setTrackedUsername(currentUsername);
         setUsernameDraft(currentUsername);
-    }, [currentUsername]);
+    }
 
     const leetcodeInitial = leetcodeUsername
         ? { username: leetcodeUsername, ...leetcodeStats }
@@ -228,7 +234,7 @@ function SettingsPage() {
         <DashboardLayout>
         <div className="max-w-4xl mx-auto text-white">
             <div className="flex items-start justify-between gap-4 mb-8">
-                <h1 className="text-2xl font-black text-white">Settings</h1>
+                <h1 className="text-3xl font-bold">Settings</h1>
                 <Link
                     to="/profile"
                     className="flex-shrink-0 text-sm text-zinc-400 hover:text-white transition whitespace-nowrap mt-1"

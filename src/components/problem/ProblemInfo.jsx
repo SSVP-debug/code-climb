@@ -1,10 +1,9 @@
-import React from "react";
 import { MessageSquareText } from "lucide-react";
 import HintSystem from "./HintSystem.jsx";
 import EditorialPanel from "./EditorialPanel.jsx";
 import RelatedProblems from "./RelatedProblems.jsx";
 import Button from "../ui/Button.jsx";
-import { usePremium } from "../../context/PremiumContext";
+import { usePremium } from "../../hooks/usePremium";
 
 function ProblemInfo({ problem, variant = "full" }) {
   const { monetizationEnabled, isPremium } = usePremium();

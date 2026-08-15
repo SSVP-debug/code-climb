@@ -1,12 +1,9 @@
 import {
-  createContext,
-  useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
-import { useAuth } from "./authContext";
+import { useAuth } from "../hooks/useAuth";
 
 import {
   markProblemSolved as persistSolvedToMongo,
@@ -16,7 +13,7 @@ import { apiFetch } from "../services/api";
 
 import { getEarnedXP } from "../utils/xpUtils";
 
-export const AppContext = createContext(null);
+import { AppContext } from "./AppContextObject";
 
 function calculateCurrentStreak(activityDates = []) {
   if (!activityDates.length) return 0;
@@ -525,8 +522,7 @@ function AppContextProvider({ children }) {
       const response =
         await persistSolvedToMongo(
           persistPayload,
-          slug,
-          difficulty
+          slug
         );
 
 
@@ -716,19 +712,6 @@ function AppContextProvider({ children }) {
       {children}
     </AppContext.Provider>
   );
-}
-
-export function useAppContext() {
-  const context =
-    useContext(AppContext);
-
-  if (!context) {
-    throw new Error(
-      "useAppContext must be used inside AppContextProvider"
-    );
-  }
-
-  return context;
 }
 
 export default AppContextProvider;

@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../../context/authContext";
+import { AuthContext } from "../../context/AuthContextObject";
 import { useAppContext } from "../../hooks/useAppContext";
 
 export default function RoleRoute({ allowedRoles, children }) {

@@ -1,6 +1,6 @@
 import PageMeta from "../components/seo/PageMeta";
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../hooks/useAuth";
 import ConstellationBackground from "../components/landing/ConstellationBackground";
 import LandingNav from "../components/landing/LandingNav";
 import HeroSection from "../components/landing/HeroSection";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../services/api";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { withAlpha } from "../../themes/themeIcons";
 import SectionCard from "../ui/layout/SectionCard";
 import Button from "../ui/Button";

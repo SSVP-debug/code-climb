@@ -4,12 +4,21 @@
   "title": "Decode Ways",
   "difficulty": "Hard",
   "topic": "Dynamic Programming",
-  "pattern": "1D DP digit parsing",
+  "pattern": "1d dp",
   "sourceType": "core",
   "functionName": "numDecodings",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Facebook",
+    "Amazon",
+    "Microsoft",
+    "Google"
+  ],
+  "relatedProblems": [
+    "climbing-stairs",
+    "word-break",
+    "fibonacci-number"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

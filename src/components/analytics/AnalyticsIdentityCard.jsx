@@ -1,5 +1,5 @@
 import { Award } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import SectionCard from "../ui/layout/SectionCard";
 
 function AnalyticsIdentityCard({ rank, level, xpCurrent, xpNeeded, xpPercent }) {

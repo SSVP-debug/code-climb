@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 
 /**
  * ThemeGate — blocks access to protected routes until a theme is selected.

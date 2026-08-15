@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "../../services/api";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { withAlpha } from "../../themes/themeIcons";
 import Button from "../ui/Button";
 import { GraduationCap, X, Mail, Clock } from "lucide-react";

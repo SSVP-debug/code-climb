@@ -5,7 +5,7 @@ import {
 } from "react";
 import { X, ChevronsLeft, ChevronsRight } from "lucide-react";
 
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { useAppContext } from "../hooks/useAppContext";
 import { useProblems } from "../hooks/useProblems";
 import { useLearningPaths } from "../hooks/useLearningPaths";
@@ -135,25 +135,34 @@ function ProblemsPage() {
   useEffect(() => {
     try {
       sessionStorage.setItem("cc_activeView", activeView);
-    } catch { }
+    } catch {
+      // sessionStorage can throw (private browsing, storage disabled) —
+      // fail open: the view preference just won't persist this session.
+    }
   }, [activeView]);
 
   useEffect(() => {
     try {
       sessionStorage.setItem("cc_sidebarCollapsed", String(sidebarCollapsed));
-    } catch { }
+    } catch {
+      // Same fail-open reasoning as the view-mode effect above.
+    }
   }, [sidebarCollapsed]);
 
   useEffect(() => {
     try {
       sessionStorage.setItem("cc_rightRailCollapsed", String(rightRailCollapsed));
-    } catch { }
+    } catch {
+      // Same fail-open reasoning as the view-mode effect above.
+    }
   }, [rightRailCollapsed]);
 
   useEffect(() => {
     try {
       sessionStorage.setItem("cc_search", searchTerm);
-    } catch { }
+    } catch {
+      // Same fail-open reasoning as the view-mode effect above.
+    }
   }, [searchTerm]);
 
   useEffect(() => {
@@ -162,7 +171,9 @@ function ProblemsPage() {
         "cc_difficulty",
         selectedDifficulty
       );
-    } catch { }
+    } catch {
+      // Same fail-open reasoning as the view-mode effect above.
+    }
   }, [selectedDifficulty]);
 
   useEffect(() => {
@@ -171,7 +182,9 @@ function ProblemsPage() {
         "cc_topic",
         selectedTopic
       );
-    } catch { }
+    } catch {
+      // Same fail-open reasoning as the view-mode effect above.
+    }
   }, [selectedTopic]);
 
   function toggleHideSolved() {
@@ -183,7 +196,9 @@ function ProblemsPage() {
           "cc_hideSolved",
           String(next)
         );
-      } catch { }
+      } catch {
+        // Same fail-open reasoning as the view-mode effect above.
+      }
 
       return next;
     });

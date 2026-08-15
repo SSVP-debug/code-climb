@@ -1,4 +1,4 @@
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 export default function ThemeSkin({ children }) {
   const { theme } = useTheme();
   const { primary, secondary, border, accent } = theme.colors;

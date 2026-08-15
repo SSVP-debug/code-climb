@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the unbounded knapsack BFS/DP approach for dynamic programming problems."
+    "text": "Greedy (always pick the largest coin) fails for arbitrary denominations. Think DP."
   },
   {
     "level": 2,
-    "text": "Can you solve Coin Change in O(n log n) or better? Consider how unbounded knapsack BFS/DP helps."
+    "text": "For each amount from 1 to target: dp[amount] = min(dp[amount], dp[amount − coin] + 1) for each valid coin."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses unbounded knapsack BFS/DP. Work through small examples to see the pattern."
+    "text": "Initialize dp[0] = 0, all others to Infinity. If dp[target] is still Infinity, return −1."
   }
 ]

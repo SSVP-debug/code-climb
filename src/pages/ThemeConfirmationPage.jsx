@@ -1,5 +1,5 @@
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { THEME_OPTIONS } from "../themes/themeOptions";
 import { getTheme } from "../themes";
 import { THEME_ICONS, withAlpha } from "../themes/themeIcons";

@@ -6,7 +6,7 @@ import EmptyState from "../ui/feedback/EmptyState";
 import { useAppContext } from "../../hooks/useAppContext";
 import { useProblems } from "../../hooks/useProblems";
 import { useHideDifficultyLabels } from "../../hooks/useHideDifficultyLabels";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { Pin } from "lucide-react";
 
 const DIFFICULTY_COLOR = {

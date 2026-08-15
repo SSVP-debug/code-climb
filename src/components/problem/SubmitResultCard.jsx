@@ -129,30 +129,6 @@ function DiffPanel({ expectedOutput, actualOutput }) {
   );
 }
 
-function MetaRow({ executionTime, passed, total }) {
-  const hasTime = executionTime !== null && executionTime !== undefined;
-  const hasRatio = total > 0;
-
-  if (!hasTime && !hasRatio) return null;
-
-  return (
-    <div className="flex items-center gap-4 text-xs text-zinc-500 font-mono pt-1">
-      {hasRatio && (
-        <span>
-          <span className="text-zinc-600">visible</span>{" "}
-          <span className="text-zinc-400">{passed}/{total}</span>
-        </span>
-      )}
-      {hasTime && (
-        <span>
-          <span className="text-zinc-600">time</span>{" "}
-          <span className="text-zinc-400">{executionTime}ms</span>
-        </span>
-      )}
-    </div>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────
 
 /**

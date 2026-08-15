@@ -50,6 +50,7 @@ function HoverTooltip({ label, side = "right", children }) {
     setCoords(null);
   }
 
+  // eslint-disable-next-line react-hooks/refs -- anchorRef.current is only ever read inside show() (below), which is only invoked from real DOM event handlers (onMouseEnter/onFocus/etc.), never during render. The rule can't verify that across the cloneElement/closure boundary, but this is exactly the ref-forwarding-without-a-wrapper-span pattern documented in this file's header comment.
   const trigger = cloneElement(children, {
     ref: anchorRef,
     onMouseEnter: (e) => {

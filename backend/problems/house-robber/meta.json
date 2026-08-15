@@ -4,12 +4,21 @@
   "title": "House Robber",
   "difficulty": "Medium",
   "topic": "Dynamic Programming",
-  "pattern": "1D DP no adjacency",
+  "pattern": "1d dp",
   "sourceType": "core",
   "functionName": "rob",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Adobe",
+    "Airbnb"
+  ],
+  "relatedProblems": [
+    "climbing-stairs",
+    "coin-change",
+    "maximum-subarray"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

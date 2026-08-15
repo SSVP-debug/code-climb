@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the Kadane's algorithm approach for dynamic programming problems."
+    "text": "Try every possible subarray — O(n²). Now think about eliminating recomputation."
   },
   {
     "level": 2,
-    "text": "Can you solve Maximum Subarray in O(n log n) or better? Consider how Kadane's algorithm helps."
+    "text": "Kadane's insight: if the running sum goes negative, restart it. A negative prefix only hurts future sums."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses Kadane's algorithm. Work through small examples to see the pattern."
+    "text": "Two variables: current_sum (reset to 0 when negative) and max_sum (best seen so far). Update max_sum each step."
   }
 ]

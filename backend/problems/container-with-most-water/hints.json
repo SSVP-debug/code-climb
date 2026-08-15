@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the shrink from both ends approach for two pointers problems."
+    "text": "Brute force checks all pairs — O(n²). The area is limited by the shorter of the two walls."
   },
   {
     "level": 2,
-    "text": "Can you solve Container With Most Water in O(n log n) or better? Consider how shrink from both ends helps."
+    "text": "Start with the widest container (both ends). Which pointer should you move to potentially find more water?"
   },
   {
     "level": 3,
-    "text": "The optimal solution uses shrink from both ends. Work through small examples to see the pattern."
+    "text": "Always move the pointer at the shorter wall inward. Moving the taller wall can only decrease or maintain area — never increase it."
   }
 ]

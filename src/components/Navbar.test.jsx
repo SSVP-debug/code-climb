@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "../context/ThemeContext";
-import { AuthContext } from "../context/authContext";
-import { AppContext } from "../context/appContext";
+import { AuthContext } from "../context/AuthContextObject";
+import { AppContext } from "../context/AppContextObject";
 import Navbar from "./Navbar";
 
 // Navbar transformation, Phase A. Prior to this file, Navbar had no direct

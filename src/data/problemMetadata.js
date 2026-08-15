@@ -1016,18 +1016,6 @@ const problemMetadata = {
     ],
   },
 
-  "find-median-from-data-stream": {
-    pattern: "two heaps (max-heap + min-heap)",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the two heaps (max-heap + min-heap) approach for heap problems." },
-      { level: 2, text: "Can you solve Find Median from Data Stream in O(n log n) or better? Consider how two heaps (max-heap + min-heap) helps." },
-      { level: 3, text: "The optimal solution uses two heaps (max-heap + min-heap). Work through small examples to see the pattern." },
-    ],
-  },
-
   "k-closest-points-to-origin": {
     pattern: "max-heap of size k",
     estimatedTime: "20–35 min",
@@ -1037,78 +1025,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the max-heap of size k approach for heap problems." },
       { level: 2, text: "Can you solve K Closest Points to Origin in O(n log n) or better? Consider how max-heap of size k helps." },
       { level: 3, text: "The optimal solution uses max-heap of size k. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "task-scheduler": {
-    pattern: "greedy with max-heap",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the greedy with max-heap approach for heap problems." },
-      { level: 2, text: "Can you solve Task Scheduler in O(n log n) or better? Consider how greedy with max-heap helps." },
-      { level: 3, text: "The optimal solution uses greedy with max-heap. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "merge-k-sorted-lists": {
-    pattern: "min-heap / divide and conquer",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the min-heap / divide and conquer approach for heap problems." },
-      { level: 2, text: "Can you solve Merge K Sorted Lists in O(n log n) or better? Consider how min-heap / divide and conquer helps." },
-      { level: 3, text: "The optimal solution uses min-heap / divide and conquer. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "search-a-2d-matrix": {
-    pattern: "treat matrix as sorted array",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the treat matrix as sorted array approach for binary search problems." },
-      { level: 2, text: "Can you solve Search a 2D Matrix in O(n log n) or better? Consider how treat matrix as sorted array helps." },
-      { level: 3, text: "The optimal solution uses treat matrix as sorted array. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "koko-eating-bananas": {
-    pattern: "binary search on answer",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the binary search on answer approach for binary search problems." },
-      { level: 2, text: "Can you solve Koko Eating Bananas in O(n log n) or better? Consider how binary search on answer helps." },
-      { level: 3, text: "The optimal solution uses binary search on answer. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "time-based-key-value-store": {
-    pattern: "binary search on sorted timestamps",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the binary search on sorted timestamps approach for binary search problems." },
-      { level: 2, text: "Can you solve Time Based Key-Value Store in O(n log n) or better? Consider how binary search on sorted timestamps helps." },
-      { level: 3, text: "The optimal solution uses binary search on sorted timestamps. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "median-of-two-sorted-arrays": {
-    pattern: "binary search on partition",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the binary search on partition approach for binary search problems." },
-      { level: 2, text: "Can you solve Median of Two Sorted Arrays in O(n log n) or better? Consider how binary search on partition helps." },
-      { level: 3, text: "The optimal solution uses binary search on partition. Work through small examples to see the pattern." },
     ],
   },
 
@@ -1160,30 +1076,6 @@ const problemMetadata = {
     ],
   },
 
-  "word-search": {
-    pattern: "DFS grid backtracking",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the DFS grid backtracking approach for backtracking problems." },
-      { level: 2, text: "Can you solve Word Search in O(n log n) or better? Consider how DFS grid backtracking helps." },
-      { level: 3, text: "The optimal solution uses DFS grid backtracking. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "n-queens": {
-    pattern: "row-by-row constraint backtracking",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the row-by-row constraint backtracking approach for backtracking problems." },
-      { level: 2, text: "Can you solve N-Queens in O(n log n) or better? Consider how row-by-row constraint backtracking helps." },
-      { level: 3, text: "The optimal solution uses row-by-row constraint backtracking. Work through small examples to see the pattern." },
-    ],
-  },
-
   "implement-trie": {
     pattern: "trie insert/search/prefix",
     estimatedTime: "20–35 min",
@@ -1232,18 +1124,6 @@ const problemMetadata = {
     ],
   },
 
-  "replace-words": {
-    pattern: "trie prefix lookup",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the trie prefix lookup approach for trie problems." },
-      { level: 2, text: "Can you solve Replace Words in O(n log n) or better? Consider how trie prefix lookup helps." },
-      { level: 3, text: "The optimal solution uses trie prefix lookup. Work through small examples to see the pattern." },
-    ],
-  },
-
   "four-sum": {
     pattern: "sort + two nested loops + two pointers",
     estimatedTime: "20–35 min",
@@ -1253,30 +1133,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the sort + two nested loops + two pointers approach for two pointers problems." },
       { level: 2, text: "Can you solve 4Sum in O(n log n) or better? Consider how sort + two nested loops + two pointers helps." },
       { level: 3, text: "The optimal solution uses sort + two nested loops + two pointers. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "longest-repeating-character-replacement": {
-    pattern: "sliding window with max frequency",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the sliding window with max frequency approach for sliding window problems." },
-      { level: 2, text: "Can you solve Longest Repeating Character Replacement in O(n log n) or better? Consider how sliding window with max frequency helps." },
-      { level: 3, text: "The optimal solution uses sliding window with max frequency. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "permutation-in-string": {
-    pattern: "fixed-window frequency match",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the fixed-window frequency match approach for sliding window problems." },
-      { level: 2, text: "Can you solve Permutation in String in O(n log n) or better? Consider how fixed-window frequency match helps." },
-      { level: 3, text: "The optimal solution uses fixed-window frequency match. Work through small examples to see the pattern." },
     ],
   },
 
@@ -1292,42 +1148,6 @@ const problemMetadata = {
     ],
   },
 
-  "subarray-sum-equals-k": {
-    pattern: "prefix sum + hash map",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the prefix sum + hash map approach for hash maps problems." },
-      { level: 2, text: "Can you solve Subarray Sum Equals K in O(n log n) or better? Consider how prefix sum + hash map helps." },
-      { level: 3, text: "The optimal solution uses prefix sum + hash map. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "jump-game": {
-    pattern: "greedy max reach",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the greedy max reach approach for greedy problems." },
-      { level: 2, text: "Can you solve Jump Game in O(n log n) or better? Consider how greedy max reach helps." },
-      { level: 3, text: "The optimal solution uses greedy max reach. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "gas-station": {
-    pattern: "total tank check + start tracking",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the total tank check + start tracking approach for greedy problems." },
-      { level: 2, text: "Can you solve Gas Station in O(n log n) or better? Consider how total tank check + start tracking helps." },
-      { level: 3, text: "The optimal solution uses total tank check + start tracking. Work through small examples to see the pattern." },
-    ],
-  },
-
   "hand-of-straights": {
     pattern: "sorted frequency map",
     estimatedTime: "20–35 min",
@@ -1340,66 +1160,6 @@ const problemMetadata = {
     ],
   },
 
-  "merge-intervals": {
-    pattern: "sort + linear merge",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the sort + linear merge approach for greedy problems." },
-      { level: 2, text: "Can you solve Merge Intervals in O(n log n) or better? Consider how sort + linear merge helps." },
-      { level: 3, text: "The optimal solution uses sort + linear merge. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "non-overlapping-intervals": {
-    pattern: "sort by end time + greedy keep",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the sort by end time + greedy keep approach for greedy problems." },
-      { level: 2, text: "Can you solve Non-overlapping Intervals in O(n log n) or better? Consider how sort by end time + greedy keep helps." },
-      { level: 3, text: "The optimal solution uses sort by end time + greedy keep. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "counting-bits": {
-    pattern: "DP with bit shift",
-    estimatedTime: "10–20 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the DP with bit shift approach for bit manipulation problems." },
-      { level: 2, text: "Can you solve Counting Bits in O(n log n) or better? Consider how DP with bit shift helps." },
-      { level: 3, text: "The optimal solution uses DP with bit shift. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "reverse-bits": {
-    pattern: "bit shift and mask",
-    estimatedTime: "10–20 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the bit shift and mask approach for bit manipulation problems." },
-      { level: 2, text: "Can you solve Reverse Bits in O(n log n) or better? Consider how bit shift and mask helps." },
-      { level: 3, text: "The optimal solution uses bit shift and mask. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "missing-number": {
-    pattern: "XOR / Gauss sum",
-    estimatedTime: "10–20 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the XOR / Gauss sum approach for bit manipulation problems." },
-      { level: 2, text: "Can you solve Missing Number in O(n log n) or better? Consider how XOR / Gauss sum helps." },
-      { level: 3, text: "The optimal solution uses XOR / Gauss sum. Work through small examples to see the pattern." },
-    ],
-  },
-
   "number-of-1-bits": {
     pattern: "n & (n-1) trick",
     estimatedTime: "10–20 min",
@@ -1409,150 +1169,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the n & (n-1) trick approach for bit manipulation problems." },
       { level: 2, text: "Can you solve Number of 1 Bits in O(n log n) or better? Consider how n & (n-1) trick helps." },
       { level: 3, text: "The optimal solution uses n & (n-1) trick. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "sum-of-two-integers": {
-    pattern: "bit manipulation add without +",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the bit manipulation add without + approach for bit manipulation problems." },
-      { level: 2, text: "Can you solve Sum of Two Integers in O(n log n) or better? Consider how bit manipulation add without + helps." },
-      { level: 3, text: "The optimal solution uses bit manipulation add without +. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "maximum-product-subarray": {
-    pattern: "track min and max simultaneously",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the track min and max simultaneously approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Maximum Product Subarray in O(n log n) or better? Consider how track min and max simultaneously helps." },
-      { level: 3, text: "The optimal solution uses track min and max simultaneously. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "longest-common-subsequence": {
-    pattern: "2D DP string",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the 2D DP string approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Longest Common Subsequence in O(n log n) or better? Consider how 2D DP string helps." },
-      { level: 3, text: "The optimal solution uses 2D DP string. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "palindrome-partitioning": {
-    pattern: "backtracking + palindrome check",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the backtracking + palindrome check approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Palindrome Partitioning in O(n log n) or better? Consider how backtracking + palindrome check helps." },
-      { level: 3, text: "The optimal solution uses backtracking + palindrome check. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "house-robber-ii": {
-    pattern: "circular DP — run twice",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the circular DP — run twice approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve House Robber II in O(n log n) or better? Consider how circular DP — run twice helps." },
-      { level: 3, text: "The optimal solution uses circular DP — run twice. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "regular-expression-matching": {
-    pattern: "2D DP with * handling",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the 2D DP with * handling approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Regular Expression Matching in O(n log n) or better? Consider how 2D DP with * handling helps." },
-      { level: 3, text: "The optimal solution uses 2D DP with * handling. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "largest-rectangle-in-histogram": {
-    pattern: "monotonic stack",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the monotonic stack approach for stacks problems." },
-      { level: 2, text: "Can you solve Largest Rectangle in Histogram in O(n log n) or better? Consider how monotonic stack helps." },
-      { level: 3, text: "The optimal solution uses monotonic stack. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "car-fleet": {
-    pattern: "sort + monotonic stack",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the sort + monotonic stack approach for stacks problems." },
-      { level: 2, text: "Can you solve Car Fleet in O(n log n) or better? Consider how sort + monotonic stack helps." },
-      { level: 3, text: "The optimal solution uses sort + monotonic stack. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "evaluate-reverse-polish-notation": {
-    pattern: "stack evaluation",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the stack evaluation approach for stacks problems." },
-      { level: 2, text: "Can you solve Evaluate Reverse Polish Notation in O(n log n) or better? Consider how stack evaluation helps." },
-      { level: 3, text: "The optimal solution uses stack evaluation. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "basic-calculator-ii": {
-    pattern: "stack with operator precedence",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the stack with operator precedence approach for stacks problems." },
-      { level: 2, text: "Can you solve Basic Calculator II in O(n log n) or better? Consider how stack with operator precedence helps." },
-      { level: 3, text: "The optimal solution uses stack with operator precedence. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "implement-queue-using-stacks": {
-    pattern: "two stacks",
-    estimatedTime: "10–20 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the two stacks approach for stacks problems." },
-      { level: 2, text: "Can you solve Implement Queue using Stacks in O(n log n) or better? Consider how two stacks helps." },
-      { level: 3, text: "The optimal solution uses two stacks. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "network-delay-time": {
-    pattern: "Dijkstra's algorithm",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the Dijkstra's algorithm approach for graphs problems." },
-      { level: 2, text: "Can you solve Network Delay Time in O(n log n) or better? Consider how Dijkstra's algorithm helps." },
-      { level: 3, text: "The optimal solution uses Dijkstra's algorithm. Work through small examples to see the pattern." },
     ],
   },
 
@@ -2204,18 +1820,6 @@ const problemMetadata = {
     ],
   },
 
-  "combination-sum": {
-    pattern: "DFS with reuse",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the DFS with reuse approach for backtracking problems." },
-      { level: 2, text: "Can you solve Combination Sum in O(n log n) or better? Consider how DFS with reuse helps." },
-      { level: 3, text: "The optimal solution uses DFS with reuse. Work through small examples to see the pattern." },
-    ],
-  },
-
   "combination-sum-ii": {
     pattern: "DFS with deduplication",
     estimatedTime: "20–35 min",
@@ -2264,18 +1868,6 @@ const problemMetadata = {
     ],
   },
 
-  "find-minimum-in-rotated-sorted-array": {
-    pattern: "binary search on rotated array",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the binary search on rotated array approach for binary search problems." },
-      { level: 2, text: "Can you solve Find Minimum in Rotated Sorted Array in O(n log n) or better? Consider how binary search on rotated array helps." },
-      { level: 3, text: "The optimal solution uses binary search on rotated array. Work through small examples to see the pattern." },
-    ],
-  },
-
   "koko-eating-bananas": {
     pattern: "binary search on answer",
     estimatedTime: "20–35 min",
@@ -2321,30 +1913,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the binary search on partition approach for binary search problems." },
       { level: 2, text: "Can you solve Median of Two Sorted Arrays in O(n log n) or better? Consider how binary search on partition helps." },
       { level: 3, text: "The optimal solution uses binary search on partition. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "group-anagrams": {
-    pattern: "sorted key grouping",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the sorted key grouping approach for hash maps problems." },
-      { level: 2, text: "Can you solve Group Anagrams in O(n log n) or better? Consider how sorted key grouping helps." },
-      { level: 3, text: "The optimal solution uses sorted key grouping. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "longest-consecutive-sequence": {
-    pattern: "hash set streak counting",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the hash set streak counting approach for hash maps problems." },
-      { level: 2, text: "Can you solve Longest Consecutive Sequence in O(n log n) or better? Consider how hash set streak counting helps." },
-      { level: 3, text: "The optimal solution uses hash set streak counting. Work through small examples to see the pattern." },
     ],
   },
 
@@ -2441,18 +2009,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the max heap greedy approach for heap problems." },
       { level: 2, text: "Can you solve Reorganize String in O(n log n) or better? Consider how max heap greedy helps." },
       { level: 3, text: "The optimal solution uses max heap greedy. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "word-break": {
-    pattern: "DP with word set",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the DP with word set approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Word Break in O(n log n) or better? Consider how DP with word set helps." },
-      { level: 3, text: "The optimal solution uses DP with word set. Work through small examples to see the pattern." },
     ],
   },
 
@@ -2564,30 +2120,6 @@ const problemMetadata = {
     ],
   },
 
-  "jump-game-ii": {
-    pattern: "level-based greedy BFS",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the level-based greedy BFS approach for greedy problems." },
-      { level: 2, text: "Can you solve Jump Game II in O(n log n) or better? Consider how level-based greedy BFS helps." },
-      { level: 3, text: "The optimal solution uses level-based greedy BFS. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "house-robber": {
-    pattern: "1D DP no adjacency",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the 1D DP no adjacency approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve House Robber in O(n log n) or better? Consider how 1D DP no adjacency helps." },
-      { level: 3, text: "The optimal solution uses 1D DP no adjacency. Work through small examples to see the pattern." },
-    ],
-  },
-
   "house-robber-ii": {
     pattern: "circular DP two passes",
     estimatedTime: "20–35 min",
@@ -2597,30 +2129,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the circular DP two passes approach for dynamic programming problems." },
       { level: 2, text: "Can you solve House Robber II in O(n log n) or better? Consider how circular DP two passes helps." },
       { level: 3, text: "The optimal solution uses circular DP two passes. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "coin-change": {
-    pattern: "unbounded knapsack BFS/DP",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the unbounded knapsack BFS/DP approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Coin Change in O(n log n) or better? Consider how unbounded knapsack BFS/DP helps." },
-      { level: 3, text: "The optimal solution uses unbounded knapsack BFS/DP. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "decode-ways": {
-    pattern: "1D DP digit parsing",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the 1D DP digit parsing approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Decode Ways in O(n log n) or better? Consider how 1D DP digit parsing helps." },
-      { level: 3, text: "The optimal solution uses 1D DP digit parsing. Work through small examples to see the pattern." },
     ],
   },
 
@@ -2681,18 +2189,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the count bits mod 3 approach for bit manipulation problems." },
       { level: 2, text: "Can you solve Single Number II in O(n log n) or better? Consider how count bits mod 3 helps." },
       { level: 3, text: "The optimal solution uses count bits mod 3. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "daily-temperatures": {
-    pattern: "monotonic decreasing stack",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the monotonic decreasing stack approach for stacks problems." },
-      { level: 2, text: "Can you solve Daily Temperatures in O(n log n) or better? Consider how monotonic decreasing stack helps." },
-      { level: 3, text: "The optimal solution uses monotonic decreasing stack. Work through small examples to see the pattern." },
     ],
   },
 
@@ -2924,30 +2420,6 @@ const problemMetadata = {
     ],
   },
 
-  "trapping-rain-water": {
-    pattern: "two pointer max left right",
-    estimatedTime: "35–60 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the two pointer max left right approach for two pointers problems." },
-      { level: 2, text: "Can you solve Trapping Rain Water in O(n log n) or better? Consider how two pointer max left right helps." },
-      { level: 3, text: "The optimal solution uses two pointer max left right. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "container-with-most-water": {
-    pattern: "shrink from both ends",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the shrink from both ends approach for two pointers problems." },
-      { level: 2, text: "Can you solve Container With Most Water in O(n log n) or better? Consider how shrink from both ends helps." },
-      { level: 3, text: "The optimal solution uses shrink from both ends. Work through small examples to see the pattern." },
-    ],
-  },
-
   "alien-dictionary": {
     pattern: "topological sort on characters",
     estimatedTime: "35–60 min",
@@ -3017,18 +2489,6 @@ const problemMetadata = {
       { level: 1, text: "Think about the offline queries + sorted sweep + min heap approach for heap problems." },
       { level: 2, text: "Can you solve Minimum Interval to Include Each Query in O(n log n) or better? Consider how offline queries + sorted sweep + min heap helps." },
       { level: 3, text: "The optimal solution uses offline queries + sorted sweep + min heap. Work through small examples to see the pattern." },
-    ],
-  },
-
-  "maximum-subarray": {
-    pattern: "Kadane's algorithm",
-    estimatedTime: "20–35 min",
-    companies: [],
-    relatedProblems: [],
-    hints: [
-      { level: 1, text: "Think about the Kadane's algorithm approach for dynamic programming problems." },
-      { level: 2, text: "Can you solve Maximum Subarray in O(n log n) or better? Consider how Kadane's algorithm helps." },
-      { level: 3, text: "The optimal solution uses Kadane's algorithm. Work through small examples to see the pattern." },
     ],
   },
 

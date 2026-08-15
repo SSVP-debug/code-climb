@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the DFS with reuse approach for backtracking problems."
+    "text": "Backtracking: at each step choose a candidate (can reuse it) or advance to the next."
   },
   {
     "level": 2,
-    "text": "Can you solve Combination Sum in O(n log n) or better? Consider how DFS with reuse helps."
+    "text": "Sort first so you can prune: if the current candidate exceeds the remaining target, stop that branch."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses DFS with reuse. Work through small examples to see the pattern."
+    "text": "Pass the remaining sum down. Add to results when it reaches exactly zero."
   }
 ]

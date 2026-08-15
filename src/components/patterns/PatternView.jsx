@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { AlertTriangle, ChevronRight } from "lucide-react";
 import { rankTopicsByCompletion } from "../../utils/rankTopics";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 
 const FOCUS_COUNT = 3;
 function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) {

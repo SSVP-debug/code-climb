@@ -21,7 +21,7 @@ vi.mock("../services/auth", () => ({
 }));
 
 let authValue = { user: null };
-vi.mock("../context/authContext", () => ({
+vi.mock("../hooks/useAuth", () => ({
   useAuth: () => authValue,
 }));
 

@@ -1,6 +1,6 @@
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
 import { Radar as RadarIcon } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import SectionCard from "../ui/layout/SectionCard";
 
 function TopicCoverageRadar({ radarData }) {

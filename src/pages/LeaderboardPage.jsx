@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -9,6 +9,7 @@ import CollegeVerifyModal from "../components/profile/CollegeVerifyModal";
 import { withAlpha } from "../themes/themeIcons";
 import { Globe, GraduationCap, Flame, Clock } from "lucide-react";
 import RankBadge from "../components/common/RankBadge";
+import { useAppContext } from "../hooks/useAppContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -69,11 +70,11 @@ function RankRow({ user, highlight = false, theme }) {
 
 export default function LeaderboardPage() {
   const { theme } = useTheme();
+  const { username: myUsername } = useAppContext();
 
   const [tab, setTab]           = useState("global");
   const [users, setUsers]       = useState([]);
   const [loading, setLoading]   = useState(true);
-  const [myRank, setMyRank]     = useState(null);
   const [page, setPage]         = useState(1);
   const [total, setTotal]       = useState(0);
   const [domain, setDomain]     = useState("");
@@ -118,7 +119,23 @@ export default function LeaderboardPage() {
     setLoading(false);
   }, [tab, page]);
 
+  // Standard "fetch on mount" pattern used throughout this codebase's
+  // data-fetching hooks/pages: the called function is a useCallback-wrapped
+  // async fetcher whose setState calls all happen after its own await, not
+  // synchronously in this effect's body. react-hooks/set-state-in-effect
+  // still flags the call site here because it can't see across the
+  // function boundary. A real fix would mean adopting a data-fetching
+  // library (React Query/SWR) or inlining every one of these fetchers —
+  // out of scope for a lint-debt pass; suppressed and documented instead.
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
   useEffect(() => { fetchLeaderboard(); }, [fetchLeaderboard]);
+
+  // Only highlights when the viewer happens to be on the currently
+  // fetched page — same scope the backend responses support today (no
+  // endpoint returns the viewer's own rank independent of pagination).
+  // Previously this was dead state (declared, read for the highlight
+  // prop, but never actually set) — RankRow's highlight never fired.
+  const myRank = myUsername ? users.find((u) => u.username === myUsername)?.rank ?? null : null;
 
   const LIMIT = 20;
   const totalPages = Math.ceil(total / LIMIT);

@@ -15,8 +15,22 @@ export default defineConfig([
   {
     files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}', 'src/test/**'],
     ignores: ['backend/**'],
+    languageOptions: {
+      // Vitest exposes Node's `global` (e.g. `global.fetch = vi.fn()`)
+      // even in jsdom-environment tests — without this, every such mock
+      // was a no-undef false positive, not an actual missing import.
+      globals: { ...globals.browser, ...globals.node },
+    },
     rules: {
       'no-unused-vars': 'off',
+    },
+  },
+  {
+    files: ['e2e/**/*.js'],
+    languageOptions: {
+      // e2e fixtures run under Node (Playwright), not the browser — they
+      // reference process.env directly, same as any other Node script.
+      globals: globals.node,
     },
   },
   {

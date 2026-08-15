@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import SectionCard from "../ui/layout/SectionCard";
 import Button from "../ui/Button";
@@ -37,12 +37,19 @@ function RecruiterSnapshot() {
   const [expectedGraduation, setExpectedGraduation] = useState("");
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  // Tracks which recruiterSnapshot reference the form fields were last
+  // initialized from, so a fresh snapshot (first load, or after another
+  // tab/session updates it) re-seeds the form during render — React's
+  // "adjusting state when a prop changes" pattern — instead of a
+  // useEffect that calls setState synchronously three times in a row.
+  const [trackedSnapshot, setTrackedSnapshot] = useState(null);
 
-  useEffect(() => {
+  if (recruiterSnapshot !== trackedSnapshot) {
+    setTrackedSnapshot(recruiterSnapshot);
     setAvailableForWork(recruiterSnapshot.availableForWork);
     setPreferredRole(recruiterSnapshot.preferredRole || "");
     setExpectedGraduation(recruiterSnapshot.expectedGraduation || "");
-  }, [recruiterSnapshot]);
+  }
 
   function markDirty(setter) {
     return (value) => {

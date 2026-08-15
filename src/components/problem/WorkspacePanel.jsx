@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AlertTriangle, XCircle, Settings, Bug, Clock } from "lucide-react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 
 // ── DebugPanel ────────────────────────────────────────────────────────────────
 
@@ -213,9 +213,26 @@ export default function WorkspacePanel({
     problem,
 }) {
     const [activeTab, setActiveTab] = useState("testcases");
+    const [appliedForceTab, setAppliedForceTab] = useState(forceTab);
     const { theme } = useTheme();
 
-
+    // Auto-switch to whichever tab the latest run/submit result calls for
+    // (debug on a compile/runtime error, testcases otherwise) — mirrors
+    // the mobile equivalent (mobileTab) in useProblemSolver.js. forceTab
+    // was already being computed and threaded all the way down to this
+    // component, but nothing ever applied it, so the desktop tab stayed
+    // wherever the student last clicked even after a fresh error.
+    //
+    // Deliberately not a useEffect: this is React's documented pattern
+    // for "adjusting state when a prop changes" — comparing against a
+    // second state variable during render and calling setState
+    // conditionally, rather than in an effect body, avoids the
+    // cascading-render effect this codebase's lint config flags
+    // (react-hooks/set-state-in-effect) elsewhere.
+    if (forceTab !== appliedForceTab) {
+        setAppliedForceTab(forceTab);
+        if (forceTab && TABS.includes(forceTab)) setActiveTab(forceTab);
+    }
 
     const errorCount = (() => {
         if (runResults?.compileFailed) return 1;

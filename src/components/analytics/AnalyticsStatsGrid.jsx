@@ -1,5 +1,5 @@
 import { CheckCircle2, Clock, Flame, Shield, FileText } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 
 function StatCard({ label, value, icon: Icon, valueColor }) {
   const { theme } = useTheme();

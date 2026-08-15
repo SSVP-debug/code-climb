@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { useAppContext } from "../hooks/useAppContext";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 import { Clock, Bookmark } from "lucide-react";
@@ -137,7 +137,7 @@ function ProblemCard({ problem }) {
         )}
 
         {typeof xp === "number" && (
-          <span className="hidden sm:inline text-xs text-[var(--theme-primary,#2dd4bf)] font-medium whitespace-nowrap">
+          <span className="hidden sm:inline text-xs text-purple-400 font-medium whitespace-nowrap">
             +{xp} XP
           </span>
         )}

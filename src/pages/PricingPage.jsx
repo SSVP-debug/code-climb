@@ -116,7 +116,7 @@ export default function PricingPage() {
       });
       rzp.open();
     } catch (err) {
-      toast.error("Something went wrong. Try again.");
+      toast.error(err.message || "Something went wrong. Try again.");
     }
     setLoadingPlan(null);
   }

@@ -1,4 +1,4 @@
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import { auth } from "../../../firebase/firebase";
 import SectionCard from "../../ui/layout/SectionCard";
 import { THEME_ICONS, DEFAULT_THEME_ICON, withAlpha } from "../../../themes/themeIcons";

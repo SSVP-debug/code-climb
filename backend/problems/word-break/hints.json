@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the DP with word set approach for dynamic programming problems."
+    "text": "If s[0..i] is breakable and s[i+1..j] is in the dictionary, then s[0..j] is breakable."
   },
   {
     "level": 2,
-    "text": "Can you solve Word Break in O(n log n) or better? Consider how DP with word set helps."
+    "text": "dp[i] = true if s[0..i−1] can be segmented. For each i, try every j < i where dp[j] is true and s[j..i−1] is a valid word."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses DP with word set. Work through small examples to see the pattern."
+    "text": "Store dictionary words in a set for O(1) lookup. Total complexity: O(n²)."
   }
 ]

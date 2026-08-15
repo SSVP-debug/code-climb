@@ -13,7 +13,7 @@ import { useMemo } from "react";
 import { getLevel, getLevelProgress } from "../utils/xpLevel";
 import { getStatusMeta } from "../utils/statusMessages";
 
-export function useAnalyticsStats({ solvedProblems, submissions, topicStats, recentActivity, totalXP = 0 }) {
+export function useAnalyticsStats({ submissions, topicStats, recentActivity, totalXP = 0 }) {
   // Audit fix: this used to be `solvedProblems.length` labeled as "level" —
   // a raw solved-problem count fed into the same Beginner..Expert threshold
   // table Profile.jsx uses for its (correctly) XP-based level. Two users

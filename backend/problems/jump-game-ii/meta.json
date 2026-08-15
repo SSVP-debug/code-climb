@@ -4,12 +4,20 @@
   "title": "Jump Game II",
   "difficulty": "Hard",
   "topic": "Greedy",
-  "pattern": "level-based greedy BFS",
+  "pattern": "greedy bfs",
   "sourceType": "core",
   "functionName": "jump",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "maximum-subarray",
+    "house-robber",
+    "coin-change"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

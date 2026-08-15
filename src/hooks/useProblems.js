@@ -3,11 +3,17 @@
  *
  * Fetches problems from the MongoDB backend via GET /api/problems.
  * Falls back to the static problems.js file if the API is unreachable.
+ *
+ * staticProblems (src/data/problems.js) is ~7k lines / the full 250-problem
+ * catalog. It's only ever needed on the fallback path (API down or DB
+ * seeded-empty) — the common case is the API succeeding and this data
+ * never being touched. It's dynamically imported below so Vite code-splits
+ * it into its own chunk instead of shipping it in the main bundle on every
+ * page load (audit finding, Aug 2026 — see problems-bundle-bloat note).
  */
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
-import staticProblems from "../data/problems";
 import problemMetadata from "../data/problemMetadata";
 
 function enrichProblems(problemList, acceptanceRates = {}) {
@@ -49,6 +55,8 @@ export function useProblems() {
         if (!data || data.length === 0) {
           // DB seeded but empty — use static fallback so page stays functional
           console.info("[useProblems] API returned 0 problems. Using static fallback.");
+          const { default: staticProblems } = await import("../data/problems");
+          if (cancelled) return;
           setProblems(enrichProblems(staticProblems, acceptanceRates));
         } else {
           setProblems(enrichProblems(data, acceptanceRates));
@@ -58,6 +66,8 @@ export function useProblems() {
 
         console.error("[useProblems] API fetch failed:", err.message);
         // Non-breaking: show static problems so the page still works
+        const { default: staticProblems } = await import("../data/problems");
+        if (cancelled) return;
         setProblems(enrichProblems(staticProblems));
         setError("Could not load problems from server. Showing cached problem set.");
       } finally {

@@ -75,7 +75,8 @@ export async function apiFetch(path, options = {}) {
   } catch (err) {
     console.error("[apiFetch] Token fetch failed:", err.message);
     throw new Error(
-      "Your session could not be refreshed. Please sign in again."
+      "Your session could not be refreshed. Please sign in again.",
+      { cause: err }
     );
   }
 

@@ -6,6 +6,7 @@ import { apiFetch } from "../services/api";
 import PageMeta from "../components/seo/PageMeta";
 import Button from "../components/ui/Button";
 import UpgradePrompt from "../components/ui/UpgradePrompt";
+import ErrorBanner from "../components/ErrorBanner";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 
 function formatTime(ms) {
@@ -30,6 +31,7 @@ export default function InterviewModePage() {
   const [asking, setAsking]         = useState(false);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
+  const [submitError, setSubmitError] = useState(null);
   const [upgrade, setUpgrade]       = useState(null); // audit fix: structured 402 body (upgradeUrl, currentPlan)
 
   const timerRef = useRef(null);
@@ -106,13 +108,21 @@ export default function InterviewModePage() {
 
   async function handleSubmit() {
     if (!session || submitted) return;
-    setSubmitted(true);
+    setSubmitError(null);
     try {
       await apiFetch("/api/interview/submit", {
         method: "POST",
         body: JSON.stringify({ sessionId: session.sessionId }),
       });
-    } catch {}
+      // Only flip to the "Interview Complete" screen once the server has
+      // actually confirmed the submission — previously this was set
+      // optimistically before the request, so a failed submit (network
+      // drop, backend error) still showed "Interview Complete" while the
+      // interview was silently never recorded server-side.
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(err.message || "Couldn't submit your interview. Please try again.");
+    }
   }
 
   if (loading) {
@@ -216,6 +226,11 @@ export default function InterviewModePage() {
                   End Interview
                 </Button>
               </div>
+              {submitError && (
+                <div className="px-4 pt-3">
+                  <ErrorBanner message={submitError} onRetry={handleSubmit} />
+                </div>
+              )}
               <div className="flex-1">
                 <Editor
                   height="100%"

@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the level-based greedy BFS approach for greedy problems."
+    "text": "Think BFS level-by-level: each level is the set of positions reachable in exactly k jumps."
   },
   {
     "level": 2,
-    "text": "Can you solve Jump Game II in O(n log n) or better? Consider how level-based greedy BFS helps."
+    "text": "Greedily, from your current reachable range, find the farthest position the next jump can reach."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses level-based greedy BFS. Work through small examples to see the pattern."
+    "text": "Track: current range end, farthest reachable, and jump count. When you step past the current end, increment jumps and extend the range."
   }
 ]

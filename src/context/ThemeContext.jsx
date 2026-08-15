@@ -1,12 +1,11 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { getTheme, DEFAULT_THEME } from "../themes";
+import { useMemo, useState } from "react";
+import { getTheme } from "../themes";
 import {
     getCurrentTheme,
     saveThemeSelection,
     loadThemeSelection,
 } from "../utils/themeStorage";
-
-const ThemeContext = createContext(null);
+import { ThemeContext } from "./ThemeContextObject";
 
 export function ThemeProvider({ children }) {
     const [themeId, setThemeIdState] = useState(
@@ -38,14 +37,4 @@ export function ThemeProvider({ children }) {
             {children}
         </ThemeContext.Provider>
     );
-}
-
-export function useTheme() {
-    const context = useContext(ThemeContext);
-
-    if (!context) {
-        throw new Error("useTheme must be used inside ThemeProvider");
-    }
-
-    return context;
 }

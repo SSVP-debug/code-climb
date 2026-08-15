@@ -3214,8 +3214,8 @@ const rawProblems = [
     companies: ["Amazon", "Google", "Microsoft"],
     description: "Place n queens on an n×n chessboard such that no two queens attack each other. Return all distinct solutions. Each solution contains a distinct board configuration where 'Q' indicates a queen and '.' indicates empty.",
     examples: [
-      { input: "n = 4", output: '[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[ \"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]' },
-      { input: "n = 1", output: '[[\"Q\"]]' },
+      { input: "n = 4", output: '[[".Q..","...Q","Q...","..Q."],[ "..Q.","Q...","...Q",".Q.."]]' },
+      { input: "n = 1", output: '[["Q"]]' },
     ],
     constraints: ["1 <= n <= 9"],
     starterCode: {

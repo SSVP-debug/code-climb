@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../../services/api";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import SectionCard from "../ui/layout/SectionCard";
 import EmptyState from "../ui/feedback/EmptyState";
 import { Swords, Trophy } from "lucide-react";

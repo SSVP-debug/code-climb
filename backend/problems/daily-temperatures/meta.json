@@ -4,12 +4,21 @@
   "title": "Daily Temperatures",
   "difficulty": "Medium",
   "topic": "Stacks",
-  "pattern": "monotonic decreasing stack",
+  "pattern": "monotonic stack",
   "sourceType": "core",
   "functionName": "dailyTemperatures",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Uber",
+    "Facebook"
+  ],
+  "relatedProblems": [
+    "valid-parentheses",
+    "min-stack",
+    "trapping-rain-water"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

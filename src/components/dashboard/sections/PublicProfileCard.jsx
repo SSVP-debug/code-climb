@@ -1,5 +1,5 @@
 import { useAppContext } from "../../../hooks/useAppContext";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import SectionCard from "../../ui/layout/SectionCard";
 
 function PublicProfileCard() {

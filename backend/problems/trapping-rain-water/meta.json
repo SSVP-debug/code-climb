@@ -4,12 +4,22 @@
   "title": "Trapping Rain Water",
   "difficulty": "Hard",
   "topic": "Two Pointers",
-  "pattern": "two pointer max left right",
+  "pattern": "two pointers",
   "sourceType": "core",
   "functionName": "trap",
-  "estimatedTime": "35–60 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–30 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Facebook",
+    "Bloomberg",
+    "Goldman Sachs"
+  ],
+  "relatedProblems": [
+    "container-with-most-water",
+    "daily-temperatures",
+    "maximum-subarray"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

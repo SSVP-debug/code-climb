@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the sorted key grouping approach for hash maps problems."
+    "text": "You need a canonical form that all anagrams of the same word share."
   },
   {
     "level": 2,
-    "text": "Can you solve Group Anagrams in O(n log n) or better? Consider how sorted key grouping helps."
+    "text": "Sorting each string gives a canonical key — anagrams always sort to the same characters."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses sorted key grouping. Work through small examples to see the pattern."
+    "text": "Group strings by their sorted key in a hash map. The values are the anagram groups."
   }
 ]

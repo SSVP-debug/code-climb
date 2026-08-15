@@ -4,12 +4,21 @@
   "title": "Coin Change",
   "difficulty": "Medium",
   "topic": "Dynamic Programming",
-  "pattern": "unbounded knapsack BFS/DP",
+  "pattern": "unbounded knapsack",
   "sourceType": "core",
   "functionName": "coinChange",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Microsoft",
+    "Goldman Sachs"
+  ],
+  "relatedProblems": [
+    "climbing-stairs",
+    "house-robber",
+    "word-break"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

@@ -1,14 +1,5 @@
 import Button from "../ui/Button";
 
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 function QueueRow({ title, subtitle, meta, onApprove, onReject, busy }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
@@ -69,5 +60,4 @@ function VerificationQueueSection({ heading, loading, emptyLabel, items, busyIds
   );
 }
 
-export { formatDate };
 export default VerificationQueueSection;

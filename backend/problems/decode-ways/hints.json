@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the 1D DP digit parsing approach for dynamic programming problems."
+    "text": "A single digit decodes if it's 1–9. Two digits decode if they form 10–26."
   },
   {
     "level": 2,
-    "text": "Can you solve Decode Ways in O(n log n) or better? Consider how 1D DP digit parsing helps."
+    "text": "dp[i] = number of ways to decode s[0..i−1]. At each position, check one-digit and two-digit decodings separately."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses 1D DP digit parsing. Work through small examples to see the pattern."
+    "text": "Leading zeros are invalid: '06' is NOT a valid encoding of F. Guard against s[i] === '0' for single-digit, and s[i..i+1] outside 10–26 for two-digit."
   }
 ]

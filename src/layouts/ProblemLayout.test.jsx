@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
+import { AuthContext } from "../context/AuthContextObject";
 import ProblemLayout from "./ProblemLayout";
 
 // Navbar transformation, Phase B. Prior to this file, ProblemLayout had no

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../../hooks/useAppContext";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import confetti from "canvas-confetti";
 import { share } from "../../utils/share";
 import { getLevel } from "../../utils/xpLevel";

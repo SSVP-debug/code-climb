@@ -6,7 +6,7 @@ import Button from "../components/ui/Button";
 import ContactChannels from "../components/common/ContactChannels";
 import { WHATSAPP_LINK, DISCORD_INVITE_URL, CONTACT_EMAIL_LINK } from "../config/site.js";
 import { apiFetch } from "../services/api";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { withAlpha } from "../themes/themeIcons";
 import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap, Medal, MessageCircle } from "lucide-react";
 

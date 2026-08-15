@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "../../../services/api";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";
 import { Sparkles, Brain } from "lucide-react";
@@ -38,8 +38,26 @@ function AIInsightsSection() {
   const [insights, setInsights] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [cooldownUntil, setCooldownUntil] = useState(0);
+  // Ticks once a second while a cooldown is active, so canRefresh/
+  // secondsLeft below stay accurate — previously these called Date.now()
+  // directly during render (flagged as an impure render call), which also
+  // meant they were frozen at whatever they were during this component's
+  // last render for some unrelated reason; nothing ever forced a
+  // re-render as the cooldown counted down, so the refresh button could
+  // stay stuck disabled well past the real 2-minute cooldown.
+  const [now, setNow] = useState(() => Date.now());
 
-  const canRefresh = Date.now() >= cooldownUntil;
+  useEffect(() => {
+    if (cooldownUntil <= Date.now()) return;
+    const interval = setInterval(() => {
+      const nowMs = Date.now();
+      setNow(nowMs);
+      if (nowMs >= cooldownUntil) clearInterval(interval);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownUntil]);
+
+  const canRefresh = now >= cooldownUntil;
 
   const fetchInsights = useCallback(async () => {
     setStatus("loading");
@@ -63,12 +81,21 @@ function AIInsightsSection() {
 
   // Auto-fetch on mount
   useEffect(() => {
+    // Standard "fetch on mount" pattern used throughout this codebase's
+    // data-fetching hooks/pages: the called function is a useCallback-wrapped
+    // async fetcher whose setState calls all happen after its own await, not
+    // synchronously in this effect's body. react-hooks/set-state-in-effect
+    // still flags the call site here because it can't see across the
+    // function boundary. A real fix would mean adopting a data-fetching
+    // library (React Query/SWR) or inlining every one of these fetchers —
+    // out of scope for a lint-debt pass; suppressed and documented instead.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
     fetchInsights();
   }, [fetchInsights]);
 
   const secondsLeft = Math.max(
     0,
-    Math.ceil((cooldownUntil - Date.now()) / 1000)
+    Math.ceil((cooldownUntil - now) / 1000)
   );
 
   return (

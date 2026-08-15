@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ACHIEVEMENT_METADATA } from "../../../config/achievementMetadata";
 import { ACHIEVEMENT_ICONS, DEFAULT_ACHIEVEMENT_ICON } from "../../../config/achievementIcons";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import EmptyState from "../../ui/feedback/EmptyState";

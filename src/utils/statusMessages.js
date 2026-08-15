@@ -141,7 +141,7 @@ const UNKNOWN_META = {
  */
 export function getStatusMeta(status) {
   if (!status) return UNKNOWN_META;
-  const normalized = status.replace(/[\s]*[✓✗❌⚠⚙️]+\s*$/u, "").trim();
+  const normalized = status.replace(/(?:\s*(?:✓|✗|❌|⚠|⚙️))+\s*$/u, "").trim();
   return STATUS_MAP[normalized] ?? STATUS_MAP[status] ?? UNKNOWN_META;
 }
 

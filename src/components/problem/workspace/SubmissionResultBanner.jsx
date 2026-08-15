@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TestcaseResultPanel from "./TestcaseResultPanel";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { FileWarning, Bomb, Settings, Bug, AlertTriangle, Clock } from "lucide-react";
 
 // ── DebugPanel ────────────────────────────────────────────────────────────────
@@ -205,7 +205,6 @@ export default function WorkspacePanel({
     submitInfo,
     isRunning,
     isSubmitting,
-    forceTab,
     problem,
 }) {
     const [activeTab, setActiveTab] = useState("testcases");

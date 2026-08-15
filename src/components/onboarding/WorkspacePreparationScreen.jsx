@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { useAppContext } from "../../hooks/useAppContext";
 
 /**

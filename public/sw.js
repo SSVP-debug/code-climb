@@ -89,15 +89,12 @@ async function cacheFirstWithNetwork(request, cacheName) {
   const cached = await cache.match(request);
   if (cached) return cached;
 
-  try {
-    const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
-    return response;
-  } catch (err) {
-    // Offline and not cached — nothing sensible to return for a JS/CSS
-    // chunk, so let the browser's own network-error handling take over.
-    throw err;
-  }
+  // Offline and not cached — nothing sensible to return for a JS/CSS
+  // chunk, so let the browser's own network-error handling take over
+  // (no try/catch needed here — a rejected fetch() just propagates).
+  const response = await fetch(request);
+  if (response.ok) cache.put(request, response.clone());
+  return response;
 }
 
 async function networkFirstWithCache(request, cacheName) {

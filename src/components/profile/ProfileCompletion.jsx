@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import SectionCard from "../ui/layout/SectionCard";
 import { useAppContext } from "../../hooks/useAppContext";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { Sparkles } from "lucide-react";
 
 /**

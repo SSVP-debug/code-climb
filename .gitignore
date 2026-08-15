@@ -13,6 +13,10 @@ dist
 dist-ssr
 *.local
 
+# Coverage reports (vitest --coverage default output dir, both workspaces)
+coverage
+backend/coverage
+
 .env
 .env.*
 !.env.example

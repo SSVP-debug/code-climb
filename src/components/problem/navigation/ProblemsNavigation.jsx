@@ -6,7 +6,7 @@ import {
   Map,
   Sparkles,
 } from "lucide-react";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import HoverTooltip from "../../ui/HoverTooltip";
 
 const navigationItems = [

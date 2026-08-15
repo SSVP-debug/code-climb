@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the two pointer max left right approach for two pointers problems."
+    "text": "Water above position i is min(maxLeft[i], maxRight[i]) − height[i]. Can you precompute those arrays?"
   },
   {
     "level": 2,
-    "text": "Can you solve Trapping Rain Water in O(n log n) or better? Consider how two pointer max left right helps."
+    "text": "That's O(n) time and O(n) space. Can you eliminate the extra arrays?"
   },
   {
     "level": 3,
-    "text": "The optimal solution uses two pointer max left right. Work through small examples to see the pattern."
+    "text": "Two-pointer: maintain left_max and right_max as you converge inward. The smaller side determines the water level at each step."
   }
 ]

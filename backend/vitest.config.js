@@ -12,5 +12,25 @@ export default defineConfig({
     globals: true,
     include: ["**/*.test.js"],
     exclude: ["node_modules", "problems", "**/*.integration.test.js"],
+
+    // Coverage reporting (audit finding, Aug 2026 — no coverage tooling
+    // existed at all before this, same as the frontend's vitest.config.js).
+    // No `thresholds` set yet — see that file's comment for why guessing a
+    // number is worse than not having one. Run `npm run test:coverage`
+    // locally or read the CI report (ci.yml) to get a real baseline first.
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "text-summary", "json-summary", "html"],
+      include: ["**/*.js"],
+      exclude: [
+        "**/*.test.js",
+        "**/*.integration.test.js",
+        "scripts/**",   // CLI/ops tooling, run manually not as request-path code
+        "problems/**",  // problem-bank data files, not application logic
+        "server.js",    // wiring/bootstrap, exercised end-to-end not unit-tested
+        "instrument.js",
+        "node_modules/**",
+      ],
+    },
   },
 });

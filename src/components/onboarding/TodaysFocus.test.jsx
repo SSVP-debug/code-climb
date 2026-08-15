@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import TodaysFocus from "./TodaysFocus";
 
-vi.mock("../../context/ThemeContext", () => ({
+vi.mock("../../hooks/useTheme", () => ({
   useTheme: () => ({ theme: { colors: { primary: "#2dd4bf" } } }),
 }));
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { formatRuntime, formatDate } from "../../utils/formatters";
 import { getStatusMeta } from "../../utils/statusMessages";
 

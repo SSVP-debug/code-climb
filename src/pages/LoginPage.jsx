@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../hooks/useAuth";
 import { signInWithGoogle } from "../services/auth";
 import { apiFetch } from "../services/api";
 import { getPostLoginDestination, VALID_PORTAL_ROLES } from "../utils/roleRedirect";
@@ -130,6 +130,7 @@ function LoginPage() {
     // (JARVIS pass §1's real-state status line). Kept consistent with that
     // established convention rather than a one-off fix.
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
       redirectAfterAuth();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -14,7 +14,7 @@
  * app uses for per-universe vocabulary. All fixed here — see the touched
  * components under components/analytics/ for the per-card changes.
  */
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAppContext } from "../hooks/useAppContext";
 import { useAnalyticsStats } from "../hooks/useAnalyticsStats";

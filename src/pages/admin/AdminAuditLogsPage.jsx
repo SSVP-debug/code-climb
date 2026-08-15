@@ -134,6 +134,7 @@ export default function AdminAuditLogsPage() {
     // mirrors, not introduced by this file) — react-hooks/set-state-in-effect
     // flags it there too. Leaving it consistent with that established
     // convention rather than a one-off fix; worth revisiting both together.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
     loadLogs();
   }, [loadLogs]);
 

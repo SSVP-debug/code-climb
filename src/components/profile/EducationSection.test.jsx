@@ -7,7 +7,7 @@ vi.mock("../../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
 }));
 
-vi.mock("../../context/ThemeContext", () => ({
+vi.mock("../../hooks/useTheme", () => ({
   useTheme: () => ({ theme: { colors: { primary: "#2dd4bf" } } }),
 }));
 

@@ -1,6 +1,6 @@
 import { Sparkles } from "lucide-react";
 import Button from "../ui/Button";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 
 /**
  * WelcomeScreen — step 1 of the first-session onboarding flow

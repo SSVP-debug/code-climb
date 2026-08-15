@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the binary search on rotated array approach for binary search problems."
+    "text": "Linear scan trivially finds the minimum. Binary search should reach O(log n)."
   },
   {
     "level": 2,
-    "text": "Can you solve Find Minimum in Rotated Sorted Array in O(n log n) or better? Consider how binary search on rotated array helps."
+    "text": "Key insight: in any rotation, at least one half of the array is fully sorted."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses binary search on rotated array. Work through small examples to see the pattern."
+    "text": "If nums[mid] > nums[right], the minimum is in the right half. Otherwise it's in the left half (including mid)."
   }
 ]

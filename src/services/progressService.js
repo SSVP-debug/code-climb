@@ -31,7 +31,7 @@ export async function initProgress() {
   return getProgress();
 }
 
-export async function markProblemSolved(currentProgress, problemSlug, difficulty) {
+export async function markProblemSolved(currentProgress, problemSlug) {
   const solvedSlugs = Array.from(
     new Set([...(currentProgress.solvedSlugs || []), problemSlug])
   );

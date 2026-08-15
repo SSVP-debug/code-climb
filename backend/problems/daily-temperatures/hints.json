@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the monotonic decreasing stack approach for stacks problems."
+    "text": "For each day, find the first future day that is warmer. Brute force is O(n²)."
   },
   {
     "level": 2,
-    "text": "Can you solve Daily Temperatures in O(n log n) or better? Consider how monotonic decreasing stack helps."
+    "text": "Think about storing indices of 'unresolved' days — days that haven't found a warmer future day yet."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses monotonic decreasing stack. Work through small examples to see the pattern."
+    "text": "Monotonic decreasing stack: push indices. When you see a warmer temperature, pop and record the gap as the answer for that index."
   }
 ]

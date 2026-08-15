@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck } from "lucide-react";
 import { useAppContext } from "../hooks/useAppContext";
-import { usePremium } from "../context/PremiumContext";
+import { usePremium } from "../hooks/usePremium";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { getLastVisitedProblem } from "../utils/recentProblem";
 

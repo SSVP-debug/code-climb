@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the 1D DP no adjacency approach for dynamic programming problems."
+    "text": "At each house you either rob it (skipping the previous) or skip it (keeping the best from the previous)."
   },
   {
     "level": 2,
-    "text": "Can you solve House Robber in O(n log n) or better? Consider how 1D DP no adjacency helps."
+    "text": "dp[i] = max(dp[i−1], dp[i−2] + nums[i])."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses 1D DP no adjacency. Work through small examples to see the pattern."
+    "text": "You only need the last two values — reduce space to O(1) with two variables."
   }
 ]

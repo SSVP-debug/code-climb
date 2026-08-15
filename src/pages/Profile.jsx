@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../hooks/useAuth";
 import { useAppContext } from "../hooks/useAppContext";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { getLevel, getLevelProgress } from "../utils/xpLevel";
 import { Flame, BarChart3, Award, Zap, Inbox, FileText, ChevronDown } from "lucide-react";
@@ -421,9 +421,9 @@ function Profile() {
             ) : (
               <>
                 <div className="space-y-3">
-                  {recentSubmissions.map((submission) => (
+                  {recentSubmissions.map((submission, index) => (
                     <div
-                      key={submission.id || submission.createdAt || Math.random()}
+                      key={submission.id || submission.createdAt || index}
                       className="flex justify-between items-center border-b border-zinc-800 pb-2 last:border-0"
                     >
                       <div>

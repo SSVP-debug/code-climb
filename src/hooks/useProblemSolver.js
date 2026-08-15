@@ -66,6 +66,11 @@ export function useProblemSolver({ problem, slug, contestId }) {
   const [submitInfo, setSubmitInfo] = useState(null);
   const { problemWidth, setProblemWidth } = usePanelResize();
   const [mobileTab, setMobileTab] = useState("problem");
+  // Tracks which (runResults, submitInfo) pair mobileTab was last derived
+  // for, so the auto-switch-to-results can happen during render (React's
+  // "adjusting state" pattern) instead of a useEffect that calls setState
+  // synchronously.
+  const [trackedResultsForMobileTab, setTrackedResultsForMobileTab] = useState({ runResults, submitInfo });
 
   const forceTab = useMemo(
     () => deriveForceTab(runResults, submitInfo),
@@ -73,9 +78,13 @@ export function useProblemSolver({ problem, slug, contestId }) {
   );
 
   // Auto-switch mobile to results after run/submit
-  useEffect(() => {
+  if (
+    runResults !== trackedResultsForMobileTab.runResults ||
+    submitInfo !== trackedResultsForMobileTab.submitInfo
+  ) {
+    setTrackedResultsForMobileTab({ runResults, submitInfo });
     if (runResults || submitInfo) setMobileTab("results");
-  }, [runResults, submitInfo]);
+  }
 
   useEffect(() => { saveCode(slug, language, code); }, [slug, language, code]);
 

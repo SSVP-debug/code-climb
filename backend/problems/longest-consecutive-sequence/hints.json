@@ -1,14 +1,14 @@
 [
   {
     "level": 1,
-    "text": "Think about the hash set streak counting approach for hash maps problems."
+    "text": "Sorting gives an O(n log n) solution. Can you reach O(n)?"
   },
   {
     "level": 2,
-    "text": "Can you solve Longest Consecutive Sequence in O(n log n) or better? Consider how hash set streak counting helps."
+    "text": "Put all numbers in a hash set for O(1) membership checks."
   },
   {
     "level": 3,
-    "text": "The optimal solution uses hash set streak counting. Work through small examples to see the pattern."
+    "text": "Only start counting a sequence from its smallest element — i.e., when num−1 is NOT in the set. This ensures each sequence is counted exactly once."
   }
 ]

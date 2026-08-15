@@ -4,12 +4,20 @@
   "title": "Find Minimum in Rotated Sorted Array",
   "difficulty": "Medium",
   "topic": "Binary Search",
-  "pattern": "binary search on rotated array",
+  "pattern": "binary search",
   "sourceType": "core",
   "functionName": "findMin",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "LinkedIn",
+    "Uber"
+  ],
+  "relatedProblems": [
+    "binary-search",
+    "search-in-rotated-sorted-array"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

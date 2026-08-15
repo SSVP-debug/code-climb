@@ -1,4 +1,4 @@
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { CheckCircle2, XCircle, Bomb, FileWarning, AlertTriangle } from "lucide-react";
 
 // Per-theme flavor copy for each verdict. Only breakingBug/codeHeist have

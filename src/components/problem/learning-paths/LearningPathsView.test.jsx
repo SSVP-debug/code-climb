@@ -7,7 +7,7 @@ vi.mock("../../../hooks/useHideDifficultyLabels", () => ({
   useHideDifficultyLabels: () => false,
 }));
 
-vi.mock("../../../context/authContext", () => ({
+vi.mock("../../../hooks/useAuth", () => ({
   useAuth: () => ({ user: { uid: "test-user" } }),
 }));
 

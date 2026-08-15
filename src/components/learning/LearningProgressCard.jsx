@@ -77,6 +77,11 @@ function LearningProgressCard({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <p className="text-base font-bold leading-none">{progress}%</p>
             <p className="text-[9px] text-zinc-500 mt-0.5 leading-none">Overall</p>
+            {total > 0 && (
+              <p className="text-[8px] text-zinc-600 mt-1 leading-none">
+                {solvedCount}/{total}
+              </p>
+            )}
           </div>
         </div>
 

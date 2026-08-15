@@ -4,12 +4,21 @@
   "title": "Combination Sum",
   "difficulty": "Medium",
   "topic": "Backtracking",
-  "pattern": "DFS with reuse",
+  "pattern": "backtracking",
   "sourceType": "core",
   "functionName": "combinationSum",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Facebook",
+    "Microsoft"
+  ],
+  "relatedProblems": [
+    "subsets",
+    "letter-case-permutations",
+    "coin-change"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

@@ -4,12 +4,21 @@
   "title": "Word Break",
   "difficulty": "Hard",
   "topic": "Dynamic Programming",
-  "pattern": "DP with word set",
+  "pattern": "1d dp / memoization",
   "sourceType": "core",
   "functionName": "wordBreak",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Amazon",
+    "Google",
+    "Facebook",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "coin-change",
+    "decode-ways",
+    "climbing-stairs"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import { AuthContext } from "../context/authContext";
+import { AuthContext } from "../context/AuthContextObject";
 
 function renderWithAuth(value, initialEntries = ["/protected"]) {
   return render(

@@ -4,12 +4,21 @@
   "title": "Container With Most Water",
   "difficulty": "Medium",
   "topic": "Two Pointers",
-  "pattern": "shrink from both ends",
+  "pattern": "two pointers",
   "sourceType": "core",
   "functionName": "maxArea",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "15–20 min",
+  "companies": [
+    "Google",
+    "Amazon",
+    "Goldman Sachs",
+    "Facebook"
+  ],
+  "relatedProblems": [
+    "trapping-rain-water",
+    "two-sum-ii-sorted",
+    "three-sum"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

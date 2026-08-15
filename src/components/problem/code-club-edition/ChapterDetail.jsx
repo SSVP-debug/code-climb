@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Clock, ListTodo } from "lucide-react";
-import { useAuth } from "../../../context/authContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
 import { STATUS } from "../../../utils/codeClubEditionProgress";
 import {

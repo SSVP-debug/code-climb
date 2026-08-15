@@ -7,7 +7,7 @@ import EmptyState from "../../ui/feedback/EmptyState";
 import { useAppContext } from "../../../hooks/useAppContext";
 import { useProblems } from "../../../hooks/useProblems";
 import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 
 const DIFFICULTY_COLOR = {
   Easy: "text-green-400 border-green-500/30 bg-green-500/10",

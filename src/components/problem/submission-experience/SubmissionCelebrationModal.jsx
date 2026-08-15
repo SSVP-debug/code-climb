@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, X, Zap } from "lucide-react";
 import { useAppContext } from "../../../hooks/useAppContext";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import Button from "../../ui/Button";
 import StreakBadge from "../../common/StreakBadge";
 import ReflectionPrompt from "./ReflectionPrompt";

@@ -4,12 +4,21 @@
   "title": "Longest Consecutive Sequence",
   "difficulty": "Medium",
   "topic": "Hashing",
-  "pattern": "hash set streak counting",
+  "pattern": "hash set",
   "sourceType": "core",
   "functionName": "longestConsecutive",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "20–25 min",
+  "companies": [
+    "Google",
+    "Facebook",
+    "Amazon",
+    "Bloomberg"
+  ],
+  "relatedProblems": [
+    "valid-anagram",
+    "group-anagrams",
+    "contains-duplicate"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

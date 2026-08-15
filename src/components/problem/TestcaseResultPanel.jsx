@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { useTheme } from "../../context/ThemeContext";
+import { useState, useMemo } from "react";
+import { useTheme } from "../../hooks/useTheme";
 import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 // ── Runtime error normalisation ───────────────────────────────────────────────
@@ -113,6 +113,11 @@ export default function TestcaseResultPanel({
   examples = [],
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  // Tracks which `results` reference activeTab was last derived for, so we
+  // can re-derive it during render when a new run/submit produces a new
+  // `results` array — the "adjusting state when a prop changes" pattern,
+  // rather than a useEffect that calls setState synchronously.
+  const [trackedResults, setTrackedResults] = useState(rawResults);
   const { theme } = useTheme();
 
 
@@ -123,11 +128,13 @@ export default function TestcaseResultPanel({
   );
 
   // Auto-jump to first failing tab when results arrive
-  useEffect(() => {
-    if (!results || results.length === 0) return;
-    const firstFail = results.findIndex((r) => !r.passed || r.error);
-    setActiveTab(firstFail === -1 ? 0 : firstFail);
-  }, [results]);
+  if (rawResults !== trackedResults) {
+    setTrackedResults(rawResults);
+    if (results && results.length > 0) {
+      const firstFail = results.findIndex((r) => !r.passed || r.error);
+      setActiveTab(firstFail === -1 ? 0 : firstFail);
+    }
+  }
 
   if (isRunning) return <LoadingSkeleton />;
 

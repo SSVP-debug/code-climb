@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { withAlpha } from "../themes/themeIcons";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ClubSubNav from "../components/club/ClubSubNav";
@@ -43,6 +43,15 @@ export default function BattleRoomDetailPage() {
     setLoading(false);
   }, [id, navigate]);
 
+  // Standard "fetch on mount" pattern used throughout this codebase's
+  // data-fetching hooks/pages: the called function is a useCallback-wrapped
+  // async fetcher whose setState calls all happen after its own await, not
+  // synchronously in this effect's body. react-hooks/set-state-in-effect
+  // still flags the call site here because it can't see across the
+  // function boundary. A real fix would mean adopting a data-fetching
+  // library (React Query/SWR) or inlining every one of these fetchers —
+  // out of scope for a lint-debt pass; suppressed and documented instead.
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
   useEffect(() => { fetchRoom(); }, [fetchRoom]);
 
   // Poll while the room is still in play — stop once it's ended, no point
@@ -51,12 +60,14 @@ export default function BattleRoomDetailPage() {
     if (!room || room.status === "ended") return;
     pollRef.current = setInterval(fetchRoom, POLL_INTERVAL_MS);
     return () => clearInterval(pollRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- room is deliberately excluded: fetchRoom returns a NEW room object every poll, so depending on the whole `room` reference (as the rule suggests) would tear down and restart this interval on every single successful poll, defeating the point of scoping to just the status transition that actually matters here.
   }, [room?.status, fetchRoom]);
 
   useEffect(() => {
     if (!room || room.status !== "active") return;
     const t = setInterval(() => setTimer(formatCountdown(room.endsAt)), 1000);
     return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- same reasoning as the poll effect above: room's object identity changes every fetch even when status/endsAt don't, so depending on the whole reference would restart this timer far more often than needed.
   }, [room?.status, room?.endsAt]);
 
   async function assignTeam(userId, teamIndex) {

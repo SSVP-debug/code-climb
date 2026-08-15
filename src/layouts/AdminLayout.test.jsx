@@ -8,8 +8,8 @@ import { ThemeProvider } from "../context/ThemeContext";
 import AdminLayout from "./AdminLayout";
 import AdminSettingsPage from "../pages/admin/AdminSettingsPage";
 import AdminCollegesPage from "../pages/admin/AdminCollegesPage";
-import { AuthContext } from "../context/authContext";
-import { AppContext } from "../context/appContext";
+import { AuthContext } from "../context/AuthContextObject";
+import { AppContext } from "../context/AppContextObject";
 
 // Navbar pulls in auth/notification/streak widgets unrelated to what this
 // file is testing (the /admin/* role guard) — stub it like DashboardLayout's

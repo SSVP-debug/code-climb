@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Lock } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { useAppContext } from "../hooks/useAppContext";
 import { THEME_OPTIONS } from "../themes/themeOptions";
 import { DEFAULT_THEME, getTheme } from "../themes";

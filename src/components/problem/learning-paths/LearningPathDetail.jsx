@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Clock, ListTodo } from "lucide-react";
-import { useAuth } from "../../../context/authContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
 import { computeProblemStatuses, STATUS } from "../../../utils/learningPathProgress";
 import { LEARNING_PATH_ICONS, LEARNING_PATH_COLOR_CLASSES } from "./learningPathIcons";

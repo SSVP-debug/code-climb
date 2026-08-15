@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { getStatusMeta } from "../../utils/statusMessages";
+import { formatRuntime } from "../../utils/formatters";
 
 function SubmissionDetailsModal({ submission, onClose }) {
   // Escape-to-close, matching SubmissionCelebrationModal.jsx's pattern —

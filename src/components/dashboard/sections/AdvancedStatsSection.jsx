@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import { useAppContext } from "../../../hooks/useAppContext";
 import SectionCard from "../../ui/layout/SectionCard";
 import { isAccepted } from "../../../utils/statusMessages";

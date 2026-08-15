@@ -428,10 +428,9 @@ const userSchema = new mongoose.Schema(
 // single string split), so there's no isModified("email") branch to
 // accidentally get wrong or forget to update if `email`'s validation
 // changes later.
-userSchema.pre("save", function setEmailDomain() {
-  this.emailDomain = this.email
-    ? this.email.split("@")[1]?.toLowerCase()
-    : null;
+userSchema.pre("save", function setEmailDomain(next) {
+  this.emailDomain = this.email ? this.email.split("@")[1]?.toLowerCase() || null : null;
+  next();
 });
 
 const User = mongoose.model("User", userSchema);

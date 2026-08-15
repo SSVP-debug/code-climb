@@ -4,7 +4,7 @@ import {
   getDailyChallenge,
 } from "../../../utils/dailyChallenge";
 
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
 import SectionCard from "../../ui/layout/SectionCard";
 import Button from "../../ui/Button";

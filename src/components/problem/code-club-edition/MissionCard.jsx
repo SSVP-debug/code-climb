@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useHideDifficultyLabels } from "../../../hooks/useHideDifficultyLabels";
 import { getEarnedXP } from "../../../utils/xpUtils";
-import { MISSION_STATUS_ICONS, DIFFICULTY_BADGE } from "./codeClubEditionTheme";
+import { MISSION_STATUS_ICONS } from "./codeClubEditionTheme";
 import { STATUS } from "../../../utils/codeClubEditionProgress";
 
 // Matches ProblemCard.jsx / LearningPathProblemItem.jsx's inline

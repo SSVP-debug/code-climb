@@ -1,6 +1,6 @@
 import DashboardLayout from "../../layouts/DashboardLayout";
 import UpgradePrompt from "../ui/UpgradePrompt";
-import { usePremium } from "../../context/PremiumContext";
+import { usePremium } from "../../hooks/usePremium";
 
 /**
  * PremiumRoute — audit fix.

@@ -4,12 +4,22 @@
   "title": "Maximum Subarray",
   "difficulty": "Easy",
   "topic": "Arrays",
-  "pattern": "Kadane's algorithm",
+  "pattern": "kadane's algorithm",
   "sourceType": "core",
   "functionName": "maxSubArray",
-  "estimatedTime": "20–35 min",
-  "companies": [],
-  "relatedProblems": [],
+  "estimatedTime": "10–15 min",
+  "companies": [
+    "Amazon",
+    "Microsoft",
+    "LinkedIn",
+    "Apple",
+    "Google"
+  ],
+  "relatedProblems": [
+    "best-time-to-buy-and-sell-stock",
+    "house-robber",
+    "climbing-stairs"
+  ],
   "returnType": {},
   "paramTypes": {},
   "comparisonMode": "exact",

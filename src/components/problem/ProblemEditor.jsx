@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import EditorMoreMenu from "./EditorMoreMenu";
 import {
   saveCode,

@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { AuthContext } from "../../../context/authContext";
-import { useTheme } from "../../../context/ThemeContext";
+import { AuthContext } from "../../../context/AuthContextObject";
+import { useTheme } from "../../../hooks/useTheme";
 import { logoutUser } from "../../../services/auth";
 import HoverTooltip from "../../ui/HoverTooltip";
 
@@ -14,10 +14,7 @@ function ProblemsTopbar({ totalProblems = 0, solvedCount = 0, progress = 0 }) {
 
   const handleLogout = async () => {
     await logoutUser();
-    // Consistency fix: Navbar/ProblemLayout's logout already redirects with
-    // ?loggedOut=1 so LoginPage shows its real post-logout confirmation —
-    // this was the one remaining topbar missing that flag.
-    navigate("/login?loggedOut=1");
+    navigate("/login");
   };
 
   const navLinks = [

@@ -1,6 +1,6 @@
 import { Compass } from "lucide-react";
 import Button from "../ui/Button";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 
 /**
  * TodaysFocus — step 5 (final) of the first-session onboarding flow

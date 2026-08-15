@@ -1,6 +1,6 @@
 import { Target, Flame, Timer } from "lucide-react";
 import Button from "../ui/Button";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { useAppContext } from "../../hooks/useAppContext";
 
 /**

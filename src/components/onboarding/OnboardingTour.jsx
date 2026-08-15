@@ -41,11 +41,19 @@ export default function OnboardingTour() {
         const t = setTimeout(() => setVisible(true), 1500);
         return () => clearTimeout(t);
       }
-    } catch {}
+    } catch {
+      // localStorage can throw (private browsing, storage disabled) —
+      // fail open by just not showing the tour rather than crashing.
+    }
   }, []);
 
   function dismiss() {
-    try { localStorage.setItem(TOUR_KEY, "1"); } catch {}
+    try {
+      localStorage.setItem(TOUR_KEY, "1");
+    } catch {
+      // Same fail-open reasoning as above — worst case the tour
+      // reappears next visit, which is harmless.
+    }
     setVisible(false);
   }
 

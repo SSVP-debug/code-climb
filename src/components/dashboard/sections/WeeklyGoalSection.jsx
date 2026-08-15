@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../../hooks/useAppContext";
-import { useTheme } from "../../../context/ThemeContext";
+import { useTheme } from "../../../hooks/useTheme";
 import SectionCard from "../../ui/layout/SectionCard";
 import { Target, PartyPopper } from "lucide-react";
 

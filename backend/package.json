@@ -21,6 +21,7 @@
     "weekly-review": "node scripts/sendWeeklyReviewEmails.js",
     "weekly-review:dry-run": "node scripts/sendWeeklyReviewEmails.js --dry-run",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.js"
   },
   "keywords": [],
@@ -48,6 +49,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.7",
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "vitest": "^3.2.4"
