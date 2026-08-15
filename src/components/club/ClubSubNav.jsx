@@ -14,7 +14,7 @@ const SECTIONS = [
   { to: "/club/leaderboard",      label: "Leaderboard",      icon: Trophy },
   { to: "/club/public-contests",  label: "Public Contests",  icon: Swords },
   { to: "/club/private-contests", label: "Private Contests", icon: Lock },
-  { to: "/club/battle-rooms",     label: "Battle Rooms",     icon: Users },
+  { to: "/club/battle-rooms",     label: "Battle Rooms",     icon: Users, soon: true },
 ];
 
 export default function ClubSubNav() {

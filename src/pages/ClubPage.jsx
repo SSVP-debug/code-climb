@@ -176,11 +176,10 @@ function ClubPage() {
         >
           <p className="text-zinc-500 text-sm mb-4">
             Form a team, share an invite code, and race another team to
-            solve the problem set first. Scores update every few seconds
-            while the match is live.
+            solve the problem set first. We're still finishing this one up.
           </p>
-          <Button to="/club/battle-rooms" variant="theme" size="sm">
-            Create or Join a Room
+          <Button to="/club/battle-rooms" variant="secondary" size="sm">
+            Coming Soon
           </Button>
         </SectionCard>
 
