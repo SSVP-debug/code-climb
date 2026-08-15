@@ -6,6 +6,7 @@ import { getProfileSignSecret } from "../config/env.js";
 import Problem from "../models/Problem.js";
 import SkillsTest from "../models/SkillsTest.js";
 import RecruiterInterest from "../models/RecruiterInterest.js";
+import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireVerified } from "../middleware/requireVerified.js";
 import { getOrSetCache } from "../utils/cache.js";
@@ -43,7 +44,25 @@ export async function recruiterRegistrationGate(req, res) {
 }
 
 // ── 083: POST /api/recruiter/register ────────────────────────────────────────
-router.post("/register", async (req, res) => {
+// Extracted as a named function (same pattern as handleCreateInterest below)
+// so it's directly unit-testable without needing an HTTP layer.
+//
+// requireAuth on the route below is mandatory: this handler reads and
+// mutates req.userDoc unconditionally (role assignment, recruiterProfile,
+// .save()). Without it, an unauthenticated request used to reach
+// `req.userDoc.role = "recruiter"` with req.userDoc still undefined and
+// crash with an uncaught TypeError, surfacing as an opaque 500 instead of a
+// clean 401. Fixed as part of the backend hardening pass. This handler
+// itself still guards defensively (`if (!req.userDoc)`) as defense in depth
+// in case it's ever wired up without requireAuth again in the future — that
+// guard is what turns "someone forgets the middleware later" into a clean
+// 401 instead of a crash, so don't remove it even though requireAuth should
+// always be there in normal operation.
+export async function handleRegister(req, res) {
+  if (!req.userDoc) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   if (await recruiterRegistrationGate(req, res)) return;
 
   try {
@@ -52,7 +71,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "companyName and designation are required." });
     }
 
-    const email = req.userDoc?.email || "";
+    const email = req.userDoc.email || "";
     const domain = email.split("@")[1] || null;
 
     // Block personal email providers
@@ -104,12 +123,15 @@ router.post("/register", async (req, res) => {
     (req.log || logger).error({ err }, "[Recruiter] register");
     return res.status(500).json({ error: "Failed to register recruiter." });
   }
-});
+}
+
+router.post("/register", requireAuth, handleRegister);
 
 // ── 084: GET /api/recruiter/candidates ───────────────────────────────────────
 // Query params: college, topic, minSolved, maxSolved, language, page, limit
 router.get(
   "/candidates",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -246,7 +268,13 @@ router.get(
 
 // ── 085: GET /api/recruiter/verify/:username ──────────────────────────────────
 // Verifies the profile signature — proves the data wasn't tampered with.
-// Public endpoint — any recruiter (or anyone) can call this.
+// Deliberately public — any recruiter, TPO, or unauthenticated third party
+// (e.g. a recruiter checking a candidate's public profile/certificate link
+// before ever creating an account) can call this. Do NOT add requireAuth
+// here; that would be a regression against the intended product behavior.
+// This route reads only public, non-sensitive fields (username, displayName,
+// solvedSlugs count, profileSignature) via an explicit .select(), so making
+// it public does not expose anything hiddentestcases-adjacent or private.
 router.get("/verify/:username", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username })
@@ -289,6 +317,7 @@ router.get("/verify/:username", async (req, res) => {
 // Recruiter sends a 3-problem, 90-min timed test to a candidate.
 router.post(
   "/skills-test",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -401,11 +430,12 @@ export async function handleCreateInterest(req, res) {
   }
 }
 
-router.post("/interest", requireRole("recruiter", "admin"), requireVerified, handleCreateInterest);
+router.post("/interest", requireAuth, requireRole("recruiter", "admin"), requireVerified, handleCreateInterest);
 
 // ── GET /api/recruiter/interests — list this recruiter's sent interests ────
 router.get(
   "/interests",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -437,6 +467,7 @@ router.get(
 // without knowing individual test ids.)
 router.get(
   "/skills-tests",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {
@@ -469,6 +500,7 @@ router.get(
 // ── 086: GET /api/recruiter/skills-test/:id — recruiter checks results ────────
 router.get(
   "/skills-test/:id",
+  requireAuth,
   requireRole("recruiter", "admin"),
   requireVerified,
   async (req, res) => {

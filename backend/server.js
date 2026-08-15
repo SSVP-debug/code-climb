@@ -207,6 +207,13 @@ app.use(
 // ─── 404 handler ────────────────────────────────────────────────────────────
 logger.info(`[Server] 404 handler initialized`);
 // ── Phase 7 mounts ───────────────────────────────────────────────────────────
+// requireAuth is intentionally NOT applied at this mount point — the sole
+// public route inside recruiter.js is GET /verify/:username (a public
+// profile-signature check, by design). Every other route in that file now
+// applies requireAuth itself, directly on the route, since backend
+// hardening pass 1 (see docs/security-fixes/). Do not add requireAuth
+// here as a blanket fix without first splitting /verify/:username into
+// its own router — doing so would 401 that intentionally-public endpoint.
 app.use("/api/recruiter", apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert", apiLimiter, certificationRoutes);

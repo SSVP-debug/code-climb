@@ -12,12 +12,21 @@ vi.mock("../services/notificationService.js", () => ({
 vi.mock("../services/settingsService.js", () => ({
   getSettings: vi.fn(),
 }));
+vi.mock("../models/VerifiedDomain.js", () => ({
+  default: { findOne: vi.fn() },
+}));
 
 import User from "../models/User.js";
 import RecruiterInterest from "../models/RecruiterInterest.js";
 import { createNotification } from "../services/notificationService.js";
 import { getSettings } from "../services/settingsService.js";
-import { handleCreateInterest, recruiterRegistrationGate } from "./recruiter.js";
+import VerifiedDomain from "../models/VerifiedDomain.js";
+import {
+  handleCreateInterest,
+  recruiterRegistrationGate,
+  handleRegister,
+  default as recruiterRouter,
+} from "./recruiter.js";
 
 function mockRes() {
   const res = {};
@@ -173,5 +182,125 @@ describe("recruiterRegistrationGate", () => {
   it("takes no dependency on req.userDoc — an existing recruiter's other routes never call this gate", async () => {
     getSettings.mockResolvedValueOnce({ recruiterRegistrationEnabled: false });
     await expect(recruiterRegistrationGate({}, res)).resolves.toBe(true);
+  });
+});
+
+// Backend hardening pass 1 — regression tests for the /register auth bug.
+// Previously: /api/recruiter was mounted without requireAuth, so an
+// unauthenticated POST /register reached `req.userDoc.role = "recruiter"`
+// with req.userDoc undefined and crashed with an uncaught TypeError (opaque
+// 500 instead of 401). Fixed by (a) adding requireAuth on the route in
+// server.js-adjacent recruiter.js, and (b) a defensive `if (!req.userDoc)`
+// guard inside the handler itself as defense in depth.
+describe("handleRegister", () => {
+  let res;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    res = mockRes();
+    getSettings.mockResolvedValue({ recruiterRegistrationEnabled: true });
+  });
+
+  it("returns 401 (not a crash) when req.userDoc is missing — the exact bug this fixes", async () => {
+    const req = { body: { companyName: "Acme", designation: "Eng Manager" }, userDoc: undefined };
+
+    await expect(handleRegister(req, res)).resolves.not.toThrow();
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ error: "Unauthorized" });
+  });
+
+  it("registers an authenticated user as a pending recruiter when the domain isn't pre-verified", async () => {
+    VerifiedDomain.findOne.mockReturnValue({ lean: vi.fn().mockResolvedValue(null) });
+    const save = vi.fn().mockResolvedValue(true);
+    const req = {
+      body: { companyName: "Acme Corp", designation: "Engineering Manager" },
+      userDoc: { email: "recruiter@acme.com", role: "student", save },
+    };
+
+    await handleRegister(req, res);
+
+    expect(req.userDoc.role).toBe("recruiter");
+    expect(req.userDoc.recruiterProfile.verified).toBe(false);
+    expect(save).toHaveBeenCalledOnce();
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true, role: "recruiter", status: "pending" })
+    );
+  });
+
+  it("auto-verifies when the company domain is on the VerifiedDomain allowlist", async () => {
+    VerifiedDomain.findOne.mockReturnValue({ lean: vi.fn().mockResolvedValue({ domain: "acme.com" }) });
+    const save = vi.fn().mockResolvedValue(true);
+    const req = {
+      body: { companyName: "Acme Corp", designation: "Engineering Manager" },
+      userDoc: { email: "recruiter@acme.com", role: "student", save },
+    };
+
+    await handleRegister(req, res);
+
+    expect(req.userDoc.recruiterProfile.verified).toBe(true);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: "verified" }));
+  });
+
+  it("respects recruiterRegistrationGate even for an authenticated user (registration disabled)", async () => {
+    getSettings.mockResolvedValueOnce({ recruiterRegistrationEnabled: false });
+    const save = vi.fn();
+    const req = {
+      body: { companyName: "Acme Corp", designation: "Engineering Manager" },
+      userDoc: { email: "recruiter@acme.com", role: "student", save },
+    };
+
+    await handleRegister(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(save).not.toHaveBeenCalled();
+  });
+});
+
+// Route-wiring regression tests — assert requireAuth is actually present in
+// the middleware chain for every protected route, and deliberately absent
+// from the one intentionally-public route (/verify/:username). This is a
+// structural test on the Express router itself (router.stack), not just the
+// handler in isolation, because the bug this fixes was a *wiring* bug: the
+// handler code alone couldn't tell you whether requireAuth ran before it.
+describe("recruiter router — requireAuth wiring", () => {
+  function middlewareNamesFor(path) {
+    const layer = recruiterRouter.stack.find(
+      (l) => l.route && l.route.path === path
+    );
+    if (!layer) throw new Error(`No route registered for ${path}`);
+    return layer.route.stack.map((s) => s.name);
+  }
+
+  it("requires auth on POST /register", () => {
+    expect(middlewareNamesFor("/register")).toContain("requireAuth");
+  });
+
+  it("requires auth on GET /candidates", () => {
+    expect(middlewareNamesFor("/candidates")).toContain("requireAuth");
+  });
+
+  it("requires auth on POST /skills-test", () => {
+    expect(middlewareNamesFor("/skills-test")).toContain("requireAuth");
+  });
+
+  it("requires auth on POST /interest", () => {
+    expect(middlewareNamesFor("/interest")).toContain("requireAuth");
+  });
+
+  it("requires auth on GET /interests", () => {
+    expect(middlewareNamesFor("/interests")).toContain("requireAuth");
+  });
+
+  it("requires auth on GET /skills-tests", () => {
+    expect(middlewareNamesFor("/skills-tests")).toContain("requireAuth");
+  });
+
+  it("requires auth on GET /skills-test/:id", () => {
+    expect(middlewareNamesFor("/skills-test/:id")).toContain("requireAuth");
+  });
+
+  it("does NOT require auth on GET /verify/:username — deliberately public", () => {
+    expect(middlewareNamesFor("/verify/:username")).not.toContain("requireAuth");
   });
 });
