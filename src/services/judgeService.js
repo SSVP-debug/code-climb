@@ -1,6 +1,9 @@
 import { apiFetch } from "./api";
 import { classifyJudgeError } from "../utils/judgeErrorTaxonomy";
-import { buildRunRequestBody, buildSubmitRequestBody } from "../../backend/contracts/judgeRequestContract";
+import {
+  buildRunRequestBody,
+  buildSubmitRequestBody,
+} from "../../shared/contracts/judgeRequestContract.js";
 
 export const judgeSubmission = async ({
   problem,

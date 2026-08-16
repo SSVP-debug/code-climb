@@ -4,7 +4,7 @@ import {
   buildRunRequestBody,
   buildSubmitRequestBody,
   RUN_ALWAYS_REQUIRED_FIELDS,
-} from "../shared/contracts/judgeRequestContract.js";
+} from "../../shared/contracts/judgeRequestContract.js";
 
 /**
  * judge.contract.test.js
