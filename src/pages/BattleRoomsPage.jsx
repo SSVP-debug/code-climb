@@ -14,12 +14,6 @@ import { Users, RadioTower } from "lucide-react";
  * same shape as PrivateContestsPage. Join is fully functional (POST
  * /api/battle-rooms/join); host lands in the room's lobby afterward to
  * assign teams and start the match — see BattleRoomDetailPage.jsx.
- *
- * NOT currently routed. backend/routes/battleRooms.js is intentionally
- * unmounted (see BattleRoomsComingSoonPage.jsx, which App.jsx renders at
- * /club/battle-rooms instead) — the solve-scoring loop is broken
- * end-to-end and there's no ownership/verification story matching the
- * Contest pattern yet. Kept here as a starting point, not deleted.
  */
 function BattleRoomsPage() {
   const navigate = useNavigate();

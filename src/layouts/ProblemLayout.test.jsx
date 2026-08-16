@@ -1,8 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { AuthContext } from "../context/AuthContextObject";
 import ProblemLayout from "./ProblemLayout";
+
+// Firebase test environment: see src/components/Navbar.test.jsx's identical
+// block for the full explanation. Here the chain runs through
+// services/auth.js's logoutUser, imported directly by ProblemLayout.
+vi.mock("firebase/auth", () => ({
+  getAuth: vi.fn(() => ({})),
+  GoogleAuthProvider: vi.fn(),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+}));
+vi.mock("../firebase/firebase", () => ({
+  auth: { currentUser: null },
+  default: {},
+}));
 
 // Navbar transformation, Phase B. Prior to this file, ProblemLayout had no
 // direct test coverage. Covers what actually changed: the "Code Club" mark

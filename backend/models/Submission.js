@@ -37,6 +37,21 @@ const submissionSchema = new mongoose.Schema(
       ref: "Contest",
       default: null,
     },
+    // ── Battle Room linkage ─────────────────────────────────────────────────
+    // Optional — null/absent for ordinary practice and contest submissions,
+    // which stay the overwhelming majority. Set only when this submission
+    // was made with a Battle Room context (see
+    // controllers/judgeController.js submitHandler and
+    // services/battleRoomScoring.js). Same reasoning as contestId above:
+    // this is what makes Battle Room scoring verifiable server-side —
+    // a real Judge0-graded Submission row, not a bare client claim of
+    // "solved" — instead of the client-trusting model the original
+    // BattleRoom /:id/solve endpoint used.
+    battleRoomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BattleRoom",
+      default: null,
+    },
     statusDescription: {
       type: String,
     },
@@ -145,6 +160,16 @@ submissionSchema.index({ userId: 1, problemSlug: 1, createdAt: -1 });
 // practice-mode row under a null key.
 submissionSchema.index(
   { contestId: 1, userId: 1, problemSlug: 1, status: 1 },
+  { sparse: true }
+);
+
+// Index: covers the Battle Room-solve proof lookup — "does this user have
+// a server-verified Accepted submission for this problem, in this Battle
+// Room?" — used by services/battleRoomScoring.js. Sparse for the same
+// reason as the contestId index above: almost no submissions carry a
+// battleRoomId.
+submissionSchema.index(
+  { battleRoomId: 1, userId: 1, problemSlug: 1, status: 1 },
   { sparse: true }
 );
 

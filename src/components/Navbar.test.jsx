@@ -6,6 +6,26 @@ import { AuthContext } from "../context/AuthContextObject";
 import { AppContext } from "../context/AppContextObject";
 import Navbar from "./Navbar";
 
+// Firebase test environment: this file never tests Firebase itself (the
+// AuthContext value below is provided directly), but Navbar's import chain
+// pulls in services/api.js / services/auth.js, both of which import
+// src/firebase/firebase.js — and that module throws at import time if its
+// required env vars aren't set, which they deliberately aren't in the test
+// environment (see src/firebase/firebase.test.js for why: no real Firebase
+// project should ever be reachable from a test run). Mocking at this
+// boundary — same convention src/services/api.test.js already uses — lets
+// the import graph resolve without ever touching real Firebase.
+vi.mock("firebase/auth", () => ({
+  getAuth: vi.fn(() => ({})),
+  GoogleAuthProvider: vi.fn(),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+}));
+vi.mock("../firebase/firebase", () => ({
+  auth: { currentUser: null },
+  default: {},
+}));
+
 // Navbar transformation, Phase A. Prior to this file, Navbar had no direct
 // test coverage — only exercised indirectly (and stubbed out) by layout
 // tests like AdminLayout.test.jsx. This covers what actually changed: the

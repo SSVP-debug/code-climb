@@ -4,7 +4,7 @@ import {
   buildRunRequestBody,
   buildSubmitRequestBody,
   RUN_ALWAYS_REQUIRED_FIELDS,
-} from "../../shared/contracts/judgeRequestContract.js";
+} from "../shared/contracts/judgeRequestContract.js";
 
 /**
  * judge.contract.test.js
@@ -144,6 +144,28 @@ describe("Judge execution contract: frontend request shape vs backend schema", (
 
       const result = submitSchema.safeParse(body);
       expect(result.error.issues[0].message).toBe("problemSlug is required");
+    });
+
+    it("a Submit request carrying battleRoomId passes validation, and battleRoomId is omitted entirely when not provided", () => {
+      const withoutRoom = buildSubmitRequestBody({ problem, code: "...", language: "python" });
+      expect(withoutRoom.battleRoomId).toBeUndefined();
+      expect(submitSchema.safeParse(withoutRoom).success).toBe(true);
+
+      const withRoom = buildSubmitRequestBody({
+        problem, code: "...", language: "python",
+        battleRoomId: "507f1f77bcf86cd799439011",
+      });
+      expect(withRoom.battleRoomId).toBe("507f1f77bcf86cd799439011");
+      expect(submitSchema.safeParse(withRoom).success).toBe(true);
+    });
+
+    it("rejects a malformed battleRoomId rather than silently ignoring it", () => {
+      const body = buildSubmitRequestBody({ problem, code: "...", language: "python" });
+      body.battleRoomId = "not-a-real-object-id";
+
+      const result = submitSchema.safeParse(body);
+      expect(result.success).toBe(false);
+      expect(result.error.issues[0].path).toEqual(["battleRoomId"]);
     });
   });
 });

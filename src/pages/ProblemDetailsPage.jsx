@@ -26,6 +26,11 @@ function ProblemDetailsPage() {
   // POST /api/contests/:id/solve). See ContestDetailPage.jsx.
   const [searchParams] = useSearchParams();
   const contestId = searchParams.get("contest");
+  // Battle Room problem links pass ?battleRoom=<id> so this page can
+  // report the solve back to the room's team score (backend: the
+  // battleRoomId this sends through POST /api/judge/submit — see
+  // backend/services/battleRoomScoring.js). See BattleRoomDetailPage.jsx.
+  const battleRoomId = searchParams.get("battleRoom");
   // Set by LearningPathProblemItem when this problem was opened from
   // inside a Learning Path — see useProblem.js for how this feeds the
   // Next Best Problem recommendation.
@@ -70,13 +75,14 @@ function ProblemDetailsPage() {
       nextSlug={nextSlug}
       nextBestProblem={nextBestProblem}
       contestId={contestId}
+      battleRoomId={battleRoomId}
       editionChapterId={editionChapterId}
     />
   );
 }
 
-function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, contestId, editionChapterId }) {
-  const solver = useProblemSolver({ problem, slug, contestId });
+function ProblemSolver({ problem, slug, prevSlug, nextSlug, nextBestProblem, contestId, battleRoomId, editionChapterId }) {
+  const solver = useProblemSolver({ problem, slug, contestId, battleRoomId });
 
   return (
     <>

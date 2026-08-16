@@ -11,6 +11,20 @@ import AdminCollegesPage from "../pages/admin/AdminCollegesPage";
 import { AuthContext } from "../context/AuthContextObject";
 import { AppContext } from "../context/AppContextObject";
 
+// Firebase test environment: see Navbar.test.jsx's identical block for the
+// full explanation. Here the chain runs through services/api.js, pulled in
+// by the admin pages this file renders.
+vi.mock("firebase/auth", () => ({
+  getAuth: vi.fn(() => ({})),
+  GoogleAuthProvider: vi.fn(),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+}));
+vi.mock("../firebase/firebase", () => ({
+  auth: { currentUser: null },
+  default: {},
+}));
+
 // Navbar pulls in auth/notification/streak widgets unrelated to what this
 // file is testing (the /admin/* role guard) — stub it like DashboardLayout's
 // own tests stub theirs (see src/routes/OnboardingGate.test.jsx).

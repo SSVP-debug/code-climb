@@ -3,11 +3,26 @@ import { logger } from "../config/logger.js";
 import crypto from "crypto";
 import BattleRoom from "../models/BattleRoom.js";
 import Problem from "../models/Problem.js";
+import Submission from "../models/Submission.js";
 import { requireRole } from "../middleware/roleGuard.js";
 import { requireAuth } from "../middleware/auth.js";
+import { awardBattleRoomSolve } from "../services/battleRoomScoring.js";
 
 const router = Router();
-const SOLVE_SCORE = 100;
+
+// ── :id validation ───────────────────────────────────────────────────────
+// A malformed id (wrong length/characters) previously fell through to
+// Mongoose, which throws a CastError that Express turns into an unhandled
+// 500 — a client bug (typo'd/truncated id) looked identical to a real
+// server failure. Same loose-shape check judge.js already uses for
+// contestId/battleRoomId; not full ObjectId semantics, just "could this
+// possibly be one," which is all a 400-vs-500 distinction needs.
+router.param("id", (req, res, next, id) => {
+  if (!/^[a-f0-9]{24}$/i.test(id)) {
+    return res.status(400).json({ error: "Invalid Battle Room id." });
+  }
+  next();
+});
 
 // Mirrors the confirmed private-contest guardrails (Phase 12B) — same
 // spirit, own limits, since Battle Rooms are a separate hosting slot.
@@ -282,73 +297,136 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ── POST /api/battle-rooms/:id/solve — report a solve ───────────────────────
+// ── POST /api/battle-rooms/:id/solve — legacy compat solve endpoint ────────
+// This used to award team credit purely on the strength of a client-sent
+// `{ slug }` — no proof the caller ever actually solved anything. That is
+// no longer true.
+//
+// The real, trusted scoring path is now controllers/judgeController.js's
+// submitHandler, which calls services/battleRoomScoring.js's
+// awardBattleRoomSolve() itself, immediately after computing a real
+// Accepted verdict — see that file (and src/hooks/useProblemSolver.js,
+// which sends battleRoomId directly on POST /api/judge/submit as of the
+// same change, so this route is no longer the primary path). This
+// endpoint is kept only for any caller that hasn't migrated. It is NOT a
+// second, independent way to score: before calling the same
+// awardBattleRoomSolve(), it first requires proof — a real Submission
+// document, written by the judge itself, showing this exact user was
+// Accepted on this exact problem in this exact Battle Room. No such
+// Submission exists → no credit, full stop. A forged `{ slug: "...",
+// status: "Accepted" }` body with no matching Submission is rejected here
+// exactly like it always was for the contest equivalent.
 router.post("/:id/solve", requireAuth, async (req, res) => {
   try {
     const { slug } = req.body;
     if (!slug) return res.status(400).json({ error: "slug required." });
 
-    const room = await BattleRoom.findById(req.params.id);
-    if (!room) return res.status(404).json({ error: "Battle Room not found." });
+    const proof = await Submission.exists({
+      userId: req.userDoc._id,
+      problemSlug: slug,
+      battleRoomId: req.params.id,
+      status: "Accepted",
+    });
 
-    // Time-based check, not just the status flag — a Battle Room can sit
-    // "active" in the DB past its actual endsAt if nothing else has
-    // written to it since (same gap Contest has; not copying it here).
-    const now = new Date();
-    if (room.status !== "active" || (room.endsAt && now > room.endsAt)) {
-      return res.status(400).json({ error: "This Battle Room isn't active." });
-    }
-    if (!room.problemSlugs.includes(slug)) {
-      return res.status(400).json({ error: "Problem not in this Battle Room." });
-    }
-
-    // Step 1 (atomic): record this member's own solve. Filter requires
-    // teamIndex to be set (must be on a team) and this slug not already
-    // personally solved — protects against double-submit races.
-    const afterPersonal = await BattleRoom.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        roster: { $elemMatch: { userId: req.userDoc._id, teamIndex: { $ne: null }, solvedSlugs: { $ne: slug } } },
-      },
-      { $push: { "roster.$.solvedSlugs": slug } },
-      { new: true }
-    );
-
-    if (!afterPersonal) {
-      // Either not on a team, or already personally recorded this slug —
-      // check which, for a clearer response.
-      const current = await BattleRoom.findById(req.params.id).lean();
-      const entry = current?.roster.find((r) => r.userId.toString() === req.userDoc._id.toString());
-      if (!entry || entry.teamIndex == null) {
-        return res.status(403).json({ error: "Join a team before submitting solves." });
-      }
-      return res.json({ success: true, alreadySolvedPersonally: true, countedForTeam: false });
+    if (!proof) {
+      return res.status(403).json({
+        error: "No verified Accepted submission found for this problem in this Battle Room.",
+      });
     }
 
-    const myEntry = afterPersonal.roster.find((r) => r.userId.toString() === req.userDoc._id.toString());
-    const teamIndex = myEntry.teamIndex;
+    const result = await awardBattleRoomSolve({
+      battleRoomId: req.params.id,
+      userId: req.userDoc._id,
+      slug,
+    });
 
-    // Step 2 (atomic): only the first teammate to solve this slug bumps
-    // the team's score — the filter fails for anyone who loses the race
-    // (or arrives after a teammate already solved it), and that's correct.
-    const teamPath = `teams.${teamIndex}.solvedSlugs`;
-    const afterTeam = await BattleRoom.findOneAndUpdate(
-      { _id: req.params.id, [teamPath]: { $ne: slug } },
-      {
-        $push: { [teamPath]: slug },
-        $inc: { [`teams.${teamIndex}.score`]: SOLVE_SCORE },
-      },
-      { new: true }
-    );
+    if (!result.ok) {
+      const statusByReason = {
+        battle_room_not_found: 404,
+        battle_room_not_active: 400,
+        problem_not_in_battle_room: 400,
+        not_joined: 403,
+        not_on_team: 403,
+      };
+      return res
+        .status(statusByReason[result.reason] ?? 400)
+        .json({ error: "Unable to record Battle Room solve.", reason: result.reason });
+    }
 
-    const countedForTeam = Boolean(afterTeam);
-    const finalRoom = afterTeam || afterPersonal;
-    const teamScore = finalRoom.teams[teamIndex].score;
-
-    return res.json({ success: true, countedForTeam, teamScore, teamIndex });
+    return res.json({
+      success: !result.alreadySolvedPersonally,
+      alreadySolvedPersonally: result.alreadySolvedPersonally,
+      countedForTeam: result.countedForTeam,
+      teamScore: result.teamScore,
+      teamIndex: result.teamIndex,
+    });
   } catch (err) {
     (req.log || logger).error({ err }, "[BattleRoom] solve");
     return res.status(500).json({ error: "Failed to record solve." });
+  }
+});
+
+// ── POST /api/battle-rooms/:id/leave — a joined participant leaves ─────────
+// Only while the room is still in the lobby — once a match starts, leaving
+// mid-battle would strand a team a member down with no rule for how to
+// handle that (no such rule was specified, so none is invented here; see
+// PHASE 8/PART A8 of the readiness review). The host can't use this route
+// at all — hosting comes with the one-active-room-at-a-time limit, so a
+// host who wants out cancels the room instead (see DELETE /:id below),
+// which is what actually frees that slot.
+router.post("/:id/leave", requireAuth, async (req, res) => {
+  try {
+    const room = await BattleRoom.findById(req.params.id);
+    if (!room) return res.status(404).json({ error: "Battle Room not found." });
+
+    if (room.createdBy.toString() === req.userDoc._id.toString()) {
+      return res.status(400).json({
+        error: "You're hosting this room — cancel it instead of leaving.",
+      });
+    }
+    if (room.status !== "lobby") {
+      return res.status(400).json({ error: "You can only leave a Battle Room before the match starts." });
+    }
+
+    const before = room.roster.length;
+    room.roster = room.roster.filter((r) => r.userId.toString() !== req.userDoc._id.toString());
+    if (room.roster.length === before) {
+      return res.status(400).json({ error: "You haven't joined this Battle Room." });
+    }
+
+    await room.save();
+    return res.json({ success: true });
+  } catch (err) {
+    (req.log || logger).error({ err }, "[BattleRoom] leave");
+    return res.status(500).json({ error: "Failed to leave Battle Room." });
+  }
+});
+
+// ── DELETE /api/battle-rooms/:id — host cancels a lobby room ───────────────
+// Host-only, lobby-only (an active/ended match isn't cancelled — no rule
+// was specified for abandoning a live match, so none is invented here).
+// This is what frees the one-active-room-at-a-time slot for a host whose
+// room never filled up or never got started. Safe to hard-delete: nothing
+// of value exists yet at the lobby stage — no scores, no submissions tied
+// to this room could exist (Battle Room submissions are only ever scored
+// while status is "active", so an Accepted Submission can never reference
+// a room that's still in "lobby").
+router.delete("/:id", requireAuth, async (req, res) => {
+  try {
+    const room = await BattleRoom.findById(req.params.id);
+    if (!room) return res.status(404).json({ error: "Battle Room not found." });
+    if (room.createdBy.toString() !== req.userDoc._id.toString()) {
+      return res.status(403).json({ error: "Only the host can cancel this Battle Room." });
+    }
+    if (room.status !== "lobby") {
+      return res.status(400).json({ error: "Only a room still in its lobby can be cancelled." });
+    }
+
+    await BattleRoom.deleteOne({ _id: req.params.id });
+    return res.json({ success: true });
+  } catch (err) {
+    (req.log || logger).error({ err }, "[BattleRoom] cancel");
+    return res.status(500).json({ error: "Failed to cancel Battle Room." });
   }
 });
 

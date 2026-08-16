@@ -36,7 +36,7 @@ function deriveForceTab(runResults, submitInfo) {
  * code state (with persistence), run/submit handlers, timer/confetti on
  * first solve, and the panel-resize/mobile-tab UI state the views need.
  */
-export function useProblemSolver({ problem, slug, contestId }) {
+export function useProblemSolver({ problem, slug, contestId, battleRoomId }) {
   const { solvedProblems, addSubmission, markProblemSolved, preferences } = useAppContext();
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
@@ -140,7 +140,7 @@ export function useProblemSolver({ problem, slug, contestId }) {
       setRunResults(null);
       setSubmitInfo(null);
 
-      const judgeResult = await judgeSubmission({ problem, code, language, contestId, onProgress: () => { } });
+      const judgeResult = await judgeSubmission({ problem, code, language, contestId, battleRoomId, onProgress: () => { } });
       const justAccepted = judgeResult.status === "Accepted";
 
       setSubmitInfo({
@@ -204,6 +204,25 @@ export function useProblemSolver({ problem, slug, contestId }) {
           // silently saying nothing, since the student will otherwise
           // wonder why their score didn't move.
           toast.error("Solved, but this contest submission wasn't eligible for scoring.");
+        }
+      }
+
+      // ── Battle Room scoring feedback ──────────────────────────────────────
+      // Same shape as the contest feedback block above: no separate "tell
+      // the room I solved it" call — judgeSubmission() already sent
+      // `battleRoomId` on the real submit call, and the SERVER decided
+      // whether it earned credit (see backend/controllers/judgeController.js
+      // + backend/services/battleRoomScoring.js). This only reads that
+      // decision back to show the right toast.
+      if (battleRoomId && judgeResult.battleRoom) {
+        if (judgeResult.battleRoom.scored) {
+          if (judgeResult.battleRoom.countedForTeam) {
+            toast.success("Team score updated!");
+          } else if (!judgeResult.battleRoom.alreadySolvedPersonally) {
+            toast.success("Solved! A teammate already had this one, so your team's score is unchanged.");
+          }
+        } else {
+          toast.error("Solved, but this Battle Room submission wasn't eligible for scoring.");
         }
       }
 

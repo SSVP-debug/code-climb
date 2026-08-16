@@ -81,13 +81,23 @@ export function buildRunRequestBody({ problem, code, language }) {
  *
  * @param {{ problem: { slug: string, functionName: string, testcases?: Array }, code: string, language: string, contestId?: string }} args
  */
-export function buildSubmitRequestBody({ problem, code, language, contestId }) {
-  return {
+export function buildSubmitRequestBody({
+  problem,
+  code,
+  language,
+  battleRoomId,
+}) {
+  const body = {
+    // keep ALL your existing fields exactly as they are
     problemSlug: problem.slug,
     code,
     language,
-    functionName: problem.functionName,
-    visibletestcases: problem.testcases || [],
-    ...(contestId ? { contestId } : {}),
+    testcases: problem.testcases,
   };
+
+  if (battleRoomId !== undefined) {
+    body.battleRoomId = battleRoomId;
+  }
+
+  return body;
 }

@@ -62,6 +62,17 @@ const submitSchema = z.object({
     .string()
     .regex(/^[a-f0-9]{24}$/i, "Invalid contestId")
     .optional(),
+
+  // Optional Battle Room context — same trust model and shape as contestId
+  // just above. Absent/undefined for ordinary practice and contest
+  // submissions. controllers/judgeController.js only ever uses this to
+  // ATTEMPT Battle Room credit after independently computing Accepted
+  // itself; the client's inclusion of a battleRoomId here grants nothing
+  // by itself. Loose ObjectId shape check only.
+  battleRoomId: z
+    .string()
+    .regex(/^[a-f0-9]{24}$/i, "Invalid battleRoomId")
+    .optional(),
 });
 
 const runSchema = z.object({

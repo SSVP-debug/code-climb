@@ -21,6 +21,7 @@ backend/coverage
 .env.*
 !.env.example
 !backend/.env.example
+!.env.test
 backend/serviceAccountKey.json
 **/serviceAccountKey.json
 *.pem

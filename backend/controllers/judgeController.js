@@ -2,6 +2,7 @@ import { callJudge0 } from "./compilerController.js";
 import Problem from "../models/Problem.js";
 import { recordVerifiedSubmission } from "./submissionController.js";
 import { awardContestSolve } from "../services/contestScoring.js";
+import { awardBattleRoomSolve } from "../services/battleRoomScoring.js";
 import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 
 /**
@@ -258,7 +259,7 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
 // matters. Every `finish()` call below persists the actual, just-computed
 // grading result before responding; nothing here is client-supplied.
 export async function submitHandler(req, res) {
-  const { problemSlug, code, language, visibletestcases, contestId } = req.body;
+  const { problemSlug, code, language, visibletestcases, contestId, battleRoomId } = req.body;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
   const problem = await Problem.findOne({
@@ -390,6 +391,7 @@ export async function submitHandler(req, res) {
           expectedOutput: submissionExtra.expectedOutput,
           actualOutput: submissionExtra.actualOutput,
           contestId: contestId || null,
+          battleRoomId: battleRoomId || null,
         });
 
         responseExtras.submissionId = submissionDoc._id.toString();
@@ -437,6 +439,47 @@ export async function submitHandler(req, res) {
             "[Judge] Failed to record contest score"
           );
           responseExtras.contest = { scored: false, reason: "error" };
+        }
+      }
+
+      // ── Battle Room scoring ───────────────────────────────────────────────
+      // Same trust model as contest scoring immediately above: the ONLY
+      // trigger for Battle Room credit is THIS server having just computed
+      // "Accepted" itself via Judge0 — never a bare client claim. See
+      // services/battleRoomScoring.js. Best-effort and isolated for the
+      // same reasons as the contest block: a scoring hiccup must not turn
+      // a real, already-returned Accepted verdict into a failure for the
+      // user, and a Submission-persistence failure above must not by
+      // itself block a scoring attempt.
+      if (status === "Accepted" && battleRoomId) {
+        try {
+          const result = await awardBattleRoomSolve({
+            battleRoomId,
+            userId: req.userDoc._id,
+            slug: problemSlug,
+          });
+
+          if (result.ok) {
+            responseExtras.battleRoom = {
+              scored: true,
+              alreadySolvedPersonally: result.alreadySolvedPersonally,
+              countedForTeam: result.countedForTeam,
+              teamScore: result.teamScore,
+              teamIndex: result.teamIndex,
+            };
+          } else {
+            req.log.warn(
+              { problemSlug, battleRoomId, reason: result.reason },
+              "[Judge] Accepted submission did not qualify for Battle Room credit"
+            );
+            responseExtras.battleRoom = { scored: false, reason: result.reason };
+          }
+        } catch (err) {
+          req.log.error(
+            { err, problemSlug, battleRoomId },
+            "[Judge] Failed to record Battle Room score"
+          );
+          responseExtras.battleRoom = { scored: false, reason: "error" };
         }
       }
     }

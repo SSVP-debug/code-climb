@@ -40,6 +40,7 @@ import { requireAuth } from "./middleware/auth.js";
 import recruiterRoutes, { candidateTestsRouter } from "./routes/recruiter.js";
 import certificationRoutes from "./routes/certification.js";
 import contestRoutes from "./routes/contests.js";
+import battleRoomRoutes from "./routes/battleRooms.js";
 import playlistRoutes from "./routes/Playlists.js";
 import profileSignRoutes from "./routes/profileSign.js";
 import { requireRole } from "./middleware/roleGuard.js";
@@ -218,6 +219,13 @@ app.use("/api/recruiter", apiLimiter, recruiterRoutes);
 app.use("/api/candidate/tests", requireAuth, apiLimiter, candidateTestsRouter);
 app.use("/api/cert", apiLimiter, certificationRoutes);
 app.use("/api/contests", requireAuth, apiLimiter, contestRoutes);
+// requireAuth is intentionally NOT applied at this mount point, same
+// reasoning as recruiter.js just above — GET /:id is the one route in
+// battleRooms.js designed to work for an unauthenticated caller too
+// (req.userDoc is optional there; host/team/solve fields are simply
+// omitted). Every other route in that file applies requireAuth or
+// requireRole itself, directly on the route.
+app.use("/api/battle-rooms", apiLimiter, battleRoomRoutes);
 app.use("/api/playlists", requireAuth, apiLimiter, playlistRoutes);
 app.use("/api/profile", requireAuth, apiLimiter, profileSignRoutes);
 

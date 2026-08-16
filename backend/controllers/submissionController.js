@@ -65,6 +65,12 @@ export async function recordVerifiedSubmission({
   // it's possible to prove, after the fact, that a given contest solve
   // corresponds to a real server-graded submission.
   contestId = null,
+  // Optional Battle Room context — null for ordinary submissions. Same
+  // trust model as contestId: persisted as-is, not validated here (see
+  // services/battleRoomScoring.js for that) — this only records the link
+  // so a Battle Room solve can be proven, after the fact, against a real
+  // server-graded submission.
+  battleRoomId = null,
 }) {
   if (!SUBMISSION_STATUSES.includes(status)) {
     throw new Error(`recordVerifiedSubmission: invalid status "${status}"`);
@@ -116,6 +122,7 @@ export async function recordVerifiedSubmission({
     normalizedCodeHash,
     encouragementMessage,
     contestId: contestId || null,
+    battleRoomId: battleRoomId || null,
   });
 }
 

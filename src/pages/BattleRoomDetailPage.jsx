@@ -9,14 +9,6 @@ import ClubSubNav from "../components/club/ClubSubNav";
 import Button from "../components/ui/Button";
 import { Copy, Shuffle, Trophy, Check, Users } from "lucide-react";
 
-// NOT currently routed — see BattleRoomsComingSoonPage.jsx / App.jsx.
-// backend/routes/battleRooms.js is intentionally unmounted: this page's
-// team-scoring UI (below) has nothing to actually drive it, since the
-// problem workspace never reports a solve back here (no code anywhere
-// reads the `battleRoom` query param this page writes onto its problem
-// links), and the backend's own /:id/solve endpoint would need a real
-// Accepted-submission proof check (like services/contestScoring.js has)
-// before it's safe to wire up. Kept here as a starting point.
 const POLL_INTERVAL_MS = 7000; // 5–10s confirmed range
 
 function formatCountdown(endsAt) {

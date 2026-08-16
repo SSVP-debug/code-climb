@@ -1,6 +1,6 @@
 import { apiFetch } from "./api";
 import { classifyJudgeError } from "../utils/judgeErrorTaxonomy";
-import { buildRunRequestBody, buildSubmitRequestBody } from "../../shared/contracts/judgeRequestContract";
+import { buildRunRequestBody, buildSubmitRequestBody } from "../../backend/contracts/judgeRequestContract";
 
 export const judgeSubmission = async ({
   problem,
@@ -13,6 +13,10 @@ export const judgeSubmission = async ({
   // submitHandler + backend/services/contestScoring.js). Sending this
   // does not, by itself, grant anything.
   contestId,
+  // Same trust model as contestId above, for Battle Rooms — see
+  // backend/services/battleRoomScoring.js. Sending this does not, by
+  // itself, grant anything either.
+  battleRoomId,
 }) => {
   // Frontend guardrail (execution-contract audit, item #5): don't even
   // attempt the request if the problem we have doesn't have enough
@@ -39,7 +43,7 @@ export const judgeSubmission = async ({
       // checks in CI — see shared/contracts/judgeRequestContract.js.
       // Visible testcases are NOT secret — safe to send from frontend.
       // Hidden testcases are loaded server-side by the backend.
-      body: JSON.stringify(buildSubmitRequestBody({ problem, code, language, contestId })),
+      body: JSON.stringify(buildSubmitRequestBody({ problem, code, language, contestId, battleRoomId })),
     });
 
     return result;

@@ -6,15 +6,12 @@ import { Trophy, Swords, Lock, Users } from "lucide-react";
  * students can move between Leaderboard / Public Contests / Private
  * Contests / Battle Rooms without going back to the hub each time.
  * Same pattern as ProblemsNavigation for /problems' Browse/Patterns/etc.
- *
- * Battle Rooms is rendered but visually marked "Soon" — the route exists
- * (renders a coming-soon page, Phase 12E) so the tab isn't a dead link.
  */
 const SECTIONS = [
   { to: "/club/leaderboard",      label: "Leaderboard",      icon: Trophy },
   { to: "/club/public-contests",  label: "Public Contests",  icon: Swords },
   { to: "/club/private-contests", label: "Private Contests", icon: Lock },
-  { to: "/club/battle-rooms",     label: "Battle Rooms",     icon: Users, soon: true },
+  { to: "/club/battle-rooms",     label: "Battle Rooms",     icon: Users },
 ];
 
 export default function ClubSubNav() {
