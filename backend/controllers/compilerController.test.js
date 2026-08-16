@@ -156,3 +156,86 @@ describe("compilerController — Judge0 health recording (Fest Readiness Audit, 
     expect(recordJudge0Failure).not.toHaveBeenCalled();
   });
 });
+
+describe("compilerController — Judge0 Integration Hardening: outgoing request boundary", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(global, "fetch").mockResolvedValue(
+      jsonResponse({
+        stdout: b64("ok"),
+        stderr: null,
+        compile_output: null,
+        status: { id: 3, description: "Accepted" },
+      })
+    );
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore?.();
+  });
+
+  function outgoingBody() {
+    const [, init] = global.fetch.mock.calls[0];
+    return JSON.parse(init.body);
+  }
+
+  it("item 3/4 — never sends enable_network, even though nothing in the call site could inject one (fetchJudge0's request body is built from server constants only, not spread from any caller-supplied object)", async () => {
+    await callJudge0({
+      sourceCode: "def solve(): pass",
+      language: "python",
+      languageId: 71,
+      testcaseInput: {},
+      functionName: "solve",
+    });
+
+    const body = outgoingBody();
+    expect(body).not.toHaveProperty("enable_network");
+  });
+
+  it("item 5 — every request uses the hardcoded EXECUTION_LIMITS values, regardless of language or caller", async () => {
+    for (const languageId of [54, 62, 63, 71]) {
+      global.fetch.mockClear();
+
+      await callJudge0({
+        sourceCode: "irrelevant",
+        languageId,
+        testcaseInput: {},
+        functionName: "solve",
+      });
+
+      const body = outgoingBody();
+      expect(body.cpu_time_limit).toBe(2);
+      expect(body.wall_time_limit).toBe(5);
+      expect(body.memory_limit).toBe(256000);
+      expect(body.max_processes_and_or_threads).toBe(60);
+      expect(body.max_file_size).toBe(1024);
+    }
+  });
+
+  it("item 5 — runCode (the /api/compiler/run handler) also cannot have limits overridden via req.body, since fetchJudge0 only ever receives (sourceCode, languageId, stdin) as positional args", async () => {
+    const { runCode } = await import("./compilerController.js");
+
+    const req = {
+      // A request body with limit-shaped fields that must be ignored —
+      // runCode only ever destructures source_code/language_id/stdin.
+      body: {
+        source_code: "print(1)",
+        language_id: 71,
+        cpu_time_limit: 999,
+        memory_limit: 999999999,
+        max_processes_and_or_threads: 99999,
+        enable_network: true,
+      },
+      log: { debug: vi.fn(), error: vi.fn() },
+    };
+    const res = { json: vi.fn(), status: vi.fn().mockReturnThis() };
+
+    await runCode(req, res);
+
+    const body = outgoingBody();
+    expect(body.cpu_time_limit).toBe(2);
+    expect(body.memory_limit).toBe(256000);
+    expect(body.max_processes_and_or_threads).toBe(60);
+    expect(body).not.toHaveProperty("enable_network");
+  });
+});

@@ -7,20 +7,15 @@ import {
 } from "../services/executionQueue.js";
 import { EXECUTION_LIMITS } from "../config/executionLimits.js";
 import { recordJudge0Success, recordJudge0Failure } from "../services/judge0Health.js";
+import { SUPPORTED_LANGUAGES, LANGUAGE_ID_TO_STRING } from "../config/languages.js";
 
-const JUDGE0_LANGUAGE_NAMES = {
-  54: "C++",
-  62: "Java",
-  63: "JavaScript",
-  71: "Python",
-};
-
-const LANGUAGE_STRINGS = {
-  71: "python",
-  63: "javascript",
-  62: "java",
-  54: "cpp",
-};
+// Judge0 Integration Hardening: these were previously two locally-declared
+// maps duplicating the same 4 language IDs already listed in
+// routes/compiler.js's Zod schema. Both now derive from the single
+// allow-list in config/languages.js. Local names kept (JUDGE0_LANGUAGE_NAMES,
+// LANGUAGE_STRINGS) so nothing below this line needs to change.
+const JUDGE0_LANGUAGE_NAMES = SUPPORTED_LANGUAGES;
+const LANGUAGE_STRINGS = LANGUAGE_ID_TO_STRING;
 
 // ── Shared Judge0 fetch ───────────────────────────────────────────────────────
 // Internal utility — not exported as a route handler.
@@ -84,6 +79,12 @@ async function fetchJudge0(sourceCode, languageId, stdin = "") {
       requestHeaders["X-Auth-Token"] = process.env.JUDGE0_API_KEY;
     }
 
+    // NOTE on enable_network: deliberately not sent here. See "Network
+    // access policy" in docs/judge0-setup.md — Judge0's configured default
+    // (documented as `false`) applies instead, and no field name below can
+    // be influenced by request-body/header/query input from the caller;
+    // this object is built entirely from server-side constants and the
+    // three explicit function parameters (sourceCode, languageId, stdin).
     const requestBody = JSON.stringify({
       source_code: b64Encode(sourceCode),
       language_id: languageId,

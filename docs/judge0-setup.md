@@ -100,6 +100,42 @@ Good for getting to production quickly without managing a Docker host.
   plain strings before returning — so every caller of `fetchJudge0()` /
   `callJudge0()` is unaffected by the encoding detail.
 
+## Network access policy
+
+Code Club's outgoing Judge0 request body (`fetchJudge0()` in
+`backend/controllers/compilerController.js`) does **not** include an
+`enable_network` field. This was reviewed during Judge0 Integration
+Hardening and deliberately left unchanged rather than adding an explicit
+`enable_network: false`:
+
+- Judge0 only accepted an `enable_network` submission field starting with
+  the CE v1.13.0 release (per Judge0's own changelog), gated by an
+  instance-level `ALLOW_ENABLE_NETWORK` setting.
+- This repository has no record of which Judge0 version is actually
+  deployed in production (see "Judge0 infrastructure requires external
+  verification" below) — it could predate that field.
+- Whether an older Judge0 instance silently ignores an unrecognized JSON
+  attribute or rejects the whole request with it present isn't something
+  that could be verified from this repo or Judge0's public docs with
+  confidence, and guessing at that behavior isn't an acceptable basis for
+  a change that could break every code execution in production.
+
+Because the field is never sent, Judge0 applies its own configured
+default for `enable_network` (documented default: `false`, i.e. no
+network) to every Code Club submission. **Network disabled by Judge0
+deployment default; Code Club does not expose network configuration to
+clients** — no request field, client-provided or otherwise, can add
+`enable_network` to the outgoing payload (see
+`compilerController.test.js`, "network policy" tests, which assert this
+directly against the constructed fetch body).
+
+If the actual deployed Judge0 version is confirmed to be v1.13.0+ (see the
+external verification checklist), it is safe to add an explicit
+`enable_network: false` to `fetchJudge0()`'s request body as
+defense-in-depth against a future change to Judge0's own default — but
+that's a decision for whoever controls the live instance to make with a
+confirmed version in hand, not something to guess at here.
+
 ## Known gaps
 
 - ~~RapidAPI auth headers aren't implemented yet~~ — resolved (see Option B

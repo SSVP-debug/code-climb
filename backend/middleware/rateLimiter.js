@@ -8,7 +8,14 @@ import { rateLimit, ipKeyGenerator } from "express-rate-limit";
  *
  * Falls back to req.ip for unauthenticated routes.
  */
-function userOrIpKey(req) {
+// Exported so other rate limiters (e.g. middleware/compilerRateLimiter.js)
+// can share the exact same key-derivation logic instead of redeclaring a
+// slightly different version that can drift out of sync — see Judge0
+// Integration Hardening item 7, which found compilerRateLimiter.js checking
+// only `req.user?.uid` (never set anywhere in this backend — only
+// `req.auth.uid` is), so it silently fell back to IP-keying for every
+// authenticated request instead of per-user keying.
+export function userOrIpKey(req) {
   return (
     req.auth?.uid ||
     req.user?.uid ||
