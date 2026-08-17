@@ -5,6 +5,7 @@ import RecruiterSignupPage from "./RecruiterSignupPage";
 const navigate = vi.fn();
 vi.mock("react-router-dom", () => ({
   useNavigate: () => navigate,
+  Link: ({ to, children, ...rest }) => <a href={to} {...rest}>{children}</a>,
 }));
 
 const apiFetch = vi.fn();

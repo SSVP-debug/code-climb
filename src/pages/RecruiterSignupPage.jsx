@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { apiFetch } from "../services/api";
 import Button from "../components/ui/Button";
 
@@ -28,6 +28,9 @@ export default function RecruiterSignupPage() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
       <div className="max-w-md w-full">
+        <Link to="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition mb-6 inline-block">
+          ← Back to dashboard
+        </Link>
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black text-white mb-2">Recruiter Access</h1>
           <p className="text-zinc-400 text-sm">Search verified candidates, assign skills tests, and hire faster.</p>

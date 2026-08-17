@@ -2,10 +2,20 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { apiFetch } from "../services/api";
+import PageMeta from "../components/seo/PageMeta";
+import { SUPPORT_EMAIL } from "../config/site.js";
+import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
-import { CheckCircle2, Info } from "lucide-react";
+import { CheckCircle2, Info, Briefcase, Search } from "lucide-react";
 
 const VALID_TABS = ["candidates", "tests"];
+
+// Mirrors GRADUATION_YEARS in src/components/profile/RecruiterSnapshot.jsx
+// (the field a candidate actually sets) — kept as a separate literal for
+// the same react-refresh/only-export-components reason PREFERRED_ROLES
+// below already documents. Keep in sync if that range changes.
+const CURRENT_YEAR = new Date().getFullYear();
+const GRADUATION_YEARS = Array.from({ length: 14 }, (_, i) => String(CURRENT_YEAR - 5 + i));
 
 // Mirrors PREFERRED_ROLES in src/components/profile/RecruiterSnapshot.jsx
 // (itself mirroring backend/controllers/userController.js) — kept as a
@@ -72,6 +82,13 @@ function FilterBar({ filters, onChange }) {
         <option value="">Any role</option>
         {PREFERRED_ROLES.map(r => (
           <option key={r} value={r}>{r}</option>
+        ))}
+      </select>
+      <select value={filters.expectedGraduation} onChange={e => onChange("expectedGraduation", e.target.value)}
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-40">
+        <option value="">Any grad year</option>
+        {GRADUATION_YEARS.map(y => (
+          <option key={y} value={y}>Grad {y}</option>
         ))}
       </select>
       <label className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-300">
@@ -268,7 +285,7 @@ export default function RecruiterDashboardPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "", preferredRole: "", availableForWork: false });
+  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "", preferredRole: "", expectedGraduation: "", availableForWork: false });
   const [selected, setSelected] = useState(null);
   const [interestTarget, setInterestTarget] = useState(null);
   const [pendingVerification, setPendingVerification] = useState(false);
@@ -300,6 +317,7 @@ export default function RecruiterDashboardPage() {
       if (currentFilters.topic) params.set("topic", currentFilters.topic);
       if (currentFilters.minSolved) params.set("minSolved", currentFilters.minSolved);
       if (currentFilters.preferredRole) params.set("preferredRole", currentFilters.preferredRole);
+      if (currentFilters.expectedGraduation) params.set("expectedGraduation", currentFilters.expectedGraduation);
       if (currentFilters.availableForWork) params.set("availableForWork", "true");
 
       const data = await apiFetch(`/api/recruiter/candidates?${params}`);
@@ -337,32 +355,48 @@ export default function RecruiterDashboardPage() {
 
   if (pendingVerification) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
-        <div className="max-w-lg text-center">
-          <h1 className="text-3xl font-black text-white">
-            Recruiter Verification Pending
-          </h1>
+      <DashboardLayout>
+        <PageMeta title="Verification Pending · Code Club Recruiter" path="/recruiter/dashboard" />
+        <div className="flex items-center justify-center px-6 py-24">
+          <div className="max-w-lg text-center">
+            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+              <Briefcase size={28} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h1 className="text-3xl font-black text-white">
+              Recruiter Verification Pending
+            </h1>
 
-          <p className="mt-4 text-zinc-400">
-            Your recruiter account has been created successfully.
-          </p>
+            <p className="mt-4 text-zinc-400">
+              Your recruiter account has been created successfully.
+            </p>
 
-          <p className="text-zinc-500">
-            Access will be enabled after an administrator verifies your account.
-          </p>
+            <p className="text-zinc-500">
+              Access will be enabled after an administrator verifies your account.
+            </p>
+
+            <p className="text-zinc-600 text-sm mt-6">
+              Questions in the meantime? Reach out to {SUPPORT_EMAIL}.
+            </p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <DashboardLayout>
+      <PageMeta title="Recruiter Portal · Code Club" path="/recruiter/dashboard" />
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Recruiter Portal</h1>
-          <p className="text-zinc-500 text-sm">
-            {tab === "candidates" ? `${total} candidates found` : "Skills tests you've sent"}
-          </p>
+        <div className="mb-8 flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)] flex items-center justify-center flex-shrink-0" aria-hidden="true">
+            <Briefcase size={18} strokeWidth={2} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white">Recruiter Portal</h1>
+            <p className="text-zinc-500 text-sm">
+              {tab === "candidates" ? `${total} verified candidates found` : "Skills tests you've sent"}
+            </p>
+          </div>
         </div>
 
         {/* Tabs — same visual pattern as the TPO dashboard */}
@@ -403,13 +437,27 @@ export default function RecruiterDashboardPage() {
                   <span className="text-right">Action</span>
                 </div>
                 {candidates.length === 0 ? (
-                  <p className="text-center text-zinc-600 py-12 text-sm">No candidates match your filters.</p>
+                  <div className="text-center py-16 text-zinc-600">
+                    <Search size={28} strokeWidth={1.75} className="mx-auto mb-3" aria-hidden="true" />
+                    <p className="text-sm">No candidates match your filters.</p>
+                    <p className="text-xs mt-1">Try widening the college domain, dropping the min-solved bar, or clearing a role/grad-year filter.</p>
+                  </div>
                 ) : candidates.map(c => (
                   <div key={c.username} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
                     <div className="col-span-2">
                       <p className="text-sm text-white font-medium">{c.displayName}</p>
                       <p className="text-xs text-zinc-500">{c.college || "—"}</p>
                       <div className="flex gap-1 mt-1 flex-wrap">
+                        {c.availableForWork && (
+                          <span className="text-[9px] bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded font-medium">
+                            Open to work
+                          </span>
+                        )}
+                        {c.expectedGraduation && (
+                          <span className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">
+                            Grad {c.expectedGraduation}
+                          </span>
+                        )}
                         {c.topTopics.map(t => (
                           <span key={t} className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">{t}</span>
                         ))}
@@ -468,6 +516,6 @@ export default function RecruiterDashboardPage() {
           onSent={() => toast.success("Interest sent.")}
         />
       )}
-    </div>
+    </DashboardLayout>
   );
 }

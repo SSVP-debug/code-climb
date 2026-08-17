@@ -35,8 +35,22 @@ function Navbar() {
   // presence.
   const isStudentThemed = role === "student";
 
-  const isActive = (path) =>
-    location.pathname === path || location.pathname.startsWith(`${path}/`);
+  // Tab-aware: a few nav destinations (e.g. the recruiter's Candidates vs
+  // Tests links) point at the same pathname with a different ?tab= query.
+  // When a link specifies a tab, only treat it active if the current
+  // location's tab matches too — otherwise every same-path link would
+  // light up together regardless of which tab is actually open.
+  const isActive = (to) => {
+    const [linkPath, linkQuery] = to.split("?");
+    const pathMatches =
+      location.pathname === linkPath || location.pathname.startsWith(`${linkPath}/`);
+    if (!pathMatches) return false;
+
+    const linkTab = linkQuery ? new URLSearchParams(linkQuery).get("tab") : null;
+    if (!linkTab) return true;
+
+    return new URLSearchParams(location.search).get("tab") === linkTab;
+  };
 
   const handleLogout = async () => {
     await logoutUser();
@@ -64,8 +78,16 @@ function Navbar() {
 
     recruiter: {
       primary: [
-        { to: "/recruiter/dashboard", label: "Candidates" },
-        { to: "/candidate/tests", label: "Tests" },
+        // Both tabs point at the same page with a different ?tab= — see
+        // the tab-aware isActive() below, which needs both to be explicit
+        // to tell them apart (an implicit/default tab wouldn't highlight
+        // correctly once a second tab exists on the same path).
+        { to: "/recruiter/dashboard?tab=candidates", label: "Candidates" },
+        // Was "/candidate/tests" — that's the STUDENT-facing "tests I've
+        // been assigned" page (CandidateTestsPage, calls
+        // /api/candidate/tests). A recruiter's own sent tests live in the
+        // "Sent Tests" tab of their own dashboard instead.
+        { to: "/recruiter/dashboard?tab=tests", label: "Tests" },
       ],
       secondary: [
         { to: "/profile", label: theme.words.profile },

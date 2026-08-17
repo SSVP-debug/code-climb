@@ -125,6 +125,26 @@ describe("TpoDashboardPage — students tab", () => {
   });
 });
 
+describe("TpoDashboardPage — pending verification and shared shell", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("shows a support contact and the shared nav shell instead of a dead-end screen", async () => {
+    apiFetch.mockRejectedValue(new Error("Your TPO account is pending verification."));
+    renderDashboard();
+
+    await waitFor(() => screen.getByText("College Verification Pending"));
+    expect(screen.getByText(/hello@codeclub.in/)).toBeInTheDocument();
+    expect(screen.getByTestId("navbar-stub")).toBeInTheDocument();
+  });
+
+  it("renders the main dashboard inside the shared DashboardLayout shell", async () => {
+    await loadDashboard();
+    expect(screen.getByTestId("navbar-stub")).toBeInTheDocument();
+  });
+});
+
 describe("TpoDashboardPage — assignments tab reminder", () => {
   beforeEach(() => {
     vi.clearAllMocks();

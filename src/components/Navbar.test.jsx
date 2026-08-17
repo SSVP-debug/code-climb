@@ -47,12 +47,16 @@ vi.mock("./common/StreakBadge", () => ({
   default: () => <div data-testid="streak-badge-stub" />,
 }));
 
-function renderNavbar({ role, user = { displayName: "Test User", email: "test@example.com" } }) {
+function renderNavbar({
+  role,
+  user = { displayName: "Test User", email: "test@example.com" },
+  initialEntries = ["/dashboard"],
+}) {
   return render(
     <ThemeProvider>
       <AuthContext.Provider value={{ user, loading: false }}>
         <AppContext.Provider value={{ role, currentStreak: 0 }}>
-          <MemoryRouter initialEntries={["/dashboard"]}>
+          <MemoryRouter initialEntries={initialEntries}>
             <Navbar />
           </MemoryRouter>
         </AppContext.Provider>
@@ -159,5 +163,27 @@ describe("Navbar", () => {
     // stay shrink-0 so it's never the side that gets squeezed.
     const mobileControls = container.querySelector(".flex.lg\\:hidden");
     expect(mobileControls.className).toContain("shrink-0");
+  });
+
+  it("points the recruiter's Tests link at their own sent-tests tab, not the student tests page", () => {
+    renderNavbar({ role: "recruiter" });
+    // Was "/candidate/tests" (the student-facing "assigned to me" page) —
+    // must now be the recruiter's own dashboard tab.
+    expect(screen.getByRole("link", { name: "Tests" })).toHaveAttribute(
+      "href",
+      "/recruiter/dashboard?tab=tests"
+    );
+  });
+
+  it("highlights only the matching tab when two recruiter links share a path with different ?tab=", () => {
+    renderNavbar({ role: "recruiter", initialEntries: ["/recruiter/dashboard?tab=tests"] });
+    expect(screen.getByRole("link", { name: "Tests" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Candidates" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("highlights Candidates instead once back on the candidates tab", () => {
+    renderNavbar({ role: "recruiter", initialEntries: ["/recruiter/dashboard?tab=candidates"] });
+    expect(screen.getByRole("link", { name: "Candidates" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Tests" })).not.toHaveAttribute("aria-current");
   });
 });

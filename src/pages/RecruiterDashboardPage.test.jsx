@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, within, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "../context/ThemeContext";
 import RecruiterDashboardPage from "./RecruiterDashboardPage";
@@ -78,6 +78,25 @@ describe("RecruiterDashboardPage filters", () => {
       expect(lastQueryString().get("availableForWork")).toBe("true");
     });
   });
+
+  it("includes expectedGraduation in the query once a grad year is selected and Search is clicked", async () => {
+    renderPage();
+    await waitFor(() => expect(apiFetch).toHaveBeenCalled());
+
+    const nextYear = String(new Date().getFullYear() + 1);
+    fireEvent.change(screen.getByDisplayValue("Any grad year"), { target: { value: nextYear } });
+    fireEvent.click(screen.getByRole("button", { name: /^search$/i }));
+
+    await waitFor(() => {
+      expect(lastQueryString().get("expectedGraduation")).toBe(nextYear);
+    });
+  });
+
+  it("renders inside the shared DashboardLayout shell", async () => {
+    renderPage();
+    await waitFor(() => expect(apiFetch).toHaveBeenCalled());
+    expect(screen.getByTestId("navbar-stub")).toBeInTheDocument();
+  });
 });
 
 describe("RecruiterDashboardPage verified badge explanation", () => {
@@ -145,5 +164,70 @@ describe("RecruiterDashboardPage verified badge explanation", () => {
     const unverifiedRow = screen.getByText("Unverified Candidate").closest("div.grid");
     const badgeCell = unverifiedRow.querySelector("[title]");
     expect(badgeCell.getAttribute("title")).toBe("Profile has not been signed yet.");
+  });
+});
+
+describe("RecruiterDashboardPage candidate row badges", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("shows an Open to work badge and grad year for a candidate who set them", async () => {
+    apiFetch.mockResolvedValue({
+      candidates: [{
+        username: "opencandidate",
+        displayName: "Open Candidate",
+        college: "Example University",
+        topTopics: [],
+        solvedCount: 12,
+        hard: 2,
+        isVerified: false,
+        availableForWork: true,
+        expectedGraduation: "2026",
+      }],
+      total: 1,
+    });
+    renderPage();
+    await waitFor(() => screen.getByText("Open Candidate"));
+
+    const row = within(screen.getByText("Open Candidate").closest("div.grid"));
+    expect(row.getByText("Open to work")).toBeInTheDocument();
+    expect(row.getByText("Grad 2026")).toBeInTheDocument();
+  });
+
+  it("omits the badges for a candidate who hasn't set them", async () => {
+    apiFetch.mockResolvedValue({
+      candidates: [{
+        username: "quietcandidate",
+        displayName: "Quiet Candidate",
+        college: "Example University",
+        topTopics: [],
+        solvedCount: 8,
+        hard: 1,
+        isVerified: false,
+      }],
+      total: 1,
+    });
+    renderPage();
+    await waitFor(() => screen.getByText("Quiet Candidate"));
+
+    const row = within(screen.getByText("Quiet Candidate").closest("div.grid"));
+    expect(row.queryByText("Open to work")).not.toBeInTheDocument();
+    expect(row.queryByText(/^Grad /)).not.toBeInTheDocument();
+  });
+});
+
+describe("RecruiterDashboardPage pending verification", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("shows a support contact and the shared nav shell instead of a dead-end screen", async () => {
+    apiFetch.mockRejectedValue(new Error("Your recruiter account is pending verification."));
+    renderPage();
+
+    await waitFor(() => screen.getByText("Recruiter Verification Pending"));
+    expect(screen.getByText(/hello@codeclub.in/)).toBeInTheDocument();
+    expect(screen.getByTestId("navbar-stub")).toBeInTheDocument();
   });
 });
