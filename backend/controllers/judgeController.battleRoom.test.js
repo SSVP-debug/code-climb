@@ -79,17 +79,23 @@ describe("submitHandler — Battle Room scoring", () => {
     awardBattleRoomSolve.mockResolvedValue({
       ok: true, alreadySolvedPersonally: false, countedForTeam: true, teamScore: 100, teamIndex: 0,
     });
-    const req = { body: { ...baseBody, battleRoomId: "room1" }, log: mockLog(), userDoc };
+    // A realistic ObjectId-shaped string, not the file's usual "room1"
+    // placeholder — see the matching comment in judgeController.contest.test.js
+    // for why: this test specifically asserts what recordVerifiedSubmission
+    // receives, which (integration-audit fix) now validates battleRoomId
+    // is a real ObjectId before persisting it.
+    const battleRoomId = "64b000000000000000000001";
+    const req = { body: { ...baseBody, battleRoomId }, log: mockLog(), userDoc };
 
     await submitHandler(req, res);
 
     expect(awardBattleRoomSolve).toHaveBeenCalledWith({
-      battleRoomId: "room1",
+      battleRoomId,
       userId: "user1",
       slug: "two-sum",
     });
     expect(recordVerifiedSubmission).toHaveBeenCalledWith(
-      expect.objectContaining({ battleRoomId: "room1", status: "Accepted" })
+      expect.objectContaining({ battleRoomId, status: "Accepted" })
     );
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
