@@ -27,8 +27,16 @@ function SubmissionHistory({ submissions, onSelectSubmission }) {
           [...submissions].reverse().map((submission) => (
             <div
               key={submission._id || submission.id}
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectSubmission(submission)}
-              className="group bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-4 cursor-pointer hover:bg-zinc-800/60 hover:border-zinc-600 transition-all active:scale-[0.98]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelectSubmission(submission);
+                }
+              }}
+              className="group bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-4 cursor-pointer hover:bg-zinc-800/60 hover:border-zinc-600 transition-all active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
             >
               <div className="flex justify-between items-start mb-2">
                 <span className={`text-[15px] font-bold ${getStatusMeta(submission.status).color}`}>

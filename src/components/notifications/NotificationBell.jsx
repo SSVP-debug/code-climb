@@ -38,6 +38,9 @@ function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
+  // Holds the scrollable notification-list <div> so arrow-key navigation
+  // (below) can find its sibling item <button>s without a ref per item.
+  const listRef = useRef(null);
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -124,6 +127,24 @@ function NotificationBell() {
     apiFetch("/api/notifications/read-all", { method: "POST" }).catch(() => {});
   }
 
+  // Roving focus for the notification list — ArrowDown/ArrowUp move
+  // between item buttons, Home/End jump to the first/last. Each item is
+  // already a real <button> (Tab + Enter/Space already worked), this only
+  // adds the arrow-key convention people expect from a menu-like list.
+  function handleListKeyDown(e) {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+    const items = Array.from(listRef.current?.querySelectorAll("button") || []);
+    if (items.length === 0) return;
+    e.preventDefault();
+    const currentIndex = items.indexOf(document.activeElement);
+    let nextIndex;
+    if (e.key === "ArrowDown") nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+    else if (e.key === "ArrowUp") nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+    else if (e.key === "Home") nextIndex = 0;
+    else nextIndex = items.length - 1;
+    items[nextIndex].focus();
+  }
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -161,7 +182,7 @@ function NotificationBell() {
             )}
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto" ref={listRef} onKeyDown={handleListKeyDown}>
             {loading && notifications.length === 0 ? (
               <p className="text-center text-zinc-500 text-sm py-8">Loading…</p>
             ) : notifications.length === 0 ? (

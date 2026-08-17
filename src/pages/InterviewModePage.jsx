@@ -129,7 +129,7 @@ export default function InterviewModePage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </DashboardLayout>
     );
@@ -190,7 +190,7 @@ export default function InterviewModePage() {
             </p>
           </div>
           <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono font-bold text-lg ${
-            urgent ? "bg-red-500/20 text-red-400 animate-pulse" : "bg-zinc-800 text-green-400"
+            urgent ? "bg-red-500/20 text-red-400 animate-pulse" : "bg-zinc-800 text-teal-400"
           }`}>
             ⏱ {formatTime(timeLeft)}
           </div>
@@ -198,7 +198,7 @@ export default function InterviewModePage() {
 
         {submitted ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="bg-zinc-900 border border-green-500/30 rounded-2xl p-8 text-center max-w-md">
+            <div className="bg-zinc-900 border border-teal-500/30 rounded-2xl p-8 text-center max-w-md">
               <h2 className="text-2xl font-bold text-white mb-2">Interview Complete</h2>
               <p className="text-zinc-400 text-sm mb-2">{chatLog.filter(c=>c.role==="interviewer").length} questions asked</p>
               <p className="text-zinc-500 text-xs mb-6">Time used: {formatTime(session.durationMs - timeLeft)}</p>
@@ -253,7 +253,7 @@ export default function InterviewModePage() {
                   <div key={i} className={`flex ${msg.role === "candidate" ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] px-3 py-2 rounded-xl text-sm ${
                       msg.role === "candidate"
-                        ? "bg-green-600 text-white"
+                        ? "bg-teal-600 text-white"
                         : "bg-zinc-800 text-zinc-200"
                     }`}>
                       {msg.text}
@@ -273,7 +273,7 @@ export default function InterviewModePage() {
                     onChange={e => setUserInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && handleAsk()}
                     placeholder="Explain your approach…"
-                    className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500/50"
+                    className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-teal-500/50"
                   />
                   <Button
                     size="sm"

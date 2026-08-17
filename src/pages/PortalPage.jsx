@@ -15,7 +15,7 @@ const ROLES = [
   {
     id: "student",
     label: "Student",
-    accent: "green",
+    accent: "teal",
     Icon: GraduationCap,
     tagline: "Solve, climb, get interview-ready.",
     description:
@@ -45,11 +45,11 @@ const ROLES = [
 ];
 
 const ACCENT_CLASSES = {
-  green: {
-    border: "hover:border-green-500/50 focus-visible:ring-green-500/60",
-    badge: "text-green-400 bg-green-500/10 border-green-500/20",
-    shadow: "hover:shadow-[0_0_40px_-15px_rgba(34,197,94,0.35)]",
-    button: "bg-green-600 group-hover:bg-green-500",
+  teal: {
+    border: "hover:border-teal-500/50 focus-visible:ring-teal-500/60",
+    badge: "text-teal-400 bg-teal-500/10 border-teal-500/20",
+    shadow: "hover:shadow-[0_0_40px_-15px_rgba(45,212,191,0.35)]",
+    button: "bg-teal-600 group-hover:bg-teal-500",
   },
   sky: {
     border: "hover:border-sky-500/50 focus-visible:ring-sky-500/60",

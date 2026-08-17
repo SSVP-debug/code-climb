@@ -117,7 +117,7 @@ export default function ThemeSelectionPage() {
                     <button
                         onClick={() => scrollByCard(-1)}
                         aria-label="Scroll to previous universe"
-                        className="hidden sm:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-green-500 hover:bg-zinc-800 transition"
+                        className="hidden sm:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-teal-500 hover:bg-zinc-800 transition"
                     >
                         ←
                     </button>
@@ -126,7 +126,7 @@ export default function ThemeSelectionPage() {
                     <button
                         onClick={() => scrollByCard(1)}
                         aria-label="Scroll to next universe"
-                        className="hidden sm:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-green-500 hover:bg-zinc-800 transition"
+                        className="hidden sm:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-teal-500 hover:bg-zinc-800 transition"
                     >
                         →
                     </button>
