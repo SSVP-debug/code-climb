@@ -229,10 +229,24 @@ describe("POST /api/battle-rooms/join", () => {
 
   it("succeeds for a fresh join", async () => {
     BattleRoom.findOne.mockResolvedValue(makeRoomDoc());
+    // The actual join is now a single atomic findOneAndUpdate (see
+    // routes/battleRooms.js's own comment on this handler for why) — the
+    // initial findOne above is only used for the fast-path 404/already-
+    // started/already-joined checks.
+    BattleRoom.findOneAndUpdate.mockResolvedValue(makeRoomDoc());
     const req = { body: { inviteCode: "ABC123" }, userDoc: userDoc(), log: mockLog() };
     await getHandler("post", "/join")(req, res);
 
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+    expect(BattleRoom.findOneAndUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _id: "room1",
+        status: "lobby",
+        "roster.userId": { $ne: "user1" },
+      }),
+      expect.objectContaining({ $push: expect.objectContaining({ roster: expect.objectContaining({ userId: "user1" }) }) }),
+      expect.objectContaining({ new: true })
+    );
   });
 
   it("does not create a duplicate membership on a repeat join (idempotent)", async () => {
@@ -250,6 +264,11 @@ describe("POST /api/battle-rooms/join", () => {
       userId: { toString: () => `user${i}` }, teamIndex: null, solvedSlugs: [],
     }));
     BattleRoom.findOne.mockResolvedValue(makeRoomDoc({ roster: fullRoster, maxTeamSize: 4 }));
+    // Full capacity → the atomic filter's $expr size guard genuinely
+    // can't match anything, so findOneAndUpdate correctly returns null;
+    // the handler then re-reads to report the specific 409 reason.
+    BattleRoom.findOneAndUpdate.mockResolvedValue(null);
+    BattleRoom.findById.mockReturnValue(queryResult({ status: "lobby", roster: fullRoster }));
     const req = { body: { inviteCode: "ABC123" }, userDoc: userDoc({ _id: "newUser" }), log: mockLog() };
     await getHandler("post", "/join")(req, res);
 

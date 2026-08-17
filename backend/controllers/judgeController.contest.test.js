@@ -76,17 +76,25 @@ describe("submitHandler — contest scoring (Fest Readiness Audit, P0-1)", () =>
     Problem.findOne.mockResolvedValue(problemDoc);
     callJudge0.mockResolvedValue({ stdout: JSON.stringify([0, 1]), stderr: null, compile_output: null });
     awardContestSolve.mockResolvedValue({ ok: true, alreadySolved: false, score: 100 });
-    const req = { body: { ...baseBody, contestId: "contest1" }, log: mockLog(), userDoc };
+    // A realistic ObjectId-shaped string, not the file's usual "contest1"
+    // placeholder — this specific test asserts what recordVerifiedSubmission
+    // receives, and (integration-audit fix) that call now validates
+    // contestId is a real ObjectId before persisting it, so a fake
+    // non-ObjectId placeholder would be correctly nulled out here. The
+    // scoring call (awardContestSolve) is unaffected either way — it
+    // always receives the raw, unsanitized value.
+    const contestId = "64a000000000000000000001";
+    const req = { body: { ...baseBody, contestId }, log: mockLog(), userDoc };
 
     await submitHandler(req, res);
 
     expect(awardContestSolve).toHaveBeenCalledWith({
-      contestId: "contest1",
+      contestId,
       userId: "user1",
       slug: "two-sum",
     });
     expect(recordVerifiedSubmission).toHaveBeenCalledWith(
-      expect.objectContaining({ contestId: "contest1", status: "Accepted" })
+      expect.objectContaining({ contestId, status: "Accepted" })
     );
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({

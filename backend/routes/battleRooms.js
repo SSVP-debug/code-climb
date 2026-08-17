@@ -110,6 +110,29 @@ router.post("/", requireRole("student", "tpo", "admin"), async (req, res) => {
 });
 
 // ── POST /api/battle-rooms/join — join the lobby via invite code ───────────
+// Integration-audit fix, take 2: this used to be a plain read →
+// roster.push() → .save(). A first pass replaced that with a bounded
+// optimistic retry on Mongoose's VersionError, on the (source-code-
+// verified) assumption that .save() version-checks array-push updates.
+// A real local Mongo run disproved that in practice — two genuinely
+// concurrent joins for the last open slot both landed ("2 joined", never
+// a VersionError on either side), meaning MongoDB's $push itself has no
+// precondition and happily accepts two concurrent pushes past whatever
+// capacity was true at each request's own read time. Optimistic retry
+// only helps if the LOSING write is actually rejected; here neither write
+// was ever rejected, so there was nothing to retry.
+// Real fix: a single atomic, conditional MongoDB update. The capacity
+// check ($expr comparing roster size against maxTeamSize*2), the
+// already-joined check ($ne on roster.userId), and the $push itself are
+// all evaluated by MongoDB as ONE atomic per-document operation — not
+// read-then-decide-then-write in application code. Two concurrent
+// requests for the same last slot are serialized by MongoDB's own
+// per-document handling: at most one filter can still match by the time
+// each is evaluated, so at most one $push can land. This mirrors the
+// atomic-update pattern already used in services/battleRoomScoring.js and
+// services/contestScoring.js. See
+// routes/battleRoomsJoin.concurrency.integration.test.js for the
+// regression coverage (now asserting on the real fix, not the retry).
 router.post("/join", requireAuth, async (req, res) => {
   try {
     const { inviteCode } = req.body;
@@ -126,20 +149,46 @@ router.post("/join", requireAuth, async (req, res) => {
       return res.json({ alreadyJoined: true, roomId: room._id });
     }
 
-    if (room.roster.length >= room.maxTeamSize * 2) {
-      return res.status(409).json({ error: "This Battle Room is full." });
+    const updated = await BattleRoom.findOneAndUpdate(
+      {
+        _id: room._id,
+        status: "lobby",
+        "roster.userId": { $ne: req.userDoc._id },
+        $expr: { $lt: [{ $size: "$roster" }, { $multiply: ["$maxTeamSize", 2] }] },
+      },
+      {
+        $push: {
+          roster: {
+            userId: req.userDoc._id,
+            username: req.userDoc.username,
+            displayName: req.userDoc.displayName,
+            teamIndex: null,
+            solvedSlugs: [],
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (updated) {
+      return res.json({ success: true, roomId: updated._id, title: updated.title });
     }
 
-    room.roster.push({
-      userId: req.userDoc._id,
-      username: req.userDoc.username,
-      displayName: req.userDoc.displayName,
-      teamIndex: null,
-      solvedSlugs: [],
-    });
-    await room.save();
-
-    return res.json({ success: true, roomId: room._id, title: room.title });
+    // The atomic filter matched nothing — someone else's concurrent write
+    // (a join that took the last slot, a status change, etc.) landed
+    // first. This re-read is purely to report the correct, specific
+    // reason; it has no bearing on correctness — that was already fully
+    // decided by the atomic step above.
+    const current = await BattleRoom.findById(room._id).lean();
+    if (!current) return res.status(404).json({ error: "Invalid invite code." });
+    if (current.status !== "lobby") {
+      return res.status(400).json({ error: "This Battle Room has already started or ended." });
+    }
+    const nowJoined = current.roster.some((r) => r.userId.toString() === req.userDoc._id.toString());
+    if (nowJoined) {
+      return res.json({ alreadyJoined: true, roomId: current._id });
+    }
+    return res.status(409).json({ error: "This Battle Room is full." });
   } catch (err) {
     (req.log || logger).error({ err }, "[BattleRoom] join");
     return res.status(500).json({ error: "Failed to join Battle Room." });

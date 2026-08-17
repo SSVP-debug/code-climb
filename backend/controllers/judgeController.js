@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { callJudge0 } from "./compilerController.js";
 import Problem from "../models/Problem.js";
 import { recordVerifiedSubmission } from "./submissionController.js";
@@ -199,7 +200,28 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
       operationSequence,
     });
   } catch (callErr) {
-    return { index, isVisible, kind: "callError", error: callErr, errorMessage: callErr.message };
+    return {
+      index,
+      isVisible,
+      kind: "callError",
+      error: callErr,
+      // Integration-audit fix: this used to be `callErr.message` directly.
+      // That's an infrastructure-level error message — e.g. fetchJudge0's
+      // own `Judge0 returned HTTP ${status}: ${raw}` construction embeds
+      // Judge0's raw response body verbatim, and a network-level failure
+      // can carry connection details in its message — and unlike stderr
+      // (sanitized via sanitizeStderr() above), it was never redacted
+      // before being persisted to the Submission document AND returned
+      // directly in the client-facing JSON response (see finish()'s
+      // `res.json({ status, ...payload, ...responseExtras })`). The full
+      // original error is still captured server-side via the req.log.error
+      // call at this failure's call site — this field is only what's
+      // ever shown to the client, which must never carry raw Judge0/
+      // network internals. There's no user-actionable content lost here:
+      // an infra failure isn't something the user can fix by reading the
+      // raw error, unlike a compile error.
+      errorMessage: "Failed to reach the code execution service. Please try again.",
+    };
   }
 
   if (!result) {
@@ -260,6 +282,26 @@ async function runTestcase({ testcase, index, isVisible, code, language, languag
 // grading result before responding; nothing here is client-supplied.
 export async function submitHandler(req, res) {
   const { problemSlug, code, language, visibletestcases, contestId, battleRoomId } = req.body;
+
+  // ── Malformed optional scoring-reference guard (integration-audit fix) ──
+  // BUG FOUND & FIXED: contestId/battleRoomId are optional, client-sent,
+  // and were passed straight into recordVerifiedSubmission() below, whose
+  // Submission.create() call types them as strict Mongoose ObjectIds. A
+  // malformed string there (e.g. "not-a-valid-object-id") threw a
+  // CastError INSIDE the same try/catch that guards Submission
+  // persistence itself — silently discarding the entire Submission row
+  // for an otherwise-real, server-computed Accepted verdict. The contest/
+  // battle-room SCORING attempt (awardContestSolve/awardBattleRoomSolve,
+  // further below) already degrades this exact same malformed-ID case
+  // correctly via its own separate try/catch (Contest.findById/
+  // BattleRoom.findById throw the same CastError, caught there and
+  // reported as `{ scored: false, reason: "error" }`) — so only the
+  // Submission-persistence path needed fixing, not scoring. Sanitized
+  // once here, used only for persistence below; the raw (possibly
+  // malformed) contestId/battleRoomId are left untouched for the scoring
+  // blocks, which already handle them correctly.
+  const persistedContestId = mongoose.isValidObjectId(contestId) ? contestId : null;
+  const persistedBattleRoomId = mongoose.isValidObjectId(battleRoomId) ? battleRoomId : null;
 
   // ── Load hidden testcases ──────────────────────────────────────────────
   const problem = await Problem.findOne({
@@ -390,8 +432,8 @@ export async function submitHandler(req, res) {
           executionTime: payload.executionTime ?? null,
           expectedOutput: submissionExtra.expectedOutput,
           actualOutput: submissionExtra.actualOutput,
-          contestId: contestId || null,
-          battleRoomId: battleRoomId || null,
+          contestId: persistedContestId,
+          battleRoomId: persistedBattleRoomId,
         });
 
         responseExtras.submissionId = submissionDoc._id.toString();
