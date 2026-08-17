@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, GraduationCap, Users2, ExternalLink } from "lucide-react";
+import { Search, X, GraduationCap, Users2, ExternalLink } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import { useAdminColleges, COLLEGES_PAGE_SIZE } from "../../hooks/useAdminColleges";
 import CollegeDetailDrawer from "../../components/admin/CollegeDetailDrawer";
@@ -76,6 +76,9 @@ export default function AdminCollegesPage() {
           </p>
         </div>
 
+        {/* Admin UX audit (Phase UI-3, P1): same clear (×) affordance as
+            the Users page search box — consistent pattern for the same
+            interaction across both searchable admin lists. */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <div className="relative flex-1">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
@@ -84,8 +87,18 @@ export default function AdminCollegesPage() {
               placeholder="Search name or domain…"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
             />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={() => setSearchInput("")}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+              >
+                <X size={13} />
+              </button>
+            )}
           </div>
           <select
             value={statusFilter}

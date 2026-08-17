@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Users as UsersIcon, ShieldAlert } from "lucide-react";
-import Button from "../ui/Button";
+import LoginAsButton from "./LoginAsButton";
 import UserActionsMenu from "./UserActionsMenu";
 import UserDetailDrawer from "./UserDetailDrawer";
 import { USERS_PAGE_SIZE } from "../../hooks/useAdminUsers";
@@ -92,14 +92,31 @@ function UsersLoginAsSection({ adminUsers }) {
         </div>
       )}
 
+      {/* Admin UX audit (Phase UI-3, P1): clear (×) affordance on the
+          search box, matching the college-filter chip's existing pattern
+          above — previously the only way to clear a search was to select
+          and backspace it, which is real friction on a page an admin
+          reaches for constantly. */}
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
-        <input
-          type="text"
-          placeholder="Search name, email, or username…"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
-        />
+        <div className="relative flex-1">
+          <input
+            type="text"
+            placeholder="Search name, email, or username…"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-3 pr-8 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+          />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={() => setSearchInput("")}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+            >
+              <X size={13} />
+            </button>
+          )}
+        </div>
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
@@ -158,15 +175,7 @@ function UsersLoginAsSection({ adminUsers }) {
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={impersonatingId === u.id}
-                  loading={impersonatingId === u.id}
-                  onClick={() => loginAs(u)}
-                >
-                  Login As
-                </Button>
+                <LoginAsButton user={u} impersonatingId={impersonatingId} loginAs={loginAs} />
                 <UserActionsMenu
                   user={u}
                   busy={busyIds[u.id]}

@@ -1,4 +1,4 @@
-import Button from "../ui/Button";
+import LoginAsButton from "./LoginAsButton";
 import UserActionsMenu from "./UserActionsMenu";
 import SideDrawer, { DrawerSection, DrawerField } from "./command/SideDrawer";
 
@@ -70,16 +70,13 @@ export default function UserDetailDrawer({ user, open, onClose, actions }) {
 
       <DrawerSection label="Actions">
         <div className="flex flex-col gap-2">
-          <Button
-            size="sm"
-            variant="secondary"
+          <LoginAsButton
+            user={user}
+            impersonatingId={impersonatingId}
+            loginAs={loginAs}
             className="w-full justify-center"
-            disabled={impersonatingId === user.id}
-            loading={impersonatingId === user.id}
-            onClick={() => loginAs(user)}
-          >
-            Login as {user.displayName || "user"}
-          </Button>
+            label={`Login as ${user.displayName || "user"}`}
+          />
           <div className="flex items-center justify-between rounded-lg border border-zinc-800 px-3 py-2">
             <span className="text-zinc-400 text-xs">More actions</span>
             <UserActionsMenu

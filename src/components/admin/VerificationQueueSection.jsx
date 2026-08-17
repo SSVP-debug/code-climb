@@ -1,6 +1,17 @@
+import { useState } from "react";
 import Button from "../ui/Button";
+import ConfirmDialog from "../ui/ConfirmDialog";
 
+// Admin UX audit (Phase UI-3, P0): Reject used to fire on a single click,
+// same as Approve. The two aren't symmetric in risk — Approve is easy to
+// walk back later (suspend, from the Users table), but Reject discards
+// the request outright with no record surfaced to the requester and no
+// way for the admin to undo it from here. It gets a confirmation step;
+// Approve stays one-click since a fast, low-friction "yes" is exactly
+// what a review queue should optimize for.
 function QueueRow({ title, subtitle, meta, onApprove, onReject, busy }) {
+  const [confirmingReject, setConfirmingReject] = useState(false);
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
       <div className="min-w-0">
@@ -9,13 +20,34 @@ function QueueRow({ title, subtitle, meta, onApprove, onReject, busy }) {
         {meta && <p className="text-zinc-600 text-[11px] mt-0.5">{meta}</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <Button size="sm" variant="secondary" disabled={busy} loading={busy === "reject"} onClick={onReject}>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={busy}
+          loading={busy === "reject"}
+          onClick={() => setConfirmingReject(true)}
+        >
           Reject
         </Button>
         <Button size="sm" variant="primary" disabled={busy} loading={busy === "approve"} onClick={onApprove}>
           Approve
         </Button>
       </div>
+
+      {confirmingReject && (
+        <ConfirmDialog
+          title={`Reject ${title}?`}
+          description="This discards the request. They'll need to submit a new one if they want to be reconsidered — this can't be undone from here."
+          confirmLabel="Reject"
+          destructive
+          loading={busy === "reject"}
+          onConfirm={() => {
+            setConfirmingReject(false);
+            onReject();
+          }}
+          onCancel={() => setConfirmingReject(false)}
+        />
+      )}
     </div>
   );
 }

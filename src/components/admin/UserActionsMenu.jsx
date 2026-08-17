@@ -10,13 +10,21 @@ const ROLE_OPTIONS = ["student", "recruiter", "tpo"];
 
 /**
  * UserActionsMenu — per-row dropdown for the five plan-003 management
- * actions (suspend/activate/delete/reset progress/change role). Delete and
- * reset-progress are irreversible/high-impact, so both route through
- * ConfirmDialog before firing; the other three are single-click.
+ * actions (suspend/activate/delete/reset-progress/change role).
+ *
+ * Admin UX audit (Phase UI-3, P0): suspend and change-role used to fire
+ * immediately on click. Both are explicitly called out in the audit spec
+ * as consequential actions needing confirmation — suspend cuts off a
+ * real person's access, and role change is a permissions change — so
+ * they now route through ConfirmDialog like delete/reset-progress
+ * already did. Activate stays single-click: it only restores access
+ * (the reversible, low-risk direction), matching the "confirmation
+ * should be proportional to consequence" principle rather than gating
+ * every action equally.
  */
 function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetProgress, onChangeRole }) {
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState(null); // "delete" | "reset-progress" | null
+  const [confirming, setConfirming] = useState(null); // "suspend" | "delete" | "reset-progress" | { role } | null
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
 
   function closeAll() {
@@ -56,7 +64,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                 type="button"
                 onClick={() => {
                   closeAll();
-                  onSuspend(user.id);
+                  setConfirming("suspend");
                 }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-left text-zinc-200 hover:bg-zinc-900"
               >
@@ -80,7 +88,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                       type="button"
                       onClick={() => {
                         closeAll();
-                        onChangeRole(user.id, r);
+                        setConfirming({ role: r });
                       }}
                       className="w-full text-left px-2 py-1.5 text-xs text-zinc-400 hover:text-white rounded"
                     >
@@ -120,6 +128,35 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
             </button>
           </div>
         </>
+      )}
+
+      {confirming === "suspend" && (
+        <ConfirmDialog
+          title="Suspend this user?"
+          description={`${user.displayName || user.email} will immediately lose access to their account. You can reactivate them at any time from this same menu.`}
+          confirmLabel="Suspend"
+          destructive
+          loading={busy === "suspend"}
+          onConfirm={() => {
+            onSuspend(user.id);
+            setConfirming(null);
+          }}
+          onCancel={() => setConfirming(null)}
+        />
+      )}
+
+      {confirming?.role && (
+        <ConfirmDialog
+          title={`Change role to ${confirming.role}?`}
+          description={`${user.displayName || user.email} will move from ${user.role} to ${confirming.role} and immediately gain/lose the permissions that come with it.`}
+          confirmLabel="Change role"
+          loading={busy === "role"}
+          onConfirm={() => {
+            onChangeRole(user.id, confirming.role);
+            setConfirming(null);
+          }}
+          onCancel={() => setConfirming(null)}
+        />
       )}
 
       {confirming === "delete" && (
