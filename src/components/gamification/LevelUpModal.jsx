@@ -49,10 +49,16 @@ export default function LevelUpModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none" aria-live="polite">
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40"
+      aria-live="polite"
+      role="dialog"
+      aria-modal="true"
+      onClick={() => setVisible(false)}
+    >
       <div
-        onClick={() => setVisible(false)}
-        className="pointer-events-auto bg-zinc-900 border border-[var(--theme-primary,#2dd4bf)]/30 rounded-3xl p-8 text-center shadow-2xl shadow-[var(--theme-primary,#2dd4bf)]/20 max-w-xs w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-zinc-900 border border-[var(--theme-primary,#2dd4bf)]/30 rounded-3xl p-8 text-center shadow-2xl shadow-[var(--theme-primary,#2dd4bf)]/20 max-w-xs w-full mx-4"
         style={{ animation: "levelUpPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
@@ -83,7 +89,7 @@ export default function LevelUpModal() {
           </button>
 
           <p className="text-[10px] text-zinc-600">
-            Click outside or press the card to dismiss
+            Press Escape or click outside to dismiss
           </p>
         </div>
       </div>

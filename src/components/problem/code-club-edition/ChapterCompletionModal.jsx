@@ -36,10 +36,16 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
   }, [onDismiss]);
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center pointer-events-none" aria-live="polite">
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40"
+      aria-live="polite"
+      role="dialog"
+      aria-modal="true"
+      onClick={onDismiss}
+    >
       <div
-        onClick={onDismiss}
-        className="pointer-events-auto bg-zinc-900 border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-sm w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-zinc-900 border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-sm w-full mx-4"
         style={{ animation: "chapterCompletePop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
@@ -73,7 +79,7 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
         </div>
 
         <p className="mt-4 text-[10px] text-zinc-600">
-          Click outside or press the card to dismiss
+          Press Escape or click outside to dismiss
         </p>
       </div>
       <style>{`@keyframes chapterCompletePop { from{opacity:0;transform:scale(0.6) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }`}</style>

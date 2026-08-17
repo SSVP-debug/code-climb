@@ -6,9 +6,12 @@ import { PlayCircle } from "lucide-react";
 function ContinueLearningSection() {
   const { submissions } = useAppContext();
 
+  // Backend (/api/init) returns submissions sorted newest-first
+  // (Submission.find().sort({ createdAt: -1 })) — index 0 is the most
+  // recent attempt, not the last index.
   const latestSubmission =
     submissions?.length > 0
-      ? submissions[submissions.length - 1]
+      ? submissions[0]
       : null;
 
 
