@@ -108,7 +108,7 @@ function AIInsightsSection() {
           <button
             onClick={fetchInsights}
             disabled={!canRefresh || status === "loading"}
-            className="text-xs text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+            className="text-xs text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
             title={!canRefresh ? `Available in ${secondsLeft}s` : "Refresh insights"}
           >
             <svg
@@ -158,7 +158,7 @@ function AIInsightsSection() {
           <p className="text-red-400 text-sm mb-3">{errorMsg}</p>
           <button
             onClick={fetchInsights}
-            className="text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-3 py-1.5 rounded-lg transition-colors"
+            className="text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-3 py-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
           >
             Try again
           </button>

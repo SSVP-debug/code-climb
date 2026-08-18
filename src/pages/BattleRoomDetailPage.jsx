@@ -152,7 +152,7 @@ export default function BattleRoomDetailPage() {
                 </div>
                 <button
                   onClick={() => { navigator.clipboard.writeText(inviteCode); toast.success("Code copied"); }}
-                  className="p-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition"
+                  className="p-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                 >
                   <Copy size={16} aria-hidden="true" />
                 </button>
@@ -180,14 +180,14 @@ export default function BattleRoomDetailPage() {
                           <button
                             disabled={assigning}
                             onClick={() => assignTeam(m.userId, 0)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50"
+                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                           >
                             → {teams[0].name}
                           </button>
                           <button
                             disabled={assigning}
                             onClick={() => assignTeam(m.userId, 1)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50"
+                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                           >
                             → {teams[1].name}
                           </button>
@@ -200,7 +200,7 @@ export default function BattleRoomDetailPage() {
                   <button
                     onClick={randomize}
                     disabled={assigning}
-                    className="mt-3 text-xs flex items-center gap-1.5 text-zinc-400 hover:text-white transition disabled:opacity-50"
+                    className="mt-3 text-xs flex items-center gap-1.5 text-zinc-400 hover:text-white transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
                   >
                     <Shuffle size={12} aria-hidden="true" /> Randomize everyone
                   </button>
@@ -222,7 +222,7 @@ export default function BattleRoomDetailPage() {
                         {isHost && (
                           <button
                             onClick={() => assignTeam(m.userId, null)}
-                            className="text-zinc-500 hover:text-red-400 text-xs flex-shrink-0"
+                            className="text-zinc-500 hover:text-red-400 text-xs flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
                           >
                             Remove
                           </button>

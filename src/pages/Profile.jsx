@@ -381,7 +381,7 @@ function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowAllActivity((v) => !v)}
-                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                   >
                     {showAllActivity
                       ? "Show less"
@@ -450,7 +450,7 @@ function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                   >
                     {showAllSubmissions
                       ? "Show less"

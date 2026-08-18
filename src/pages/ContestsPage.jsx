@@ -91,19 +91,20 @@ function ContestCard({ contest, onJoin }) {
             {joining ? "Joining…" : "Join & Compete"}
           </Button>
           <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition">
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
             Leaderboard
           </button>
         </div>
       )}
       {contest.status === "upcoming" && (
-        <p className="text-center text-zinc-600 text-xs py-1">
+        <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
+          className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
           Starts {new Date(contest.startsAt).toLocaleString()}
-        </p>
+        </button>
       )}
       {contest.status === "ended" && (
         <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
-          className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition">
+          className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
           View Results
         </button>
       )}
@@ -161,7 +162,7 @@ export default function ContestsPage() {
             const active = tab === t.value;
             return (
               <button key={t.value} onClick={() => setTab(t.value)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
                   active ? "text-white" : "bg-zinc-900 border border-zinc-800 text-zinc-400"
                 }`}
                 style={active ? { backgroundColor: theme.colors.primary, color: "#09090b" } : undefined}

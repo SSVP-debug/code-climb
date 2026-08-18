@@ -53,7 +53,7 @@ function BrowseToolbar({
         {searchTerm && (
           <button
             onClick={() => setSearchTerm("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
             aria-label="Clear search"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -76,7 +76,7 @@ function BrowseToolbar({
             <button
               key={`${s.type}:${s.value}`}
               onClick={() => setSearchTerm(s.value)}
-              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-[var(--theme-primary,#2dd4bf)] hover:text-white transition-colors"
+              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-[var(--theme-primary,#2dd4bf)] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
             >
               {s.value}
               <span className="text-zinc-600 ml-1">{s.count}</span>
@@ -89,7 +89,7 @@ function BrowseToolbar({
       {/* The #1 filter returning users need — placed prominently above topic/diff */}
       <button
         onClick={toggleHideSolved}
-        className={`flex items-center gap-2 w-fit px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+        className={`flex items-center gap-2 w-fit px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
           hideSolved
             ? "bg-transparent"
             : "bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
@@ -131,7 +131,7 @@ function BrowseToolbar({
             <button
               key={topic}
               onClick={() => setSelectedTopic(topic)}
-              className={`flex-shrink-0 px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+              className={`flex-shrink-0 px-3 py-1 rounded-lg text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
                 selectedTopic === topic
                   ? ""
                   : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -159,7 +159,7 @@ function BrowseToolbar({
                 <button
                   key={diff}
                   onClick={() => setSelectedDifficulty("All")}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
                     active
                       ? ""
                       : "bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
@@ -179,7 +179,7 @@ function BrowseToolbar({
               <button
                 key={diff}
                 onClick={() => setSelectedDifficulty(diff)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
                   selectedDifficulty === diff
                     ? DIFF_STYLES[diff]
                     : `bg-transparent ${DIFF_INACTIVE[diff]}`

@@ -172,7 +172,7 @@ export default function LeaderboardPage() {
               <button
                 key={id}
                 onClick={() => { setTab(id); setPage(1); }}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
                   active ? "text-white" : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
                 }`}
                 style={active ? { backgroundColor: theme.colors.primary, color: "#09090b" } : undefined}
@@ -217,7 +217,7 @@ export default function LeaderboardPage() {
             </p>
             <button
               onClick={() => setShowVerifyModal(true)}
-              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition hover:brightness-110"
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
               style={{ backgroundColor: theme.colors.primary, color: "#09090b" }}
             >
               Verify College Email
@@ -260,7 +260,7 @@ export default function LeaderboardPage() {
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
                 >
                   ← Prev
                 </button>
@@ -268,7 +268,7 @@ export default function LeaderboardPage() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition"
+                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
                 >
                   Next →
                 </button>

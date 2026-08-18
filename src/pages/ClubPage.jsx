@@ -115,7 +115,7 @@ function ClubPage() {
           >
             {contestsLoading ? (
               <div className="space-y-2">
-                {[0, 1].map((i) => (
+                {[0, 1, 2].map((i) => (
                   <div key={i} className="h-14 bg-zinc-800 rounded-xl animate-pulse" />
                 ))}
               </div>
