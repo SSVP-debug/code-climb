@@ -26,7 +26,7 @@ function Navbar() {
   const location = useLocation();
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
-  const { currentStreak, role } = useAppContext();
+  const { currentStreak, role, isBackendReady } = useAppContext();
   const [menuOpen, setMenuOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -137,6 +137,17 @@ function Navbar() {
   // Center instead — showing both would be a duplicate, confusing signal.
   const showNotificationBell = role !== "admin";
 
+  // Nav destinations and search hit real backend data (Problems needs
+  // fetched questions, Club needs contest/room data, etc.). The onboarding
+  // flow's quiz/mission/focus steps intentionally buy time for a cold
+  // backend start (see OnboardingGate's comment), but until now Navbar was
+  // still fully clickable during that window — a student could tap
+  // "Problems" while the backend was still starting and land on a page
+  // with no questions rendered. Gate navigation on the same isBackendReady
+  // flag OnboardingContainer itself already waits on before it hands back
+  // control.
+  const navReady = isBackendReady;
+
   return (
     <nav className="bg-zinc-900 text-white border-b border-zinc-800 relative z-50">
       <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
@@ -165,6 +176,18 @@ function Navbar() {
         <div className="hidden lg:flex items-center gap-6 shrink-0">
           {nav.primary.map((link) => {
             const active = isActive(link.to);
+            if (!navReady) {
+              return (
+                <span
+                  key={link.to}
+                  aria-disabled="true"
+                  title="Preparing your workspace…"
+                  className="relative pb-1 text-sm text-zinc-600 cursor-not-allowed select-none"
+                >
+                  {link.label}
+                </span>
+              );
+            }
             return (
               <Link
                 key={link.to}
@@ -192,6 +215,18 @@ function Navbar() {
             <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
               {nav.secondary.map((link) => {
                 const active = isActive(link.to);
+                if (!navReady) {
+                  return (
+                    <span
+                      key={link.to}
+                      aria-disabled="true"
+                      title="Preparing your workspace…"
+                      className="text-sm text-zinc-600 cursor-not-allowed select-none"
+                    >
+                      {link.label}
+                    </span>
+                  );
+                }
                 return (
                   <Link
                     key={link.to}
@@ -213,7 +248,9 @@ function Navbar() {
               type="button"
               aria-label="Search (Ctrl+K)"
               onClick={() => setPaletteOpen(true)}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+              disabled={!navReady}
+              title={navReady ? undefined : "Preparing your workspace…"}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-zinc-400"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4" />
@@ -242,7 +279,9 @@ function Navbar() {
               type="button"
               aria-label="Search (Ctrl+K)"
               onClick={() => setPaletteOpen(true)}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+              disabled={!navReady}
+              title={navReady ? undefined : "Preparing your workspace…"}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-zinc-400"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4" />
@@ -286,6 +325,18 @@ function Navbar() {
         <div className="lg:hidden border-t border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col gap-1">
           {[...nav.primary, ...nav.secondary].map((link) => {
             const active = isActive(link.to);
+            if (!navReady) {
+              return (
+                <span
+                  key={link.to}
+                  aria-disabled="true"
+                  title="Preparing your workspace…"
+                  className="py-2.5 px-3 rounded-xl text-sm border-l-2 border-transparent text-zinc-600 cursor-not-allowed select-none"
+                >
+                  {link.label}
+                </span>
+              );
+            }
             return (
               <Link
                 key={link.to}

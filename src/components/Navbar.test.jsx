@@ -47,11 +47,11 @@ vi.mock("./common/StreakBadge", () => ({
   default: () => <div data-testid="streak-badge-stub" />,
 }));
 
-function renderNavbar({ role, user = { displayName: "Test User", email: "test@example.com" }, path = "/dashboard" }) {
+function renderNavbar({ role, user = { displayName: "Test User", email: "test@example.com" }, path = "/dashboard", isBackendReady = true }) {
   return render(
     <ThemeProvider>
       <AuthContext.Provider value={{ user, loading: false }}>
-        <AppContext.Provider value={{ role, currentStreak: 0 }}>
+        <AppContext.Provider value={{ role, currentStreak: 0, isBackendReady }}>
           <MemoryRouter initialEntries={[path]}>
             <Navbar />
           </MemoryRouter>
@@ -186,5 +186,23 @@ describe("Navbar", () => {
     // stay shrink-0 so it's never the side that gets squeezed.
     const mobileControls = container.querySelector(".flex.lg\\:hidden");
     expect(mobileControls.className).toContain("shrink-0");
+  });
+
+  // The onboarding flow (Welcome -> Quiz -> Mission -> Focus -> Workspace
+  // Preparation, see OnboardingGate) intentionally buys time for a cold
+  // backend start. While that's happening, isBackendReady is false — and
+  // until this fix Navbar was still fully clickable, so a student could
+  // navigate to Problems before there was any data to render there.
+  it("disables nav links and the search trigger while the backend isn't ready", () => {
+    renderNavbar({ role: "student", isBackendReady: false });
+    expect(screen.queryByRole("link", { name: "Problems" })).not.toBeInTheDocument();
+    expect(screen.getByText("Problems")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getAllByRole("button", { name: /search/i })[0]).toBeDisabled();
+  });
+
+  it("re-enables nav links and search once the backend becomes ready", () => {
+    renderNavbar({ role: "student", isBackendReady: true });
+    expect(screen.getByRole("link", { name: "Problems" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /search/i })[0]).not.toBeDisabled();
   });
 });
