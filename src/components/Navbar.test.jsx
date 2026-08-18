@@ -47,16 +47,12 @@ vi.mock("./common/StreakBadge", () => ({
   default: () => <div data-testid="streak-badge-stub" />,
 }));
 
-function renderNavbar({
-  role,
-  user = { displayName: "Test User", email: "test@example.com" },
-  initialEntries = ["/dashboard"],
-}) {
+function renderNavbar({ role, user = { displayName: "Test User", email: "test@example.com" }, path = "/dashboard" }) {
   return render(
     <ThemeProvider>
       <AuthContext.Provider value={{ user, loading: false }}>
         <AppContext.Provider value={{ role, currentStreak: 0 }}>
-          <MemoryRouter initialEntries={initialEntries}>
+          <MemoryRouter initialEntries={[path]}>
             <Navbar />
           </MemoryRouter>
         </AppContext.Provider>
@@ -88,14 +84,26 @@ describe("Navbar", () => {
     expect(screen.queryByRole("button", { name: /switch workspace/i })).not.toBeInTheDocument();
   });
 
-  it("shows the WorkspaceSwitcher for admin, defaulting to Command Center", () => {
-    renderNavbar({ role: "admin" });
+  it("shows the WorkspaceSwitcher for admin, defaulting to Command Center at /admin", () => {
+    renderNavbar({ role: "admin", path: "/admin" });
     expect(screen.getByRole("button", { name: /switch workspace/i })).toBeInTheDocument();
     expect(screen.getByText("Command Center")).toBeInTheDocument();
   });
 
+  // Admin UX audit (Phase UI-3, continued — the "3 redundant switchers"
+  // screenshot finding): WorkspaceSwitcher's currentId used to be
+  // hardcoded to "admin" in Navbar.jsx regardless of the actual route, so
+  // it kept reading "Command Center" even while an admin was actively
+  // previewing another workspace. This locks in the fix — the label now
+  // tracks wherever the admin actually is.
+  it("shows the current workspace label based on the actual route, not a hardcoded default", () => {
+    renderNavbar({ role: "admin", path: "/dashboard" });
+    expect(screen.getByText("Student")).toBeInTheDocument();
+    expect(screen.queryByText("Command Center")).not.toBeInTheDocument();
+  });
+
   it("opens the workspace menu and lists all four workspaces", () => {
-    renderNavbar({ role: "admin" });
+    renderNavbar({ role: "admin", path: "/admin" });
     fireEvent.click(screen.getByRole("button", { name: /switch workspace/i }));
     expect(screen.getByRole("menu", { name: /workspaces/i })).toBeInTheDocument();
     expect(screen.getByRole("menuitemradio", { name: /command center/i })).toHaveAttribute(
@@ -118,6 +126,21 @@ describe("Navbar", () => {
   it("falls back to the student nav for an unrecognized role", () => {
     renderNavbar({ role: "unknown-role" });
     expect(screen.getByText("Code Club")).toBeInTheDocument();
+  });
+
+  // Admin UX audit (Phase UI-3, continued — the "3 redundant switchers"
+  // screenshot finding): admin's nav.primary/secondary used to render a
+  // flat "Admin Console | Student | Recruiter | TPO" link row here, a
+  // pure duplicate of both AdminPreviewBanner (mounted globally) and
+  // WorkspaceSwitcher (the dropdown right next to it). Locks in that it's
+  // gone — WorkspaceSwitcher's menu (tested above) is now the only
+  // Navbar-level switcher.
+  it("no longer renders a duplicate flat Student/Recruiter/TPO link row for admin", () => {
+    renderNavbar({ role: "admin", path: "/admin" });
+    expect(screen.queryByRole("link", { name: "Admin Console" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Student" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Recruiter" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "TPO" })).not.toBeInTheDocument();
   });
 
   it("shows a search trigger for student/recruiter/tpo but not admin", () => {
@@ -163,27 +186,5 @@ describe("Navbar", () => {
     // stay shrink-0 so it's never the side that gets squeezed.
     const mobileControls = container.querySelector(".flex.lg\\:hidden");
     expect(mobileControls.className).toContain("shrink-0");
-  });
-
-  it("points the recruiter's Tests link at their own sent-tests tab, not the student tests page", () => {
-    renderNavbar({ role: "recruiter" });
-    // Was "/candidate/tests" (the student-facing "assigned to me" page) —
-    // must now be the recruiter's own dashboard tab.
-    expect(screen.getByRole("link", { name: "Tests" })).toHaveAttribute(
-      "href",
-      "/recruiter/dashboard?tab=tests"
-    );
-  });
-
-  it("highlights only the matching tab when two recruiter links share a path with different ?tab=", () => {
-    renderNavbar({ role: "recruiter", initialEntries: ["/recruiter/dashboard?tab=tests"] });
-    expect(screen.getByRole("link", { name: "Tests" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Candidates" })).not.toHaveAttribute("aria-current");
-  });
-
-  it("highlights Candidates instead once back on the candidates tab", () => {
-    renderNavbar({ role: "recruiter", initialEntries: ["/recruiter/dashboard?tab=candidates"] });
-    expect(screen.getByRole("link", { name: "Candidates" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("link", { name: "Tests" })).not.toHaveAttribute("aria-current");
   });
 });

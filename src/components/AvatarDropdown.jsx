@@ -176,13 +176,30 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
           )}
 
           <div className="py-2">
-            <Link
-              to="/profile"
-              onClick={() => setOpen(false)}
-              className="block px-4 py-2 hover:bg-zinc-800"
-            >
-              View Profile
-            </Link>
+            {/* Admin UX audit (Phase UI-3, P0/P1): View Profile and Pricing
+                are irrelevant for an admin account — there's no public
+                "profile identity" concept for internal staff, and Pricing
+                is a premium-upsell page aimed at paying users. Neither
+                page is broken for admin now that ThemeGate.jsx no longer
+                walls them off (see that file's comment), but showing them
+                is still noise competing for attention in exactly the way
+                the audit spec calls out.
+                Deliberately checks `role === "admin"` here rather than
+                reusing `isStudent` above — `isStudent` is also false for
+                recruiter/tpo, and hiding these links for those roles is
+                UI-2's call to make, not something to change as a side
+                effect of the admin audit. Settings is kept for admin —
+                it's genuine account-level settings, not just theming, so
+                still useful even though its theme section doesn't apply. */}
+            {role !== "admin" && (
+              <Link
+                to="/profile"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-2 hover:bg-zinc-800"
+              >
+                View Profile
+              </Link>
+            )}
 
             <Link
               to="/settings"
@@ -192,13 +209,15 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
               Settings
             </Link>
 
-            <Link
-              to="/pricing"
-              onClick={() => setOpen(false)}
-              className="block px-4 py-2 hover:bg-zinc-800"
-            >
-              Pricing
-            </Link>
+            {role !== "admin" && (
+              <Link
+                to="/pricing"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-2 hover:bg-zinc-800"
+              >
+                Pricing
+              </Link>
+            )}
           </div>
 
           <div className="border-t border-zinc-800 p-2">

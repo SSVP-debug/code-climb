@@ -26,6 +26,7 @@ import PinnedProblems from "../components/profile/PinnedProblems";
 import ProfileCompletion from "../components/profile/ProfileCompletion";
 import EducationSection from "../components/profile/EducationSection";
 import ContestHistorySection from "../components/profile/ContestHistorySection";
+import AdminAccountView from "../components/profile/AdminAccountView";
 
 // ── Profile ────────────────────────────────────────────────────────────────────
 // Phase 9B: Coding Identity build-out. Hero now shows the real XP-derived
@@ -82,6 +83,20 @@ function Profile() {
   const joinedDisplay = joinedDate
     ? new Date(joinedDate).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
     : "Recently";
+
+  // Admin UX audit (Phase UI-3, P0/P1): everything below this point (XP/
+  // level hero, resume, GitHub/LinkedIn prompts, achievements, activity
+  // heatmap, etc.) is student-shaped and meaningless for admin — see
+  // AdminAccountView.jsx for the full rationale. Early return here, before
+  // quickNavItems and the rest of the student-specific render, so none of
+  // the logic below needs to know admin exists at all.
+  if (role === "admin") {
+    return (
+      <DashboardLayout>
+        <AdminAccountView user={user} joinedDisplay={joinedDisplay} />
+      </DashboardLayout>
+    );
+  }
 
   // Quick-jump nav — mirrors the ContentSlot ids below, with the same
   // role gating so a link never points at a section that isn't rendered.
@@ -381,7 +396,7 @@ function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowAllActivity((v) => !v)}
-                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
                   >
                     {showAllActivity
                       ? "Show less"
@@ -450,7 +465,7 @@ function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowAllSubmissions((v) => !v)}
-                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+                    className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
                   >
                     {showAllSubmissions
                       ? "Show less"

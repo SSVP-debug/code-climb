@@ -1,61 +1,108 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "../context/ThemeContext";
-import { AppContext } from "../context/AppContextObject";
 import ThemeGate from "./ThemeGate";
 
-// themeId comes from localStorage (see utils/themeStorage.js) — cleared
-// before each test so every case starts from "no theme selected".
-beforeEach(() => {
-  localStorage.clear();
-});
+vi.mock("react-router-dom", () => ({
+  useLocation: () => ({ pathname: "/profile", search: "" }),
+  Navigate: ({ to }) => <div data-testid="navigate" data-to={to} />,
+}));
 
-function renderGate({ role, isBackendReady }) {
-  const appContextValue = { role, isBackendReady };
-  return render(
-    <AppContext.Provider value={appContextValue}>
-      <ThemeProvider>
-        <MemoryRouter initialEntries={["/protected"]}>
-          <Routes>
-            <Route
-              path="/protected"
-              element={<ThemeGate><div>Protected content</div></ThemeGate>}
-            />
-            <Route path="/theme-selection" element={<div>Theme selection page</div>} />
-          </Routes>
-        </MemoryRouter>
-      </ThemeProvider>
-    </AppContext.Provider>
-  );
-}
+let themeValue = { themeId: null };
+vi.mock("../hooks/useTheme", () => ({
+  useTheme: () => themeValue,
+}));
 
+let appContextValue = { role: "student" };
+vi.mock("../hooks/useAppContext", () => ({
+  useAppContext: () => appContextValue,
+}));
+
+// Admin UX audit (Phase UI-3, P0): an admin's own account menu links
+// (View Profile/Settings/Pricing) all route through ThemeGate-wrapped
+// pages. Admin accounts never have a themeId set — theming is a
+// student-facing concept AdminLayout never applies — so without this
+// bypass, every admin hit a "Choose Your Code Club Universe" wall before
+// reaching their own settings. This locks in the fix: admin skips the
+// gate entirely; every other role's behavior (student/recruiter/tpo — not
+// this phase's ownership) is completely unchanged.
 describe("ThemeGate", () => {
-  it("redirects a themeless student to /theme-selection", () => {
-    renderGate({ role: "student", isBackendReady: true });
-    expect(screen.getByText("Theme selection page")).toBeInTheDocument();
+  beforeEach(() => {
+    appContextValue = { role: "student", isBackendReady: true };
+    themeValue = { themeId: null };
   });
 
-  it("lets a themeless recruiter straight through — no theme onboarding exists for this role", () => {
-    renderGate({ role: "recruiter", isBackendReady: true });
-    expect(screen.getByText("Protected content")).toBeInTheDocument();
+  it("renders children directly for admin, even with no themeId set", () => {
+    appContextValue = { role: "admin", isBackendReady: true };
+    themeValue = { themeId: null };
+
+    render(
+      <ThemeGate>
+        <div>protected content</div>
+      </ThemeGate>
+    );
+
+    expect(screen.getByText("protected content")).toBeInTheDocument();
+    expect(screen.queryByTestId("navigate")).not.toBeInTheDocument();
   });
 
-  it("lets a themeless TPO straight through", () => {
-    renderGate({ role: "tpo", isBackendReady: true });
-    expect(screen.getByText("Protected content")).toBeInTheDocument();
+  it("still redirects a student with no themeId to theme-selection", () => {
+    appContextValue = { role: "student", isBackendReady: true };
+    themeValue = { themeId: null };
+
+    render(
+      <ThemeGate>
+        <div>protected content</div>
+      </ThemeGate>
+    );
+
+    expect(screen.queryByText("protected content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toHaveAttribute(
+      "data-to",
+      "/theme-selection?next=%2Fprofile"
+    );
   });
 
-  it("lets a themeless admin straight through", () => {
-    renderGate({ role: "admin", isBackendReady: true });
-    expect(screen.getByText("Protected content")).toBeInTheDocument();
+  it("still shows children directly once a student has a themeId", () => {
+    appContextValue = { role: "student", isBackendReady: true };
+    themeValue = { themeId: "hacker" };
+
+    render(
+      <ThemeGate>
+        <div>protected content</div>
+      </ThemeGate>
+    );
+
+    expect(screen.getByText("protected content")).toBeInTheDocument();
   });
 
-  it("does not bypass on the role's default value before the backend hydrate resolves", () => {
-    // role defaults to "student" pre-hydrate even for a real recruiter
-    // (see appContext.jsx) — isBackendReady=false must still gate on the
-    // themeless-student path rather than reading the not-yet-correct role.
-    renderGate({ role: "student", isBackendReady: false });
-    expect(screen.getByText("Theme selection page")).toBeInTheDocument();
+  it("renders nothing (not a premature redirect) while role hasn't hydrated yet and there's no themeId", () => {
+    // The exact race RoleRoute.jsx already guards against: role reads as
+    // the "student" default for one render before /api/init resolves.
+    // A real admin must not get bounced to /theme-selection during that
+    // window just because role hasn't caught up to "admin" yet.
+    appContextValue = { role: "student", isBackendReady: false };
+    themeValue = { themeId: null };
+
+    render(
+      <ThemeGate>
+        <div>protected content</div>
+      </ThemeGate>
+    );
+
+    expect(screen.queryByText("protected content")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("navigate")).not.toBeInTheDocument();
+  });
+
+  it("does not wait on isBackendReady when a themeId is already set — no new delay for the common case", () => {
+    appContextValue = { role: "student", isBackendReady: false };
+    themeValue = { themeId: "hacker" };
+
+    render(
+      <ThemeGate>
+        <div>protected content</div>
+      </ThemeGate>
+    );
+
+    expect(screen.getByText("protected content")).toBeInTheDocument();
   });
 });

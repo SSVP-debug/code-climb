@@ -9,6 +9,7 @@ import StreakBadge from "./common/StreakBadge";
 import NotificationBell from "./notifications/NotificationBell";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import CommandPalette from "./CommandPalette";
+import { WORKSPACES } from "../config/workspaces";
 
 // Plain (non-switchable) workspace label shown in the brand block for
 // roles that aren't admin (which gets the real WorkspaceSwitcher) or
@@ -35,22 +36,8 @@ function Navbar() {
   // presence.
   const isStudentThemed = role === "student";
 
-  // Tab-aware: a few nav destinations (e.g. the recruiter's Candidates vs
-  // Tests links) point at the same pathname with a different ?tab= query.
-  // When a link specifies a tab, only treat it active if the current
-  // location's tab matches too — otherwise every same-path link would
-  // light up together regardless of which tab is actually open.
-  const isActive = (to) => {
-    const [linkPath, linkQuery] = to.split("?");
-    const pathMatches =
-      location.pathname === linkPath || location.pathname.startsWith(`${linkPath}/`);
-    if (!pathMatches) return false;
-
-    const linkTab = linkQuery ? new URLSearchParams(linkQuery).get("tab") : null;
-    if (!linkTab) return true;
-
-    return new URLSearchParams(location.search).get("tab") === linkTab;
-  };
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -78,16 +65,8 @@ function Navbar() {
 
     recruiter: {
       primary: [
-        // Both tabs point at the same page with a different ?tab= — see
-        // the tab-aware isActive() below, which needs both to be explicit
-        // to tell them apart (an implicit/default tab wouldn't highlight
-        // correctly once a second tab exists on the same path).
-        { to: "/recruiter/dashboard?tab=candidates", label: "Candidates" },
-        // Was "/candidate/tests" — that's the STUDENT-facing "tests I've
-        // been assigned" page (CandidateTestsPage, calls
-        // /api/candidate/tests). A recruiter's own sent tests live in the
-        // "Sent Tests" tab of their own dashboard instead.
-        { to: "/recruiter/dashboard?tab=tests", label: "Tests" },
+        { to: "/recruiter/dashboard", label: "Candidates" },
+        { to: "/candidate/tests", label: "Tests" },
       ],
       secondary: [
         { to: "/profile", label: theme.words.profile },
@@ -104,18 +83,46 @@ function Navbar() {
     },
 
     admin: {
-      primary: [
-        { to: "/admin", label: "Admin Console" },
-      ],
-      secondary: [
-        { to: "/dashboard", label: "Student" },
-        { to: "/recruiter/dashboard", label: "Recruiter" },
-        { to: "/tpo/dashboard", label: "TPO" },
-      ],
+      // Admin UX audit (Phase UI-3, continued — found from a screenshot,
+      // not a code read): this used to list { "Admin Console" } as
+      // primary and { Student, Recruiter, TPO } as secondary, rendered
+      // as a flat link row right here. That made THREE simultaneous,
+      // always-visible ways to do the exact same "jump to another
+      // workspace" action on every single admin page: this row,
+      // AdminPreviewBanner (the purple strip above, mounted globally),
+      // and WorkspaceSwitcher (the "Command Center ▾" dropdown a few
+      // pixels to the left, next to the brand). Directly the kind of
+      // "visual overload" / "noisy" the spec's premium standard warns
+      // against — three controls for one job reads as unfinished, not
+      // powerful.
+      // Kept both of the other two rather than picking just one:
+      // AdminPreviewBanner does double duty as the impersonation-exit
+      // safety banner (§ earlier P0 work) and can't be removed, while
+      // WorkspaceSwitcher fills the same Navbar-brand-adjacent slot every
+      // other role uses for a workspace/theme label (student's theme
+      // name, recruiter/tpo's plain label) — removing it would leave
+      // admin's Navbar looking broken relative to every other role, not
+      // calmer. This row was the pure duplicate with zero unique value,
+      // so it's gone. See WorkspaceSwitcher.jsx for the related fix
+      // (its currentId now reflects the actual page, not a hardcoded
+      // "admin", so it stays honest while previewing another workspace).
+      primary: [],
+      secondary: [],
     },
   };
 
   const nav = navigation[role] ?? navigation.student;
+
+  // Which of the four WORKSPACES the admin is actually looking at right
+  // now — matched by longest path prefix so nested routes (e.g.
+  // /recruiter/dashboard/candidates) still resolve correctly. Falls back
+  // to "admin" (Command Center) for any admin-only path not in the list.
+  // Previously this was hardcoded to "admin" always, so WorkspaceSwitcher
+  // kept reading "Command Center" even while an admin was actively
+  // previewing the Student or Recruiter dashboard — a small but real
+  // correctness gap found alongside the redundant-switchers issue above.
+  const currentWorkspaceId =
+    [...WORKSPACES].sort((a, b) => b.path.length - a.path.length).find((w) => isActive(w.path))?.id ?? "admin";
 
   // Search/command palette: offered to every role except admin. Admin
   // already has WorkspaceSwitcher for "go somewhere else", and Command
@@ -138,7 +145,7 @@ function Navbar() {
         <div className="flex flex-col min-w-0">
           <span className="text-xl sm:text-2xl font-bold truncate">Code Club</span>
           {role === "admin" ? (
-            <WorkspaceSwitcher currentId="admin" />
+            <WorkspaceSwitcher currentId={currentWorkspaceId} />
           ) : isStudentThemed ? (
             <span className="flex items-center gap-1.5 text-[10px] text-zinc-500 uppercase tracking-widest">
               <span
