@@ -401,7 +401,7 @@ export default function TpoDashboardPage() {
                 <option value="name">Sort: Name</option>
               </select>
             </div>
-            <div className="flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+            <div className="hidden sm:flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
               <span className="flex-1">Student</span>
               <span className="w-20 text-right">Solved</span>
               <span className="w-20 text-right">Streak</span>
@@ -411,18 +411,27 @@ export default function TpoDashboardPage() {
               {visibleStudents.length === 0 ? (
                 <p className="text-center text-zinc-600 py-12 text-sm">No students match "{studentSearch}".</p>
               ) : visibleStudents.map(s => (
-                  <div key={s.email} className="flex items-center gap-3 px-4 py-3">
-                    <span className="flex-1 text-sm text-white truncate">{s.name}</span>
-                    <span className="w-20 text-right text-sm text-zinc-400">{s.solvedCount}</span>
-                    <span className="w-20 text-right text-sm text-orange-400">
-                      {s.currentStreak > 0 ? (
-                        <span className="inline-flex items-center justify-end gap-1">
-                          <Flame size={13} strokeWidth={2} aria-hidden="true" />
-                          {s.currentStreak}
-                        </span>
-                      ) : "—"}
-                    </span>
-                    <span className="w-20 text-right text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">{s.totalXP}</span>
+                  // Flex-wraps into a compact stat row on mobile instead of
+                  // squeezing three fixed 80px columns next to the name —
+                  // that made the name unreadable below ~400px.
+                  <div key={s.email} className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3 px-4 py-3">
+                    <span className="text-sm text-white truncate sm:flex-1">{s.name}</span>
+                    <div className="flex items-center gap-4 sm:contents">
+                      <span className="text-xs text-zinc-500 sm:w-20 sm:text-right sm:text-sm sm:text-zinc-400">
+                        <span className="sm:hidden">Solved </span>{s.solvedCount}
+                      </span>
+                      <span className="text-xs text-orange-400 sm:w-20 sm:text-right sm:text-sm">
+                        {s.currentStreak > 0 ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Flame size={13} strokeWidth={2} aria-hidden="true" />
+                            {s.currentStreak}
+                          </span>
+                        ) : "—"}
+                      </span>
+                      <span className="text-xs sm:w-20 sm:text-right sm:text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">
+                        <span className="text-zinc-500 sm:hidden">XP </span>{s.totalXP}
+                      </span>
+                    </div>
                   </div>
                 ))}
             </div>
@@ -443,19 +452,19 @@ export default function TpoDashboardPage() {
               ) : (
                 assignments.map(a => (
                   <div key={a._id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                       <h4 className="font-semibold text-white">{a.title}</h4>
-                      <span className={`text-xs px-2 py-1 rounded-full ${a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-zinc-800 text-zinc-400"
+                      <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-zinc-800 text-zinc-400"
                         }`}>
                         Due {new Date(a.dueDate).toLocaleDateString()}
                       </span>
                     </div>
                     <p className="text-xs text-zinc-500 mb-3">{a.problemSlugs.length} problems</p>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex-1 min-w-[80px] h-2 bg-zinc-800 rounded-full overflow-hidden">
                         <div className="h-full bg-[var(--theme-primary,#2dd4bf)]" style={{ width: `${a.completionPercent}%` }} />
                       </div>
-                      <span className="text-xs text-zinc-500">{a.completedCount}/{a.totalStudents} done</span>
+                      <span className="text-xs text-zinc-500 flex-shrink-0">{a.completedCount}/{a.totalStudents} done</span>
                       <Button
                         size="sm"
                         variant="secondary"

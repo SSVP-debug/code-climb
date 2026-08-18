@@ -92,6 +92,18 @@ describe("RecruiterDashboardPage filters", () => {
     });
   });
 
+  it("includes maxSolved in the query once typed and Search is clicked", async () => {
+    renderPage();
+    await waitFor(() => expect(apiFetch).toHaveBeenCalled());
+
+    fireEvent.change(screen.getByPlaceholderText("Max solved"), { target: { value: "150" } });
+    fireEvent.click(screen.getByRole("button", { name: /^search$/i }));
+
+    await waitFor(() => {
+      expect(lastQueryString().get("maxSolved")).toBe("150");
+    });
+  });
+
   it("renders inside the shared DashboardLayout shell", async () => {
     renderPage();
     await waitFor(() => expect(apiFetch).toHaveBeenCalled());
@@ -214,6 +226,79 @@ describe("RecruiterDashboardPage candidate row badges", () => {
     const row = within(screen.getByText("Quiet Candidate").closest("div.grid"));
     expect(row.queryByText("Open to work")).not.toBeInTheDocument();
     expect(row.queryByText(/^Grad /)).not.toBeInTheDocument();
+  });
+});
+
+describe("RecruiterDashboardPage sent tests — results modal", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function renderTestsTab() {
+    return render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/recruiter/dashboard?tab=tests"]}>
+          <RecruiterDashboardPage />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+  }
+
+  it("opens a results breakdown for a submitted test and shows solved vs unsolved problems", async () => {
+    apiFetch.mockImplementation((url) => {
+      if (url.startsWith("/api/recruiter/skills-tests")) {
+        return Promise.resolve({
+          tests: [{
+            id: "test-1",
+            candidateUsername: "opencandidate",
+            problemSlugs: ["two-sum", "valid-parentheses"],
+            status: "submitted",
+            score: 50,
+            note: null,
+            createdAt: "2026-06-01T00:00:00.000Z",
+          }],
+        });
+      }
+      if (url === "/api/recruiter/skills-test/test-1") {
+        return Promise.resolve({
+          candidateUsername: "opencandidate",
+          problemSlugs: ["two-sum", "valid-parentheses"],
+          solvedSlugs: ["two-sum"],
+          score: 50,
+          note: null,
+          submittedAt: "2026-06-02T00:00:00.000Z",
+        });
+      }
+      return Promise.resolve({});
+    });
+
+    renderTestsTab();
+    await waitFor(() => screen.getByText("opencandidate"));
+
+    fireEvent.click(screen.getByText("View results →"));
+
+    await waitFor(() => screen.getByText("Solved 1 of 2"));
+    expect(screen.getByText("two-sum")).toBeInTheDocument();
+    expect(screen.getByText("valid-parentheses")).toBeInTheDocument();
+  });
+
+  it("does not offer a results view for a test that hasn't been submitted yet", async () => {
+    apiFetch.mockResolvedValue({
+      tests: [{
+        id: "test-2",
+        candidateUsername: "pendingcandidate",
+        problemSlugs: ["two-sum"],
+        status: "pending",
+        score: null,
+        note: null,
+        createdAt: "2026-06-01T00:00:00.000Z",
+      }],
+    });
+
+    renderTestsTab();
+    await waitFor(() => screen.getByText("pendingcandidate"));
+
+    expect(screen.queryByText("View results →")).not.toBeInTheDocument();
   });
 });
 

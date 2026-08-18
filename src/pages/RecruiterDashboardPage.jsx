@@ -77,6 +77,9 @@ function FilterBar({ filters, onChange }) {
       <input type="number" placeholder="Min solved" value={filters.minSolved}
         onChange={e => onChange("minSolved", e.target.value)}
         className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
+      <input type="number" placeholder="Max solved" value={filters.maxSolved}
+        onChange={e => onChange("maxSolved", e.target.value)}
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
       <select value={filters.preferredRole} onChange={e => onChange("preferredRole", e.target.value)}
         className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-44">
         <option value="">Any role</option>
@@ -194,9 +197,85 @@ export function ExpressInterestModal({ candidate, onClose, onSent }) {
   );
 }
 
+function TestResultsModal({ testId, onClose }) {
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiFetch(`/api/recruiter/skills-test/${testId}`);
+        if (!cancelled) setResult(data);
+      } catch (err) {
+        if (!cancelled) setError(err.message || "Failed to load results.");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [testId]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4" onClick={onClose}>
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        {error ? (
+          <p className="text-red-400 text-sm">{error}</p>
+        ) : !result ? (
+          <div className="flex items-center justify-center py-10">
+            <div className="w-6 h-6 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <>
+            <h3 className="text-lg font-bold text-white mb-1">Test Results</h3>
+            <p className="text-zinc-500 text-sm mb-4">{result.candidateUsername}</p>
+
+            <div className="flex items-center justify-between bg-zinc-800/60 rounded-xl px-4 py-3 mb-4">
+              <span className="text-sm text-zinc-400">
+                Solved {result.solvedSlugs?.length || 0} of {result.problemSlugs.length}
+              </span>
+              <span className="text-lg font-bold text-[var(--theme-primary,#2dd4bf)]">
+                {result.score != null ? `${result.score}%` : "—"}
+              </span>
+            </div>
+
+            <ul className="space-y-1.5 mb-4">
+              {result.problemSlugs.map(slug => {
+                const solved = (result.solvedSlugs || []).includes(slug);
+                return (
+                  <li key={slug} className="flex items-center gap-2 text-sm">
+                    {solved
+                      ? <CheckCircle2 size={14} strokeWidth={2} className="text-verdict-accept flex-shrink-0" aria-hidden="true" />
+                      : <span className="w-3.5 h-3.5 rounded-full border border-zinc-700 flex-shrink-0" aria-hidden="true" />
+                    }
+                    <span className={solved ? "text-zinc-300" : "text-zinc-600"}>{slug}</span>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {result.note && (
+              <p className="text-xs text-zinc-500 border-t border-zinc-800 pt-3 mb-4">
+                Your note: "{result.note}"
+              </p>
+            )}
+
+            <p className="text-xs text-zinc-600 mb-4">
+              {result.submittedAt
+                ? `Submitted ${new Date(result.submittedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
+                : "Not yet submitted."}
+            </p>
+
+            <Button variant="secondary" size="sm" onClick={onClose} className="w-full">Close</Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SentTestsTab() {
   const [tests, setTests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewingId, setViewingId] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -230,33 +309,46 @@ function SentTestsTab() {
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-      <div className="grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+      <div className="hidden sm:grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
         <span className="col-span-2">Candidate</span>
         <span>Problems</span>
         <span className="text-center">Status</span>
         <span className="text-center">Score</span>
         <span className="text-right">Sent</span>
       </div>
-      {tests.map((t) => (
-        <div key={t.id} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
-          <div className="col-span-2">
-            <p className="text-sm text-white font-medium">{t.candidateUsername}</p>
-            {t.note && <p className="text-xs text-zinc-500 truncate">{t.note}</p>}
-          </div>
-          <span className="text-xs text-zinc-400">{t.problemSlugs.length} problems</span>
-          <span className="text-center">
-            <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLES[t.status] || STATUS_STYLES.pending}`}>
-              {t.status.replace("_", " ")}
+      {tests.map((t) => {
+        const canViewResults = t.status === "submitted" || t.status === "expired";
+        return (
+          <div
+            key={t.id}
+            role={canViewResults ? "button" : undefined}
+            tabIndex={canViewResults ? 0 : undefined}
+            onClick={canViewResults ? () => setViewingId(t.id) : undefined}
+            onKeyDown={canViewResults ? (e) => { if (e.key === "Enter") setViewingId(t.id); } : undefined}
+            className={`grid grid-cols-2 gap-y-1 sm:grid-cols-6 sm:gap-y-0 sm:items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30 ${canViewResults ? "cursor-pointer" : ""}`}
+          >
+            <div className="col-span-2">
+              <p className="text-sm text-white font-medium">{t.candidateUsername}</p>
+              {t.note && <p className="text-xs text-zinc-500 truncate">{t.note}</p>}
+            </div>
+            <span className="text-xs text-zinc-400">{t.problemSlugs.length} problems</span>
+            <span className="sm:text-center">
+              <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wide ${STATUS_STYLES[t.status] || STATUS_STYLES.pending}`}>
+                {t.status.replace("_", " ")}
+              </span>
             </span>
-          </span>
-          <span className="text-center text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">
-            {t.score != null ? `${t.score}%` : "—"}
-          </span>
-          <span className="text-right text-xs text-zinc-500">
-            {new Date(t.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-          </span>
-        </div>
-      ))}
+            <span className="text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold sm:text-center">
+              {t.score != null ? `${t.score}%` : "—"}
+            </span>
+            <span className="text-xs text-zinc-500 sm:text-right">
+              {canViewResults
+                ? "View results →"
+                : new Date(t.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+            </span>
+          </div>
+        );
+      })}
+      {viewingId && <TestResultsModal testId={viewingId} onClose={() => setViewingId(null)} />}
     </div>
   );
 }
@@ -285,7 +377,7 @@ export default function RecruiterDashboardPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "", preferredRole: "", expectedGraduation: "", availableForWork: false });
+  const [filters, setFilters] = useState({ college: "", topic: "", minSolved: "", maxSolved: "", preferredRole: "", expectedGraduation: "", availableForWork: false });
   const [selected, setSelected] = useState(null);
   const [interestTarget, setInterestTarget] = useState(null);
   const [pendingVerification, setPendingVerification] = useState(false);
@@ -316,6 +408,7 @@ export default function RecruiterDashboardPage() {
       if (currentFilters.college) params.set("college", currentFilters.college);
       if (currentFilters.topic) params.set("topic", currentFilters.topic);
       if (currentFilters.minSolved) params.set("minSolved", currentFilters.minSolved);
+      if (currentFilters.maxSolved) params.set("maxSolved", currentFilters.maxSolved);
       if (currentFilters.preferredRole) params.set("preferredRole", currentFilters.preferredRole);
       if (currentFilters.expectedGraduation) params.set("expectedGraduation", currentFilters.expectedGraduation);
       if (currentFilters.availableForWork) params.set("availableForWork", "true");
@@ -427,7 +520,7 @@ export default function RecruiterDashboardPage() {
               </div>
             ) : (
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                <div className="grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+                <div className="hidden sm:grid grid-cols-6 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
                   <span className="col-span-2">Candidate</span>
                   <span className="text-center">Solved</span>
                   <span className="text-center">Hard</span>
@@ -443,7 +536,12 @@ export default function RecruiterDashboardPage() {
                     <p className="text-xs mt-1">Try widening the college domain, dropping the min-solved bar, or clearing a role/grad-year filter.</p>
                   </div>
                 ) : candidates.map(c => (
-                  <div key={c.username} className="grid grid-cols-6 items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                  // grid-cols-2 on mobile (name+badges spans both, each stat
+                  // gets its own cell) keeps the "div.grid" class present at
+                  // every breakpoint — a 6-equal-column grid was unreadable
+                  // below ~640px, squeezing the candidate's name/college
+                  // into a sliver next to four cramped stat columns.
+                  <div key={c.username} className="grid grid-cols-2 gap-y-2 sm:grid-cols-6 sm:gap-y-0 sm:items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
                     <div className="col-span-2">
                       <p className="text-sm text-white font-medium">{c.displayName}</p>
                       <p className="text-xs text-zinc-500">{c.college || "—"}</p>
@@ -463,12 +561,17 @@ export default function RecruiterDashboardPage() {
                         ))}
                       </div>
                     </div>
-                    <span className="text-center text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">{c.solvedCount}</span>
-                    <span className="text-center text-sm text-red-400">{c.hard}</span>
-                    <span className="text-center flex justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
-                      {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : "—"}
+                    <span className="text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold sm:text-center">
+                      <span className="text-zinc-600 sm:hidden">Solved </span>{c.solvedCount}
                     </span>
-                    <div className="text-right flex gap-2 justify-end">
+                    <span className="text-sm text-red-400 sm:text-center">
+                      <span className="text-zinc-600 sm:hidden">Hard </span>{c.hard}
+                    </span>
+                    <span className="flex sm:justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
+                      <span className="text-zinc-600 sm:hidden mr-1">Verified</span>
+                      {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : <span className="text-sm">—</span>}
+                    </span>
+                    <div className="col-span-2 sm:col-span-1 text-right flex flex-wrap gap-2 justify-end">
                       <Button
                         href={`/u/${c.username}`}
                         target="_blank"
