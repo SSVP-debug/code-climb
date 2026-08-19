@@ -1,9 +1,9 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { ExpressInterestModal } from "./RecruiterDashboardPage";
+import { ExpressInterestModal } from "./RecruiterActionModals";
 
 const apiFetch = vi.fn();
-vi.mock("../services/api", () => ({
+vi.mock("../../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
 }));
 

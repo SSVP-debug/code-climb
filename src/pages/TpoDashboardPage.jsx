@@ -190,19 +190,29 @@ export default function TpoDashboardPage() {
   // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  function downloadReportPDF() {
-    import("../services/auth").then(({ getIdToken }) => {
-      getIdToken().then(token => {
-        fetch(`${API_URL}/api/tpo/report/pdf`, { headers: { Authorization: `Bearer ${token}` } })
-          .then(r => r.blob())
-          .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url; a.download = "codeclub_class_report.pdf"; a.click();
-            URL.revokeObjectURL(url);
-          });
+  const [downloadingReport, setDownloadingReport] = useState(false);
+
+  async function downloadReportPDF() {
+    setDownloadingReport(true);
+    try {
+      const { getIdToken } = await import("../services/auth");
+      const token = await getIdToken();
+      const response = await fetch(`${API_URL}/api/tpo/report/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-    });
+      if (!response.ok) {
+        throw new Error("Report generation failed. Try again in a moment.");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "codeclub_class_report.pdf"; a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error(err.message || "Failed to download report.");
+    } finally {
+      setDownloadingReport(false);
+    }
   }
 
   const SORTERS = {
@@ -320,7 +330,7 @@ export default function TpoDashboardPage() {
       <PageMeta title="College Dashboard · Code Club" path="/tpo/dashboard" />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div className="flex items-start gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)] flex items-center justify-center flex-shrink-0" aria-hidden="true">
               <GraduationCap size={18} strokeWidth={2} />
@@ -332,19 +342,24 @@ export default function TpoDashboardPage() {
           </div>
           <button
             onClick={downloadReportPDF}
-            className="px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white rounded-xl text-sm font-medium transition flex-shrink-0"
+            disabled={downloadingReport}
+            className="self-start px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-300 hover:text-white rounded-xl text-sm font-medium transition flex-shrink-0"
           >
-            ⬇ Download Report
+            {downloadingReport ? "Preparing…" : "⬇ Download Report"}
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        {/* Tabs — horizontally scrollable instead of wrapping/overflowing:
+            three tabs at full label width ("Overview"/"Students"/
+            "Assignments") don't reliably fit a 375px viewport next to each
+            other, and wrapping to a second line pushes content down
+            awkwardly for just one overflow tab. */}
+        <div className="flex gap-2 mb-6 overflow-x-auto">
           {["overview", "students", "assignments"].map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition ${tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition flex-shrink-0 ${tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
                 }`}
             >
               {t}
@@ -363,20 +378,24 @@ export default function TpoDashboardPage() {
             </div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">Topic Coverage</h3>
-              <div className="space-y-2">
-                {dashboard.topicCoverage.map(t => (
-                  <div key={t.topic} className="flex items-center gap-3">
-                    <span className="text-sm text-zinc-300 w-40 truncate">{t.topic}</span>
-                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full"
-                        style={{ width: `${Math.min(100, (t.totalSolves / dashboard.topicCoverage[0].totalSolves) * 100)}%` }}
-                      />
+              {dashboard.topicCoverage.length === 0 ? (
+                <p className="text-zinc-600 text-sm">No topic-tagged solves yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {dashboard.topicCoverage.map(t => (
+                    <div key={t.topic} className="flex items-center gap-3">
+                      <span className="text-sm text-zinc-300 w-24 sm:w-40 truncate">{t.topic}</span>
+                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full"
+                          style={{ width: `${Math.min(100, (t.totalSolves / dashboard.topicCoverage[0].totalSolves) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-zinc-500 w-10 text-right">{t.totalSolves}</span>
                     </div>
-                    <span className="text-xs text-zinc-500 w-10 text-right">{t.totalSolves}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

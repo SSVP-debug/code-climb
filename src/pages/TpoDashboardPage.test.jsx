@@ -9,8 +9,9 @@ vi.mock("../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
 }));
 
+const toastMock = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock("react-hot-toast", () => ({
-  default: { error: vi.fn(), success: vi.fn() },
+  default: toastMock,
 }));
 
 // Navbar transformation: TpoDashboardPage now renders inside DashboardLayout
@@ -142,6 +143,70 @@ describe("TpoDashboardPage — pending verification and shared shell", () => {
   it("renders the main dashboard inside the shared DashboardLayout shell", async () => {
     await loadDashboard();
     expect(screen.getByTestId("navbar-stub")).toBeInTheDocument();
+  });
+});
+
+describe("TpoDashboardPage — overview tab (analytics)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function renderOverview() {
+    return render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/tpo/dashboard"]}>
+          <TpoDashboardPage />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+  }
+
+  async function loadOverview(overrides = {}) {
+    apiFetch.mockImplementation((url) => {
+      if (url === "/api/tpo/dashboard") return Promise.resolve({ ...dashboardData, ...overrides });
+      if (url === "/api/tpo/students") return Promise.resolve(studentsData);
+      if (url === "/api/tpo/assignments") return Promise.resolve({ assignments: [] });
+      return Promise.reject(new Error(`Unexpected apiFetch call: ${url}`));
+    });
+    renderOverview();
+    await waitFor(() => screen.getByText("Example University"));
+  }
+
+  it("shows a fallback message instead of an empty card when no topics have been solved yet", async () => {
+    await loadOverview({ topicCoverage: [] });
+    expect(screen.getByText("No topic-tagged solves yet.")).toBeInTheDocument();
+    expect(screen.queryByText("Arrays")).not.toBeInTheDocument();
+  });
+
+  it("renders the topic coverage bars when data exists", async () => {
+    await loadOverview();
+    expect(screen.getByText("Arrays")).toBeInTheDocument();
+    expect(screen.queryByText("No topic-tagged solves yet.")).not.toBeInTheDocument();
+  });
+
+  it("disables the download button and shows a preparing state while the report is generating", async () => {
+    await loadOverview();
+    vi.doMock("../services/auth", () => ({ getIdToken: () => new Promise(() => {}) }));
+
+    fireEvent.click(screen.getByRole("button", { name: /download report/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /preparing/i })).toBeDisabled();
+    });
+  });
+
+  it("shows an error toast instead of downloading a broken file when the report request fails", async () => {
+    await loadOverview();
+    global.fetch = vi.fn().mockResolvedValue({ ok: false });
+    vi.doMock("../services/auth", () => ({ getIdToken: async () => "fake-token" }));
+
+    fireEvent.click(screen.getByRole("button", { name: /download report/i }));
+
+    await waitFor(() => {
+      expect(toastMock.error).toHaveBeenCalledWith(expect.stringMatching(/report generation failed/i));
+    });
+    // Button re-enables afterwards instead of staying stuck on "Preparing…".
+    expect(screen.getByRole("button", { name: /download report/i })).not.toBeDisabled();
   });
 });
 

@@ -15,8 +15,64 @@ import { getLevelProgress } from "../utils/xpLevel";
 import { SITE_URL } from "../config/site.js";
 import LinkedInShareButton from "../components/common/LinkedInShareButton";
 import DifficultyBadge from "../components/profile/public/DifficultyBadge";
-import { Pin, FileText, ArrowUpRight, Sparkles } from "lucide-react";
+import { Pin, FileText, ArrowUpRight, Sparkles, Briefcase } from "lucide-react";
 import { GithubMark, LinkedinMark } from "../components/icons/BrandIcons";
+import { useAppContext } from "../hooks/useAppContext";
+import Button from "../components/ui/Button";
+import toast from "react-hot-toast";
+import { SendTestModal, ExpressInterestModal } from "../components/recruiter/RecruiterActionModals";
+
+// Recruiter-only action strip shown on top of the otherwise fully public
+// profile — recruiters previously had to close this tab and re-find the
+// candidate's row in their own dashboard just to send a test or express
+// interest, even though they'd already opened the profile to evaluate the
+// same candidate. Gated on isBackendReady the same way ThemeGate/RoleRoute
+// are, since `role` defaults to "student" until /api/init resolves — an
+// anonymous visitor or a not-yet-hydrated recruiter session must not flash
+// this bar. Rendered inline rather than reusing RecruiterDashboardPage's
+// SentTestsTab/candidate list — those need the full candidate array this
+// page doesn't have; only the two send-action modals are shared (via
+// RecruiterActionModals.jsx) since they just need username+displayName.
+function RecruiterActionBar({ profile }) {
+    const { role, isBackendReady } = useAppContext();
+    const [showSendTest, setShowSendTest] = useState(false);
+    const [showInterest, setShowInterest] = useState(false);
+
+    if (!isBackendReady || role !== "recruiter") return null;
+
+    const candidate = { username: profile.username, displayName: profile.displayName || profile.username };
+
+    return (
+        <div className="max-w-4xl mx-auto px-8 pt-6">
+            <div className="flex items-center gap-3 bg-[var(--theme-primary,#2dd4bf)]/5 border border-[var(--theme-primary,#2dd4bf)]/20 rounded-2xl px-5 py-3 flex-wrap">
+                <Briefcase size={16} strokeWidth={2} className="text-[var(--theme-primary,#2dd4bf)] flex-shrink-0" aria-hidden="true" />
+                <span className="text-sm text-zinc-300 flex-1 min-w-[160px]">Viewing as recruiter</span>
+                <div className="flex gap-2">
+                    <Button size="sm" variant="secondary" onClick={() => setShowInterest(true)}>
+                        Express Interest
+                    </Button>
+                    <Button size="sm" onClick={() => setShowSendTest(true)}>
+                        Send Skills Test
+                    </Button>
+                </div>
+            </div>
+            {showSendTest && (
+                <SendTestModal
+                    candidate={candidate}
+                    onClose={() => setShowSendTest(false)}
+                    onSent={() => toast.success("Test sent.")}
+                />
+            )}
+            {showInterest && (
+                <ExpressInterestModal
+                    candidate={candidate}
+                    onClose={() => setShowInterest(false)}
+                    onSent={() => toast.success("Interest sent.")}
+                />
+            )}
+        </div>
+    );
+}
 
 function PublicProfile() {
     const { username } = useParams();
@@ -80,6 +136,7 @@ function PublicProfile() {
             description={`Level ${profile.level} · ${profile.solvedCount} problems solved · ${profile.currentStreak} day streak on Code Club.`}
             path={`/u/${profile.username}`}
         />
+        <RecruiterActionBar profile={profile} />
         <div className="max-w-4xl mx-auto p-8">
 
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
