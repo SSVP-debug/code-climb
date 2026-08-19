@@ -397,7 +397,7 @@ export default function ContestDetailPage() {
                         style={
                           solved
                             ? {
-                                backgroundColor: "#22c55e",
+                                backgroundColor: "var(--color-verdict-accept, #2dd4bf)",
                                 color: "#000",
                               }
                             : {

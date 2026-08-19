@@ -20,7 +20,12 @@ function StatCard({ label, value, accent = "text-white" }) {
 }
 
 function ReadinessGauge({ score }) {
-  const color = score >= 70 ? "#22c55e" : score >= 40 ? "#f59e0b" : "#ef4444";
+  const color =
+    score >= 70
+      ? "var(--color-verdict-accept, #2dd4bf)"
+      : score >= 40
+      ? "var(--color-verdict-pending, #ffb454)"
+      : "var(--color-verdict-reject, #ff5d5d)";
   const label = score >= 70 ? "Placement Ready" : score >= 40 ? "Building Momentum" : "Needs Attention";
 
   return (

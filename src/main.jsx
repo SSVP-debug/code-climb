@@ -84,14 +84,14 @@ ReactDOM.createRoot(
 
                   success: {
                     iconTheme: {
-                      primary: "#22c55e",
+                      primary: "var(--color-verdict-accept, #2dd4bf)",
                       secondary: "#000",
                     },
                   },
 
                   error: {
                     iconTheme: {
-                      primary: "#ef4444",
+                      primary: "var(--color-verdict-reject, #ff5d5d)",
                       secondary: "#fff",
                     },
                   },

@@ -6,9 +6,6 @@ function LandingNav({ user }) {
     <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-ink-700">
       <div className="flex items-center gap-2">
         <span className="text-xl font-bold tracking-tight">Code Club</span>
-        <span className="text-[10px] bg-verdict-accept/10 text-verdict-accept border border-verdict-accept/25 px-2 py-0.5 rounded-full font-mono-ui font-semibold tracking-widest uppercase">
-          Beta
-        </span>
       </div>
       <div className="flex items-center gap-3">
         <Link

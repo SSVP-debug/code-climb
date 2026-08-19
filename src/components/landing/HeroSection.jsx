@@ -1,7 +1,8 @@
 import Button from "../ui/Button";
 import HeroTerminal from "./HeroTerminal";
+import ConstellationBackground from "./ConstellationBackground";
 
-const TRUST_SIGNALS = ["Free to use", "No credit card", "Google login in 10 sec"];
+const TRUST_SIGNALS = "Free to use · No credit card · Google login in 10 sec";
 
 function HeroSection({ user }) {
   return (
@@ -11,8 +12,8 @@ function HeroSection({ user }) {
             rather than waiting on a scroll trigger like sections below. */}
         <div className="lp-reveal lp-in-view">
           <div className="inline-flex items-center gap-2 bg-ink-800 border border-ink-700 rounded-full px-4 py-1.5 text-xs font-mono-ui text-zinc-400 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-verdict-accept animate-pulse" />
-            Built for placement season
+            <span className="w-1.5 h-1.5 rounded-full bg-verdict-pending" />
+            Placement season 2026 · batches open now
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold leading-[1.1] mb-5 tracking-tight">
@@ -23,9 +24,10 @@ function HeroSection({ user }) {
 
           <p className="text-zinc-400 text-lg leading-relaxed mb-8">
             Solve real interview problems, practice live AI mock interviews,
-            and build a public solve history recruiters actually check —
-            no overwhelm, just
-            <strong className="text-white"> your Code Club.</strong>
+            and build a solve history that's{" "}
+            <span className="text-verdict-pending">verified</span>, not
+            self-reported —{" "}
+            <strong className="text-white">the kind recruiters actually check.</strong>
           </p>
 
           <div className="flex flex-wrap gap-3 mb-10">
@@ -46,21 +48,14 @@ function HeroSection({ user }) {
             </Button>
           </div>
 
-          <div className="flex flex-wrap gap-4 font-mono-ui">
-            {TRUST_SIGNALS.map((t) => (
-              <span key={t} className="flex items-center gap-1.5 text-xs text-zinc-500">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <circle cx="6" cy="6" r="5.5" stroke="#2dd4bf" strokeWidth="1" />
-                  <path d="M3.5 6L5.5 8L8.5 4.5" stroke="#2dd4bf" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {t}
-              </span>
-            ))}
-          </div>
+          <p className="text-xs text-zinc-500 font-mono-ui">{TRUST_SIGNALS}</p>
         </div>
 
-        {/* Right — the signature moment: a live-running judge */}
-        <div className="lp-reveal lp-in-view">
+        {/* Right — the signature moment: a live-running judge, with the
+            skill-graph canvas confined to this one panel instead of
+            wallpapering the whole page behind every section below. */}
+        <div className="lp-reveal lp-in-view relative p-6 md:p-10 -m-6 md:-m-10">
+          <ConstellationBackground />
           <HeroTerminal />
         </div>
       </div>

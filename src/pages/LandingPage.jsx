@@ -1,7 +1,6 @@
 import PageMeta from "../components/seo/PageMeta";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import ConstellationBackground from "../components/landing/ConstellationBackground";
 import LandingNav from "../components/landing/LandingNav";
 import HeroSection from "../components/landing/HeroSection";
 import StatsBar from "../components/landing/StatsBar";
@@ -9,7 +8,7 @@ import ThemesShowcase from "../components/landing/ThemesShowcase";
 import FeatureGrid from "../components/landing/FeatureGrid";
 import AudienceGrid from "../components/landing/AudienceGrid";
 import CompetitorComparison from "../components/landing/CompetitorComparison";
-import LetterJourney from "../components/landing/LetterJourney";
+import BrandSignoff from "../components/landing/BrandSignoff";
 import CtaSection from "../components/landing/CtaSection";
 import LandingFooter from "../components/landing/LandingFooter";
 
@@ -64,14 +63,12 @@ export default function LandingPage() {
   const stats = useLiveStats();
 
   return (
-    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-clip font-display [--theme-primary:#c6ff3d]">
+    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-clip font-display">
       <PageMeta
         title="Code Club DSA Practice for Placement Season"
         description="Solve curated DSA problems, practice live AI mock interviews, and get discovered. Free for students, with a placement dashboard for TPOs and a candidate search portal for recruiters."
         path="/"
       />
-
-      <ConstellationBackground />
 
       <div className="relative">
         <LandingNav user={user} />
@@ -81,7 +78,7 @@ export default function LandingPage() {
         <FeatureGrid />
         <AudienceGrid user={user} />
         <CompetitorComparison />
-        <LetterJourney />
+        <BrandSignoff />
         <CtaSection user={user} />
         <LandingFooter user={user} />
       </div>
