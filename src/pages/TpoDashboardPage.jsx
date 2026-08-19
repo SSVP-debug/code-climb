@@ -412,7 +412,7 @@ export default function TpoDashboardPage() {
               <select
                 value={studentSort}
                 onChange={e => setStudentSort(e.target.value)}
-                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none"
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
               >
                 <option value="xp">Sort: XP</option>
                 <option value="solved">Sort: Solved</option>

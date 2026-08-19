@@ -77,19 +77,19 @@ function FilterBar({ filters, onChange }) {
         className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-56" />
       <input type="number" placeholder="Min solved" value={filters.minSolved}
         onChange={e => onChange("minSolved", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-28" />
       <input type="number" placeholder="Max solved" value={filters.maxSolved}
         onChange={e => onChange("maxSolved", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-28" />
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-28" />
       <select value={filters.preferredRole} onChange={e => onChange("preferredRole", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-44">
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-44">
         <option value="">Any role</option>
         {PREFERRED_ROLES.map(r => (
           <option key={r} value={r}>{r}</option>
         ))}
       </select>
       <select value={filters.expectedGraduation} onChange={e => onChange("expectedGraduation", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none w-40">
+        className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 w-40">
         <option value="">Any grad year</option>
         {GRADUATION_YEARS.map(y => (
           <option key={y} value={y}>Grad {y}</option>
