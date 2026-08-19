@@ -69,6 +69,22 @@ export function useAdminColleges() {
     setCollegesPage(1);
   }
 
+  // Optimistic-ish rename: PATCH, then patch the already-loaded list in
+  // place rather than a full reload — same college count/page, just a
+  // corrected name. Falls back to a toast + re-throw so the calling UI
+  // (CollegeDetailDrawer) can keep its edit form open on failure instead
+  // of silently losing the user's edit.
+  async function renameCollege(collegeId, name) {
+    const data = await apiFetch(`/api/admin/colleges/${collegeId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    });
+    setColleges((prev) =>
+      prev.map((c) => (c.id === collegeId ? { ...c, name: data.college.name } : c))
+    );
+    return data.college;
+  }
+
   return {
     colleges,
     collegesTotal,
@@ -79,5 +95,6 @@ export function useAdminColleges() {
     setStatusFilter: setStatusFilterAndResetPage,
     searchInput,
     setSearchInput,
+    renameCollege,
   };
 }

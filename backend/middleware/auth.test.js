@@ -11,6 +11,10 @@ vi.mock("../config/logger.js", () => ({
 vi.mock("../models/User.js", () => ({
   default: { findOne: vi.fn(), findById: vi.fn(), create: vi.fn() },
 }));
+const autoProvisionCollegeForDomain = vi.fn().mockResolvedValue(null);
+vi.mock("../services/collegeAutoProvision.js", () => ({
+  autoProvisionCollegeForDomain: (...args) => autoProvisionCollegeForDomain(...args),
+}));
 
 import User from "../models/User.js";
 import { requireAuth } from "./auth.js";

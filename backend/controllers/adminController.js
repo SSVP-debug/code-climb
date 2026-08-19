@@ -58,7 +58,15 @@ export async function getPendingQueue(req, res) {
     ]);
 
     const tpoColleges = pendingColleges.filter((c) => c.submittedByRole === "tpo");
-    const studentColleges = pendingColleges.filter((c) => c.submittedByRole === "student");
+    // "auto" (signup-time auto-detected — services/collegeAutoProvision.js)
+    // bucketed together with "student" here: same review flow
+    // (approve/rejectStudentCollege), same admin queue. No human
+    // submitted an "auto" record, so requestedBy will just be null for
+    // those — the frontend labels them "Auto-detected" instead of a
+    // requester name (see AdminOverviewPage.jsx).
+    const studentColleges = pendingColleges.filter(
+      (c) => c.submittedByRole === "student" || c.submittedByRole === "auto"
+    );
 
     return res.json({
       recruiters: recruiters.map((u) => ({
@@ -84,6 +92,7 @@ export async function getPendingQueue(req, res) {
         collegeName: c.name,
         domains: c.domains,
         website: c.website,
+        autoDetected: c.submittedByRole === "auto",
         requestedBy: c.submittedBy
           ? { email: c.submittedBy.email, displayName: c.submittedBy.displayName }
           : null,

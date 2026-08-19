@@ -12,6 +12,7 @@ import { getOrSetCache } from "../utils/cache.js";
 import { invalidateTpoCache } from "../controllers/tpoController.js";
 import { createNotificationBulk } from "../services/notificationService.js";
 import { isDomainAutoVerified, isConsumerEmailDomain } from "../utils/domainVerification.js";
+import { looksLikeEmailAddress } from "../utils/collegeNameHeuristics.js";
 import { getSettings } from "../services/settingsService.js";
 
 const TPO_CACHE_TTL_SECONDS = 2 * 60; // 2 minutes — matches profile cache TTL
@@ -68,6 +69,15 @@ router.post("/register", async (req, res) => {
     if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
     if (!collegeName) return res.status(400).json({ error: "collegeName is required." });
 
+    if (looksLikeEmailAddress(collegeName)) {
+      // The "unnecessary box" bug class: a College record whose name is
+      // literally someone's email address, pasted into the wrong field.
+      // Reject it here instead of silently storing it.
+      return res.status(400).json({
+        error: "That looks like an email address — please enter your college's name instead.",
+      });
+    }
+
     const email = req.userDoc.email || "";
     const domain = email.split("@")[1];
 
@@ -79,11 +89,19 @@ router.post("/register", async (req, res) => {
 
     // A second TPO from a domain that's already verified doesn't need
     // another manual review — the college itself has already been vetted.
-    // A domain that's still pending review stays blocked from a second
-    // claim, same as before, to avoid two conflicting requests in the queue.
+    // A domain still pending review from an earlier TPO or student stays
+    // blocked from a second claim, to avoid two conflicting requests in
+    // the queue — UNLESS the existing record is an auto-detected
+    // placeholder (submittedByRole: "auto", created the moment some
+    // student first signed up from this domain — see
+    // services/collegeAutoProvision.js). Nobody actually submitted that
+    // one; it's not a real claim to conflict with, so a TPO registering
+    // for the same domain should be able to claim/upgrade it rather than
+    // being blocked by a guess nobody reviewed.
     const existingCollege = await College.findByDomain(domain);
+    const existingIsAutoPlaceholder = existingCollege?.submittedByRole === "auto";
 
-    if (existingCollege && existingCollege.status !== "verified") {
+    if (existingCollege && existingCollege.status !== "verified" && !existingIsAutoPlaceholder) {
       return res.status(409).json({
         error: "This college is already registered and pending verification.",
         status: existingCollege.status,
@@ -96,7 +114,8 @@ router.post("/register", async (req, res) => {
     // queue. Everything else is created pending and shows up in
     // GET /api/admin/pending for manual approval.
     const autoVerified =
-      existingCollege?.status === "verified" || (await isDomainAutoVerified(domain, "college"));
+      (existingCollege?.status === "verified" && !existingIsAutoPlaceholder) ||
+      (await isDomainAutoVerified(domain, "college"));
 
     if (!existingCollege) {
       await College.create({
@@ -107,6 +126,17 @@ router.post("/register", async (req, res) => {
         submittedBy: req.userDoc._id,
         submittedByRole: "tpo",
       });
+    } else if (existingIsAutoPlaceholder) {
+      // Upgrade the auto-detected placeholder into a real TPO submission
+      // — replace the guessed name with the TPO's actual college name and
+      // record who's now vouching for it, rather than leaving a second,
+      // duplicate College doc for the same domain.
+      existingCollege.name = collegeName;
+      existingCollege.status = autoVerified ? "verified" : "pending";
+      existingCollege.verifiedAt = autoVerified ? now : null;
+      existingCollege.submittedBy = req.userDoc._id;
+      existingCollege.submittedByRole = "tpo";
+      await existingCollege.save();
     }
 
     // Mark user as TPO. Previously this dropped collegeDomain/collegeName

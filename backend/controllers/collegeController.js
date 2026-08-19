@@ -13,6 +13,8 @@
 import College from "../models/College.js";
 import User from "../models/User.js";
 import { logger } from "../config/logger.js";
+import { recordAdminAction } from "../services/adminAuditLog.js";
+import { looksLikeEmailAddress } from "../utils/collegeNameHeuristics.js";
 
 // ── GET /api/admin/colleges ──────────────────────────────────────────────────
 // Lists every college (not just pending ones — that's getPendingQueue's job)
@@ -87,6 +89,7 @@ export async function getColleges(req, res) {
           domains: college.domains,
           website: college.website,
           status: college.status,
+          autoDetected: college.submittedByRole === "auto",
           studentCount,
           studentCountCaveat:
             "Lower bound — students verified via an auto-recognized domain aren't linked to a specific college record.",
@@ -114,5 +117,59 @@ export async function getColleges(req, res) {
   } catch (err) {
     logger.error({ err }, "[Admin] colleges list error");
     return res.status(500).json({ error: "Failed to load colleges." });
+  }
+}
+
+// ── PATCH /api/admin/colleges/:collegeId ────────────────────────────────────
+// Renames a College record — primarily for correcting an auto-detected
+// guess (services/collegeAutoProvision.js's deriveCollegeNameFromDomain
+// output, e.g. "NITS" for a domain the admin knows is actually "National
+// Institute of Technology Silchar") or fixing a garbage name that slipped
+// through before the email-shaped-name guard existed (routes/tpo.js,
+// routes/collegeVerification.js). Deliberately narrow: only `name` (and
+// optionally `website`) are editable here — `domains`/`status` have their
+// own dedicated, more consequential flows (approve/reject) and aren't
+// touched by this endpoint.
+export async function renameCollege(req, res) {
+  try {
+    const { collegeId } = req.params;
+    const { name, website } = req.body;
+
+    if (!name?.trim()) {
+      return res.status(400).json({ error: "A college name is required." });
+    }
+    if (looksLikeEmailAddress(name)) {
+      return res.status(400).json({
+        error: "That looks like an email address — please enter the institution's name instead.",
+      });
+    }
+
+    const college = await College.findById(collegeId);
+    if (!college) {
+      return res.status(404).json({ error: "College not found." });
+    }
+
+    const previousName = college.name;
+    college.name = name.trim();
+    if (website !== undefined) {
+      college.website = website?.trim() || null;
+    }
+    await college.save();
+
+    recordAdminAction({
+      adminDoc: req.actingAdminDoc || req.userDoc,
+      action: "college.rename",
+      targetType: "College",
+      targetId: college._id,
+      details: { from: previousName, to: college.name },
+    });
+
+    return res.json({
+      success: true,
+      college: { id: college._id, name: college.name, website: college.website },
+    });
+  } catch (err) {
+    logger.error({ err }, "[Admin] rename college error");
+    return res.status(500).json({ error: "Failed to rename college." });
   }
 }

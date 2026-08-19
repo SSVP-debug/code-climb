@@ -330,14 +330,25 @@ const userSchema = new mongoose.Schema(
       branch:         { type: String, default: null, trim: true, maxlength: 60 },
       graduationYear: { type: Number, default: null },
       collegeEmail:   { type: String, default: null, trim: true, lowercase: true },
-      // Links to a College document (backend/models/College.js) ONLY when
-      // the student's domain required manual/TPO-driven review — the
-      // auto-verified-domain path (see utils/domainVerification.js's
-      // VerifiedDomain allowlist) never creates or links a College doc at
-      // all, by design, so collegeId legitimately stays null even for a
-      // fully verified student. See plan 005's Design decision notes for
-      // why a per-college student count built on this field alone can't
-      // capture auto-verified-domain students.
+      // Links to a College document (backend/models/College.js). Set two
+      // ways:
+      //   - Automatically, at account creation, for any institutional
+      //     (non-consumer) email domain — see
+      //     services/collegeAutoProvision.js, called from
+      //     middleware/auth.js on first login. This is what makes a
+      //     student who never runs the college-verification flow below
+      //     still show up under their college in the admin console.
+      //   - Explicitly, via the /college-verification/request flow below,
+      //     when the student's domain required manual/TPO-driven review.
+      // Either way this is a *link*, not proof of anything — it never
+      // implies emailVerified or collegeStatus === "verified" on its own
+      // (those gate College Leaderboard / contests / battle rooms access
+      // and are set only via the flows below). Historically (pre
+      // auto-provisioning) this stayed null for the recognized-domain
+      // path, meaning any per-college student count built on this field
+      // alone undercounted — see plan 005's design notes and
+      // collegeController.js's studentCountCaveat, which still applies
+      // for accounts created before auto-provisioning shipped.
       collegeId:        { type: mongoose.Schema.Types.ObjectId, ref: "College", default: null },
       emailVerified:    { type: Boolean, default: false },
       emailVerifiedAt:  { type: Date, default: null },

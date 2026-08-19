@@ -3,10 +3,19 @@ import mongoose from "mongoose";
 /**
  * College — an institution/domain record with a review lifecycle.
  *
- * Two submitter paths write into this same collection:
+ * Three submitter paths write into this same collection:
  *   - TPO registration (backend/routes/tpo.js) — submittedByRole: "tpo"
  *   - Student college-email verification (backend/routes/collegeVerification.js)
  *     — submittedByRole: "student"
+ *   - Automatic detection at signup, for any institutional (non-consumer)
+ *     email domain that doesn't already have a College doc
+ *     (backend/services/collegeAutoProvision.js, called from
+ *     middleware/auth.js on first login) — submittedByRole: "auto". No
+ *     human submitted these; `name` is a best-effort guess derived from
+ *     the domain (see utils/collegeNameHeuristics.js) and `submittedBy`
+ *     stays null. Always correctable by an admin via the Colleges
+ *     console's rename action — the frontend flags these with an
+ *     "Auto-detected" badge so a guess never reads as a reviewed fact.
  *
  * `status` here is the institution's own trust state — separate from
  * whether any individual user has verified ownership of an email at this
@@ -71,7 +80,7 @@ const collegeSchema = new mongoose.Schema(
 
     submittedByRole: {
       type: String,
-      enum: ["student", "tpo"],
+      enum: ["student", "tpo", "auto"],
       default: null,
     },
   },

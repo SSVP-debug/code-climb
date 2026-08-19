@@ -1,6 +1,7 @@
 import { getFirebaseAdmin } from "../config/firebaseAdmin.js";
 import { logger } from "../config/logger.js";
 import User from "../models/User.js";
+import { autoProvisionCollegeForDomain } from "../services/collegeAutoProvision.js";
 import {
   getCachedUserByFirebaseUid,
   setCachedUserByFirebaseUid,
@@ -58,6 +59,30 @@ async function resolveAuthenticatedUser(req) {
           email: decoded.email || "",
           displayName: decoded.name || "",
         });
+
+        // Link this brand-new account to a College record when their
+        // email domain is institutional — see
+        // services/collegeAutoProvision.js's header for why this can't
+        // just live inside the (opt-in, rarely-run) education-
+        // verification flow. Best-effort and fire-once: a failure here
+        // must never fail account creation/login itself.
+        try {
+          const college = await autoProvisionCollegeForDomain(userDoc.emailDomain);
+          if (college) {
+            const existingEducation = userDoc.education?.toObject?.() ?? userDoc.education ?? {};
+            userDoc.education = {
+              ...existingEducation,
+              collegeId: college._id,
+              collegeName: existingEducation.collegeName || college.name,
+            };
+            await userDoc.save();
+          }
+        } catch (provisionError) {
+          (req.log || logger).error(
+            { err: provisionError },
+            "[Auth] college auto-provision failed"
+          );
+        }
       }
 
       setCachedUserByFirebaseUid(decoded.uid, userDoc);

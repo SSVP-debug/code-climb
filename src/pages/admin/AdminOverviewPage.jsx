@@ -103,7 +103,9 @@ export default function AdminOverviewPage() {
             getRow={(c) => ({
               id: c.collegeId,
               title: c.collegeName,
-              subtitle: c.requestedBy?.displayName || c.requestedBy?.email || "Unknown requester",
+              subtitle: c.autoDetected
+                ? "Auto-detected from a student signup — name is a guess, not yet reviewed"
+                : c.requestedBy?.displayName || c.requestedBy?.email || "Unknown requester",
               meta: `${(c.domains || []).join(", ")}${c.website ? " · " + c.website : ""} · requested ${formatDate(c.requestedAt)}`,
             })}
             onApprove={(id) => actOnStudentCollege(id, "approve")}

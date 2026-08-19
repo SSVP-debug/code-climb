@@ -6,6 +6,7 @@ import College from "../models/College.js";
 import { requireAuth } from "../middleware/auth.js";
 import { collegeVerificationResendLimiter } from "../middleware/rateLimiter.js";
 import { isDomainAutoVerified, isConsumerEmailDomain } from "../utils/domainVerification.js";
+import { looksLikeEmailAddress } from "../utils/collegeNameHeuristics.js";
 import { getResendClient, getFromAddress } from "../config/resend.js";
 import { SITE_URL } from "../config/site.js";
 
@@ -129,29 +130,59 @@ router.post("/request", requireAuth, async (req, res) => {
     let college = null;
 
     if (!recognized) {
-      if (!collegeName?.trim()) {
-        // Signals the frontend to show the "We haven't added your college
-        // yet" step and collect a name (+ optional website) rather than a
-        // generic toast — this is NOT a dead end, it's a state transition.
-        return res.status(400).json({
-          error: "College name is required for an unrecognized domain.",
-          code: "COLLEGE_NAME_REQUIRED",
+      // A College doc may already exist for this domain — auto-detected
+      // from an earlier student's signup (services/collegeAutoProvision.js)
+      // or submitted by an earlier requester for the same unrecognized
+      // domain. Check for it BEFORE asking for a college name: forcing a
+      // name the code is just going to discard in favor of the existing
+      // record (see findOrCreatePendingCollege's `if (existing) return
+      // existing;` below) is a needless, confusing extra step.
+      const existingCollege = await College.findByDomain(domain);
+
+      if (existingCollege?.status === "rejected") {
+        return res.status(409).json({
+          error:
+            "This institution was previously reviewed and not approved. Contact support if you believe this is an error.",
         });
       }
 
-      try {
-        college = await findOrCreatePendingCollege({
-          domain,
-          name: collegeName.trim(),
-          website: collegeWebsite?.trim() || null,
-          submittedBy: req.userDoc._id,
-          submittedByRole: "student",
-        });
-      } catch (err) {
-        if (err.statusCode) {
-          return res.status(err.statusCode).json({ error: err.message });
+      if (existingCollege) {
+        college = existingCollege;
+      } else {
+        if (!collegeName?.trim()) {
+          // Signals the frontend to show the "We haven't added your
+          // college yet" step and collect a name (+ optional website)
+          // rather than a generic toast — this is NOT a dead end, it's a
+          // state transition.
+          return res.status(400).json({
+            error: "College name is required for an unrecognized domain.",
+            code: "COLLEGE_NAME_REQUIRED",
+          });
         }
-        throw err;
+
+        if (looksLikeEmailAddress(collegeName)) {
+          // The "unnecessary box" bug class: a College record whose name
+          // is literally someone's email address (fat-fingered into the
+          // wrong field). Reject it here instead of silently storing it.
+          return res.status(400).json({
+            error: "That looks like an email address — please enter your institution's name instead.",
+          });
+        }
+
+        try {
+          college = await findOrCreatePendingCollege({
+            domain,
+            name: collegeName.trim(),
+            website: collegeWebsite?.trim() || null,
+            submittedBy: req.userDoc._id,
+            submittedByRole: "student",
+          });
+        } catch (err) {
+          if (err.statusCode) {
+            return res.status(err.statusCode).json({ error: err.message });
+          }
+          throw err;
+        }
       }
     }
 

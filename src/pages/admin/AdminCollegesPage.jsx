@@ -52,6 +52,7 @@ export default function AdminCollegesPage() {
     setStatusFilter,
     searchInput,
     setSearchInput,
+    renameCollege,
   } = useAdminColleges();
 
   const selectedCollege = colleges.find((c) => c.id === selectedCollegeId) || null;
@@ -133,7 +134,17 @@ export default function AdminCollegesPage() {
                     <p className="text-white font-semibold text-sm truncate">{college.name}</p>
                     <p className="text-zinc-500 text-xs truncate">{college.domains?.join(", ")}</p>
                   </div>
-                  <StatusBadge status={college.status} />
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <StatusBadge status={college.status} />
+                    {college.autoDetected && (
+                      <span
+                        title="Name auto-derived from domain at signup — not yet reviewed"
+                        className="text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wide font-semibold bg-purple-500/10 text-purple-300"
+                      >
+                        Auto-detected
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center bg-black/20 rounded-lg py-2.5">
@@ -200,6 +211,7 @@ export default function AdminCollegesPage() {
         open={Boolean(selectedCollege)}
         onClose={() => setSelectedCollegeId(null)}
         onViewStudents={viewStudents}
+        onRename={renameCollege}
       />
     </>
   );
