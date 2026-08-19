@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Code Club — sitemap.xml
+
+  Only the routes registered WITHOUT <ProtectedRoute> in src/App.jsx are
+  listed here (verified against source, not guessed) — /pricing and
+  /ambassador look public by name but are both wrapped in ProtectedRoute,
+  so they're intentionally excluded.
+
+  Domain matches SITE_URL in src/config/site.js — update both together if
+  the deployment moves to a custom domain.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://code-club-one.vercel.app/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://code-club-one.vercel.app/portal</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://code-club-one.vercel.app/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://code-club-one.vercel.app/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://code-club-one.vercel.app/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

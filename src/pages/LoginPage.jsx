@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { signInWithGoogle } from "../services/auth";
 import { apiFetch } from "../services/api";
 import { getPostLoginDestination, VALID_PORTAL_ROLES } from "../utils/roleRedirect";
 import { getSafeNextPath } from "../utils/authRedirect";
+import { GraduationCap, Briefcase, Building2, Flame, Search, Users } from "lucide-react";
 
 // JARVIS pass, spec §1: "LOGIN → AUTHENTICATING → ... should feel like one
 // continuous experience... the user should never wait just to watch an
@@ -39,6 +40,75 @@ const ROLE_COPY = {
   },
 };
 
+// Left-panel copy — deliberately distinct from ROLE_COPY (the form-side
+// heading above): this is the "why," not the "sign in as." Colors and the
+// stat line reuse the exact teal/sky/violet accents and mock numbers from
+// the landing page's role-preview cards (AudienceGrid.jsx) and /portal's
+// role cards, so the color someone tapped on /portal follows them straight
+// through to this screen instead of resetting to a generic brand panel.
+const LEFT_PANEL_COPY = {
+  student: {
+    Icon: GraduationCap,
+    accent: "teal",
+    heading: "Turn practice into proof.",
+    description:
+      "Every solve is verified server-side — no self-reported skills, just a real solve history recruiters can check.",
+    StatIcon: Flame,
+    stat: "1,240 XP · 14-day streak",
+  },
+  recruiter: {
+    Icon: Briefcase,
+    accent: "sky",
+    heading: "Skip the resume guesswork.",
+    description:
+      "Search candidates by real solve history and verified topic strength, then send skills tests directly.",
+    StatIcon: Search,
+    stat: "142 verified candidates found this week",
+  },
+  tpo: {
+    Icon: Building2,
+    accent: "violet",
+    heading: "See readiness, not guesses.",
+    description:
+      "Track your whole batch's solve velocity, streaks, and topic coverage — one dashboard, not spreadsheets.",
+    StatIcon: Users,
+    stat: "78% of your batch is placement-ready",
+  },
+};
+
+const DEFAULT_LEFT_PANEL = {
+  Icon: GraduationCap,
+  accent: "default",
+  heading: "Practice that becomes proof.",
+  description:
+    "Solve real interview problems, practice live AI mock interviews, and build a verified solve history recruiters actually check.",
+  StatIcon: Flame,
+  stat: "High-quality DSA problems · Multi-language",
+};
+
+const ACCENT_PANEL = {
+  teal: {
+    bg: "bg-gradient-to-br from-teal-500/10 via-ink-950 to-ink-950",
+    ring: "border-teal-500/25 bg-teal-500/10 text-teal-400",
+    text: "text-teal-300",
+  },
+  sky: {
+    bg: "bg-gradient-to-br from-sky-500/10 via-ink-950 to-ink-950",
+    ring: "border-sky-500/25 bg-sky-500/10 text-sky-400",
+    text: "text-sky-300",
+  },
+  violet: {
+    bg: "bg-gradient-to-br from-violet-500/10 via-ink-950 to-ink-950",
+    ring: "border-violet-500/25 bg-violet-500/10 text-violet-400",
+    text: "text-violet-300",
+  },
+  default: {
+    bg: "bg-gradient-to-br from-verdict-accept/10 via-ink-950 to-ink-950",
+    ring: "border-verdict-accept/25 bg-verdict-accept/10 text-verdict-accept",
+    text: "text-verdict-accept",
+  },
+};
+
 function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,6 +123,8 @@ function LoginPage() {
     heading: "Welcome to Code Club",
     sub: "Continue your DSA journey",
   };
+  const leftPanel = LEFT_PANEL_COPY[roleIntent] || DEFAULT_LEFT_PANEL;
+  const panelAccent = ACCENT_PANEL[leftPanel.accent];
 
   // Apply referral code after login if present in URL
   async function applyReferralIfPresent() {
@@ -163,75 +235,115 @@ function LoginPage() {
   const busy = status !== "idle";
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black text-white px-4">
-      <div className="w-[400px] max-w-full animate-fadeIn" style={{ animationDuration: "0.35s" }}>
-        <div className="flex items-center justify-center gap-1.5 mb-6">
+    <div className="min-h-screen grid md:grid-cols-2 bg-ink-950 text-white">
+      {/* Left — role-colored brand panel. Hidden below md: on a small
+          screen the form is the job, not the illustration. The accent
+          color and stat line are the same ones tapped on /portal and
+          shown in the landing page's role-preview cards, so the color
+          someone chose follows them all the way to sign-in. */}
+      <div
+        className={`hidden md:flex flex-col justify-between p-12 border-r border-ink-700 ${panelAccent.bg}`}
+      >
+        <Link to="/" className="flex items-center gap-2 w-fit">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-verdict-accept" />
           <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-zinc-500">
             Code Club
           </span>
+        </Link>
+
+        <div className="max-w-sm">
+          <span
+            className={`inline-flex w-14 h-14 rounded-2xl items-center justify-center border mb-6 ${panelAccent.ring}`}
+            aria-hidden="true"
+          >
+            <leftPanel.Icon size={26} strokeWidth={2} />
+          </span>
+          <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
+            {leftPanel.heading}
+          </h2>
+          <p className="text-zinc-400 leading-relaxed">{leftPanel.description}</p>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
-          <h1 className="text-3xl font-bold mb-3">{copy.heading}</h1>
+        <div className="flex items-center gap-2 font-mono-ui text-xs text-zinc-500">
+          <leftPanel.StatIcon size={14} className={panelAccent.text} strokeWidth={2.2} aria-hidden="true" />
+          <span className={panelAccent.text}>{leftPanel.stat}</span>
+        </div>
+      </div>
 
-          <p className="text-zinc-400 mb-8">{copy.sub}</p>
+      {/* Right — the actual sign-in form. Logic untouched from before;
+          just re-laid-out into the right-hand column. */}
+      <div className="flex items-center justify-center px-4 py-16">
+        <div className="w-[400px] max-w-full animate-fadeIn" style={{ animationDuration: "0.35s" }}>
+          {/* Brand mark repeats here too — the split panel is hidden on
+              mobile, so this is the only brand mark on small screens. */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mb-6">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-verdict-accept" />
+            <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-zinc-500">
+              Code Club
+            </span>
+          </div>
 
-          {/* Session expired banner — shown when api.js redirects here after 401 */}
-          {sessionExpired && (
-            <div className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm px-4 py-3 rounded-xl mb-6">
-              Your session expired. Please sign in again.
-            </div>
-          )}
+          <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
+            <h1 className="text-3xl font-bold mb-3">{copy.heading}</h1>
 
-          {/* Honest sign-out confirmation — only shown after a real, completed
-              logout (see Navbar's handleLogout), never sessionExpired's twin. */}
-          {justLoggedOut && !sessionExpired && (
-            <div className="bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept text-sm px-4 py-3 rounded-xl mb-6">
-              You've been signed out.
-            </div>
-          )}
+            <p className="text-zinc-400 mb-8">{copy.sub}</p>
 
-          {errorMsg && (
-            <div className="bg-verdict-reject/10 border border-verdict-reject/30 text-verdict-reject text-sm px-4 py-3 rounded-xl mb-6">
-              {errorMsg}
-            </div>
-          )}
-
-          <button
-            onClick={handleGoogleLogin}
-            disabled={busy}
-            className="w-full flex items-center justify-center gap-2.5 bg-white text-black py-3 rounded-xl font-semibold hover:bg-zinc-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {busy && (
-              <span
-                aria-hidden="true"
-                className="h-3.5 w-3.5 rounded-full border-2 border-black/30 border-t-black animate-spin"
-              />
+            {/* Session expired banner — shown when api.js redirects here after 401 */}
+            {sessionExpired && (
+              <div className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm px-4 py-3 rounded-xl mb-6">
+                Your session expired. Please sign in again.
+              </div>
             )}
-            {busy ? STATUS_COPY[status] : "Continue with Google"}
-          </button>
 
-          {/* Real-state system-status language (JARVIS pass §1) — mirrors the
-              admin command bar's mono-ui labels, not decoration on its own:
-              only rendered while `status` reflects an actual in-flight
-              promise (Google popup, referral apply, /api/init). */}
-          {busy && (
-            <p
-              className="mt-3 text-[11px] font-mono-ui uppercase tracking-widest text-zinc-600"
-              role="status"
-              aria-live="polite"
+            {/* Honest sign-out confirmation — only shown after a real, completed
+                logout (see Navbar's handleLogout), never sessionExpired's twin. */}
+            {justLoggedOut && !sessionExpired && (
+              <div className="bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept text-sm px-4 py-3 rounded-xl mb-6">
+                You've been signed out.
+              </div>
+            )}
+
+            {errorMsg && (
+              <div className="bg-verdict-reject/10 border border-verdict-reject/30 text-verdict-reject text-sm px-4 py-3 rounded-xl mb-6">
+                {errorMsg}
+              </div>
+            )}
+
+            <button
+              onClick={handleGoogleLogin}
+              disabled={busy}
+              className="w-full flex items-center justify-center gap-2.5 bg-white text-black py-3 rounded-xl font-semibold hover:bg-zinc-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {status === "authenticating" ? "Verifying with Google" : "Preparing your workspace"}
-            </p>
-          )}
+              {busy && (
+                <span
+                  aria-hidden="true"
+                  className="h-3.5 w-3.5 rounded-full border-2 border-black/30 border-t-black animate-spin"
+                />
+              )}
+              {busy ? STATUS_COPY[status] : "Continue with Google"}
+            </button>
 
-          <p className="mt-6 text-xs text-zinc-600">
-            Not the right account type?{" "}
-            <a href="/portal" className="text-zinc-400 hover:text-white underline">
-              Choose your access
-            </a>
-          </p>
+            {/* Real-state system-status language (JARVIS pass §1) — mirrors the
+                admin command bar's mono-ui labels, not decoration on its own:
+                only rendered while `status` reflects an actual in-flight
+                promise (Google popup, referral apply, /api/init). */}
+            {busy && (
+              <p
+                className="mt-3 text-[11px] font-mono-ui uppercase tracking-widest text-zinc-600"
+                role="status"
+                aria-live="polite"
+              >
+                {status === "authenticating" ? "Verifying with Google" : "Preparing your workspace"}
+              </p>
+            )}
+
+            <p className="mt-6 text-xs text-zinc-600">
+              Not the right account type?{" "}
+              <a href="/portal" className="text-zinc-400 hover:text-white underline">
+                Choose your access
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -9,6 +9,14 @@ let searchParamsValue = new URLSearchParams();
 vi.mock("react-router-dom", () => ({
   useNavigate: () => navigateMock,
   useSearchParams: () => [searchParamsValue],
+  // Split-screen redesign's left brand panel (LoginPage.jsx) links back to
+  // "/" — a plain <a> stand-in is enough for these redirect-logic tests,
+  // which don't assert anything about that link itself.
+  Link: ({ to, children, ...rest }) => (
+    <a href={to} {...rest}>
+      {children}
+    </a>
+  ),
 }));
 
 const apiFetchMock = vi.fn();

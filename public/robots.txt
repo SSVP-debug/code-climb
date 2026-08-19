@@ -1,0 +1,36 @@
+# Code Club — robots.txt
+# Public marketing/legal pages are crawlable; everything behind auth
+# (dashboards, portals, admin) is disallowed since it's not indexable
+# content anyway (ProtectedRoute redirects logged-out crawlers to /login)
+# and there's no reason to spend crawl budget on it.
+
+User-agent: *
+Allow: /
+Allow: /portal
+Allow: /login
+Allow: /privacy
+Allow: /terms
+
+Disallow: /dashboard
+Disallow: /analytics
+Disallow: /profile
+Disallow: /settings
+Disallow: /club/
+Disallow: /leaderboard
+Disallow: /problems
+Disallow: /tpo/
+Disallow: /recruiter/
+Disallow: /candidate/
+Disallow: /certifications
+Disallow: /verify/
+Disallow: /verify-college
+Disallow: /ambassador
+Disallow: /pricing
+Disallow: /interview-mode/
+Disallow: /admin
+Disallow: /theme-selection
+Disallow: /theme-confirmation
+
+# Update this if/when the deployment moves off code-club-one.vercel.app —
+# same domain kept as the single source of truth in src/config/site.js.
+Sitemap: https://code-club-one.vercel.app/sitemap.xml
