@@ -21,29 +21,24 @@ function WelcomeBanner() {
 
   return (
     <SectionCard accented>
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-zinc-400 text-sm">
-            {greeting},
-          </p>
-
-          <h1 className="text-4xl font-bold mt-2">
-            {name}
-          </h1>
-
-          <p className="text-zinc-400 mt-3">
-            {theme.words.welcomeTagline}
-          </p>
-        </div>
-
+      <div className="flex items-center gap-3.5">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{
             backgroundColor: withAlpha(theme.colors.primary, "1f"),
             color: theme.colors.primary,
           }}
         >
-          <Icon size={28} strokeWidth={2} aria-hidden="true" />
+          <Icon size={22} strokeWidth={2} aria-hidden="true" />
+        </div>
+
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold leading-tight truncate">
+            {greeting}, {name}
+          </h1>
+          <p className="text-zinc-400 text-sm truncate">
+            {theme.words.welcomeTagline}
+          </p>
         </div>
       </div>
     </SectionCard>

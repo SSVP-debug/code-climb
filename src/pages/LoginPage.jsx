@@ -283,14 +283,14 @@ function LoginPage() {
             </span>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
+          <div className="bg-ink-800 border border-ink-700 p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
             <h1 className="text-3xl font-bold mb-3">{copy.heading}</h1>
 
             <p className="text-zinc-400 mb-8">{copy.sub}</p>
 
             {/* Session expired banner — shown when api.js redirects here after 401 */}
             {sessionExpired && (
-              <div className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm px-4 py-3 rounded-xl mb-6">
+              <div className="bg-verdict-pending/10 border border-verdict-pending/30 text-verdict-pending text-sm px-4 py-3 rounded-xl mb-6">
                 Your session expired. Please sign in again.
               </div>
             )}
