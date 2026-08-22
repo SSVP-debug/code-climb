@@ -5,7 +5,10 @@ import { useAppContext } from "../../hooks/useAppContext";
 
 /**
  * DailyMission — step 4 of the first-session onboarding flow
- * (docs/002-first-session-onboarding-flow.md). Three small, achievable
+ * (docs/002-first-session-onboarding-flow.md). Currently unused/orphaned —
+ * the flow's orchestrator + gate were removed when the Daily Quiz Gate
+ * spec replaced the old quiz step with DailyQuizGuard.jsx; kept as a
+ * standalone component in case it's reused elsewhere. Three small, achievable
  * goals meant to give purpose before entering the platform. The streak
  * goal's copy depends on whether the user already has one going — asking
  * someone with no streak yet to "maintain" one that doesn't exist would

@@ -4,10 +4,11 @@ import QuizResultSummary from "./QuizResultSummary";
 
 /**
  * QuizResultModal — lets a person reopen today's Daily Quick Quiz result
- * after they've already continued past it once. Reads from
- * dailyQuizStorage's saved result (this session or an earlier one today) —
- * there is nothing to refetch, it's the same in-memory shape scoreQuizAttempt
- * produced originally.
+ * after they've already continued past it once. Currently unused/orphaned
+ * (no caller passes it a `result` today — see DailyQuizGuard.jsx, which
+ * replaced the old onboarding quiz step and doesn't keep the result around
+ * after completion). Expects the same in-memory result shape
+ * scoreQuizAttempt produces.
  *
  * Closable via the X button, clicking the backdrop, or Escape — same
  * pattern as LevelUpModal (src/components/gamification/LevelUpModal.jsx).

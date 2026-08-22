@@ -4,12 +4,18 @@ import { useTheme } from "../../hooks/useTheme";
 import { useAppContext } from "../../hooks/useAppContext";
 
 /**
- * WorkspacePreparationScreen — final step of the onboarding flow (see
- * OnboardingContainer / docs/002-first-session-onboarding-flow.md and the
- * "refine first-session experience" follow-up plan). Not a spinner: per
- * that plan's explicit copy guidance, this continues the onboarding
- * narrative ("Building today's coding session...") rather than surfacing
- * infra language ("Connecting...", "Loading server...").
+ * WorkspacePreparationScreen — was the final step of the Welcome -> Quiz
+ * -> Mission -> Focus -> Readiness onboarding flow (see
+ * docs/002-first-session-onboarding-flow.md and the "refine first-session
+ * experience" follow-up plan). That flow's orchestrator (formerly
+ * OnboardingContainer.jsx) and its gate (formerly OnboardingGate.jsx) were
+ * removed when the Daily Quiz Gate spec replaced the quiz step with a
+ * stricter, server-backed, app-wide gate (see DailyQuizGuard.jsx) — this
+ * component is currently unused/orphaned, kept in place as a standalone
+ * piece in case the readiness-screen concept gets reused elsewhere. Not a
+ * spinner: per the original plan's explicit copy guidance, this continues
+ * the onboarding narrative ("Building today's coding session...") rather
+ * than surfacing infra language ("Connecting...", "Loading server...").
  *
  * Auto-advances (calls onReady) once AppContext's isBackendReady flips
  * true — the user never has to click anything here. A MIN_DISPLAY_MS floor

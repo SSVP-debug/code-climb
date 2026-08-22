@@ -188,11 +188,10 @@ describe("Navbar", () => {
     expect(mobileControls.className).toContain("shrink-0");
   });
 
-  // The onboarding flow (Welcome -> Quiz -> Mission -> Focus -> Workspace
-  // Preparation, see OnboardingGate) intentionally buys time for a cold
-  // backend start. While that's happening, isBackendReady is false — and
-  // until this fix Navbar was still fully clickable, so a student could
-  // navigate to Problems before there was any data to render there.
+  // DailyQuizGuard (src/routes/DailyQuizGuard.jsx) waits for
+  // isBackendReady before ever mounting Navbar. This test covers Navbar's
+  // own belt-and-suspenders isBackendReady gate directly, independent of
+  // that upstream guarantee.
   it("disables nav links and the search trigger while the backend isn't ready", () => {
     renderNavbar({ role: "student", isBackendReady: false });
     expect(screen.queryByRole("link", { name: "Problems" })).not.toBeInTheDocument();

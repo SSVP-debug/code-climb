@@ -9,13 +9,13 @@
  * `bg-zinc-900 border border-zinc-800 rounded-2xl animate-pulse` pattern
  * already used by ProblemCardSkeleton / ProblemDetailsSkeleton.
  *
- * This is the defense-in-depth layer: under normal flow, OnboardingGate's
- * WorkspacePreparationScreen step already blocks navigation to /dashboard
- * until isBackendReady is true, so this should rarely be visible. It
- * exists so that no route — including edge cases like a direct deep link
- * or a fast-refresh during dev — can ever end up rendering the old fake
- * zero-state (0 solved, empty streak, empty charts) instead of an honest
- * loading state.
+ * This is the defense-in-depth layer: under normal flow, DailyQuizGuard
+ * (src/routes/DailyQuizGuard.jsx) already waits for isBackendReady before
+ * ever letting /dashboard (or any other route) mount, so this should
+ * rarely be visible. It exists so that no route — including edge cases
+ * like a direct deep link or a fast-refresh during dev — can ever end up
+ * rendering the old fake zero-state (0 solved, empty streak, empty
+ * charts) instead of an honest loading state.
  */
 
 function Block({ className = "" }) {

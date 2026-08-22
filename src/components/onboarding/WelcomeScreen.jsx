@@ -4,7 +4,10 @@ import { useTheme } from "../../hooks/useTheme";
 
 /**
  * WelcomeScreen — step 1 of the first-session onboarding flow
- * (docs/002-first-session-onboarding-flow.md). Not a splash screen: this is
+ * (docs/002-first-session-onboarding-flow.md). Currently unused/orphaned —
+ * the flow's orchestrator + gate were removed when the Daily Quiz Gate
+ * spec replaced the old quiz step with DailyQuizGuard.jsx; kept as a
+ * standalone component in case it's reused elsewhere. Not a splash screen: this is
  * framed as "the beginning of today's coding session", appreciating the
  * user for showing up rather than a generic motivational quote. CTA is
  * intentionally "Start Today's Session" — the spec explicitly bans

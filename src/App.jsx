@@ -4,7 +4,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
 import PremiumRoute from "./components/auth/PremiumRoute";
 import ThemeGate from "./routes/ThemeGate";
-import OnboardingGate from "./routes/OnboardingGate";
+import DailyQuizGuard from "./routes/DailyQuizGuard";
+import DashboardRoleRedirect from "./routes/DashboardRoleRedirect";
 import { warmBackend } from "./services/api";
 
 // ── Eagerly loaded ─────────────────────────────────────────────────────────
@@ -95,6 +96,13 @@ function App() {
 
   return (
     <Suspense fallback={<PageLoader />}>
+      {/* Daily Quiz Gate — wraps EVERYTHING below (banners, navbar-bearing
+          routes, all of it). See DailyQuizGuard's own comment for why this
+          has to sit above the router rather than inside individual pages:
+          nothing below it — including the app shell/navbar — mounts until
+          today's quiz is confirmed complete by the server. No-ops entirely
+          for logged-out visitors, so public routes are unaffected. */}
+      <DailyQuizGuard>
       <OfflineBanner />
       <AnnouncementBanner />
       <AdminPreviewBanner />
@@ -116,7 +124,9 @@ function App() {
           element={
             <ProtectedRoute>
               <ThemeGate>
-                <OnboardingGate><Dashboard /></OnboardingGate>
+                <DashboardRoleRedirect>
+                  <Dashboard />
+                </DashboardRoleRedirect>
               </ThemeGate>
             </ProtectedRoute>
           }
@@ -308,6 +318,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
+      </DailyQuizGuard>
     </Suspense>
   );
 }

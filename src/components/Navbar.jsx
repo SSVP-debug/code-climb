@@ -138,14 +138,12 @@ function Navbar() {
   const showNotificationBell = role !== "admin";
 
   // Nav destinations and search hit real backend data (Problems needs
-  // fetched questions, Club needs contest/room data, etc.). The onboarding
-  // flow's quiz/mission/focus steps intentionally buy time for a cold
-  // backend start (see OnboardingGate's comment), but until now Navbar was
-  // still fully clickable during that window — a student could tap
-  // "Problems" while the backend was still starting and land on a page
-  // with no questions rendered. Gate navigation on the same isBackendReady
-  // flag OnboardingContainer itself already waits on before it hands back
-  // control.
+  // fetched questions, Club needs contest/room data, etc.). DailyQuizGuard
+  // (src/routes/DailyQuizGuard.jsx) already waits for isBackendReady
+  // before ever letting Navbar mount in the first place, but this flag is
+  // kept as its own explicit gate here too — cheap belt-and-suspenders in
+  // case that upstream guarantee ever changes, rather than Navbar quietly
+  // relying on an invariant it doesn't own.
   const navReady = isBackendReady;
 
   return (

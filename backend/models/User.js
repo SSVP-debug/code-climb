@@ -421,6 +421,23 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
+    // ── Daily Quiz Gate ────────────────────────────────────────────────
+    // The calendar day (UTC, "YYYY-MM-DD" — same convention as
+    // `lastActivityDate` / `dailyChallengeHistory[].date`, both derived via
+    // `new Date().toISOString().split("T")[0]`) on which this user last
+    // completed the mandatory daily warm-up quiz gate (see
+    // controllers/dailyQuizController.js). Server-side source of truth on
+    // purpose: the frontend gate (src/routes/DailyQuizGuard.jsx) must not
+    // be bypassable by clearing localStorage/sessionStorage. Lives directly
+    // on `User` rather than going through userProgressService — it isn't a
+    // solving-progress stat (not in the PROGRESS_FIELDS table in
+    // docs/migrations/user-model-split.md), it's an auth-adjacent gating
+    // flag, closer to `lastWeeklyReviewSentAt` above.
+    dailyQuizCompletedDate: {
+      type: String,
+      default: null,
+    },
+
     problemNotes: {
       type: Map,
       of: String,

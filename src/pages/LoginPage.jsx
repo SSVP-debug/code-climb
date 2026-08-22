@@ -157,17 +157,17 @@ function LoginPage() {
   // /api/init the instant `user` is set, so the backend was already
   // loading in the background regardless. For the plain-login path (no
   // ?role= intent) we now navigate straight to /dashboard without waiting;
-  // if this turns out to be a returning recruiter/TPO, OnboardingGate
-  // (src/routes/OnboardingGate.jsx) bounces them to their real dashboard
-  // once AppContext's role has hydrated.
+  // if this turns out to be a returning recruiter/TPO, DashboardRoleRedirect
+  // (src/routes/DashboardRoleRedirect.jsx) bounces them to their real
+  // dashboard once AppContext's role has hydrated.
   //
   // The portal-intent path (?role=recruiter|tpo) still waits: unlike the
   // plain path, getPostLoginDestination() there must distinguish "already
   // has this role, go to their dashboard" from "doesn't have it yet, go to
   // the signup form" — guessing wrong would send an existing recruiter to
   // the signup flow instead of their dashboard, a correctness bug, not
-  // just a slow redirect. OnboardingGate can't fix that after the fact
-  // because it only wraps /dashboard, not /recruiter/signup or
+  // just a slow redirect. DashboardRoleRedirect can't fix that after the
+  // fact because it only wraps /dashboard, not /recruiter/signup or
   // /tpo/signup.
   async function redirectAfterAuth() {
     setStatus("redirecting");

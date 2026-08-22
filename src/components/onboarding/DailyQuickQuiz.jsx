@@ -15,16 +15,20 @@ const FEEDBACK_DELAY_MS = 900;
 /**
  * DailyQuickQuiz — the "Daily Quick Quiz" from the first-session-experience
  * spec: 5 MCQs shown once per day, then a result screen ("You're strongest
- * in: X" / "Today's improvement area: Y"). Rendered by OnboardingGate in
- * place of the Dashboard until the quiz is completed for today.
+ * in: X" / "Today's improvement area: Y"). Rendered by DailyQuizGuard
+ * (src/routes/DailyQuizGuard.jsx) in place of the entire application shell
+ * until the quiz is completed for today.
  *
- * No quiz attempt is persisted server-side (Plan 001 design decision) — this
- * component only holds the current attempt in memory and hands the final
- * `result` to `onComplete(result)`. The result, including a per-question
- * review (selected vs. correct option), is shown once, right here, when the
- * quiz finishes — it does not reappear on the dashboard afterward.
- * OnboardingGate owns the "once per day" localStorage gate
- * (src/utils/dailyQuizStorage.js).
+ * This component itself only ever holds the current attempt in memory and
+ * hands the final `result` to `onComplete(result)` once the person clicks
+ * through the result screen — it has no opinion on what onComplete() does
+ * with that. DailyQuizGuard is what persists completion server-side
+ * (POST /api/daily-quiz/complete) and owns the "once per calendar day"
+ * gate; this component would work identically if some other caller wired
+ * it up differently. (Formerly: no server persistence at all, and the
+ * once-per-day gate lived client-side in the now-removed
+ * src/utils/dailyQuizStorage.js — see DailyQuizGuard's comment for why
+ * that changed.)
  */
 export default function DailyQuickQuiz({ onComplete }) {
   const [questions] = useState(() => selectDailyQuestions(QUESTION_COUNT));

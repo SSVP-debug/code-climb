@@ -27,7 +27,7 @@ vi.mock("../firebase/firebase", () => ({
 
 // Navbar pulls in auth/notification/streak widgets unrelated to what this
 // file is testing (the /admin/* role guard) — stub it like DashboardLayout's
-// own tests stub theirs (see src/routes/OnboardingGate.test.jsx).
+// own tests stub theirs.
 vi.mock("../components/Navbar", () => ({
   default: () => <nav data-testid="navbar-stub" />,
 }));

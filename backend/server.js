@@ -48,6 +48,7 @@ import { requireRole } from "./middleware/roleGuard.js";
 import { compilerLimiter, apiLimiter, aiLimiter } from "./middleware/rateLimiter.js";
 import insightsRoutes from "./routes/insights.js";
 import dailyChallengeRoutes from "./routes/dailyChallenge.js";
+import dailyQuizRoutes from "./routes/dailyQuiz.js";
 import initRoutes from "./routes/init.js";
 import statsRoutes from "./routes/stats.js";
 import referralRoutes from "./routes/referral.js";
@@ -199,6 +200,12 @@ app.use(
   requireAuth,
   apiLimiter,
   dailyChallengeRoutes
+);
+app.use(
+  "/api/daily-quiz",
+  requireAuth,
+  apiLimiter,
+  dailyQuizRoutes
 );
 app.use(
   "/api/public",

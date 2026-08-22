@@ -76,7 +76,7 @@ describe("LoginPage — post-login redirect (Gate 3 P0-1)", () => {
   // AppContext already fires its own independent /api/init the instant
   // `user` is set. The plain-login path (no ?next=, no ?role= intent) now
   // navigates straight to /dashboard without waiting; a returning
-  // recruiter/TPO gets bounced to their real dashboard by OnboardingGate
+  // recruiter/TPO gets bounced to their real dashboard by DashboardRoleRedirect
   // once AppContext's role has hydrated, instead of being resolved here.
   it("navigates straight to /dashboard without waiting on /api/init when there is no ?next= or ?role= intent", async () => {
     authValue = { user: { uid: "1" } };
@@ -90,7 +90,7 @@ describe("LoginPage — post-login redirect (Gate 3 P0-1)", () => {
   // The portal-intent path (?role=recruiter|tpo) is different: it must
   // distinguish "already has this role, go to their dashboard" from
   // "doesn't have it yet, go to the signup form", so it still needs the
-  // real role and keeps awaiting /api/init here (OnboardingGate only
+  // real role and keeps awaiting /api/init here (DashboardRoleRedirect only
   // wraps /dashboard, so it can't correct a wrong signup-vs-dashboard
   // guess after the fact).
   it("still awaits /api/init on the portal-intent path, so a returning recruiter lands on their dashboard, not the signup form", async () => {
