@@ -138,12 +138,13 @@ function Navbar() {
   const showNotificationBell = role !== "admin";
 
   // Nav destinations and search hit real backend data (Problems needs
-  // fetched questions, Club needs contest/room data, etc.). DailyQuizGuard
-  // (src/routes/DailyQuizGuard.jsx) already waits for isBackendReady
-  // before ever letting Navbar mount in the first place, but this flag is
-  // kept as its own explicit gate here too — cheap belt-and-suspenders in
-  // case that upstream guarantee ever changes, rather than Navbar quietly
-  // relying on an invariant it doesn't own.
+  // fetched questions, Club needs contest/room data, etc.). DailyQuizGate
+  // (src/routes/DailyQuizGate.jsx, reached via ProtectedRoute) already
+  // waits for isBackendReady before ever letting a protected page's
+  // Navbar mount in the first place, but this flag is kept as its own
+  // explicit gate here too — cheap belt-and-suspenders in case that
+  // upstream guarantee ever changes, rather than Navbar quietly relying
+  // on an invariant it doesn't own.
   const navReady = isBackendReady;
 
   return (

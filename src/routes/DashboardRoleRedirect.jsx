@@ -10,10 +10,10 @@ import { getPostLoginDestination } from "../utils/roleRedirect";
  * Extracted out of the now-removed OnboardingGate (formerly
  * src/routes/OnboardingGate.jsx), which used to do this as a side effect
  * of its own onboarding-completion callback. That component was replaced
- * by DailyQuizGuard (a stricter, server-backed, app-wide gate — see its
- * comment) which has nothing to do with role routing and wraps every
- * route, not just /dashboard, so this narrow concern needed its own home
- * rather than being bolted onto the quiz gate.
+ * by DailyQuizGate/DailyQuizProvider (a stricter, server-backed gate — see
+ * those files' comments) which has nothing to do with role routing, so
+ * this narrow concern needed its own home rather than being bolted onto
+ * the quiz gate.
  *
  * Scoped to /dashboard only, same as OnboardingGate was — see
  * getPostLoginDestination's own comment for why /recruiter/signup and

@@ -10,6 +10,20 @@ import AdminSettingsPage from "../pages/admin/AdminSettingsPage";
 import AdminCollegesPage from "../pages/admin/AdminCollegesPage";
 import { AuthContext } from "../context/AuthContextObject";
 import { AppContext } from "../context/AppContextObject";
+import { DailyQuizContext } from "../context/DailyQuizContextObject";
+
+// This file tests the /admin/* role guard (RoleRoute), not the Daily Quiz
+// Gate — supply an already-"unlocked" quiz status so ProtectedRoute's
+// DailyQuizGate step is transparent here and doesn't obscure what's
+// actually under test.
+const unlockedQuizValue = {
+  status: "unlocked",
+  isBackendReady: true,
+  retry: () => {},
+  completeQuiz: () => {},
+  completing: false,
+  completeError: null,
+};
 
 // Firebase test environment: see Navbar.test.jsx's identical block for the
 // full explanation. Here the chain runs through services/api.js, pulled in
@@ -49,6 +63,7 @@ function renderAdmin({ user, loading = false, role }, initialEntries) {
       <ThemeProvider>
       <AuthContext.Provider value={{ user, loading }}>
         <AppContext.Provider value={{ role, isBackendReady: true }}>
+          <DailyQuizContext.Provider value={unlockedQuizValue}>
           <MemoryRouter initialEntries={initialEntries}>
             <Routes>
               <Route
@@ -68,6 +83,7 @@ function renderAdmin({ user, loading = false, role }, initialEntries) {
               <Route path="/login" element={<div>Login Page</div>} />
             </Routes>
           </MemoryRouter>
+          </DailyQuizContext.Provider>
         </AppContext.Provider>
       </AuthContext.Provider>
       </ThemeProvider>

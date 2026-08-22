@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
 import { buildLoginRedirect } from "../utils/authRedirect";
+import DailyQuizGate from "../routes/DailyQuizGate";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -27,7 +28,12 @@ function ProtectedRoute({ children }) {
     return <Navigate to={buildLoginRedirect(location.pathname + location.search)} replace />;
   }
 
-  return children;
+  // Daily Quiz Gate (see DailyQuizGate.jsx): every genuinely protected
+  // page already routes through ProtectedRoute, so this is the single,
+  // centralized place to enforce "today's quiz must be completed before
+  // reaching protected content" — no per-page wiring, and public routes
+  // that don't use ProtectedRoute are never affected.
+  return <DailyQuizGate>{children}</DailyQuizGate>;
 }
 
 export default ProtectedRoute;

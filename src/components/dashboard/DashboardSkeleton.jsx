@@ -9,8 +9,9 @@
  * `bg-zinc-900 border border-zinc-800 rounded-2xl animate-pulse` pattern
  * already used by ProblemCardSkeleton / ProblemDetailsSkeleton.
  *
- * This is the defense-in-depth layer: under normal flow, DailyQuizGuard
- * (src/routes/DailyQuizGuard.jsx) already waits for isBackendReady before
+ * This is the defense-in-depth layer: under normal flow, DailyQuizGate
+ * (src/routes/DailyQuizGate.jsx, reached via ProtectedRoute) already waits
+ * for isBackendReady before
  * ever letting /dashboard (or any other route) mount, so this should
  * rarely be visible. It exists so that no route — including edge cases
  * like a direct deep link or a fast-refresh during dev — can ever end up

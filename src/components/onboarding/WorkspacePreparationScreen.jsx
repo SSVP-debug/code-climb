@@ -10,7 +10,7 @@ import { useAppContext } from "../../hooks/useAppContext";
  * experience" follow-up plan). That flow's orchestrator (formerly
  * OnboardingContainer.jsx) and its gate (formerly OnboardingGate.jsx) were
  * removed when the Daily Quiz Gate spec replaced the quiz step with a
- * stricter, server-backed, app-wide gate (see DailyQuizGuard.jsx) — this
+ * stricter, server-backed gate (see DailyQuizGate.jsx / DailyQuizProvider.jsx) — this
  * component is currently unused/orphaned, kept in place as a standalone
  * piece in case the readiness-screen concept gets reused elsewhere. Not a
  * spinner: per the original plan's explicit copy guidance, this continues

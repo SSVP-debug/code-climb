@@ -6,7 +6,7 @@ import { useTheme } from "../../hooks/useTheme";
  * TodaysFocus — step 5 (final) of the first-session onboarding flow
  * (docs/002-first-session-onboarding-flow.md). Currently unused/orphaned —
  * the flow's orchestrator + gate were removed when the Daily Quiz Gate
- * spec replaced the old quiz step with DailyQuizGuard.jsx; kept as a
+ * spec replaced the old quiz step with DailyQuizGate.jsx; kept as a
  * standalone component in case it's reused elsewhere. A fun, presentation-only
  * reveal of one topic for today. Per the spec's own future-extension note,
  * "subtly highlighting" this topic elsewhere in the UI (e.g. ProblemsPage

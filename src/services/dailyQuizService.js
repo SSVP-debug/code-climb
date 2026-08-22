@@ -2,7 +2,7 @@ import { apiFetch } from "./api";
 
 /**
  * GET /api/daily-quiz/status — { required, completed }. Called by
- * DailyQuizGuard on mount / whenever the authenticated user changes.
+ * DailyQuizProvider on mount / whenever the authenticated user changes.
  * Server is the source of truth; see backend/controllers/dailyQuizController.js.
  */
 export async function getDailyQuizStatus() {
@@ -11,7 +11,7 @@ export async function getDailyQuizStatus() {
 
 /**
  * POST /api/daily-quiz/complete — persists today's completion before
- * DailyQuizGuard unlocks the app. Idempotent on the backend, safe to
+ * DailyQuizGate unlocks the app. Idempotent on the backend, safe to
  * retry.
  */
 export async function completeDailyQuiz() {

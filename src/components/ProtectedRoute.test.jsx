@@ -1,36 +1,57 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import { AuthContext } from "../context/AuthContextObject";
+import { DailyQuizContext } from "../context/DailyQuizContextObject";
 
-function renderWithAuth(value, initialEntries = ["/protected"]) {
+// DailyQuickQuiz owns the actual question UI and is covered by its own
+// tests — stub it down to a single button that calls onComplete, same
+// pattern DailyQuizGate.test.jsx uses.
+vi.mock("../components/onboarding/DailyQuickQuiz", () => ({
+  default: ({ onComplete }) => (
+    <button onClick={() => onComplete({ score: 5 })}>finish quiz</button>
+  ),
+}));
+
+const unlockedQuizValue = {
+  status: "unlocked",
+  isBackendReady: true,
+  retry: vi.fn(),
+  completeQuiz: vi.fn(),
+  completing: false,
+  completeError: null,
+};
+
+function renderWithAuth(authValue, initialEntries = ["/protected"], quizValue = unlockedQuizValue) {
   return render(
-    <AuthContext.Provider value={value}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <Routes>
-          <Route
-            path="/protected"
-            element={
-              <ProtectedRoute>
-                <div>Secret</div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/club/public-contests/:id"
-            element={
-              <ProtectedRoute>
-                <div>Contest Detail</div>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={<LoginRouteProbe />}
-          />
-        </Routes>
-      </MemoryRouter>
+    <AuthContext.Provider value={authValue}>
+      <DailyQuizContext.Provider value={quizValue}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Routes>
+            <Route
+              path="/protected"
+              element={
+                <ProtectedRoute>
+                  <div>Secret</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/club/public-contests/:id"
+              element={
+                <ProtectedRoute>
+                  <div>Contest Detail</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={<LoginRouteProbe />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </DailyQuizContext.Provider>
     </AuthContext.Provider>
   );
 }
@@ -57,13 +78,39 @@ describe("ProtectedRoute", () => {
     expect(screen.getByText("Login Page: /login?next=%2Fprotected")).toBeInTheDocument();
   });
 
-  it("renders children when user is authenticated", () => {
+  it("renders children when user is authenticated and today's quiz is already unlocked", () => {
     renderWithAuth({
       user: { uid: "1" },
       loading: false,
     });
 
     expect(screen.getByText("Secret")).toBeInTheDocument();
+  });
+
+  // Fix verified here: the Daily Quiz Gate must only ever appear in place
+  // of an actual protected page (reached through ProtectedRoute), never
+  // over a public route — this test is the authenticated+gated case,
+  // proving the quiz screen (not "Secret") is what renders when required.
+  it("renders the daily quiz — not the page's children — when today's quiz is required", () => {
+    renderWithAuth(
+      { user: { uid: "1" }, loading: false },
+      ["/protected"],
+      { ...unlockedQuizValue, status: "required" }
+    );
+
+    expect(screen.getByText("finish quiz")).toBeInTheDocument();
+    expect(screen.queryByText("Secret")).not.toBeInTheDocument();
+  });
+
+  it("does not silently render children while the quiz status is still loading", () => {
+    renderWithAuth(
+      { user: { uid: "1" }, loading: false },
+      ["/protected"],
+      { ...unlockedQuizValue, status: "loading" }
+    );
+
+    expect(screen.queryByText("Secret")).not.toBeInTheDocument();
+    expect(screen.queryByText("finish quiz")).not.toBeInTheDocument();
   });
 
   // Gate 3 audit, P0-1: a logged-out visitor following a contest link must

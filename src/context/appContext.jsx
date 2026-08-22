@@ -94,7 +94,7 @@ function AppContextProvider({ children }) {
     useState(null);
 
   // Readiness signal for the "no route ever shows fake/empty data while
-  // the backend is still cold-starting" requirement (see DailyQuizGuard's
+  // the backend is still cold-starting" requirement (see DailyQuizGate's
   // isBackendReady wait and Dashboard's skeleton fallback). Distinct from
   // services/api.js's warmBackend(), which just nudges Render awake early
   // and doesn't tell the UI anything — this is set to true once /api/init

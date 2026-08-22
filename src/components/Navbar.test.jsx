@@ -188,10 +188,11 @@ describe("Navbar", () => {
     expect(mobileControls.className).toContain("shrink-0");
   });
 
-  // DailyQuizGuard (src/routes/DailyQuizGuard.jsx) waits for
-  // isBackendReady before ever mounting Navbar. This test covers Navbar's
-  // own belt-and-suspenders isBackendReady gate directly, independent of
-  // that upstream guarantee.
+  // DailyQuizGate (src/routes/DailyQuizGate.jsx, reached via
+  // ProtectedRoute) waits for isBackendReady before ever mounting a
+  // protected page's Navbar. This test covers Navbar's own
+  // belt-and-suspenders isBackendReady gate directly, independent of that
+  // upstream guarantee.
   it("disables nav links and the search trigger while the backend isn't ready", () => {
     renderNavbar({ role: "student", isBackendReady: false });
     expect(screen.queryByRole("link", { name: "Problems" })).not.toBeInTheDocument();

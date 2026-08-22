@@ -5,7 +5,7 @@ import QuizResultSummary from "./QuizResultSummary";
 /**
  * QuizResultModal — lets a person reopen today's Daily Quick Quiz result
  * after they've already continued past it once. Currently unused/orphaned
- * (no caller passes it a `result` today — see DailyQuizGuard.jsx, which
+ * (no caller passes it a `result` today — see DailyQuizGate.jsx, which
  * replaced the old onboarding quiz step and doesn't keep the result around
  * after completion). Expects the same in-memory result shape
  * scoreQuizAttempt produces.
