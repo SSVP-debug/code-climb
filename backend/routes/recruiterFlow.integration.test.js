@@ -224,14 +224,21 @@ describe("Recruiter registration → pending → verification → recruiter-only
     "an identity can hold Student + TPO + Recruiter simultaneously and switch between them " +
       "without losing any role's authorization (Definition of Done: multi-role support)",
     async () => {
+      // B2B_ENABLED (config/featureFlags.js) is a module-load-time
+      // constant baked into tpo.js at import — must be set BEFORE the
+      // dynamic import below, not after, or b2bGate() silently short-
+      // circuits registration with a 200 "not live yet" response that
+      // this test doesn't check the status of, leaving `roles` untouched
+      // and this assertion failing for the wrong reason. Same ordering
+      // requirement documented at the top of tpoFlow.integration.test.js.
+      process.env.B2B_ENABLED = "true";
+
       const { switchActiveRole } = await import("../controllers/userController.js");
       const { default: tpoRouter } = await import("./tpo.js");
       const tpoRegisterLayer = tpoRouter.stack.find(
         (l) => l.route && l.route.path === "/register" && l.route.methods.post
       );
       const tpoRegisterHandler = tpoRegisterLayer.route.stack[0].handle;
-
-      process.env.B2B_ENABLED = "true";
 
       const user = await seedStudent({ email: "triple-role@unrecognized-tpo-corp.ac.in" });
 
