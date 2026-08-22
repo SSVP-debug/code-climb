@@ -12,7 +12,7 @@ export const defaultTheme = createTheme({
     name: "Default",
 
     description:
-        "A clean, no-frills experience with standard labels — no story, no roleplay.",
+        "A clean, no-frills experience with standard labels no story, no roleplay.",
 
     colors: {
         // Phase 11A: previously #ffffff/#71717a placeholders. Now matches the

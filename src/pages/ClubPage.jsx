@@ -153,7 +153,7 @@ function ClubPage() {
             accented
           >
             <p className="text-zinc-500 text-sm mb-4">
-              Have an invite code from a friend or your college? Join instantly —
+              Have an invite code from a friend or your college? Join instantly
               or set up your own contest to run.
             </p>
             <div className="flex gap-2">

@@ -13,6 +13,7 @@ import { useCodeClubEdition } from "../hooks/useCodeClubEdition";
 import ThemeSkin from "../themes/ThemeSkin";
 
 import ProblemsTopbar from "../components/problem/common/ProblemsTopbar";
+import CompanyTagsNotice from "../components/problem/common/CompanyTagsNotice";
 import ProblemsNavigation from "../components/problem/navigation/ProblemsNavigation";
 import LearningWorkspace from "../components/learning/LearningWorkspace";
 import HoverTooltip from "../components/ui/HoverTooltip";
@@ -436,6 +437,11 @@ function ProblemsPage() {
         progress={progress}
         currentStreak={currentStreak}
       />
+
+      {/* Company tags (ProblemCard, BrowseToolbar) are placeholder/test
+          data for every problem right now, not real verified data — see
+          CompanyTagsNotice.jsx. Dismissible, so it only nags once. */}
+      <CompanyTagsNotice />
 
       {/* ── Mobile/tablet workspace nav — horizontal pill strip, replaces
              the left sidebar below `lg`. Sits right under the topbar. ── */}

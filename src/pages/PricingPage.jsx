@@ -132,8 +132,8 @@ export default function PricingPage() {
           </div>
           <h1 className="text-3xl font-black text-white mb-3">Code Club is free for everyone right now</h1>
           <p className="text-zinc-400 mb-8">
-            We're in early access. Every feature — AI hints, all themes, editorials,
-            interview mode — is unlocked for all users. Pricing launches once we've
+            We're in early access. Every feature, AI hints, all themes, editorials,
+            interview mode is unlocked for all users. Pricing launches once we've
             grown the platform. Enjoy it while it lasts!
           </p>
           <Button size="lg" onClick={() => navigate("/problems")}>

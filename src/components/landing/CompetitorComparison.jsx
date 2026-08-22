@@ -20,7 +20,7 @@ const STAGES = [
     Icon: ShieldCheck,
     eyebrow: "02 · TPO",
     title: "Verify",
-    body: "Every accepted solve rolls into your batch's readiness dashboard automatically — streaks and topic coverage a TPO can trust without a spreadsheet.",
+    body: "Every accepted solve rolls into your batch's readiness dashboard automatically streaks and topic coverage a TPO can trust without a spreadsheet.",
     accent: "violet",
   },
   {
@@ -28,7 +28,7 @@ const STAGES = [
     Icon: Eye,
     eyebrow: "03 · Recruiter",
     title: "Get discovered",
-    body: "Recruiters search by verified solve history and topic strength, and send a skills test directly — no resume claims to take on faith.",
+    body: "Recruiters search by verified solve history and topic strength, and send a skills test directly no resume claims to take on faith.",
     accent: "sky",
   },
 ];

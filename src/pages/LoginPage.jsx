@@ -20,7 +20,7 @@ import { GraduationCap, Briefcase, Building2, Flame, Search, Users } from "lucid
 // delay this pass explicitly rules out.
 const STATUS_COPY = {
   authenticating: "Authenticating…",
-  redirecting: "Access granted — entering Code Club…",
+  redirecting: "Access granted entering Code Club…",
 };
 
 // Copy tailored per portal intent — same Google sign-in either way, just a
@@ -52,7 +52,7 @@ const LEFT_PANEL_COPY = {
     accent: "teal",
     heading: "Turn practice into proof.",
     description:
-      "Every solve is verified server-side — no self-reported skills, just a real solve history recruiters can check.",
+      "Every solve is verified server-side no self-reported skills, just a real solve history recruiters can check.",
     StatIcon: Flame,
     stat: "1,240 XP · 14-day streak",
   },

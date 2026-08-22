@@ -26,7 +26,7 @@ function HeroSection({ user }) {
             Solve real interview problems, practice live AI mock interviews,
             and build a solve history that's{" "}
             <span className="text-verdict-pending">verified</span>, not
-            self-reported —{" "}
+            self-reported  {" "}
             <strong className="text-white">the kind recruiters actually check.</strong>
           </p>
 

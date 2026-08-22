@@ -337,7 +337,7 @@ function SettingsPage() {
 
                     <p className="mt-2 text-sm text-zinc-500">
                         {isDefaultTheme
-                            ? "You're on the default experience — no universe theming applied."
+                            ? "You're on the default experience no universe theming applied."
                             : "Clears your universe selection and switches to a clean, unthemed experience with plain labels (Dashboard, Problems, Profile)."}
                     </p>
                 </section>
@@ -360,7 +360,7 @@ function SettingsPage() {
                         />
                         <ToggleRow
                             label="Disable difficulty labels"
-                            description="Hides the Easy / Medium / Hard badge in the question panel — useful if the label biases how you approach a problem."
+                            description="Hides the Easy / Medium / Hard badge in the question panel useful if the label biases how you approach a problem."
                             checked={preferences.hideDifficultyLabels}
                             saving={savingHideDifficulty}
                             onToggle={handleToggleHideDifficulty}

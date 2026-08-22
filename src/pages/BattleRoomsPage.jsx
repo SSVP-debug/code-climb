@@ -93,7 +93,7 @@ function BattleRoomsPage() {
           {/* ── Host ─────────────────────────────────────────────────── */}
           <SectionCard
             title="Host a Battle Room"
-            subtitle="Set up a team match — you'll assign teams once people join"
+            subtitle="Set up a team match you'll assign teams once people join"
             icon={<Users size={18} strokeWidth={2} />}
             accented
           >

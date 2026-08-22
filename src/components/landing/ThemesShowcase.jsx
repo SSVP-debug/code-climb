@@ -45,7 +45,7 @@ function ThemesShowcase({ user }) {
           Pick your universe. Own your grind.
         </h2>
         <p className="text-zinc-400 max-w-xl mx-auto">
-          Not just problems — Code Club has <em>worlds</em>. Same DSA,
+          Not just problems, Code Club has <em>worlds</em>. Same DSA,
           a completely different experience.
         </p>
       </Reveal>

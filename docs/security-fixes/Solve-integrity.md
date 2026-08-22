@@ -69,7 +69,7 @@ solve to justify it — a client can no longer backfill arbitrary past dates
 to inflate a streak.
 
 `leetcodeUsername` is the one field still taken directly from the request
-body — it's self-reported by design elsewhere in the codebase (it doesn't
+body it's self-reported by design elsewhere in the codebase (it doesn't
 feed XP or any verified stat), so there's no trust boundary to enforce.
 
 ## Incidental fix discovered while implementing this

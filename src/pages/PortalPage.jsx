@@ -69,7 +69,7 @@ export default function PortalPage() {
   return (
     <>
       <PageMeta
-        title="Choose your access — Code Club"
+        title="Choose your access Code Club"
         description="Enter Code Club as a Student, Recruiter, or TPO."
         path="/portal"
       />

@@ -36,7 +36,7 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
       <div>
         <h2 className="text-2xl font-bold">Learn by Pattern</h2>
         <p className="text-zinc-400 mt-1 text-sm">
-          Master one topic at a time — ranked by where you have the most room to grow.
+          Master one topic at a time ranked by where you have the most room to grow.
         </p>
       </div>
 

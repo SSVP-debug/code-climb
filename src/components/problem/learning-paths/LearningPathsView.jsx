@@ -57,7 +57,7 @@ function LearningPathsView({ problems, solvedProblems }) {
       <div>
         <h2 className="text-2xl font-bold text-white">Learning Paths</h2>
         <p className="text-zinc-400 mt-1 text-sm">
-          A guided roadmap — solve problems in order, one unlocks the next.
+          A guided roadmap to solve problems in order, one unlocks the next.
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

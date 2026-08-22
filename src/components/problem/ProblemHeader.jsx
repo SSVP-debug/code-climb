@@ -71,7 +71,7 @@ function ProblemHeader({ problem, isSolved }) {
         )}
       </div>
 
-      {/* Company tags row — shown only when companies are present */}
+      {/* Company tags row shown only when companies are present */}
       {companies.length > 0 && (
         <div className="flex items-center gap-2 mt-3 flex-wrap">
           <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">

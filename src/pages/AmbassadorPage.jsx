@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { apiFetch } from "../services/api";
 import DashboardLayout from "../layouts/DashboardLayout";
 import SectionCard from "../components/ui/layout/SectionCard";
@@ -57,6 +59,18 @@ export default function AmbassadorPage() {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
+        {/* This page is only ever reached from the Club page's "Ambassador
+            Program" card (see ClubPage.jsx) — there was no way back to it
+            short of the browser's own Back button. Same Link+ArrowLeft
+            pattern as ProblemsTopbar.jsx's "Back to Dashboard". */}
+        <Link
+          to="/club"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition mb-4"
+        >
+          <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
+          Back to Club
+        </Link>
+
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-white">Campus Ambassador Program</h1>
           <p className="text-zinc-500 mt-1 text-sm">

@@ -36,7 +36,7 @@ const ROLES = [
     Icon: Briefcase,
     title: "Recruiters",
     description:
-      "Search verified candidates by solve history and topic strength, and send skills tests directly — no resume guesswork.",
+      "Search verified candidates by solve history and topic strength, and send skills tests directly no resume guesswork.",
     cta: "Recruiter access",
     accent: "sky",
   },
@@ -45,7 +45,7 @@ const ROLES = [
     Icon: Building2,
     title: "TPOs",
     description:
-      "One dashboard for your entire batch's placement readiness — solve counts, streaks, topic coverage — not spreadsheets.",
+      "One dashboard for your entire batch's placement readiness solve counts, streaks, topic coverage not spreadsheets.",
     cta: "TPO dashboard",
     accent: "violet",
   },

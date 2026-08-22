@@ -64,7 +64,7 @@ function PlaylistView() {
         <EmptyState
           icon={<ListChecks size={28} strokeWidth={1.75} />}
           title="No playlists yet"
-          description="Create a custom playlist to group problems your way — interview prep, weak topics, whatever helps you study."
+          description="Create a custom playlist to group problems your way, interview prep, weak topics, whatever helps you study."
           actionLabel="New Playlist"
           onAction={() => setCreateOpen(true)}
           compact

@@ -78,7 +78,7 @@ function PinnedProblems() {
     <SectionCard
       title="Pinned Problems"
       icon={<Pin size={18} strokeWidth={2} />}
-      subtitle="Showcase your best solves — shown on your public profile."
+      subtitle="Showcase your best solves shown on your public profile."
       accented
       collapsible
       defaultOpen={false}

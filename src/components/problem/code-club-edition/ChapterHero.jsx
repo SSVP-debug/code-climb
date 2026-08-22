@@ -27,7 +27,7 @@ function ChapterHero({ campaignProgress, currentChapter, onContinue }) {
         </h1>
 
         <p className="mt-3 text-sm sm:text-base text-zinc-400 max-w-xl">
-          Handcrafted mysteries, heists, and network thrillers — each one wraps a
+          Handcrafted mysteries, heists, and network thrillers each one wraps a
           real DSA pattern in a story you'll actually remember solving.
         </p>
 
