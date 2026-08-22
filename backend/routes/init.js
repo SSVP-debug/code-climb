@@ -15,7 +15,7 @@
 import { Router } from "express";
 import User from "../models/User.js";
 import Submission from "../models/Submission.js";
-import { progressToClient } from "../controllers/progressController.js";
+import { progressToClientForRole } from "../controllers/progressController.js";
 
 const router = Router();
 
@@ -46,14 +46,20 @@ router.get("/", async (req, res) => {
       });
     }
 
-    // Run both queries in parallel — no dependency between them.
-    const [submissions] = await Promise.all([
-      Submission
-        .find({ userId: req.userDoc._id })
-        .sort({ createdAt: -1 })
-        .limit(50)
-        .lean(),
-    ]);
+    // Submission history is student-track data, same as progress below —
+    // only fetch/return it when the session's ACTIVE role is "student".
+    // Skipping the query entirely for TPO/recruiter/admin sessions is both
+    // the role-isolation fix (a TPO must never see a leftover Student
+    // registration's submission history) and a free perf win (no query to
+    // run in the first place).
+    const submissions =
+      req.userDoc.role === "student"
+        ? await Submission
+            .find({ userId: req.userDoc._id })
+            .sort({ createdAt: -1 })
+            .limit(50)
+            .lean()
+        : [];
 
     // Admin impersonation state — req.actingAdminDoc is only set (by
     // requireAuth) while an admin is actively viewing as someone else.
@@ -74,6 +80,11 @@ router.get("/", async (req, res) => {
     return res.json({
       user: {
         role: req.userDoc.role,
+        // Authorized roles vs the single active `role` above — see
+        // models/User.js's role/roles comment. Lets the frontend offer a
+        // real workspace switch (WorkspaceSwitcher.jsx) to any account
+        // with more than one, not just admin.
+        roles: req.userDoc.roles?.length ? req.userDoc.roles : ["student"],
         username: req.userDoc.username || "",
         leetcodeUsername: req.userDoc.leetcodeUsername || "",
         leetcodeStats: req.userDoc.leetcodeStats || null,
@@ -99,7 +110,13 @@ router.get("/", async (req, res) => {
 
       impersonation,
 
-      progress: progressToClient(req.userDoc),
+      // Role-gated — see progressToClientForRole's comment in
+      // progressController.js. Returns real solvedSlugs/XP/streak/etc.
+      // only when `role === "student"`; any other active role (tpo,
+      // recruiter, admin) gets the same zeroed shape as the `_dbDown`
+      // fallback above, regardless of what this document's student-track
+      // fields actually hold from a prior registration.
+      progress: progressToClientForRole(req.userDoc),
 
       submissions: submissions.map((doc) => ({
         id: doc._id.toString(),

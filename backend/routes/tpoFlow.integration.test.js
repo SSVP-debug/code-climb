@@ -203,4 +203,63 @@ describe("TPO registration → pending → verification → TPO-only endpoint (r
     const reloadedSecond = await User.findById(secondUser._id);
     expect(reloadedSecond.tpoProfile.verified).toBe(true);
   });
+
+  // ── Role/profile isolation regression coverage ──────────────────────────
+  // See models/User.js's role/roles comment and userController.js's
+  // switchActiveRole for the architecture this covers.
+  it(
+    "a Student registering as TPO keeps their student-track data and authorization intact " +
+      "(roles becomes [student, tpo], not a replacement)",
+    async () => {
+      const user = await seedStudent({
+        email: "student-then-tpo@unrecognized-college.ac.in",
+        totalXP: 500,
+        currentStreak: 4,
+        solvedSlugs: ["two-sum", "valid-parentheses"],
+      });
+      expect(user.roles).toEqual(["student"]);
+
+      await registerHandler(
+        { userDoc: user, log: mockLog(), body: { collegeName: "Some College" } },
+        mockRes()
+      );
+
+      const reloaded = await User.findById(user._id);
+      expect(reloaded.role).toBe("tpo");
+      expect(reloaded.roles).toEqual(["student", "tpo"]);
+
+      // The prior Student registration's data is untouched on the
+      // document — it's just no longer served while active role is
+      // "tpo" (see routes/init.test.js and
+      // controllers/progressRoleGating.test.js for the read-boundary
+      // coverage of that part).
+      expect(reloaded.totalXP).toBe(500);
+      expect(reloaded.currentStreak).toBe(4);
+      expect(reloaded.solvedSlugs).toEqual(["two-sum", "valid-parentheses"]);
+    }
+  );
+
+  it("rejectTpo revokes the 'tpo' authorization, not just the active role", async () => {
+    const { switchActiveRole } = await import("../controllers/userController.js");
+
+    const user = await seedStudent({ email: "tpo-then-rejected@unrecognized-college2.ac.in" });
+    await registerHandler(
+      { userDoc: user, log: mockLog(), body: { collegeName: "Some Other College" } },
+      mockRes()
+    );
+
+    const admin = await User.create({ firebaseUid: "fb-admin-7", email: "admin7@codeclub.test", role: "admin" });
+    const college = await College.findByDomain("unrecognized-college2.ac.in");
+    await rejectTpo({ params: { collegeId: college._id.toString() }, userDoc: admin, log: mockLog() }, mockRes());
+
+    const reloaded = await User.findById(user._id);
+    expect(reloaded.role).toBe("student");
+    expect(reloaded.roles).toEqual(["student"]);
+
+    // Can't self-service back into "tpo" via switch-role anymore — they'd
+    // have to register again.
+    const switchRes = mockRes();
+    await switchActiveRole({ userDoc: reloaded, body: { role: "tpo" } }, switchRes);
+    expect(switchRes.status).toHaveBeenCalledWith(403);
+  });
 });

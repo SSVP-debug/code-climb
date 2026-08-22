@@ -246,11 +246,54 @@ const userSchema = new mongoose.Schema(
     },
 
     // ── Role system ─────────────────────────────────────────────
+    // `role` is the ACTIVE role — the application context currently being
+    // used (what route guards, roleGuard.js, and every "which profile do
+    // I show" decision key off). `roles` (below) is the set of roles this
+    // identity is AUTHORIZED to use. These are deliberately different
+    // concepts: one Firebase-backed account can be authorized for
+    // student + tpo simultaneously while `role` reflects whichever one
+    // is currently active. See grantRole() below and
+    // routes/users.js's POST /me/switch-role, the only place `role`
+    // should be reassigned to a value the account didn't just register
+    // for the first time.
+    //
+    // Root-cause note (role/profile isolation audit): before `roles`
+    // existed, TPO/recruiter registration (routes/tpo.js, routes/
+    // recruiter.js) simply overwrote this single field, so a Student who
+    // later registered as TPO became *only* "tpo" with no record they'd
+    // ever been a student — combined with /api/init unconditionally
+    // returning progressToClient(req.userDoc) regardless of role, this
+    // is what let a TPO session render leftover student XP/streak/solved
+    // data. The student-track fields on this schema (totalXP,
+    // currentStreak, solvedSlugs, etc.) were never moved into a separate
+    // subdocument — doing so would touch dozens of call sites (judge
+    // submission recording, leaderboard, public profile, XP utils...)
+    // for a codebase this size. Instead, isolation is enforced at the
+    // read boundary: routes/init.js and progressController.getProgress
+    // only serialize real progress data when `role === "student"`; any
+    // other active role gets the same zeroed scaffold shape used for the
+    // DB-down fallback. See docs/migrations/ for the full writeup.
     role: {
       type: String,
       enum: ["student", "recruiter", "tpo", "admin"],
       default: "student",
       index: true,
+    },
+
+    // ── Authorized roles (role/profile isolation fix) ────────────────────
+    // Every account is implicitly a "student" from creation (matches the
+    // pre-existing default above), so this always starts as ["student"].
+    // TPO/recruiter registration additively grants a role here via
+    // grantRole() rather than replacing it — see routes/tpo.js and
+    // routes/recruiter.js's register handlers. Nothing should ever
+    // *remove* "student" from this array; a rejected/downgraded TPO or
+    // recruiter application (adminController.js's rejectTpo/
+    // rejectRecruiter) removes the rejected role and falls `role` back
+    // to "student", which the account was always authorized for.
+    roles: {
+      type: [String],
+      enum: ["student", "recruiter", "tpo", "admin"],
+      default: ["student"],
     },
 
     // ── Account status (Admin console — plan 003) ───────────────────────
@@ -421,23 +464,6 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
 
-    // ── Daily Quiz Gate ────────────────────────────────────────────────
-    // The calendar day (UTC, "YYYY-MM-DD" — same convention as
-    // `lastActivityDate` / `dailyChallengeHistory[].date`, both derived via
-    // `new Date().toISOString().split("T")[0]`) on which this user last
-    // completed the mandatory daily warm-up quiz gate (see
-    // controllers/dailyQuizController.js). Server-side source of truth on
-    // purpose: the frontend gate (src/routes/DailyQuizGuard.jsx) must not
-    // be bypassable by clearing localStorage/sessionStorage. Lives directly
-    // on `User` rather than going through userProgressService — it isn't a
-    // solving-progress stat (not in the PROGRESS_FIELDS table in
-    // docs/migrations/user-model-split.md), it's an auth-adjacent gating
-    // flag, closer to `lastWeeklyReviewSentAt` above.
-    dailyQuizCompletedDate: {
-      type: String,
-      default: null,
-    },
-
     problemNotes: {
       type: Map,
       of: String,
@@ -459,6 +485,33 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", function setEmailDomain(next) {
   this.emailDomain = this.email ? this.email.split("@")[1]?.toLowerCase() || null : null;
 });
+
+// ── Role authorization helpers (role/profile isolation fix) ────────────────
+// Additive-only: adds `roleName` to `roles` if not already present. Does
+// NOT touch the active `role` field — callers (routes/tpo.js, routes/
+// recruiter.js registration handlers) set `role` themselves right after,
+// since "just registered for X" also means "X is now active". Kept as a
+// plain method (not a pre-save hook) because it needs to run conditionally
+// only at registration time, not on every save.
+userSchema.methods.grantRole = function grantRole(roleName) {
+  if (!Array.isArray(this.roles) || this.roles.length === 0) {
+    this.roles = ["student"];
+  }
+  if (!this.roles.includes(roleName)) {
+    this.roles.push(roleName);
+  }
+};
+
+// Removes `roleName` from `roles` (used when an admin rejects/revokes a
+// TPO or recruiter application — adminController.js's rejectTpo/
+// rejectRecruiter). Never removes "student" — every account keeps that
+// baseline authorization for life, matching the default above.
+userSchema.methods.revokeRole = function revokeRole(roleName) {
+  if (roleName === "student") return;
+  if (!Array.isArray(this.roles)) return;
+  this.roles = this.roles.filter((r) => r !== roleName);
+  if (this.roles.length === 0) this.roles = ["student"];
+};
 
 const User = mongoose.model("User", userSchema);
 

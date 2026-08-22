@@ -16,6 +16,8 @@
     "problems:export-to-folders": "node scripts/exportProblemsToFolders.js",
     "problems:import-from-folders": "node scripts/importProblems.js",
     "backfill-xp": "node scripts/backfillXP.js",
+    "backfill-roles": "node scripts/backfillAuthorizedRoles.js",
+    "backfill-roles:dry-run": "node scripts/backfillAuthorizedRoles.js --dry-run",
     "migrate:college-schema": "node scripts/migrateCollegeSchema.js",
     "migrate:college-schema:dry-run": "node scripts/migrateCollegeSchema.js --dry-run",
     "weekly-review": "node scripts/sendWeeklyReviewEmails.js",

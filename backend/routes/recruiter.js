@@ -95,6 +95,11 @@ export async function handleRegister(req, res) {
       });
     }
 
+    // grantRole is additive — a Student (or TPO) registering as recruiter
+    // keeps their prior authorization(s) and all student-track data
+    // untouched on this same document; only the ACTIVE role below
+    // switches to "recruiter". See models/User.js's role/roles comment.
+    req.userDoc.grantRole("recruiter");
     req.userDoc.role = "recruiter";
 
     // Hybrid verification (Phase B): known company domains skip the queue

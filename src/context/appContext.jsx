@@ -94,8 +94,8 @@ function AppContextProvider({ children }) {
     useState(null);
 
   // Readiness signal for the "no route ever shows fake/empty data while
-  // the backend is still cold-starting" requirement (see DailyQuizGate's
-  // isBackendReady wait and Dashboard's skeleton fallback). Distinct from
+  // the backend is still cold-starting" requirement (see OnboardingGate's
+  // readiness step and Dashboard's skeleton fallback). Distinct from
   // services/api.js's warmBackend(), which just nudges Render awake early
   // and doesn't tell the UI anything — this is set to true once /api/init
   // has actually resolved below, whether that resolution succeeded or
@@ -143,6 +143,14 @@ function AppContextProvider({ children }) {
   // response. Optimistic update in markProblemSolved is corrected by server.
   const [totalXP, setTotalXP] = useState(0);
   const [role, setRole] = useState("student");
+
+  // Authorized roles vs the single active `role` above — see backend
+  // models/User.js's role/roles comment. Most accounts only ever have
+  // ["student"]; an account that's also registered as TPO or recruiter
+  // will have more than one entry here, which is what RoleAccountView
+  // (rendered from Profile.jsx for non-student active roles) uses to
+  // offer switching back without re-registering.
+  const [roles, setRoles] = useState(["student"]);
 
   // Admin "Login As" state — sourced from /api/init's `impersonation`
   // block. { active: false } when not impersonating, or
@@ -228,6 +236,7 @@ function AppContextProvider({ children }) {
         }
 
         setRole(bootUser?.role || "student");
+        setRoles(bootUser?.roles?.length ? bootUser.roles : ["student"]);
         setImpersonation(bootImpersonation || { active: false });
 
         setSolvedProblems(
@@ -568,6 +577,26 @@ function AppContextProvider({ children }) {
   }
 
   // --------------------------------------------------
+  // ACTIVE ROLE SWITCH (role/profile isolation fix)
+  // --------------------------------------------------
+  // Backend-authoritative: POST /me/switch-role rejects anything not in
+  // this account's own `roles` (see userController.js's switchActiveRole),
+  // so this can't be used to self-grant an unregistered role. Re-runs
+  // hydrate() via retryHydration afterward so progress/submissions —
+  // role-gated server-side — refresh under the new active role instead
+  // of showing stale data from before the switch.
+  async function switchActiveRole(targetRole) {
+    const result = await apiFetch("/api/users/me/switch-role", {
+      method: "POST",
+      body: JSON.stringify({ role: targetRole }),
+    });
+    setRole(result.role);
+    setRoles(result.roles?.length ? result.roles : ["student"]);
+    retryHydration();
+    return result;
+  }
+
+  // --------------------------------------------------
   // RECRUITER SNAPSHOT (Phase 9C)
   // --------------------------------------------------
 
@@ -680,6 +709,8 @@ function AppContextProvider({ children }) {
     weeklyGoal: 10,
     submissions,
     role,
+    roles,
+    switchActiveRole,
     impersonation,
     totalXP,
     joinedDate,

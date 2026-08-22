@@ -215,12 +215,28 @@ describe("handleRegister", () => {
     const save = vi.fn().mockResolvedValue(true);
     const req = {
       body: { companyName: "Acme Corp", designation: "Engineering Manager" },
-      userDoc: { email: "recruiter@acme.com", role: "student", save },
+      userDoc: {
+        email: "recruiter@acme.com",
+        role: "student",
+        roles: ["student"],
+        // Real behavior (mirrors models/User.js's grantRole), not a bare
+        // stub — handleRegister calls this before setting `role`, so a
+        // no-op mock would still leave `role` correctly set, but this
+        // also lets the "keeps prior authorization" behavior be asserted
+        // here if needed, same as recruiterFlow.integration.test.js's
+        // real-Mongo coverage of the same call site.
+        grantRole: vi.fn(function grantRole(roleName) {
+          if (!Array.isArray(this.roles) || this.roles.length === 0) this.roles = ["student"];
+          if (!this.roles.includes(roleName)) this.roles.push(roleName);
+        }),
+        save,
+      },
     };
 
     await handleRegister(req, res);
 
     expect(req.userDoc.role).toBe("recruiter");
+    expect(req.userDoc.roles).toEqual(["student", "recruiter"]);
     expect(req.userDoc.recruiterProfile.verified).toBe(false);
     expect(save).toHaveBeenCalledOnce();
     expect(res.json).toHaveBeenCalledWith(
@@ -233,7 +249,16 @@ describe("handleRegister", () => {
     const save = vi.fn().mockResolvedValue(true);
     const req = {
       body: { companyName: "Acme Corp", designation: "Engineering Manager" },
-      userDoc: { email: "recruiter@acme.com", role: "student", save },
+      userDoc: {
+        email: "recruiter@acme.com",
+        role: "student",
+        roles: ["student"],
+        grantRole: vi.fn(function grantRole(roleName) {
+          if (!Array.isArray(this.roles) || this.roles.length === 0) this.roles = ["student"];
+          if (!this.roles.includes(roleName)) this.roles.push(roleName);
+        }),
+        save,
+      },
     };
 
     await handleRegister(req, res);

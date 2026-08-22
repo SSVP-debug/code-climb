@@ -55,10 +55,50 @@ export function progressToClient(user) {
   };
 }
 
+// The same shape as progressToClient's output, zeroed out — used whenever
+// the requesting session's ACTIVE role isn't "student" (see
+// emptyProgress()/progressToClientForRole() below). Kept in one place so
+// this and routes/init.js's pre-existing `_dbDown` fallback scaffold can't
+// drift apart.
+export function emptyProgress() {
+  return {
+    solvedSlugs: [],
+    topicStats: {},
+    activityDates: [],
+    achievements: [],
+    dailyChallengeHistory: [],
+    solvedDifficulty: { easy: 0, medium: 0, hard: 0 },
+    recentActivity: [],
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActivityDate: null,
+    totalXP: 0,
+    joinedDate: null,
+    leetcodeUsername: "",
+  };
+}
+
+// ── Role-gated serialiser (role/profile isolation fix) ──────────────────────
+// This — not progressToClient itself — is what user-facing read endpoints
+// (getProgress below, routes/init.js) must call. progressToClient stays
+// role-agnostic on purpose: XP awarding, achievement evaluation, the
+// leaderboard, and the public profile all need the REAL underlying values
+// regardless of the account's current active role (a person's solved-
+// problem history doesn't stop being real just because they're presently
+// looking at their TPO dashboard). Only the read-facing "here's your
+// progress" response needs to hide it, which is what caused a TPO/
+// recruiter session to render a previous Student registration's leftover
+// XP/streak/solved data — see models/User.js's role/roles comment for the
+// full root-cause writeup.
+export function progressToClientForRole(user) {
+  if (user?.role !== "student") return emptyProgress();
+  return progressToClient(user);
+}
+
 // ── Route handlers ─────────────────────────────────────────────────────────────
 
 export async function getProgress(req, res) {
-  return res.json(progressToClient(req.userDoc));
+  return res.json(progressToClientForRole(req.userDoc));
 }
 
 export async function putProgress(req, res) {

@@ -143,6 +143,14 @@ router.post("/register", async (req, res) => {
     // entirely — tpoProfile only ever got verificationStatus (not even a
     // real schema field) + verified + requestedAt, so every TPO's own
     // college identity was silently lost. Fixed here.
+    //
+    // grantRole is additive — a Student registering as TPO keeps their
+    // "student" authorization (and every student-track field: totalXP,
+    // solvedSlugs, streaks, etc. all stay untouched on this same
+    // document); only the ACTIVE role below switches to "tpo". See
+    // models/User.js's role/roles comment for why student data isn't
+    // moved or cleared here.
+    req.userDoc.grantRole("tpo");
     req.userDoc.role = "tpo";
     req.userDoc.tpoProfile = {
       collegeDomain: domain,

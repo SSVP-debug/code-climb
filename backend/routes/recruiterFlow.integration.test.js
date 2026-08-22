@@ -171,4 +171,92 @@ describe("Recruiter registration → pending → verification → recruiter-only
     // subject to the same domain check as any first-time registration.
     expect(reloaded.recruiterProfile.verified).toBe(false);
   });
+
+  // ── Role/profile isolation regression coverage ──────────────────────────
+  // See models/User.js's role/roles comment and userController.js's
+  // switchActiveRole for the architecture this covers.
+  it(
+    "a Student registering as recruiter keeps their student-track data and authorization intact " +
+      "(roles becomes [student, recruiter], not a replacement)",
+    async () => {
+      const user = await seedStudent({
+        email: "student-then-recruiter@unrecognized-corp.com",
+        totalXP: 900,
+        solvedSlugs: ["two-sum"],
+      });
+      expect(user.roles).toEqual(["student"]);
+
+      await handleRegister(
+        { userDoc: user, log: mockLog(), body: { companyName: "Some Corp", designation: "Recruiter" } },
+        mockRes()
+      );
+
+      const reloaded = await User.findById(user._id);
+      expect(reloaded.role).toBe("recruiter");
+      expect(reloaded.roles).toEqual(["student", "recruiter"]);
+      expect(reloaded.totalXP).toBe(900);
+      expect(reloaded.solvedSlugs).toEqual(["two-sum"]);
+    }
+  );
+
+  it("rejectRecruiter revokes the 'recruiter' authorization, not just the active role", async () => {
+    const { switchActiveRole } = await import("../controllers/userController.js");
+
+    const user = await seedStudent({ email: "recruiter-then-rejected@unrecognized-corp2.com" });
+    await handleRegister(
+      { userDoc: user, log: mockLog(), body: { companyName: "Rejected Co", designation: "Recruiter" } },
+      mockRes()
+    );
+
+    const admin = await User.create({ firebaseUid: "fb-admin-8", email: "admin8@codeclub.test", role: "admin" });
+    const pending = await User.findById(user._id);
+    await rejectRecruiter({ params: { id: pending._id.toString() }, userDoc: admin, log: mockLog() }, mockRes());
+
+    const reloaded = await User.findById(user._id);
+    expect(reloaded.roles).toEqual(["student"]);
+
+    const switchRes = mockRes();
+    await switchActiveRole({ userDoc: reloaded, body: { role: "recruiter" } }, switchRes);
+    expect(switchRes.status).toHaveBeenCalledWith(403);
+  });
+
+  it(
+    "an identity can hold Student + TPO + Recruiter simultaneously and switch between them " +
+      "without losing any role's authorization (Definition of Done: multi-role support)",
+    async () => {
+      const { switchActiveRole } = await import("../controllers/userController.js");
+      const { default: tpoRouter } = await import("./tpo.js");
+      const tpoRegisterLayer = tpoRouter.stack.find(
+        (l) => l.route && l.route.path === "/register" && l.route.methods.post
+      );
+      const tpoRegisterHandler = tpoRegisterLayer.route.stack[0].handle;
+
+      process.env.B2B_ENABLED = "true";
+
+      const user = await seedStudent({ email: "triple-role@unrecognized-tpo-corp.ac.in" });
+
+      await tpoRegisterHandler(
+        { userDoc: user, log: mockLog(), body: { collegeName: "Triple Role College" } },
+        mockRes()
+      );
+      let reloaded = await User.findById(user._id);
+      expect(reloaded.roles.sort()).toEqual(["student", "tpo"]);
+
+      await handleRegister(
+        { userDoc: reloaded, log: mockLog(), body: { companyName: "Triple Role Corp", designation: "Recruiter" } },
+        mockRes()
+      );
+      reloaded = await User.findById(user._id);
+      expect(reloaded.roles.sort()).toEqual(["recruiter", "student", "tpo"]);
+      expect(reloaded.role).toBe("recruiter"); // most recent registration is active
+
+      // Switch through all three — none of them get dropped from `roles`.
+      for (const target of ["student", "tpo", "recruiter", "student"]) {
+        const res = mockRes();
+        await switchActiveRole({ userDoc: reloaded, body: { role: target } }, res);
+        expect(reloaded.role).toBe(target);
+      }
+      expect(reloaded.roles.sort()).toEqual(["recruiter", "student", "tpo"]);
+    }
+  );
 });

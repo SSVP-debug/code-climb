@@ -102,8 +102,19 @@ function makeUser(overrides = {}) {
         firebaseUid: "fb-1",
         email: "u1@b.com",
         role: "recruiter",
+        roles: ["student", "recruiter"],
         recruiterProfile: { companyName: "Acme", verified: false, verifiedAt: null },
         save: vi.fn().mockResolvedValue(true),
+        // Real behavior, not a bare vi.fn() stub — rejectRecruiter/rejectTpo
+        // (adminController.js) call this and then assert on `role`/`roles`
+        // afterward, same as the real User.js instance method (see
+        // models/User.js). Mirrors it here rather than mocking it away so
+        // these tests still catch a regression in the revoke call itself.
+        revokeRole: vi.fn(function revokeRole(roleName) {
+            if (roleName === "student") return;
+            this.roles = (this.roles || []).filter((r) => r !== roleName);
+            if (this.roles.length === 0) this.roles = ["student"];
+        }),
         ...overrides,
     };
 }
@@ -204,13 +215,14 @@ describe("adminController", () => {
 
     describe("rejectRecruiter", () => {
         it("demotes the user back to student, invalidates their auth cache, and audit-logs it", async () => {
-            const user = makeUser();
+            const user = makeUser({ roles: ["student", "recruiter"] });
             const admin = makeAdmin();
             User.findById.mockResolvedValueOnce(user);
 
             await rejectRecruiter({ params: { id: "u1" }, userDoc: admin, actingAdminDoc: null }, res);
 
             expect(user.role).toBe("student");
+            expect(user.roles).toEqual(["student"]);
             expect(user.recruiterProfile.verified).toBe(false);
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-1");
             expect(recordAdminAction).toHaveBeenCalledWith(
@@ -262,7 +274,7 @@ describe("adminController", () => {
     describe("rejectTpo", () => {
         it("deletes the college, demotes the requester if still a TPO, and audit-logs it", async () => {
             const college = { _id: "c1", name: "MIT", submittedBy: "req1" };
-            const requester = makeUser({ _id: "req1", role: "tpo", firebaseUid: "fb-req1" });
+            const requester = makeUser({ _id: "req1", role: "tpo", roles: ["student", "tpo"], firebaseUid: "fb-req1" });
             const admin = makeAdmin();
 
             College.findById.mockResolvedValueOnce(college);
@@ -272,6 +284,7 @@ describe("adminController", () => {
 
             expect(College.deleteOne).toHaveBeenCalledWith({ _id: "c1" });
             expect(requester.role).toBe("student");
+            expect(requester.roles).toEqual(["student"]);
             expect(invalidateCachedUserByFirebaseUid).toHaveBeenCalledWith("fb-req1");
             expect(recordAdminAction).toHaveBeenCalledWith(
                 expect.objectContaining({ adminDoc: admin, action: "tpo.reject", targetType: "College", targetId: "c1" })

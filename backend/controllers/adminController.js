@@ -156,6 +156,12 @@ export async function rejectRecruiter(req, res) {
 
     const companyName = user.recruiterProfile?.companyName;
 
+    // Revoke the "recruiter" authorization (not just the active role) so
+    // this account can no longer switch back into a recruiter session via
+    // POST /me/switch-role — matches the additive grantRole() at
+    // registration. Falls active role back to "student", which every
+    // account is authorized for by default.
+    user.revokeRole("recruiter");
     user.role = "student";
     user.recruiterProfile = {
       companyName: null,
@@ -269,6 +275,9 @@ export async function rejectTpo(req, res) {
     if (requesterId) {
       const user = await User.findById(requesterId);
       if (user && user.role === "tpo") {
+        // Revoke the "tpo" authorization, matching rejectRecruiter's
+        // revokeRole above — see that comment for why.
+        user.revokeRole("tpo");
         user.role = "student";
         user.tpoProfile = {
           collegeDomain: null,

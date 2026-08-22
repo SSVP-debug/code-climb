@@ -27,6 +27,7 @@ import ProfileCompletion from "../components/profile/ProfileCompletion";
 import EducationSection from "../components/profile/EducationSection";
 import ContestHistorySection from "../components/profile/ContestHistorySection";
 import AdminAccountView from "../components/profile/AdminAccountView";
+import RoleAccountView from "../components/profile/RoleAccountView";
 
 // ── Profile ────────────────────────────────────────────────────────────────────
 // Phase 9B: Coding Identity build-out. Hero now shows the real XP-derived
@@ -53,6 +54,8 @@ function Profile() {
     achievements,
     joinedDate,
     role,
+    roles,
+    switchActiveRole,
   } = useAppContext();
 
   const [showAllActivity, setShowAllActivity] = useState(false);
@@ -94,6 +97,27 @@ function Profile() {
     return (
       <DashboardLayout>
         <AdminAccountView user={user} joinedDisplay={joinedDisplay} />
+      </DashboardLayout>
+    );
+  }
+
+  // Role/profile isolation fix: TPO and Recruiter sessions used to fall
+  // through into the student-shaped render below, which is where a TPO
+  // could see a previous Student registration's leftover XP/streak/
+  // solved-problem data (see models/User.js's role/roles comment for the
+  // root cause and RoleAccountView.jsx for why this is a separate, small
+  // component rather than threading role checks through every section
+  // underneath — same reasoning as the admin case above).
+  if (role === "tpo" || role === "recruiter") {
+    return (
+      <DashboardLayout>
+        <RoleAccountView
+          role={role}
+          user={user}
+          joinedDisplay={joinedDisplay}
+          roles={roles}
+          switchActiveRole={switchActiveRole}
+        />
       </DashboardLayout>
     );
   }

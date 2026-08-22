@@ -40,6 +40,13 @@ function serializeUser(userDoc) {
     username: userDoc.username || "",
     isProfilePublic: userDoc.isProfilePublic,
 
+    // Active application role vs authorized roles — see models/User.js's
+    // role/roles comment. Included here so any caller of GET /api/me gets
+    // the same role/roles shape as /api/init, rather than having to
+    // cross-reference two endpoints.
+    role: userDoc.role,
+    roles: userDoc.roles?.length ? userDoc.roles : ["student"],
+
     leetcodeUsername: userDoc.leetcodeUsername || "",
     leetcodeStats: userDoc.leetcodeStats || null,
     joinedDate: userDoc.joinedDate,
@@ -360,4 +367,48 @@ export async function unsaveProblem(req, res) {
   await req.userDoc.save();
 
   res.json(serializeUser(req.userDoc));
+}
+
+// ── POST /api/users/me/switch-role (role/profile isolation fix) ────────────
+// Lets an identity with more than one authorized role (see models/User.js's
+// grantRole()) change which one is currently ACTIVE — e.g. a Student+TPO
+// account stepping from their Student workspace into their TPO one. This
+// is the only place `role` should be reassigned to a value the account
+// didn't just register for; registration (routes/tpo.js, routes/
+// recruiter.js) sets both `role` and `roles` together.
+//
+// Deliberately backend-authoritative: the target role is checked against
+// `req.userDoc.roles` (server state derived from Firebase-verified
+// req.userDoc, never trusted from the request body) before it's allowed,
+// so a Student can't switch themselves into "tpo" or "recruiter" just by
+// calling this endpoint without ever having registered for that role.
+// "admin" is intentionally excluded — that's granted out-of-band (no
+// self-service registration flow for it) and uses the separate
+// impersonation mechanism (middleware/auth.js) rather than this switch.
+const SWITCHABLE_ROLES = ["student", "recruiter", "tpo"];
+
+export async function switchActiveRole(req, res) {
+  if (!req.userDoc) return res.status(503).json({ error: "Database unavailable." });
+
+  const { role } = req.body || {};
+
+  if (!SWITCHABLE_ROLES.includes(role)) {
+    return res.status(400).json({
+      error: `role must be one of: ${SWITCHABLE_ROLES.join(", ")}`,
+    });
+  }
+
+  const authorizedRoles = req.userDoc.roles?.length ? req.userDoc.roles : ["student"];
+
+  if (!authorizedRoles.includes(role)) {
+    return res.status(403).json({
+      error: `Not authorized for role: ${role}.`,
+      authorizedRoles,
+    });
+  }
+
+  req.userDoc.role = role;
+  await req.userDoc.save();
+
+  return res.json({ success: true, role, roles: authorizedRoles });
 }
