@@ -13,6 +13,8 @@ import {
   createOpportunityAdmin,
   publishOpportunityAdmin,
   rejectOpportunityAdmin,
+  extractOpportunitiesAdmin,
+  importSelectedOpportunitiesAdmin,
 } from "./opportunityApi";
 
 function jsonResponse(body, status = 200) {
@@ -108,5 +110,32 @@ describe("opportunityApi.js — admin functions", () => {
 
     const [, options] = apiFetch.mock.calls[0];
     expect(JSON.parse(options.body)).toEqual({ reason: "Deadline already passed" });
+  });
+
+  it("extractOpportunitiesAdmin POSTs the pasted research text to the extract endpoint", async () => {
+    apiFetch.mockResolvedValue({ opportunities: [] });
+
+    await extractOpportunitiesAdmin("some research text");
+
+    expect(apiFetch).toHaveBeenCalledWith(
+      "/api/admin/opportunities/import/extract",
+      expect.objectContaining({ method: "POST" })
+    );
+    const [, options] = apiFetch.mock.calls[0];
+    expect(JSON.parse(options.body)).toEqual({ researchText: "some research text" });
+  });
+
+  it("importSelectedOpportunitiesAdmin POSTs the selected candidates to the bulk-import endpoint", async () => {
+    apiFetch.mockResolvedValue({ imported: [], failed: [] });
+    const candidates = [{ title: "MLH Fellowship" }];
+
+    await importSelectedOpportunitiesAdmin(candidates);
+
+    expect(apiFetch).toHaveBeenCalledWith(
+      "/api/admin/opportunities/import/bulk",
+      expect.objectContaining({ method: "POST" })
+    );
+    const [, options] = apiFetch.mock.calls[0];
+    expect(JSON.parse(options.body)).toEqual({ opportunities: candidates });
   });
 });

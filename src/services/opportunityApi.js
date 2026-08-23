@@ -99,3 +99,19 @@ export const duplicateOpportunityAdmin = (id) => transition(id, "duplicate");
 export async function fetchOpportunityAnalyticsAdmin(id) {
   return apiFetch(`/api/admin/opportunities/${id}/analytics`);
 }
+
+// ── Import (AI-assisted extraction) ─────────────────────────────────────
+
+export async function extractOpportunitiesAdmin(researchText) {
+  return apiFetch("/api/admin/opportunities/import/extract", {
+    method: "POST",
+    body: JSON.stringify({ researchText }),
+  });
+}
+
+export async function importSelectedOpportunitiesAdmin(opportunities) {
+  return apiFetch("/api/admin/opportunities/import/bulk", {
+    method: "POST",
+    body: JSON.stringify({ opportunities }),
+  });
+}

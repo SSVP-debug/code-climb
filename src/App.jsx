@@ -69,6 +69,8 @@ const OpportunityRadarPage = lazy(() => import("./pages/OpportunityRadarPage"));
 const OpportunityDetailPage = lazy(() => import("./pages/OpportunityDetailPage"));
 const AdminOpportunitiesPage = lazy(() => import("./pages/admin/AdminOpportunitiesPage"));
 const AdminOpportunityFormPage = lazy(() => import("./pages/admin/AdminOpportunityFormPage"));
+const AdminOpportunityImportPage = lazy(() => import("./pages/admin/AdminOpportunityImportPage"));
+const AdminGenerateShareCardPage = lazy(() => import("./pages/admin/AdminGenerateShareCardPage"));
 const AdminOpportunityAnalyticsPage = lazy(() => import("./pages/admin/AdminOpportunityAnalyticsPage"));
 // ── Route-level loading fallback ───────────────────────────────────────────
 // Shown while a chunk is downloading. Matches the app's dark background
@@ -326,8 +328,10 @@ function App() {
           <Route path="colleges" element={<AdminCollegesPage />} />
           <Route path="problems" element={<AdminProblemsPage />} />
           <Route path="opportunities" element={<AdminOpportunitiesPage />} />
+          <Route path="opportunities/import" element={<AdminOpportunityImportPage />} />
           <Route path="opportunities/new" element={<AdminOpportunityFormPage />} />
           <Route path="opportunities/:id/edit" element={<AdminOpportunityFormPage />} />
+          <Route path="opportunities/:id/share" element={<AdminGenerateShareCardPage />} />
           <Route path="opportunities/:id/analytics" element={<AdminOpportunityAnalyticsPage />} />
           <Route path="analytics" element={<AdminAnalyticsPage />} />
           <Route path="system-health" element={<AdminSystemHealthPage />} />

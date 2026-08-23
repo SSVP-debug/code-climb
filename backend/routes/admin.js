@@ -38,6 +38,7 @@ import {
 import { getSystemHealth } from "../controllers/adminHealthController.js";
 import { getSettingsAdmin, updateSettingsAdmin } from "../controllers/adminSettingsController.js";
 import { validateBody } from "../middleware/validateBody.js";
+import { aiLimiter } from "../middleware/rateLimiter.js";
 import {
   OpportunityCreateSchema,
   OpportunityUpdateSchema,
@@ -57,6 +58,10 @@ import {
   duplicateOpportunity,
   getOpportunityAnalytics,
 } from "../controllers/adminOpportunityController.js";
+import {
+  extractOpportunities,
+  importSelectedOpportunities,
+} from "../controllers/adminOpportunityImportController.js";
 
 const router = Router();
 
@@ -117,6 +122,14 @@ router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
 // ── Opportunity Radar ────────────────────────────────────────────────────────
 // Admin management always works regardless of OPPORTUNITY_RADAR_ENABLED —
 // see that flag's comment in config/featureFlags.js for why.
+// Import — static paths, placed before the /:id routes below to avoid any
+// ambiguity with the dynamic :id segment (defensive ordering; Express
+// wouldn't currently collide since no route below matches a bare
+// "/opportunities/import" path, but ordering static before dynamic is the
+// safer convention to keep as more opportunity sub-routes get added).
+router.post("/opportunities/import/extract", requireAdmin, aiLimiter, extractOpportunities);
+router.post("/opportunities/import/bulk", requireAdmin, importSelectedOpportunities);
+
 router.get("/opportunities", requireAdmin, listOpportunitiesAdmin);
 router.get("/opportunities/:id", requireAdmin, getOpportunityAdmin);
 router.post("/opportunities", requireAdmin, validateBody(OpportunityCreateSchema), createOpportunity);

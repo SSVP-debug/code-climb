@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Copy, BarChart3, Pencil, X } from "lucide-react";
+import { Plus, Copy, BarChart3, Pencil, X, Sparkles, Share2 } from "lucide-react";
 import PageMeta from "../../components/seo/PageMeta";
 import Button from "../../components/ui/Button";
 import EmptyState from "../../components/ui/feedback/EmptyState";
@@ -101,10 +101,16 @@ export default function AdminOpportunitiesPage() {
           <h1 className="text-xl font-bold text-white">Opportunities</h1>
           <p className="text-zinc-500 text-sm mt-0.5">Discover, verify, and publish opportunities for students.</p>
         </div>
-        <Button to="/admin/opportunities/new" size="sm">
-          <Plus size={16} strokeWidth={2} />
-          New Opportunity
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button to="/admin/opportunities/import" size="sm" variant="secondary">
+            <Sparkles size={14} strokeWidth={2} />
+            Import Opportunities
+          </Button>
+          <Button to="/admin/opportunities/new" size="sm">
+            <Plus size={16} strokeWidth={2} />
+            New Opportunity
+          </Button>
+        </div>
       </div>
 
       {toast && (
@@ -180,6 +186,15 @@ export default function AdminOpportunitiesPage() {
                       <Link to={`/admin/opportunities/${o._id}/analytics`} className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white" title="Analytics">
                         <BarChart3 size={14} strokeWidth={2} />
                       </Link>
+                      {o.status === "published" && (
+                        <Link
+                          to={`/admin/opportunities/${o._id}/share`}
+                          className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                          title="Generate Share Card"
+                        >
+                          <Share2 size={14} strokeWidth={2} />
+                        </Link>
+                      )}
                       <button
                         onClick={() => runAction(o._id, duplicateOpportunityAdmin, "Duplicated as a new draft.")}
                         disabled={busyId === o._id}

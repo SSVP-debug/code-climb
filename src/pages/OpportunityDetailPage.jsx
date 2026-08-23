@@ -199,8 +199,8 @@ export default function OpportunityDetailPage() {
           </button>
           {showShareCard && (
             <div className="mt-4 flex flex-wrap gap-6">
-              <ShareCard opportunity={o} aspect="portrait" />
-              <ShareCard opportunity={o} aspect="square" />
+              <ShareCard opportunity={o} format="mobile" />
+              <ShareCard opportunity={o} format="linkedin" />
             </div>
           )}
         </div>

@@ -74,6 +74,7 @@ const PAGE_TITLES = {
   "/admin/problems": "Problems",
   "/admin/opportunities": "Opportunities",
   "/admin/opportunities/new": "New Opportunity",
+  "/admin/opportunities/import": "Import Opportunities",
   "/admin/analytics": "Analytics",
   "/admin/system-health": "System Health",
   "/admin/audit-logs": "Audit Logs",
