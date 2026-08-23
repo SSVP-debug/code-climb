@@ -68,6 +68,7 @@ import tpoRoutes, { studentAssignmentsRouter } from "./routes/tpo.js";
 import billingRoutes from "./routes/billing.js";
 import interviewRoutes from "./routes/interview.js";
 import adminRoutes from "./routes/admin.js";
+import opportunityRoutes from "./routes/opportunities.js";
 import { SITE_URL } from "./config/site.js";
 
 if (process.env.NODE_ENV !== "production") {
@@ -211,6 +212,10 @@ app.use(
   "/api/public",
   publicProfileRoutes
 );
+// Opportunity Radar — public (no auth), gated internally by
+// OPPORTUNITY_RADAR_ENABLED. Admin management lives under /api/admin
+// (adminRoutes below, already requireAuth + requireAdmin).
+app.use("/api/opportunities", opportunityRoutes);
 
 // ─── 404 handler ────────────────────────────────────────────────────────────
 logger.info(`[Server] 404 handler initialized`);

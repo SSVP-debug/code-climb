@@ -18,6 +18,7 @@ import {
   Settings,
   Search,
   Command,
+  Radar,
 } from "lucide-react";
 
 // Plan 001: dedicated admin layout — own sidebar/nav, distinct from the
@@ -51,6 +52,7 @@ const NAV_GROUPS = [
     label: "Platform",
     items: [
       { to: "/admin/problems", label: "Problems", icon: ListChecks },
+      { to: "/admin/opportunities", label: "Opportunities", icon: Radar },
       { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
@@ -70,6 +72,8 @@ const PAGE_TITLES = {
   "/admin/users": "Users",
   "/admin/colleges": "Colleges",
   "/admin/problems": "Problems",
+  "/admin/opportunities": "Opportunities",
+  "/admin/opportunities/new": "New Opportunity",
   "/admin/analytics": "Analytics",
   "/admin/system-health": "System Health",
   "/admin/audit-logs": "Audit Logs",

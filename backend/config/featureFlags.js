@@ -19,6 +19,16 @@ export const MONETIZATION_ENABLED = process.env.MONETIZATION_ENABLED === "true";
 export const B2B_ENABLED = process.env.B2B_ENABLED === "true";
 
 /**
+ * OPPORTUNITY_RADAR_ENABLED controls the public-facing Opportunity Radar
+ * (/opportunities, /opportunities/:ccId). Admin management
+ * (/admin/opportunities) always works regardless of this flag — admins
+ * need to be able to draft/verify/build up curated content *before*
+ * flipping the public site live, same reasoning as MONETIZATION_ENABLED
+ * above (pricing pages built and gated ahead of going live).
+ */
+export const OPPORTUNITY_RADAR_ENABLED = process.env.OPPORTUNITY_RADAR_ENABLED === "true";
+
+/**
  * Pricing — single source of truth, read by both backend (webhook/order
  * creation) and exposed via /api/billing/plans for frontend display.
  * All prices in paise (Razorpay's smallest unit) — 100 paise = ₹1.

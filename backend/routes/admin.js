@@ -37,6 +37,26 @@ import {
 } from "../controllers/adminAnalyticsController.js";
 import { getSystemHealth } from "../controllers/adminHealthController.js";
 import { getSettingsAdmin, updateSettingsAdmin } from "../controllers/adminSettingsController.js";
+import { validateBody } from "../middleware/validateBody.js";
+import {
+  OpportunityCreateSchema,
+  OpportunityUpdateSchema,
+  OpportunityRejectSchema,
+} from "../schemas/opportunitySchema.js";
+import {
+  listOpportunitiesAdmin,
+  getOpportunityAdmin,
+  createOpportunity,
+  updateOpportunity,
+  submitForReview,
+  approveOpportunity,
+  publishOpportunity,
+  rejectOpportunity,
+  archiveOpportunity,
+  markExpiredOpportunity,
+  duplicateOpportunity,
+  getOpportunityAnalytics,
+} from "../controllers/adminOpportunityController.js";
 
 const router = Router();
 
@@ -93,6 +113,22 @@ router.get("/analytics/active-users", requireAdmin, getActiveUserTrends);
 router.get("/analytics/retention", requireAdmin, getRetentionMetric);
 router.get("/analytics/problems", requireAdmin, getProblemPopularity);
 router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
+
+// ── Opportunity Radar ────────────────────────────────────────────────────────
+// Admin management always works regardless of OPPORTUNITY_RADAR_ENABLED —
+// see that flag's comment in config/featureFlags.js for why.
+router.get("/opportunities", requireAdmin, listOpportunitiesAdmin);
+router.get("/opportunities/:id", requireAdmin, getOpportunityAdmin);
+router.post("/opportunities", requireAdmin, validateBody(OpportunityCreateSchema), createOpportunity);
+router.patch("/opportunities/:id", requireAdmin, validateBody(OpportunityUpdateSchema), updateOpportunity);
+router.post("/opportunities/:id/submit-review", requireAdmin, submitForReview);
+router.post("/opportunities/:id/approve", requireAdmin, approveOpportunity);
+router.post("/opportunities/:id/publish", requireAdmin, publishOpportunity);
+router.post("/opportunities/:id/reject", requireAdmin, validateBody(OpportunityRejectSchema), rejectOpportunity);
+router.post("/opportunities/:id/archive", requireAdmin, archiveOpportunity);
+router.post("/opportunities/:id/mark-expired", requireAdmin, markExpiredOpportunity);
+router.post("/opportunities/:id/duplicate", requireAdmin, duplicateOpportunity);
+router.get("/opportunities/:id/analytics", requireAdmin, getOpportunityAnalytics);
 
 // ── System health ────────────────────────────────────────────────────────────
 router.get("/system-health", requireAdmin, getSystemHealth);
