@@ -155,7 +155,7 @@ export async function extractOpportunities(req, res) {
         maxTokens: 4000,
       });
     } catch (err) {
-      logger.error({ err }, "[OpportunityImport] Claude extraction call failed");
+      logger.error({ err, status: err.status }, "[OpportunityImport] Claude extraction call failed");
 
       // Defensive fallback for the same "not configured" condition in
       // case of a race (env var unset between the check above and this
@@ -164,6 +164,38 @@ export async function extractOpportunities(req, res) {
       if (err.message?.includes("ANTHROPIC_API_KEY is not set")) {
         return res.status(503).json({
           error: "Opportunity extraction is unavailable. Set ANTHROPIC_API_KEY to enable.",
+        });
+      }
+
+      // anthropicClient.js now attaches the real upstream HTTP status to
+      // the thrown error (see its own comment) — surface a specific,
+      // still-secret-free reason instead of one blanket 502 for every
+      // case. This is what actually lets "extraction is unavailable
+      // because the key is wrong" be told apart from "Anthropic is
+      // rate-limiting us right now" from the response alone, without
+      // needing to go dig through server logs every time.
+      if (err.status === 401 || err.status === 403) {
+        // Never echo the provider's response body here — it can include
+        // enough of the request context to be worth keeping server-side
+        // only. The status code alone is enough to point at "the
+        // configured key is invalid or was revoked."
+        return res.status(503).json({
+          error: "Opportunity extraction is unavailable — the configured AI API key was rejected. Check ANTHROPIC_API_KEY.",
+        });
+      }
+      if (err.status === 404) {
+        return res.status(503).json({
+          error: "Opportunity extraction is unavailable — the configured AI model is not available on this API key/account.",
+        });
+      }
+      if (err.status === 429) {
+        return res.status(502).json({
+          error: "The extraction service is rate-limited right now. Try again in a minute.",
+        });
+      }
+      if (err.status === 529) {
+        return res.status(502).json({
+          error: "The extraction service is temporarily overloaded. Try again shortly.",
         });
       }
 

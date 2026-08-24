@@ -248,7 +248,9 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("returns 502 (genuine upstream failure), distinct from the 503 config case, when Claude is reachable but errors", async () => {
-      callClaudeJSON.mockRejectedValue(new Error("Anthropic API error (529): overloaded_error"));
+      const err = new Error("Anthropic API error (500): internal_server_error");
+      err.status = 500;
+      callClaudeJSON.mockRejectedValue(err);
 
       const req = { body: { researchText: "text" } };
       const res = mockRes();
@@ -259,13 +261,101 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("returns 502 when the Claude call itself fails", async () => {
-      callClaudeJSON.mockRejectedValue(new Error("Anthropic API error (500)"));
+      const err = new Error("Anthropic API error (500)");
+      err.status = 500;
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
       await extractOpportunities(req, res);
 
       expect(res.status).toHaveBeenCalledWith(502);
+    });
+
+    it("returns 503 with a key-specific message on a 401 (invalid/revoked key) from the provider", async () => {
+      const err = new Error("Anthropic API error (401): authentication_error");
+      err.status = 401;
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(503);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.stringContaining("API key was rejected") })
+      );
+    });
+
+    it("returns 503 with a key-specific message on a 403 from the provider too", async () => {
+      const err = new Error("Anthropic API error (403): permission_error");
+      err.status = 403;
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(503);
+    });
+
+    it("returns 503 with a model-specific message on a 404 (invalid/unavailable model) from the provider", async () => {
+      const err = new Error("Anthropic API error (404): not_found_error");
+      err.status = 404;
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(503);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.stringContaining("AI model is not available") })
+      );
+    });
+
+    it("returns 502 with a rate-limit-specific message on a 429 from the provider", async () => {
+      const err = new Error("Anthropic API error (429): rate_limit_error");
+      err.status = 429;
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(502);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.stringContaining("rate-limited") })
+      );
+    });
+
+    it("returns 502 with an overload-specific message on a 529 from the provider", async () => {
+      const err = new Error("Anthropic API error (529): overloaded_error");
+      err.status = 529;
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(502);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.stringContaining("overloaded") })
+      );
+    });
+
+    it("never echoes the provider's raw response body or the API key into the client-facing error message", async () => {
+      const err = new Error("Anthropic API error (401): {\"error\":{\"message\":\"invalid x-api-key: sk-ant-secret-value\"}}");
+      err.status = 401;
+      err.providerBody = '{"error":{"message":"invalid x-api-key: sk-ant-secret-value"}}';
+      callClaudeJSON.mockRejectedValue(err);
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      const responseBody = res.json.mock.calls[0][0];
+      expect(JSON.stringify(responseBody)).not.toContain("sk-ant-secret-value");
     });
 
     it("caps extraction at MAX_OPPORTUNITIES_PER_IMPORT even if Claude returns more", async () => {

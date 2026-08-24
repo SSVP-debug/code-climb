@@ -29,24 +29,43 @@ export async function callClaudeJSON({ systemPrompt, userMessage, maxTokens = 40
     throw new Error("ANTHROPIC_API_KEY is not set");
   }
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
-    }),
-  });
+  let response;
+  try {
+    response = await fetch(ANTHROPIC_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMessage }],
+      }),
+    });
+  } catch (err) {
+    // fetch() itself threw — DNS failure, connection refused, egress
+    // blocked from the host, TLS error, etc. No HTTP status exists here
+    // at all; callers should treat the absence of `.status` on the
+    // thrown error as "never got a response," distinct from "got a
+    // response Anthropic didn't like" below.
+    throw new Error(`Failed to reach Anthropic API: ${err.message}`, { cause: err });
+  }
 
   if (!response.ok) {
     const errBody = await response.text();
-    throw new Error(`Anthropic API error (${response.status}): ${errBody}`);
+    // Attach the real HTTP status to the thrown error (not just baked
+    // into the message string) so callers can distinguish e.g. 401
+    // (bad/revoked key — a config problem) from 404 (invalid model
+    // string — also effectively a config problem, but a different fix)
+    // from 429/529 (rate-limited/overloaded — a transient provider
+    // problem, worth a plain retry) without parsing message text.
+    const err = new Error(`Anthropic API error (${response.status}): ${errBody}`);
+    err.status = response.status;
+    err.providerBody = errBody;
+    throw err;
   }
 
   const data = await response.json();
