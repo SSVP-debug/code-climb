@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("../models/Opportunity.js", () => ({
   default: {
@@ -74,6 +74,25 @@ describe("adminOpportunityImportController.js", () => {
   });
 
   describe("extractOpportunities", () => {
+    const ORIGINAL_ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+    beforeEach(() => {
+      // Most tests in this block are about extraction *logic*, not the
+      // config-presence check itself — give them a key so they exercise
+      // the callClaudeJSON path. The specific "key is missing" behavior
+      // is covered by its own tests below, which delete/restore this
+      // themselves.
+      process.env.ANTHROPIC_API_KEY = "sk-ant-test-key";
+    });
+
+    afterEach(() => {
+      if (ORIGINAL_ANTHROPIC_API_KEY !== undefined) {
+        process.env.ANTHROPIC_API_KEY = ORIGINAL_ANTHROPIC_API_KEY;
+      } else {
+        delete process.env.ANTHROPIC_API_KEY;
+      }
+    });
+
     it("returns 400 for empty research text without ever calling Claude", async () => {
       const req = { body: { researchText: "   " } };
       const res = mockRes();
@@ -192,6 +211,51 @@ describe("adminOpportunityImportController.js", () => {
       await extractOpportunities(req, res);
 
       expect(res.json.mock.calls[0][0].opportunities).toEqual([]);
+    });
+
+    it("returns 503 (not 502) when ANTHROPIC_API_KEY is not set — a missing config, not an upstream outage", async () => {
+      delete process.env.ANTHROPIC_API_KEY;
+
+      const req = { body: { researchText: "some research text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(503);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.stringContaining("Set ANTHROPIC_API_KEY to enable"),
+        })
+      );
+      // Confirms the root-cause fix: no network call is even attempted
+      // once the missing key is detected up front.
+      expect(callClaudeJSON).not.toHaveBeenCalled();
+    });
+
+    it("still returns 503 (defensive fallback) if callClaudeJSON itself throws the missing-key error", async () => {
+      // Key IS present (set by the block's beforeEach) so the upfront
+      // check passes, but callClaudeJSON throws the same error it would
+      // if the env var vanished between the check and the call — the
+      // catch block's own message-based fallback should still catch this.
+      callClaudeJSON.mockRejectedValue(new Error("ANTHROPIC_API_KEY is not set"));
+
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(503);
+    });
+
+    it("returns 502 (genuine upstream failure), distinct from the 503 config case, when Claude is reachable but errors", async () => {
+      callClaudeJSON.mockRejectedValue(new Error("Anthropic API error (529): overloaded_error"));
+
+      const req = { body: { researchText: "text" } };
+      const res = mockRes();
+
+      await extractOpportunities(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(502);
     });
 
     it("returns 502 when the Claude call itself fails", async () => {

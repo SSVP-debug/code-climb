@@ -122,6 +122,31 @@ export async function extractOpportunities(req, res) {
       });
     }
 
+    // Root cause of the 502 this was returning: callClaudeJSON() throws a
+    // plain Error("ANTHROPIC_API_KEY is not set") when the key is
+    // missing from the environment — the exact same Error shape as a
+    // genuine network/upstream failure — and the catch block below used
+    // to map every error from callClaudeJSON to a blanket 502 "couldn't
+    // reach the service" response. That's wrong on two counts: a missing
+    // env var is a server *configuration* problem, not an upstream
+    // outage (502 implies "the thing on the other end failed", when
+    // nothing was ever contacted), and collapsing both cases into one
+    // generic message meant retrying could never work and there was no
+    // way to tell, from the response alone, which situation this was.
+    //
+    // Checking up front and returning 503 here (rather than only in the
+    // catch block) mirrors the exact convention routes/interview.js
+    // already uses for this identical situation (see getClaude() +
+    // its 503 "AI interviewer unavailable. Set ANTHROPIC_API_KEY to
+    // enable." response) — reusing the established pattern rather than
+    // inventing a new one.
+    if (!process.env.ANTHROPIC_API_KEY) {
+      logger.warn("[OpportunityImport] ANTHROPIC_API_KEY is not set — extraction unavailable.");
+      return res.status(503).json({
+        error: "Opportunity extraction is unavailable. Set ANTHROPIC_API_KEY to enable.",
+      });
+    }
+
     let parsed;
     try {
       parsed = await callClaudeJSON({
@@ -131,6 +156,17 @@ export async function extractOpportunities(req, res) {
       });
     } catch (err) {
       logger.error({ err }, "[OpportunityImport] Claude extraction call failed");
+
+      // Defensive fallback for the same "not configured" condition in
+      // case of a race (env var unset between the check above and this
+      // call) — still distinguished from a genuine upstream/network
+      // failure rather than folded into the same 502.
+      if (err.message?.includes("ANTHROPIC_API_KEY is not set")) {
+        return res.status(503).json({
+          error: "Opportunity extraction is unavailable. Set ANTHROPIC_API_KEY to enable.",
+        });
+      }
+
       return res.status(502).json({
         error: "Couldn't reach the extraction service. Try again in a moment.",
       });
