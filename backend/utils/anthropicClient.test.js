@@ -94,6 +94,56 @@ describe("callClaudeJSON", () => {
     expect(caught.status).toBe(404);
   });
 
+  it("extracts providerType from Anthropic's JSON error body ({ error: { type } })", async () => {
+    global.fetch.mockResolvedValue(
+      jsonResponse('{"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}', {
+        ok: false,
+        status: 401,
+      })
+    );
+
+    let caught;
+    try {
+      await callClaudeJSON({ systemPrompt: "sys", userMessage: "msg" });
+    } catch (err) {
+      caught = err;
+    }
+
+    expect(caught.providerType).toBe("authentication_error");
+  });
+
+  it("sets providerType to null (does not throw) when the error body isn't valid JSON", async () => {
+    global.fetch.mockResolvedValue(
+      jsonResponse("<html>502 Bad Gateway</html>", { ok: false, status: 502 })
+    );
+
+    let caught;
+    try {
+      await callClaudeJSON({ systemPrompt: "sys", userMessage: "msg" });
+    } catch (err) {
+      caught = err;
+    }
+
+    expect(caught.status).toBe(502);
+    expect(caught.providerType).toBeNull();
+  });
+
+  it("attaches err.code from the underlying network error when fetch itself throws", async () => {
+    const networkErr = new TypeError("fetch failed");
+    networkErr.cause = { code: "ECONNREFUSED" };
+    global.fetch.mockRejectedValue(networkErr);
+
+    let caught;
+    try {
+      await callClaudeJSON({ systemPrompt: "sys", userMessage: "msg" });
+    } catch (err) {
+      caught = err;
+    }
+
+    expect(caught.code).toBe("ECONNREFUSED");
+    expect(caught.status).toBeUndefined();
+  });
+
   it("does not attach a .status when fetch itself throws (never got a response at all)", async () => {
     global.fetch.mockRejectedValue(new TypeError("fetch failed"));
 

@@ -51,7 +51,15 @@ export async function callClaudeJSON({ systemPrompt, userMessage, maxTokens = 40
     // at all; callers should treat the absence of `.status` on the
     // thrown error as "never got a response," distinct from "got a
     // response Anthropic didn't like" below.
-    throw new Error(`Failed to reach Anthropic API: ${err.message}`, { cause: err });
+    //
+    // Node's undici (fetch implementation) attaches a `.code` (e.g.
+    // "ECONNREFUSED", "ENOTFOUND", "ETIMEDOUT") to the underlying cause
+    // for most network-level failures — surface it on the thrown error
+    // too, not just buried in `.cause`, so callers building a diagnostic
+    // don't need to know undici's error-wrapping shape to find it.
+    const wrapped = new Error(`Failed to reach Anthropic API: ${err.message}`, { cause: err });
+    wrapped.code = err.code || err.cause?.code || null;
+    throw wrapped;
   }
 
   if (!response.ok) {
@@ -65,6 +73,23 @@ export async function callClaudeJSON({ systemPrompt, userMessage, maxTokens = 40
     const err = new Error(`Anthropic API error (${response.status}): ${errBody}`);
     err.status = response.status;
     err.providerBody = errBody;
+
+    // Anthropic's error responses are JSON shaped like
+    // { "type": "error", "error": { "type": "authentication_error", "message": "..." } }.
+    // Extract just the `type` string — e.g. "authentication_error",
+    // "not_found_error", "rate_limit_error", "overloaded_error" — which
+    // is exactly the field name Anthropic itself uses to classify the
+    // failure, and safe to log (it's a fixed enum-like category, never
+    // user data or secrets). Best-effort: errBody isn't guaranteed to be
+    // valid JSON (e.g. an upstream proxy/CDN error page), so this must
+    // not throw if it isn't.
+    try {
+      const parsedBody = JSON.parse(errBody);
+      err.providerType = parsedBody?.error?.type || parsedBody?.type || null;
+    } catch {
+      err.providerType = null;
+    }
+
     throw err;
   }
 

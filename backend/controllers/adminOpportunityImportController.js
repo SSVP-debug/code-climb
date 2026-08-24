@@ -37,6 +37,40 @@ import { OpportunityCreateSchema } from "../schemas/opportunitySchema.js";
 const MAX_INPUT_CHARS = 20000; // guards against pathological Claude cost / prompt-injection payloads
 const MAX_OPPORTUNITIES_PER_IMPORT = 25;
 
+/**
+ * buildSafeExtractionDiagnostic() — server-log-only diagnostic for a
+ * failed callClaudeJSON() call, deliberately narrow: only the fields
+ * needed to tell "missing config" from "provider rejected the key" from
+ * "provider rejected the model" from "rate limited/overloaded" from "no
+ * response reached us at all" apart, at a glance, from the log line
+ * itself — nothing that could ever be a secret.
+ *
+ * Explicitly NEVER includes: err.stack (can embed request context in
+ * some error shapes), err.providerBody (Anthropic's raw response text —
+ * not a secret per se, but unbounded and not needed once providerType is
+ * extracted), the research text, or anything from process.env.
+ *
+ * `err.status` present (a number) means a response DID come back from
+ * Anthropic, just a non-2xx one — that's the "hasProviderResponse: true"
+ * case. `err.status` absent means fetch() itself never got a response at
+ * all (DNS/connection/TLS failure) — see anthropicClient.js's own catch
+ * block around fetch(), which deliberately does not set `.status` in
+ * that case so this distinction falls out for free here.
+ */
+function buildSafeExtractionDiagnostic(err) {
+  const hasProviderResponse = typeof err.status === "number";
+  return {
+    name: err.name || null,
+    message: err.message || null,
+    status: err.status ?? null,
+    code: err.code ?? null,
+    hasProviderResponse,
+    providerStatus: hasProviderResponse ? err.status : null,
+    providerType: err.providerType ?? null,
+    kind: hasProviderResponse ? "provider_response" : "network_or_config",
+  };
+}
+
 function slugify(title) {
   return (
     (title || "")
@@ -155,7 +189,23 @@ export async function extractOpportunities(req, res) {
         maxTokens: 4000,
       });
     } catch (err) {
-      logger.error({ err, status: err.status }, "[OpportunityImport] Claude extraction call failed");
+      const diagnostic = buildSafeExtractionDiagnostic(err);
+      // Log the diagnostic BOTH as a structured merging object (for any
+      // log aggregator that parses JSON fields) AND inlined as visible
+      // text in the message itself — deliberately redundant. Render's
+      // (and many other PaaS) log viewers commonly show only the
+      // top-level message string in their default/compact view and
+      // don't auto-expand nested JSON objects, which is exactly why the
+      // previous version of this log line (passing `{ err, status }` as
+      // a merging object only) looked like it was producing no detail
+      // at all in production, even though pino was almost certainly
+      // still emitting it in the raw JSON line. Baking it into the
+      // message text guarantees it's visible no matter how the log
+      // viewer renders structured fields.
+      logger.error(
+        diagnostic,
+        `[OpportunityImport] Claude extraction call failed :: ${JSON.stringify(diagnostic)}`
+      );
 
       // Defensive fallback for the same "not configured" condition in
       // case of a race (env var unset between the check above and this

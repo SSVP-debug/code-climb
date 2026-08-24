@@ -23,6 +23,7 @@ import Opportunity from "../models/Opportunity.js";
 import { nextSequence } from "../models/Counter.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { callClaudeJSON } from "../utils/anthropicClient.js";
+import { logger } from "../config/logger.js";
 import { extractOpportunities, importSelectedOpportunities } from "./adminOpportunityImportController.js";
 
 function mockRes() {
@@ -356,6 +357,113 @@ describe("adminOpportunityImportController.js", () => {
 
       const responseBody = res.json.mock.calls[0][0];
       expect(JSON.stringify(responseBody)).not.toContain("sk-ant-secret-value");
+    });
+
+    describe("server-side diagnostic logging", () => {
+      it("logs a structured diagnostic with name/message/status/code/providerType on a provider rejection", async () => {
+        const err = new Error("Anthropic API error (401): authentication_error");
+        err.status = 401;
+        err.code = null;
+        err.providerType = "authentication_error";
+        callClaudeJSON.mockRejectedValue(err);
+
+        await extractOpportunities({ body: { researchText: "text" } }, mockRes());
+
+        const [diagnostic] = logger.error.mock.calls[0];
+        expect(diagnostic).toMatchObject({
+          name: "Error",
+          status: 401,
+          hasProviderResponse: true,
+          providerStatus: 401,
+          providerType: "authentication_error",
+        });
+      });
+
+      it("bakes the diagnostic into the visible log message text, not just a hidden merging-object field", async () => {
+        const err = new Error("Anthropic API error (401): authentication_error");
+        err.status = 401;
+        err.providerType = "authentication_error";
+        callClaudeJSON.mockRejectedValue(err);
+
+        await extractOpportunities({ body: { researchText: "text" } }, mockRes());
+
+        const [, message] = logger.error.mock.calls[0];
+        expect(message).toContain("[OpportunityImport] Claude extraction call failed");
+        expect(message).toContain('"status":401');
+        expect(message).toContain('"providerType":"authentication_error"');
+      });
+
+      it("marks hasProviderResponse:false and kind:'network_or_config' when no HTTP status exists (fetch itself failed)", async () => {
+        const err = new Error("Failed to reach Anthropic API: fetch failed");
+        // deliberately no err.status — simulates anthropicClient.js's
+        // network-failure path, which never sets .status
+        callClaudeJSON.mockRejectedValue(err);
+
+        await extractOpportunities({ body: { researchText: "text" } }, mockRes());
+
+        const [diagnostic] = logger.error.mock.calls[0];
+        expect(diagnostic.hasProviderResponse).toBe(false);
+        expect(diagnostic.providerStatus).toBeNull();
+        expect(diagnostic.kind).toBe("network_or_config");
+      });
+
+      it("marks hasProviderResponse:true and kind:'provider_response' when a real HTTP status came back", async () => {
+        const err = new Error("Anthropic API error (429): rate_limit_error");
+        err.status = 429;
+        err.providerType = "rate_limit_error";
+        callClaudeJSON.mockRejectedValue(err);
+
+        await extractOpportunities({ body: { researchText: "text" } }, mockRes());
+
+        const [diagnostic] = logger.error.mock.calls[0];
+        expect(diagnostic.hasProviderResponse).toBe(true);
+        expect(diagnostic.kind).toBe("provider_response");
+      });
+
+      it("includes err.code when present (e.g. a network-level failure code)", async () => {
+        const err = new Error("Failed to reach Anthropic API: connect ECONNREFUSED");
+        err.code = "ECONNREFUSED";
+        callClaudeJSON.mockRejectedValue(err);
+
+        await extractOpportunities({ body: { researchText: "text" } }, mockRes());
+
+        const [diagnostic] = logger.error.mock.calls[0];
+        expect(diagnostic.code).toBe("ECONNREFUSED");
+      });
+
+      it("never logs the configured ANTHROPIC_API_KEY, providerBody, or the research text in the diagnostic", async () => {
+        const originalKey = process.env.ANTHROPIC_API_KEY;
+        process.env.ANTHROPIC_API_KEY = "sk-ant-the-real-configured-secret-key";
+        try {
+          const err = new Error("Anthropic API error (401): authentication_error");
+          err.status = 401;
+          err.providerBody = '{"error":{"message":"invalid x-api-key"}}'; // raw provider body — must not be logged
+          err.providerType = "authentication_error";
+          callClaudeJSON.mockRejectedValue(err);
+
+          const secretResearchText = "CONFIDENTIAL RESEARCH — must not leak into logs";
+          await extractOpportunities({ body: { researchText: secretResearchText } }, mockRes());
+
+          const [diagnostic, message] = logger.error.mock.calls[0];
+          const serializedDiagnostic = JSON.stringify(diagnostic);
+
+          // The real configured secret must never appear anywhere in the
+          // logged output, in either form.
+          expect(serializedDiagnostic).not.toContain(process.env.ANTHROPIC_API_KEY);
+          expect(message).not.toContain(process.env.ANTHROPIC_API_KEY);
+          // The diagnostic is a fixed, narrow field set — providerBody
+          // (the provider's raw, unbounded response text) is deliberately
+          // excluded from it, only the extracted providerType is kept.
+          expect(diagnostic.providerBody).toBeUndefined();
+          // The admin's pasted research text must never end up in a log
+          // line either.
+          expect(serializedDiagnostic).not.toContain(secretResearchText);
+          expect(message).not.toContain(secretResearchText);
+        } finally {
+          if (originalKey !== undefined) process.env.ANTHROPIC_API_KEY = originalKey;
+          else delete process.env.ANTHROPIC_API_KEY;
+        }
+      });
     });
 
     it("caps extraction at MAX_OPPORTUNITIES_PER_IMPORT even if Claude returns more", async () => {
