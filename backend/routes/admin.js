@@ -62,6 +62,7 @@ import {
   extractOpportunities,
   importSelectedOpportunities,
 } from "../controllers/adminOpportunityImportController.js";
+import { getOpportunityAIDiagnostics } from "../controllers/adminOpportunityAIDiagnosticsController.js";
 
 const router = Router();
 
@@ -129,6 +130,12 @@ router.get("/analytics/languages", requireAdmin, getLanguagePopularity);
 // safer convention to keep as more opportunity sub-routes get added).
 router.post("/opportunities/import/extract", requireAdmin, aiLimiter, extractOpportunities);
 router.post("/opportunities/import/bulk", requireAdmin, importSelectedOpportunities);
+
+// ⚠️ TEMPORARY — see adminOpportunityAIDiagnosticsController.js's header
+// comment for the TODO on removing this once GEMINI_MODEL is confirmed
+// working in production. Placed alongside the other static
+// "/opportunities/..." paths for the same dynamic-:id-ordering reason.
+router.get("/opportunities/ai-diagnostics", requireAdmin, getOpportunityAIDiagnostics);
 
 router.get("/opportunities", requireAdmin, listOpportunitiesAdmin);
 router.get("/opportunities/:id", requireAdmin, getOpportunityAdmin);
