@@ -137,6 +137,17 @@ async function main() {
             process.exit(1);
         }
 
+        // Content & Execution Architecture, Phase 3 adapter — same
+        // reasoning as the equivalent change in scripts/seedProblems.js:
+        // the folder format's testcases.json is unchanged (still
+        // {visible, hidden}), this just wraps `testcases.hidden` into
+        // Problem.js's actual `hiddenTestcaseSet` sub-document at the one
+        // point this script writes to Mongo, preserving whatever
+        // `enabled` state already exists there rather than resetting it.
+        const existingForHiddenSet = DRY_RUN
+            ? null
+            : await Problem.findOne({ slug: meta.slug }).lean();
+
         const problemDoc = {
             ...meta,
             description,
@@ -144,8 +155,10 @@ async function main() {
                 testcases.visible,
             testcases:
                 testcases.visible,
-            hiddentestcases:
-                testcases.hidden,
+            hiddenTestcaseSet: {
+                enabled: existingForHiddenSet?.hiddenTestcaseSet?.enabled ?? true,
+                testcases: testcases.hidden,
+            },
             starterCode,
             editorial: {
                 content: editorial,

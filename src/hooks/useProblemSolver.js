@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import confetti from "canvas-confetti";
 import toast from "react-hot-toast";
+import { useNavigate, useLocation } from "react-router-dom";
 import { formatDate } from "../utils/formatters";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { judgeSubmission, runTestcases } from "../services/judgeService";
 import { completeDailyChallenge } from "../services/dailyChallengeService";
 import { useAppContext } from "./useAppContext";
+import { useIdentity } from "./useIdentity";
 import { usePanelResize } from "./usePanelResize";
 import { useVerticalResize } from "./useVerticalResize";
 import { useTimer } from "./useTimer";
 import { getEarnedXP } from "../utils/xpUtils";
+import { buildLoginRedirect } from "../utils/authRedirect";
 import {
   loadSavedCode,
   saveCode,
@@ -38,6 +41,9 @@ function deriveForceTab(runResults, submitInfo) {
  */
 export function useProblemSolver({ problem, slug, contestId, battleRoomId }) {
   const { solvedProblems, addSubmission, markProblemSolved, preferences } = useAppContext();
+  const { isAuthenticated } = useIdentity();
+  const navigate = useNavigate();
+  const location = useLocation();
   const isSolved = solvedProblems.includes(slug);
   const { formatted: timerFormatted, stop: stopTimer } = useTimer();
 
@@ -132,6 +138,24 @@ export function useProblemSolver({ problem, slug, contestId, battleRoomId }) {
 
   const handleSubmitCode = async () => {
     if (submitting) return;
+
+    // Guest Mode: Submit persists a Submission and awards XP/streak — an
+    // account is required. Rather than let this reach judgeSubmission()
+    // (POST /api/judge/submit, requireAuth on the backend — see
+    // backend/routes/judge.js) only to fail with a 401, redirect to the
+    // login gate up front, with `next` preserving this exact problem page
+    // and `reason=submit` surfacing the contextual message (see
+    // AuthGate.jsx's AUTH_GATE_MESSAGES and LoginPage.jsx's banner) —
+    // "guest clicks Submit → auth gate → login → return to the problem"
+    // per the Guest Mode spec, reusing the existing ?next= infrastructure
+    // rather than a bespoke modal.
+    if (!isAuthenticated) {
+      navigate(
+        buildLoginRedirect(location.pathname + location.search, { reason: "submit" })
+      );
+      return;
+    }
+
     const wasAlreadySolved = isSolved;
 
     try {

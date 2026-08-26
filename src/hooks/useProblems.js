@@ -13,7 +13,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { apiFetch } from "../services/api";
+import { apiFetchOptional } from "../services/api";
 import problemMetadata from "../data/problemMetadata";
 
 function enrichProblems(problemList, acceptanceRates = {}) {
@@ -42,9 +42,15 @@ export function useProblems() {
         // Acceptance rates are a nice-to-have display detail, not core data —
         // fetched in parallel but never allowed to block or fail the problem
         // list itself. If this fetch fails, cards just show no acceptance %.
+        // Guest Mode: these two are genuinely public on the backend
+        // (backend/routes/problemRoutes.js — no auth middleware at all),
+        // so apiFetchOptional (not apiFetch, which throws for a guest
+        // with no Firebase user) is used here — same request either way
+        // for an authenticated caller, but guests reach the real API
+        // instead of falling straight to the static fallback below.
         const [data, acceptanceRates] = await Promise.all([
-          apiFetch("/api/problems"),
-          apiFetch("/api/problems/stats/acceptance").catch((err) => {
+          apiFetchOptional("/api/problems"),
+          apiFetchOptional("/api/problems/stats/acceptance").catch((err) => {
             console.warn("[useProblems] Acceptance rates fetch failed:", err.message);
             return {};
           }),

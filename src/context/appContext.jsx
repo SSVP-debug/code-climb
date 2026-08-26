@@ -4,6 +4,7 @@ import {
 } from "react";
 
 import { useAuth } from "../hooks/useAuth";
+import { useGuest } from "../hooks/useGuest";
 
 import {
   markProblemSolved as persistSolvedToMongo,
@@ -64,6 +65,7 @@ function calculateCurrentStreak(activityDates = []) {
 
 function AppContextProvider({ children }) {
   const { user } = useAuth();
+  const { guestPortal } = useGuest();
 
   const [solvedProblems, setSolvedProblems] =
     useState([]);
@@ -207,6 +209,43 @@ function AppContextProvider({ children }) {
   // Private "read later" bookmarks — [{ slug, savedAt }]. Separate from
   // pinnedProblems (public-profile showcase); see User model comment.
   const [savedProblems, setSavedProblems] = useState([]);
+
+  // Guest Mode: no backend account exists for a guest — there is nothing
+  // to hydrate, and there must never be (Zero Persistence: a guest
+  // session must not read or write any User/Progress/Submission document
+  // — see Guest Mode spec). `role`/`roles` are set to the guest's chosen
+  // portal (student/recruiter/tpo) rather than left at their default
+  // "student" so every existing consumer that already keys off `role` —
+  // Navbar's nav-link set, RoleRoute's allowedRoles check,
+  // DashboardRoleRedirect's admin check — treats a guest correctly for
+  // free, with no changes to their own logic (see RoleRoute.jsx/
+  // ProtectedRoute.jsx for the one additional guest-bypass each of them
+  // still needs on top of this, specifically for the `!user` case those
+  // two check that this alone doesn't cover).
+  //
+  // isBackendReady is set true immediately, not left at its default
+  // false: ThemeGate.jsx and RoleRoute.jsx both block rendering while
+  // isBackendReady is false, waiting for hydrate() to finish — a guest
+  // has no hydrate() to wait for, so leaving this false would hang those
+  // gates forever instead of ever showing the guest the portal.
+  //
+  // Deliberately NOT inside the hydrate() effect below: guestPortal is
+  // already synchronously available (GuestProvider holds no async state
+  // of its own), so setting it from an effect would just be a same-tick
+  // extra render for no benefit — this follows the same "adjust state
+  // during render, not in an effect" pattern WorkspacePanel.jsx already
+  // uses for forceTab, comparing against a second state variable instead
+  // of calling setState unconditionally in an effect body.
+  const [appliedGuestPortal, setAppliedGuestPortal] = useState(null);
+  if (guestPortal !== appliedGuestPortal) {
+    setAppliedGuestPortal(guestPortal);
+    if (guestPortal) {
+      setRole(guestPortal);
+      setRoles([guestPortal]);
+      setIsBackendReady(true);
+      setHydrationError(null);
+    }
+  }
 
   // --------------------------------------------------
   // HYDRATE FROM MONGODB
@@ -403,6 +442,17 @@ function AppContextProvider({ children }) {
     difficulty,
     title,
   }) {
+    // Guest Mode / Zero Persistence: this only ever runs from the Submit
+    // success path (hooks/useProblemSolver.js), and Submit itself is
+    // requireAuth-gated server-side (backend/routes/judge.js) — a guest
+    // can never reach it through the UI (AuthGate intercepts the Submit
+    // action first). This is a defensive second guard, not the actual
+    // enforcement boundary: it exists so a guest session can never end up
+    // with even an optimistic local "solved" entry or attempt a
+    // persistSolvedToMongo() call below, regardless of how this function
+    // gets invoked.
+    if (guestPortal) return;
+
     if (solvedProblems.includes(slug)) {
       return;
     }

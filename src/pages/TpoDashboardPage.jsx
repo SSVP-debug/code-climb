@@ -6,6 +6,8 @@ import PageMeta from "../components/seo/PageMeta";
 import { SUPPORT_EMAIL } from "../config/site.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
+import AuthGate from "../components/auth/AuthGate";
+import { useIdentity } from "../hooks/useIdentity";
 import { GraduationCap, Users, Flame } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -124,6 +126,7 @@ function CreateAssignmentModal({ onClose, onCreated }) {
 export default function TpoDashboardPage() {
   const VALID_TABS = ["overview", "students", "assignments"];
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isAuthenticated } = useIdentity();
 
   const [enabled, setEnabled] = useState(null);
   const [dashboard, setDashboard] = useState(null);
@@ -192,8 +195,19 @@ export default function TpoDashboardPage() {
   // function boundary. A real fix would mean adopting a data-fetching
   // library (React Query/SWR) or inlining every one of these fetchers —
   // out of scope for a lint-debt pass; suppressed and documented instead.
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  // Guest Mode: this page has no meaningful "shell" independent of student/
+  // college data — StatCards, the readiness gauge, the student list, and
+  // assignments ARE the page. Rather than fabricate a partial layout that
+  // isn't part of the existing design, a guest sees this single AuthGate
+  // in the normal chrome instead, and fetchAll() below never runs, so no
+  // /api/tpo/* request is even attempted (the backend's own requireAuth +
+  // requireRole + requireVerified on these routes — backend/routes/tpo.js
+  // — remains the actual authorization boundary regardless).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
+    fetchAll();
+  }, [fetchAll, isAuthenticated]);
 
   const [downloadingReport, setDownloadingReport] = useState(false);
 
@@ -275,6 +289,26 @@ export default function TpoDashboardPage() {
               Questions in the meantime? Reach out to {SUPPORT_EMAIL}.
             </p>
           </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Guest Mode: this page has no meaningful "shell" independent of
+  // student/college data — StatCards, the readiness gauge, the student
+  // list, and assignments ARE the page content. Rather than fabricate a
+  // partial layout that isn't part of the existing design, a guest sees
+  // this single AuthGate in the normal chrome instead. fetchAll() above
+  // never runs for a guest (see that effect's guard), so no /api/tpo/*
+  // request is even attempted — the backend's own requireAuth +
+  // requireRole + requireVerified on those routes (backend/routes/tpo.js)
+  // remains the actual authorization boundary regardless.
+  if (!isAuthenticated) {
+    return (
+      <DashboardLayout>
+        <PageMeta title="TPO Portal · Code Club" path="/tpo/dashboard" />
+        <div className="max-w-2xl mx-auto py-12">
+          <AuthGate reason="studentData" />
         </div>
       </DashboardLayout>
     );

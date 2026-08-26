@@ -28,6 +28,7 @@ import submissionRoutes from "./routes/submissions.js";
 import notificationRoutes from "./routes/notifications.js";
 import compilerRoutes from "./routes/compiler.js";
 import problemRoutes from "./routes/problemRoutes.js";
+import languageRoutes from "./routes/languages.js";
 import publicProfileRoutes from "./routes/publicProfile.js";
 import billingWebhookRoutes from "./routes/billingWebhook.js";
 import healthRoutes from "./routes/health.js";
@@ -176,9 +177,27 @@ app.use("/api/users", requireAuth, apiLimiter, userRoutes);
 app.use("/api/progress", requireAuth, apiLimiter, progressRoutes);
 app.use("/api/submissions", requireAuth, apiLimiter, submissionRoutes);
 app.use("/api/notifications", requireAuth, apiLimiter, notificationRoutes);
-app.use("/api/compiler", requireAuth, compilerLimiter, compilerRoutes);
-app.use("/api/judge", requireAuth, apiLimiter, judgeRoutes);
+// Guest Mode (Phase 1): requireAuth removed from BOTH of these mounts —
+// each router now declares its own auth requirement per-route instead of
+// one blanket gate for the whole router:
+//   - routes/compiler.js's single POST /run route applies optionalAuth
+//     itself (compilerController.js's runCode is stateless — confirmed by
+//     inspection, never reads/writes req.userDoc — so it's safe for a
+//     guest caller; see that file).
+//   - routes/judge.js applies optionalAuth to POST /run (guests may Run)
+//     and requireAuth to POST /submit (an account is required to persist a
+//     Submission) — see that file's own comment for the full reasoning.
+// compilerLimiter/apiLimiter stay mounted here unchanged — both already
+// key on userOrIpKey (middleware/rateLimiter.js), which already falls back
+// to per-IP limiting for a request with no req.auth.uid, so an unauthenticated
+// caller is still rate-limited, just not blocked outright by these two lines.
+app.use("/api/compiler", compilerLimiter, compilerRoutes);
+app.use("/api/judge", apiLimiter, judgeRoutes);
 app.use("/api/problems", problemRoutes);
+// Content & Execution Architecture, Phase 2: mirrors /api/problems'
+// mounting exactly — no requireAuth, no rate limiter — this is content
+// discovery (which languages currently exist), not user-specific data.
+app.use("/api/languages", languageRoutes);
 // Public stats endpoint — no auth, used by landing page social proof
 app.use("/api/stats", statsRoutes);
 // Leaderboard — public (no auth required, cached 5 min)

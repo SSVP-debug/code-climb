@@ -47,7 +47,7 @@ const problemDoc = {
   slug: "two-sum",
   title: "Two Sum",
   visibility: "public",
-  hiddentestcases: [{ input: { nums: [3, 3] }, expectedOutput: [0, 1] }],
+  hiddenTestcaseSet: { enabled: true, testcases: [{ input: { nums: [3, 3] }, expectedOutput: [0, 1] }] },
 };
 
 describe("submitHandler — contest scoring (Fest Readiness Audit, P0-1)", () => {

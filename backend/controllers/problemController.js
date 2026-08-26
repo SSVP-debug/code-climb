@@ -58,13 +58,28 @@ export const getProblems = async (req, res) => {
           // detail endpoint below, which does open up post-contest) — it's
           // reachable only by direct slug/URL, gated by getProblemBySlug.
           visibility: { $ne: "contest" },
+          // Content & Execution Architecture, Phase 1: a disabled problem
+          // must disappear from normal discovery entirely. `$ne: false`
+          // (not `enabled: true`) is deliberate — this is a `.lean()`
+          // query, so Mongoose's `default: true` on the schema never gets
+          // applied to documents fetched here; every problem seeded before
+          // this field existed has no `enabled` key at all in Mongo, and
+          // `{ enabled: true }` would wrongly exclude every one of them.
+          // "missing or true" is the correct definition of "enabled" here,
+          // and means no backfill migration is required for this field to
+          // behave correctly on day one.
+          enabled: { $ne: false },
         })
           // editorial.content is gated (solve-to-unlock / premium — see
           // backend/routes/editorial.js) and must only ever be served through
-          // that dedicated, gated endpoint. Excluding it here too, not just
-          // hiddentestcases — otherwise every user gets the full editorial
-          // for free on every problem-list load, bypassing the gate entirely.
-          .select("-hiddentestcases -editorial.content")
+          // that dedicated, gated endpoint. Excludes BOTH the current
+          // (hiddenTestcaseSet) and legacy (hiddentestcases, kept physically
+          // in place post-migration for rollback safety — see
+          // scripts/migrateHiddenTestcaseSet.js) hidden-testcase field names,
+          // not just editorial content — otherwise every user gets the full
+          // editorial for free on every problem-list load, bypassing the
+          // gate entirely.
+          .select("-hiddentestcases -hiddenTestcaseSet -editorial.content")
           .sort({ id: 1 })
           .lean();
 
@@ -94,11 +109,25 @@ export const getProblemBySlug = async (req, res) => {
       slug,
     })
       // Same reasoning as getProblems above — editorial.content must only
-      // come from the gated GET /api/problems/:slug/editorial endpoint.
-      .select("-hiddentestcases -editorial.content")
+      // come from the gated GET /api/problems/:slug/editorial endpoint, and
+      // both hidden-testcase field names (current + legacy) are excluded
+      // for the same rollback-safety reason documented there.
+      .select("-hiddentestcases -hiddenTestcaseSet -editorial.content")
       .lean();
 
     if (!problem) {
+      return res.status(404).json({
+        message: "Problem not found",
+      });
+    }
+
+    // ── Availability gate (Content & Execution Architecture, Phase 1) ─────
+    // A disabled problem must not be directly reachable by slug either —
+    // same generic 404 shape as "doesn't exist" above, deliberately, so a
+    // caller can't distinguish "never existed" from "exists but is
+    // disabled." Checked before the contest gate below: a disabled problem
+    // is disabled regardless of contest context.
+    if (problem.enabled === false) {
       return res.status(404).json({
         message: "Problem not found",
       });

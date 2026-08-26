@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SUPPORTED_LANGUAGE_KEYS } from "../config/languages.js";
 
 // Status values must exactly match what backend/routes/judge.js returns.
 // The emoji suffixes are intentional — they are displayed directly in the UI.
@@ -64,9 +65,17 @@ const submissionSchema = new mongoose.Schema(
       min: 0,
     },
     problemTitle: String,
+    // Content & Execution Architecture, Phase 2: sourced from
+    // SUPPORTED_LANGUAGE_KEYS (config/languages.js) — deliberately the
+    // full REGISTERED set, not ENABLED_LANGUAGE_KEYS. A language being
+    // disabled must never make historical Submission documents written in
+    // that language fail to validate/read — this enum only needs to
+    // shrink if a language is removed from the registry entirely (which
+    // has never happened and isn't part of this phase), not when it's
+    // merely toggled off. See config/languages.js's own module comment.
     language: {
       type: String,
-      enum: ["javascript", "python", "java", "cpp"],
+      enum: SUPPORTED_LANGUAGE_KEYS,
       required: true,
     },
     // Status must match judge route output — includes emoji suffix

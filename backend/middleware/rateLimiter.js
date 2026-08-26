@@ -1,4 +1,5 @@
 import { rateLimit, ipKeyGenerator } from "express-rate-limit";
+import { GUEST_RUN_LIMIT_PER_MINUTE } from "../config/guestLimits.js";
 
 
 /**
@@ -85,10 +86,28 @@ export const aiLimiter = rateLimit({
  * Submits need. Submit deliberately keeps the more permissive apiLimiter
  * (see routes/judge.js) — a participant should never feel throttled on
  * the action that actually scores.
+ *
+ * Guest Mode (Phase 1): `/run` is reachable by guests too (optionalAuth,
+ * not requireAuth — see routes/judge.js), so `max` is a function rather
+ * than a fixed number: an authenticated caller (req.userDoc set by
+ * optionalAuth, which runs BEFORE this middleware on the route — see
+ * routes/judge.js's ordering) keeps the existing 10/min; a guest
+ * (req.userDoc absent) gets the stricter, separately-configurable
+ * GUEST_RUN_LIMIT_PER_MINUTE (config/guestLimits.js) instead. Authenticated
+ * behavior is unchanged — this only ever narrows the limit for the guest
+ * branch, never widens it for anyone.
  */
+// Extracted as its own named export (rather than an inline arrow in the
+// rateLimit() config below) purely so it's directly unit-testable without
+// having to drive the whole express-rate-limit middleware — see
+// rateLimiter.guestMode.test.js.
+export function judgeRunMax(req) {
+  return req.userDoc ? 10 : GUEST_RUN_LIMIT_PER_MINUTE;
+}
+
 export const judgeRunLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10,
+  max: judgeRunMax,
   keyGenerator: userOrIpKey,
   standardHeaders: true,
   legacyHeaders: false,

@@ -25,9 +25,35 @@ const seedProblems = async () => {
     for (const problem of problems) {
       const existing = await Problem.findOne({ slug: problem.slug }).lean();
 
+      // ── Content & Execution Architecture, Phase 3 adapter ────────────────
+      // src/data/problems.js still declares a flat `hiddentestcases` array
+      // — the content-authoring format itself is explicitly out of scope
+      // for this phase (see Phase 5, "problem-content consolidation," not
+      // yet started). This is the one point that wraps that flat shape
+      // into Problem.js's actual `hiddenTestcaseSet` sub-document before
+      // writing; without it, Mongoose's default strict-schema behavior
+      // would silently drop the unrecognized `hiddentestcases` key from
+      // every future `$set`, and catalog problems' hidden testcases would
+      // quietly stop updating from this file entirely.
+      //
+      // `enabled` is carried forward from whatever's already in Mongo
+      // (defaulting to `true` only the first time a problem is seeded) —
+      // NOT reset to `true` on every reseed. If an admin has disabled
+      // grading for a catalog problem via the admin API, a routine reseed
+      // must not silently turn it back on, the same way it already
+      // wouldn't silently undo other admin-editable catalog fields.
+      const { hiddentestcases, ...problemFields } = problem;
+      const problemToSet = {
+        ...problemFields,
+        hiddenTestcaseSet: {
+          enabled: existing?.hiddenTestcaseSet?.enabled ?? true,
+          testcases: hiddentestcases ?? [],
+        },
+      };
+
       await Problem.findOneAndUpdate(
         { slug: problem.slug },
-        { $set: problem },
+        { $set: problemToSet },
         { upsert: true, new: true }
       );
 

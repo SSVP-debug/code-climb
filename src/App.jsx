@@ -131,7 +131,7 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute guestPortal="student">
               <ThemeGate>
                 <DashboardRoleRedirect>
                   <Dashboard />
@@ -191,7 +191,7 @@ function App() {
         <Route
           path="/problems"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute guestPortal="student">
               <ThemeGate><ProblemsPage /></ThemeGate>
             </ProtectedRoute>
           }
@@ -202,7 +202,7 @@ function App() {
         <Route
           path="/problems/:slug"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute guestPortal="student">
               <ThemeGate><ProblemDetailsPage /></ThemeGate>
             </ProtectedRoute>
           }
@@ -220,7 +220,7 @@ function App() {
         <Route
           path="/tpo/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute guestPortal="tpo">
               <RoleRoute allowedRoles={["tpo", "admin"]}>
                 <TpoDashboardPage />
               </RoleRoute>
@@ -234,7 +234,7 @@ function App() {
         <Route
           path="/recruiter/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute guestPortal="recruiter">
               <RoleRoute allowedRoles={["recruiter", "admin"]}>
                 <RecruiterDashboardPage />
               </RoleRoute>

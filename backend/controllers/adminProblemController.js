@@ -27,21 +27,40 @@
  *     by seedProblems.js/importProblems.js by construction (they only ever
  *     touch slugs present in problems.js).
  */
+import { z } from "zod";
 import Problem from "../models/Problem.js";
 import { invalidateProblemsCache } from "./problemController.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
 import { AdminProblemCreateSchema, MetaSchema } from "../schemas/problemSchema.js";
 import { logger } from "../config/logger.js";
 
-const CATALOG_SAFELISTED_FIELDS = ["topic", "pattern", "sourceType"];
-// Reuses MetaSchema's own field-level rules for the three safelisted
-// fields, rather than re-declaring "topic must be a non-empty string" etc.
-// a second time — same reuse rationale as AdminProblemCreateSchema itself.
+// ── Availability field (Content & Execution Architecture, Phase 1) ────────
+// `enabled` deliberately does NOT live in schemas/problemSchema.js's
+// MetaSchema/AdminProblemCreateSchema — those are shared with the folder/JS
+// content-authoring pipeline (src/data/problems.js, importProblems.js,
+// ProblemFolderSchema), which this phase explicitly does not touch.
+// Extended locally, admin-console-only, so the authoring-pipeline schemas
+// stay exactly as they were.
+const EnabledFieldSchema = z.boolean();
+
+const CATALOG_SAFELISTED_FIELDS = ["topic", "pattern", "sourceType", "enabled"];
+// Reuses MetaSchema's own field-level rules for the three original
+// safelisted fields, rather than re-declaring "topic must be a non-empty
+// string" etc. a second time — same reuse rationale as
+// AdminProblemCreateSchema itself. `enabled` is appended via `.extend()`
+// since it isn't part of MetaSchema (see EnabledFieldSchema above) — for a
+// catalog problem this is actually SAFER than the other three safelisted
+// fields: seedProblems.js's `$set: problem` never includes `enabled`
+// (src/data/problems.js entries don't declare it), so toggling it here
+// survives every future seed run without the "will be reverted on next
+// seed" caveat that applies to topic/pattern/sourceType.
 const CatalogSafelistSchema = MetaSchema.pick({
   topic: true,
   pattern: true,
   sourceType: true,
-}).partial();
+})
+  .partial()
+  .extend({ enabled: EnabledFieldSchema.optional() });
 
 // New admin-created problems get an id starting well clear of the catalog's
 // own sequential range (currently 1–250ish) so the two numbering spaces
@@ -70,6 +89,14 @@ export async function listProblemsForAdmin(req, res) {
     if (adminSource && ["catalog", "admin"].includes(adminSource)) {
       filter.adminSource = adminSource;
     }
+    // Same "missing or true counts as enabled" reasoning as
+    // problemController.getProblems — lets the future admin UI filter by
+    // availability without a backfill migration.
+    if (req.query.enabled === "true") {
+      filter.enabled = { $ne: false };
+    } else if (req.query.enabled === "false") {
+      filter.enabled = false;
+    }
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: "i" } },
@@ -81,7 +108,7 @@ export async function listProblemsForAdmin(req, res) {
     const limitNum = Math.min(50, parseInt(limit));
 
     const [problems, total] = await Promise.all([
-      Problem.find(filter, "id title slug difficulty topic pattern sourceType adminSource visibility createdAt")
+      Problem.find(filter, "id title slug difficulty topic pattern sourceType adminSource visibility enabled createdAt")
         .sort({ id: 1 })
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum)
@@ -97,9 +124,10 @@ export async function listProblemsForAdmin(req, res) {
 }
 
 // ── GET /api/admin/problems/:slug ────────────────────────────────────────────
-// Full detail INCLUDING hiddentestcases — the public getProblemBySlug
-// (problemController.js) deliberately strips these (Problem.js:276-278's
-// publicFields static); this is the admin-only variant that doesn't.
+// Full detail INCLUDING hiddenTestcaseSet — the public getProblemBySlug
+// (problemController.js) deliberately strips these (Problem.js's
+// publicFields static / its own .select() calls); this is the admin-only
+// variant that doesn't.
 export async function getProblemForAdmin(req, res) {
   try {
     const problem = await Problem.findOne({ slug: req.params.slug }).lean();
@@ -116,7 +144,13 @@ export async function getProblemForAdmin(req, res) {
 // ── POST /api/admin/problems ─────────────────────────────────────────────────
 export async function createProblem(req, res) {
   try {
-    const parsed = AdminProblemCreateSchema.omit({ id: true }).safeParse(req.body);
+    // `enabled` extended in locally (see EnabledFieldSchema above) — kept
+    // optional so a create payload that doesn't mention it at all still
+    // works exactly as before, falling through to the Mongoose schema's
+    // own `default: true`.
+    const parsed = AdminProblemCreateSchema.omit({ id: true })
+      .extend({ enabled: EnabledFieldSchema.optional() })
+      .safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
         error: "Invalid problem payload.",
@@ -205,7 +239,10 @@ export async function updateProblem(req, res) {
     }
 
     // Admin-sourced — full update, same shape/rules as create.
-    const parsed = AdminProblemCreateSchema.omit({ id: true }).partial().safeParse(req.body);
+    const parsed = AdminProblemCreateSchema.omit({ id: true })
+      .partial()
+      .extend({ enabled: EnabledFieldSchema.optional() })
+      .safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({
         error: "Invalid problem payload.",

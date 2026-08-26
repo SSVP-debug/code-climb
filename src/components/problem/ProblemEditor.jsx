@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "../../hooks/useTheme";
+import { useLanguages } from "../../hooks/useLanguages";
 import EditorMoreMenu from "./EditorMoreMenu";
 import {
   saveCode,
@@ -29,6 +30,7 @@ function ProblemEditor({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [justCopied, setJustCopied] = useState(false);
   const { theme } = useTheme();
+  const { languages } = useLanguages();
   const editorRef = useRef(null);
 
   function adjustFontSize(delta) {
@@ -118,10 +120,16 @@ function ProblemEditor({
             onChange={(e) => setLanguage(e.target.value)}
             className="bg-zinc-800 text-zinc-200 text-sm border-none rounded-md px-2 py-1 outline-none hover:bg-zinc-700 transition-colors cursor-pointer"
           >
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="java">Java</option>
-            <option value="cpp">C++</option>
+            {/* Content & Execution Architecture, Phase 2: sourced from
+                GET /api/languages (see useLanguages.js) instead of a
+                hardcoded list — a language disabled in
+                backend/config/languages.js disappears from here on the
+                next fetch, with no frontend code change required. */}
+            {languages.map((lang) => (
+              <option key={lang.id} value={lang.id}>
+                {lang.name}
+              </option>
+            ))}
           </select>
 
           <EditorMoreMenu

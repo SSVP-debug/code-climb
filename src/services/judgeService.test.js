@@ -1,9 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { judgeSubmission } from "./judgeService";
-import { apiFetch } from "./api";
+import { apiFetch, apiFetchOptional } from "./api";
 
 vi.mock("./api", () => ({
   apiFetch: vi.fn(),
+  // Guest Mode: runTestcases() (POST /api/judge/run) now calls
+  // apiFetchOptional, not apiFetch, so guests can Run without a Firebase
+  // session — see services/judgeService.js's own comment. judgeSubmission
+  // (POST /api/judge/submit) is unaffected and still uses apiFetch, since
+  // Submit remains account-only.
+  apiFetchOptional: vi.fn(),
 }));
 
 describe("judgeSubmission", () => {
@@ -133,7 +139,7 @@ describe("runTestcases", () => {
   });
 
   it("sends problemSlug so the backend can resolve the execution contract server-side (audit P1-1)", async () => {
-    apiFetch.mockResolvedValue({ results: [], compileFailed: false });
+    apiFetchOptional.mockResolvedValue({ results: [], compileFailed: false });
 
     const { runTestcases } = await import("./judgeService");
     await runTestcases({
@@ -147,7 +153,7 @@ describe("runTestcases", () => {
       language: "python",
     });
 
-    const sentBody = JSON.parse(apiFetch.mock.calls[0][1].body);
+    const sentBody = JSON.parse(apiFetchOptional.mock.calls[0][1].body);
     expect(sentBody.problemSlug).toBe("top-k-frequent-elements");
     // Contract fields are resolved server-side from problemSlug now — the
     // frontend no longer needs to (and doesn't) send them.
@@ -157,7 +163,7 @@ describe("runTestcases", () => {
   });
 
   it("sends code/language/testcases needed to run the preview", async () => {
-    apiFetch.mockResolvedValue({ results: [], compileFailed: false });
+    apiFetchOptional.mockResolvedValue({ results: [], compileFailed: false });
 
     const { runTestcases } = await import("./judgeService");
     await runTestcases({
@@ -166,7 +172,7 @@ describe("runTestcases", () => {
       language: "python",
     });
 
-    const sentBody = JSON.parse(apiFetch.mock.calls[0][1].body);
+    const sentBody = JSON.parse(apiFetchOptional.mock.calls[0][1].body);
     expect(sentBody.code).toBe("dummy code");
     expect(sentBody.language).toBe("python");
     expect(sentBody.testcases).toEqual([{ input: { nums: [1] }, expectedOutput: 1 }]);
@@ -176,7 +182,7 @@ describe("runTestcases", () => {
   // Asserts the actual request payload — not just that a request was
   // sent — reproducing the production bug report verbatim.
   it("REGRESSION: for the single-number problem, sends problemSlug but does NOT send functionName", async () => {
-    apiFetch.mockResolvedValue({ results: [], compileFailed: false });
+    apiFetchOptional.mockResolvedValue({ results: [], compileFailed: false });
 
     const { runTestcases } = await import("./judgeService");
     await runTestcases({
@@ -189,7 +195,7 @@ describe("runTestcases", () => {
       language: "python",
     });
 
-    const sentBody = JSON.parse(apiFetch.mock.calls[0][1].body);
+    const sentBody = JSON.parse(apiFetchOptional.mock.calls[0][1].body);
     expect(sentBody.problemSlug).toBe("single-number");
     expect(sentBody.functionName).toBeUndefined();
     expect(sentBody.code).toContain("singleNumber");
@@ -197,11 +203,11 @@ describe("runTestcases", () => {
     expect(sentBody.testcases).toEqual([{ input: { nums: [4, 1, 2, 1, 2] }, expectedOutput: 4 }]);
   });
 
-  it("does not call apiFetch and returns a config error (not a generic/infra one) when no problem is loaded", async () => {
+  it("does not call apiFetchOptional and returns a config error (not a generic/infra one) when no problem is loaded", async () => {
     const { runTestcases } = await import("./judgeService");
     const res = await runTestcases({ problem: null, code: "x", language: "python" });
 
-    expect(apiFetch).not.toHaveBeenCalled();
+    expect(apiFetchOptional).not.toHaveBeenCalled();
     expect(res.errorKind).toBe("config");
     expect(res.error).toMatch(/no problem is loaded/i);
     expect(res.compileFailed).toBe(false);
@@ -211,7 +217,7 @@ describe("runTestcases", () => {
   it("classifies a 400 response as errorKind 'config', distinct from infra unavailability", async () => {
     const err = new Error("functionName is required when problemSlug is not provided");
     err.status = 400;
-    apiFetch.mockRejectedValue(err);
+    apiFetchOptional.mockRejectedValue(err);
 
     const { runTestcases } = await import("./judgeService");
     const res = await runTestcases({
@@ -227,7 +233,7 @@ describe("runTestcases", () => {
   });
 
   it("classifies a network-level failure (no status) as errorKind 'infra'", async () => {
-    apiFetch.mockRejectedValue(new Error("Failed to fetch"));
+    apiFetchOptional.mockRejectedValue(new Error("Failed to fetch"));
 
     const { runTestcases } = await import("./judgeService");
     const res = await runTestcases({
@@ -243,7 +249,7 @@ describe("runTestcases", () => {
   it("classifies a 401 response as errorKind 'auth'", async () => {
     const err = new Error("You are not logged in. Please refresh the page and try again.");
     err.status = 401;
-    apiFetch.mockRejectedValue(err);
+    apiFetchOptional.mockRejectedValue(err);
 
     const { runTestcases } = await import("./judgeService");
     const res = await runTestcases({

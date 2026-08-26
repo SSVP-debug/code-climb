@@ -257,6 +257,51 @@ describe("adminProblemController", () => {
 
             expect(res.status).toHaveBeenCalledWith(404);
         });
+
+        // ── Content & Execution Architecture, Phase 1 ────────────────────
+        it("accepts `enabled` on a catalog problem via the safelist", async () => {
+            const doc = makeProblemDoc({ adminSource: "catalog", enabled: true });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                { params: { slug: "two-sum" }, body: { enabled: false }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(doc.enabled).toBe(false);
+            expect(doc.save).toHaveBeenCalledOnce();
+            expect(invalidateProblemsCache).toHaveBeenCalledOnce();
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({ action: "problem.update_safelisted" })
+            );
+        });
+
+        it("rejects a non-boolean `enabled` value on a catalog problem", async () => {
+            const doc = makeProblemDoc({ adminSource: "catalog" });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                { params: { slug: "two-sum" }, body: { enabled: "nope" }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(doc.save).not.toHaveBeenCalled();
+        });
+
+        it("accepts `enabled` on an admin-sourced problem through the full-update path", async () => {
+            const doc = makeProblemDoc({ adminSource: "admin", enabled: true });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                { params: { slug: "two-sum" }, body: { enabled: false }, userDoc: makeAdmin(), actingAdminDoc: null },
+                res
+            );
+
+            expect(doc.enabled).toBe(false);
+            expect(doc.save).toHaveBeenCalledOnce();
+            expect(invalidateProblemsCache).toHaveBeenCalledOnce();
+        });
     });
 
     describe("deleteProblem", () => {

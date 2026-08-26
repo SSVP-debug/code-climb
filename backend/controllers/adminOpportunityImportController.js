@@ -6,13 +6,10 @@
  * Approve → Publish sequence:
  *
  *   1. extractOpportunities(): admin pastes raw research text (e.g. a
- *      Claude research answer). callOpportunityAI() (see
- *      utils/opportunityAI.js) routes this to whichever provider is
- *      configured — Gemini by default, or Anthropic via
- *      OPPORTUNITY_AI_PROVIDER=anthropic — which parses it into a
- *      structured array of *candidate* opportunities. Nothing is written
- *      to the database here — this is a pure extraction step, returned
- *      to the admin for review/selection in the UI.
+ *      Claude research answer). Claude parses it into a structured array
+ *      of *candidate* opportunities. Nothing is written to the database
+ *      here — this is a pure extraction step, returned to the admin for
+ *      review/selection in the UI.
  *
  *   2. importSelectedOpportunities(): admin has reviewed the candidates
  *      client-side, corrected/deselected as needed, and POSTs the final
@@ -33,7 +30,7 @@
 import Opportunity from "../models/Opportunity.js";
 import { nextSequence } from "../models/Counter.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
-import { callOpportunityAI, checkOpportunityAIConfig } from "../utils/opportunityAI.js";
+import { callClaudeJSON } from "../utils/anthropicClient.js";
 import { logger } from "../config/logger.js";
 import { OpportunityCreateSchema } from "../schemas/opportunitySchema.js";
 
@@ -42,26 +39,23 @@ const MAX_OPPORTUNITIES_PER_IMPORT = 25;
 
 /**
  * buildSafeExtractionDiagnostic() — server-log-only diagnostic for a
- * failed callOpportunityAI() call (regardless of which provider is
- * configured — Gemini or Anthropic), deliberately narrow: only the
- * fields needed to tell "missing config" from "provider rejected the
- * key" from "provider rejected the model" from "rate limited/overloaded"
- * from "no response reached us at all" apart, at a glance, from the log
- * line itself — nothing that could ever be a secret.
+ * failed callClaudeJSON() call, deliberately narrow: only the fields
+ * needed to tell "missing config" from "provider rejected the key" from
+ * "provider rejected the model" from "rate limited/overloaded" from "no
+ * response reached us at all" apart, at a glance, from the log line
+ * itself — nothing that could ever be a secret.
  *
  * Explicitly NEVER includes: err.stack (can embed request context in
- * some error shapes), err.providerBody (the provider's raw response
- * text — not a secret per se, but unbounded and not needed once
- * providerType is extracted), the research text, or anything from
- * process.env.
+ * some error shapes), err.providerBody (Anthropic's raw response text —
+ * not a secret per se, but unbounded and not needed once providerType is
+ * extracted), the research text, or anything from process.env.
  *
  * `err.status` present (a number) means a response DID come back from
- * the provider, just a non-2xx one — that's the "hasProviderResponse:
- * true" case. `err.status` absent means the provider client's own fetch
- * never got a response at all (DNS/connection/TLS failure) — both
- * geminiClient.js and anthropicClient.js deliberately do not set
- * `.status` in that case, so this distinction falls out for free here
- * regardless of which one actually ran.
+ * Anthropic, just a non-2xx one — that's the "hasProviderResponse: true"
+ * case. `err.status` absent means fetch() itself never got a response at
+ * all (DNS/connection/TLS failure) — see anthropicClient.js's own catch
+ * block around fetch(), which deliberately does not set `.status` in
+ * that case so this distinction falls out for free here.
  */
 function buildSafeExtractionDiagnostic(err) {
   const hasProviderResponse = typeof err.status === "number";
@@ -162,34 +156,34 @@ export async function extractOpportunities(req, res) {
       });
     }
 
-    // Root cause of a 502 this used to return for a missing key:
-    // callClaudeJSON()/callGeminiJSON() throw a plain Error("<ENV_VAR> is
-    // not set") when their key is missing from the environment — the
-    // exact same Error shape as a genuine network/upstream failure — and
-    // this used to be mapped to a blanket 502 "couldn't reach the
-    // service" response regardless. A missing env var is a server
-    // *configuration* problem, not an upstream outage (502 implies "the
-    // thing on the other end failed", when nothing was ever contacted).
+    // Root cause of the 502 this was returning: callClaudeJSON() throws a
+    // plain Error("ANTHROPIC_API_KEY is not set") when the key is
+    // missing from the environment — the exact same Error shape as a
+    // genuine network/upstream failure — and the catch block below used
+    // to map every error from callClaudeJSON to a blanket 502 "couldn't
+    // reach the service" response. That's wrong on two counts: a missing
+    // env var is a server *configuration* problem, not an upstream
+    // outage (502 implies "the thing on the other end failed", when
+    // nothing was ever contacted), and collapsing both cases into one
+    // generic message meant retrying could never work and there was no
+    // way to tell, from the response alone, which situation this was.
     //
-    // checkOpportunityAIConfig() (utils/opportunityAI.js) answers "is
-    // the currently-configured provider (Gemini by default, or Anthropic
-    // via OPPORTUNITY_AI_PROVIDER=anthropic) actually usable right now?"
-    // without needing this controller to know which env var name to
-    // check — that mapping lives in one place, the provider abstraction,
-    // not duplicated here. Checking up front (rather than only in the
-    // catch block) mirrors the exact convention routes/interview.js uses
-    // for this identical situation with Anthropic (see getClaude() +
+    // Checking up front and returning 503 here (rather than only in the
+    // catch block) mirrors the exact convention routes/interview.js
+    // already uses for this identical situation (see getClaude() +
     // its 503 "AI interviewer unavailable. Set ANTHROPIC_API_KEY to
-    // enable." response).
-    const configCheck = checkOpportunityAIConfig();
-    if (!configCheck.configured) {
-      logger.warn(`[OpportunityImport] ${configCheck.reason}`);
-      return res.status(503).json({ error: configCheck.reason });
+    // enable." response) — reusing the established pattern rather than
+    // inventing a new one.
+    if (!process.env.ANTHROPIC_API_KEY) {
+      logger.warn("[OpportunityImport] ANTHROPIC_API_KEY is not set — extraction unavailable.");
+      return res.status(503).json({
+        error: "Opportunity extraction is unavailable. Set ANTHROPIC_API_KEY to enable.",
+      });
     }
 
     let parsed;
     try {
-      parsed = await callOpportunityAI({
+      parsed = await callClaudeJSON({
         systemPrompt: EXTRACTION_SYSTEM_PROMPT,
         userMessage: rawText,
         maxTokens: 4000,
@@ -201,29 +195,33 @@ export async function extractOpportunities(req, res) {
       // text in the message itself — deliberately redundant. Render's
       // (and many other PaaS) log viewers commonly show only the
       // top-level message string in their default/compact view and
-      // don't auto-expand nested JSON objects.
+      // don't auto-expand nested JSON objects, which is exactly why the
+      // previous version of this log line (passing `{ err, status }` as
+      // a merging object only) looked like it was producing no detail
+      // at all in production, even though pino was almost certainly
+      // still emitting it in the raw JSON line. Baking it into the
+      // message text guarantees it's visible no matter how the log
+      // viewer renders structured fields.
       logger.error(
         diagnostic,
-        `[OpportunityImport] AI extraction call failed (provider: ${configCheck.provider}) :: ${JSON.stringify(diagnostic)}`
+        `[OpportunityImport] Claude extraction call failed :: ${JSON.stringify(diagnostic)}`
       );
 
       // Defensive fallback for the same "not configured" condition in
       // case of a race (env var unset between the check above and this
-      // call) — re-checking rather than hardcoding a provider-specific
-      // message, since the provider (and therefore which env var) is
-      // configurable.
-      if (err.message?.includes(" is not set")) {
-        const recheck = checkOpportunityAIConfig();
+      // call) — still distinguished from a genuine upstream/network
+      // failure rather than folded into the same 502.
+      if (err.message?.includes("ANTHROPIC_API_KEY is not set")) {
         return res.status(503).json({
-          error: recheck.reason || "Opportunity extraction is unavailable. Check the configured AI provider's API key.",
+          error: "Opportunity extraction is unavailable. Set ANTHROPIC_API_KEY to enable.",
         });
       }
 
-      // Both geminiClient.js and anthropicClient.js attach the real
-      // upstream HTTP status to the thrown error — surface a specific,
+      // anthropicClient.js now attaches the real upstream HTTP status to
+      // the thrown error (see its own comment) — surface a specific,
       // still-secret-free reason instead of one blanket 502 for every
       // case. This is what actually lets "extraction is unavailable
-      // because the key is wrong" be told apart from "the provider is
+      // because the key is wrong" be told apart from "Anthropic is
       // rate-limiting us right now" from the response alone, without
       // needing to go dig through server logs every time.
       if (err.status === 401 || err.status === 403) {
@@ -232,7 +230,7 @@ export async function extractOpportunities(req, res) {
         // only. The status code alone is enough to point at "the
         // configured key is invalid or was revoked."
         return res.status(503).json({
-          error: `Opportunity extraction is unavailable — the configured AI API key was rejected. Check ${configCheck.envVar}.`,
+          error: "Opportunity extraction is unavailable — the configured AI API key was rejected. Check ANTHROPIC_API_KEY.",
         });
       }
       if (err.status === 404) {

@@ -11,8 +11,20 @@ import { z } from "zod";
 import { validateBody } from "../middleware/validateBody.js";
 import { runHandler, submitHandler } from "../controllers/judgeController.js";
 import { judgeRunLimiter } from "../middleware/rateLimiter.js";
+import { ENABLED_LANGUAGE_KEYS, formatEnabledLanguageKeysMessage } from "../config/languages.js";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
 
 const router = Router();
+
+// Content & Execution Architecture, Phase 2: both schemas below derive
+// their `language` validation from the central registry
+// (config/languages.js) instead of each hand-declaring its own
+// `z.enum(["python", "javascript", "java", "cpp"])` literal — those two
+// literals were one of the duplicated-language-declaration sites the
+// audit flagged. Using ENABLED_LANGUAGE_KEYS (not the full registry) means
+// a disabled language is rejected right here, before either handler runs
+// or Judge0 is ever reached — no separate enabled-check needed inside
+// runHandler/submitHandler for the `language` field itself.
 
 const submitSchema = z.object({
   problemSlug: z
@@ -25,8 +37,8 @@ const submitSchema = z.object({
     .min(1, "Code cannot be empty")
     .max(50_000, "Code exceeds the 50,000 character limit"),
 
-  language: z.enum(["python", "javascript", "java", "cpp"], {
-    error: () => "language must be: python, javascript, java, or cpp",
+  language: z.enum(ENABLED_LANGUAGE_KEYS, {
+    error: () => `language must be: ${formatEnabledLanguageKeysMessage()}`,
   }),
 
   // Accepted but IGNORED server-side once the problem is loaded —
@@ -80,8 +92,8 @@ const runSchema = z.object({
     .string({ error: "code is required" })
     .min(1).max(50_000),
 
-  language: z.enum(["python", "javascript", "java", "cpp"], {
-    error: () => "language must be: python, javascript, java, or cpp",
+  language: z.enum(ENABLED_LANGUAGE_KEYS, {
+    error: () => `language must be: ${formatEnabledLanguageKeysMessage()}`,
   }),
 
   // Optional as of the P1-1 server-side-resolution fix below: when
@@ -150,12 +162,30 @@ const runSchema = z.object({
   }
 );
 
+// ── Guest Mode ─────────────────────────────────────────────────────────
+// requireAuth used to be applied once, for the whole /api/judge router, at
+// the server.js mount point. Run and Submit now need different identity
+// requirements, so each declares its own auth middleware directly on the
+// route instead (server.js no longer mounts requireAuth for this router —
+// see its own comment there):
+//
+//   /run    → optionalAuth: guests may Run (stateless, no persistence — see
+//             controllers/judgeController.js's runHandler). optionalAuth
+//             must run BEFORE judgeRunLimiter so req.userDoc is already
+//             resolved (or absent) by the time the guest-vs-authenticated
+//             rate limit decision is made — see rateLimiter.js's
+//             judgeRunLimiter doc comment.
+//   /submit → requireAuth, unchanged: Submit persists a Submission, awards
+//             XP/streak, and can score a contest/battle room — an account
+//             is required, full stop. A guest calling this directly gets a
+//             401 before submitHandler ever runs.
+//
 // Fest Readiness Audit, P1-2: Run gets its own tighter limiter on top of the
 // apiLimiter already applied to the whole /api/judge router (see
 // server.js) — Submit deliberately keeps just the shared, more permissive
 // one. See middleware/rateLimiter.js's judgeRunLimiter doc comment.
-router.post("/run", judgeRunLimiter, validateBody(runSchema), runHandler);
-router.post("/submit", validateBody(submitSchema), submitHandler);
+router.post("/run", optionalAuth, judgeRunLimiter, validateBody(runSchema), runHandler);
+router.post("/submit", requireAuth, validateBody(submitSchema), submitHandler);
 
 // Exported (not just used internally) so tests can assert directly
 // against the real validation contract instead of only against

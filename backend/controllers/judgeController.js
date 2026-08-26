@@ -5,6 +5,7 @@ import { recordVerifiedSubmission } from "./submissionController.js";
 import { awardContestSolve } from "../services/contestScoring.js";
 import { awardBattleRoomSolve } from "../services/battleRoomScoring.js";
 import { canAccessContestProblem } from "../services/contestProblemAccess.js";
+import { LANGUAGE_KEY_TO_ID } from "../config/languages.js";
 
 /**
  * Sanitize stderr output from Judge0 before sending to the client.
@@ -54,6 +55,19 @@ export async function runHandler(req, res) {
       });
     }
 
+    // ── Availability gate (Content & Execution Architecture, Phase 1) ─────
+    // A disabled problem must never reach Judge0 via Run either. Same
+    // generic "not found" shape as the real not-found case just above —
+    // deliberately indistinguishable, same reasoning as the contest gate
+    // right below (don't confirm existence to a caller not entitled to it).
+    if (problem.enabled === false) {
+      return res.status(404).json({
+        error: `Problem "${problemSlug}" not found.`,
+        results: [],
+        compileFailed: false,
+      });
+    }
+
     // ── Contest access gate (Fest Readiness Audit, P0-2) ──────────────────
     // Protecting the problem-detail endpoint alone isn't enough: without
     // this check, a private contest problem's own execution contract
@@ -79,7 +93,7 @@ export async function runHandler(req, res) {
     operationSequence = problem.operationSequence?.enabled ? problem.operationSequence : undefined;
   }
 
-  const languageId = languageIdMap[language];
+  const languageId = LANGUAGE_KEY_TO_ID[language];
   const results = [];
 
   for (const [index, testcase] of testcases.entries()) {
@@ -176,9 +190,15 @@ function outputsMatch(expected, actual, comparisonMode = "exact") {
   }
 }
 
-const languageIdMap = {
-  python: 71, javascript: 63, java: 62, cpp: 54,
-};
+// Content & Execution Architecture, Phase 2: this used to be a
+// locally-declared literal (`languageIdMap = { python: 71, ... }`) — a
+// prior, narrower-scoped task ("Judge0 Integration Hardening") deliberately
+// left it untouched because it wasn't validating arbitrary client-provided
+// IDs the way routes/compiler.js was, so it wasn't exposed to that
+// specific vulnerability. This phase's actual mandate — one authoritative
+// language registry, no duplicated declarations — is the concrete reason
+// to finish that consolidation now: this now imports LANGUAGE_KEY_TO_ID
+// from config/languages.js instead. Same 4 values, single source.
 
 /**
  * Runs a single testcase through Judge0 and normalizes the outcome into a
@@ -314,6 +334,17 @@ export async function submitHandler(req, res) {
     });
   }
 
+  // ── Availability gate (Content & Execution Architecture, Phase 1) ───────
+  // A disabled problem must never be gradeable via Submit either — same
+  // generic "not found" shape as above, and checked before the contest
+  // gate below for the same "kill switch takes priority" reasoning as
+  // runHandler above.
+  if (problem.enabled === false) {
+    return res.status(404).json({
+      error: `Problem "${problemSlug}" not found.`,
+    });
+  }
+
   // ── Contest access gate (Fest Readiness Audit, P0-2) ────────────────────
   // Same reasoning as runHandler's identical check above — a private
   // contest problem must not be directly submittable before its contest
@@ -328,7 +359,38 @@ export async function submitHandler(req, res) {
     }
   }
 
-  const hidden = problem.hiddentestcases ?? [];
+  // ── Hidden testcase set gate (Content & Execution Architecture, Phase 3) ─
+  // Two independent checks, deliberately in this order:
+  //
+  // 1. Fail CLOSED if the set has been explicitly disabled. This must
+  //    never be confused with "no hidden testcases exist" (check #2,
+  //    pre-existing) — a disabled set is an operator decision to pause
+  //    grading, not an authoring gap, so it gets its own distinct error
+  //    shape/status so the frontend can show something like "grading is
+  //    temporarily unavailable for this problem" rather than the generic
+  //    "not found" a missing problem/language/contest-access gate returns.
+  //    Explicitly does NOT fall back to grading only visibletestcases, and
+  //    does NOT return Accepted — either would silently change what
+  //    "Accepted" means for this problem while the toggle is off.
+  //    `?? true` treats a pre-Phase-3 or not-yet-migrated document (no
+  //    `hiddenTestcaseSet` at all) as enabled — same "missing means
+  //    enabled" reasoning as `Problem.enabled` elsewhere in this file.
+  const hiddenTestcaseSetEnabled = problem.hiddenTestcaseSet?.enabled ?? true;
+  if (!hiddenTestcaseSetEnabled) {
+    req.log.error(
+      { problemSlug },
+      "[Judge] hiddenTestcaseSet is disabled — grading unavailable, failing closed"
+    );
+    return res.status(503).json({
+      error: `Grading is temporarily unavailable for "${problemSlug}".`,
+      code: "HIDDEN_TESTCASES_DISABLED",
+    });
+  }
+
+  // 2. Pre-existing guard, unchanged in spirit: an *enabled* set with zero
+  //    testcases in it is an authoring gap (nothing to grade against), not
+  //    an operator decision — kept as its own 404, distinct from #1 above.
+  const hidden = problem.hiddenTestcaseSet?.testcases ?? [];
 
   if (hidden.length === 0) {
     return res.status(404).json({
@@ -336,7 +398,7 @@ export async function submitHandler(req, res) {
     });
   }
 
-  const languageId = languageIdMap[language];
+  const languageId = LANGUAGE_KEY_TO_ID[language];
   const alltestcases = [...visibletestcases, ...hidden];
 
   // functionName — resolved from the problem's own record, never trusted

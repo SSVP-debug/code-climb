@@ -5,6 +5,7 @@ import { signInWithGoogle } from "../services/auth";
 import { apiFetch } from "../services/api";
 import { getPostLoginDestination, VALID_PORTAL_ROLES } from "../utils/roleRedirect";
 import { getSafeNextPath } from "../utils/authRedirect";
+import { AUTH_GATE_MESSAGES } from "../utils/authGateMessages";
 import { GraduationCap, Briefcase, Building2, Flame, Search, Users } from "lucide-react";
 
 // JARVIS pass, spec §1: "LOGIN → AUTHENTICATING → ... should feel like one
@@ -232,6 +233,16 @@ function LoginPage() {
   // not a cinematic shutdown sequence.
   const justLoggedOut = searchParams.get("loggedOut") === "1";
 
+  // Guest Mode: set by AuthGate/handleSubmitCode (see
+  // hooks/useProblemSolver.js) when a guest action needs an account —
+  // ?reason=<key into AUTH_GATE_MESSAGES>, e.g. reason=submit. Falls back
+  // to no banner for an unrecognized/absent key rather than guessing.
+  const guestGateReason = searchParams.get("reason");
+  const guestGateMessage =
+    guestGateReason && guestGateReason !== "session_expired"
+      ? AUTH_GATE_MESSAGES[guestGateReason]
+      : null;
+
   const busy = status !== "idle";
 
   return (
@@ -300,6 +311,17 @@ function LoginPage() {
             {justLoggedOut && !sessionExpired && (
               <div className="bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept text-sm px-4 py-3 rounded-xl mb-6">
                 You've been signed out.
+              </div>
+            )}
+
+            {/* Guest Mode contextual gate — why login is required for the
+                action the guest just attempted (see AuthGate.jsx's
+                AUTH_GATE_MESSAGES). Never shown alongside the two banners
+                above; those already explain a different reason for being
+                here. */}
+            {guestGateMessage && !sessionExpired && !justLoggedOut && (
+              <div className="bg-verdict-pending/10 border border-verdict-pending/30 text-verdict-pending text-sm px-4 py-3 rounded-xl mb-6">
+                {guestGateMessage}
               </div>
             )}
 

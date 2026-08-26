@@ -143,3 +143,81 @@ export async function apiFetch(path, options = {}) {
 
   return response.json();
 }
+// ── Guest Mode: apiFetchOptional ────────────────────────────────────────────
+// apiFetch (above) is deliberately strict: it throws immediately if there's
+// no Firebase user, because every route it's used against genuinely
+// requires an account. A handful of routes are different — they're
+// `optionalAuth` on the backend (see backend/middleware/auth.js): public
+// for anyone, but personalize/behave differently when a real session IS
+// present. apiFetch can't be reused for those without either weakening it
+// (risking every other authenticated call site) or throwing for guests
+// before the request is even sent.
+//
+// apiFetchOptional is the guest-safe counterpart, used ONLY for routes that
+// are genuinely optionalAuth server-side:
+//   - GET  /api/problems             (services/problems.js's fetchProblems)
+//   - GET  /api/problems/stats/acceptance
+//   - GET  /api/problems/:slug       (services/problems.js's fetchProblem)
+//   - POST /api/judge/run            (services/judgeService.js's runTestcases)
+//
+// It attaches a Firebase ID token when one is available (identical
+// behavior to apiFetch for a logged-in caller — same headers, same JSON
+// parsing, same error shape) and falls back to an unauthenticated request
+// otherwise, instead of throwing. It deliberately does NOT replicate
+// apiFetch's force-sign-out-on-401 behavior: a 401 here just means "this
+// particular call failed", not "the session is dead" — an optionalAuth
+// route never required a session to begin with, so there's no session to
+// invalidate over one failed call.
+function doPlainRequest(path, options) {
+  return fetch(`${API_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+}
+
+export async function apiFetchOptional(path, options = {}) {
+  const user = auth.currentUser;
+  let response;
+
+  if (user) {
+    let token = null;
+    try {
+      token = await user.getIdToken(false);
+    } catch (err) {
+      console.warn(
+        "[apiFetchOptional] Token fetch failed, continuing as an unauthenticated request:",
+        err.message
+      );
+    }
+    response = token
+      ? await doRequest(path, options, token)
+      : await doPlainRequest(path, options);
+  } else {
+    response = await doPlainRequest(path, options);
+  }
+
+  if (!response.ok) {
+    const text = await response.text();
+    let message = text;
+    let body = null;
+
+    try {
+      body = JSON.parse(text);
+      message = body.error || body.message || text;
+    } catch {
+      // keep raw text if response is not JSON
+    }
+
+    const err = new Error(message || `Request failed (${response.status})`);
+    err.status = response.status;
+    err.body = body;
+    throw err;
+  }
+
+  if (response.status === 204) return null;
+
+  return response.json();
+}

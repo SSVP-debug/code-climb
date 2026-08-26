@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("../models/Opportunity.js", () => ({
   default: {
@@ -12,9 +12,8 @@ vi.mock("../models/Counter.js", () => ({
 vi.mock("../services/adminAuditLog.js", () => ({
   recordAdminAction: vi.fn(),
 }));
-vi.mock("../utils/opportunityAI.js", () => ({
-  callOpportunityAI: vi.fn(),
-  checkOpportunityAIConfig: vi.fn(),
+vi.mock("../utils/anthropicClient.js", () => ({
+  callClaudeJSON: vi.fn(),
 }));
 vi.mock("../config/logger.js", () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
@@ -23,7 +22,7 @@ vi.mock("../config/logger.js", () => ({
 import Opportunity from "../models/Opportunity.js";
 import { nextSequence } from "../models/Counter.js";
 import { recordAdminAction } from "../services/adminAuditLog.js";
-import { callOpportunityAI, checkOpportunityAIConfig } from "../utils/opportunityAI.js";
+import { callClaudeJSON } from "../utils/anthropicClient.js";
 import { logger } from "../config/logger.js";
 import { extractOpportunities, importSelectedOpportunities } from "./adminOpportunityImportController.js";
 
@@ -70,53 +69,53 @@ function validCandidate(overrides = {}) {
   };
 }
 
-// Default "everything is configured and ready" response for
-// checkOpportunityAIConfig() — most tests below are about extraction
-// *logic*, not the config-presence check itself, so they don't need to
-// think about provider/env-var details at all. The specific
-// not-configured behavior is covered by its own tests, which override
-// this per-test.
-function configuredOk(provider = "gemini") {
-  return {
-    configured: true,
-    provider,
-    envVar: provider === "gemini" ? "GEMINI_API_KEY" : "ANTHROPIC_API_KEY",
-    reason: null,
-  };
-}
-
 describe("adminOpportunityImportController.js", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe("extractOpportunities", () => {
+    const ORIGINAL_ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
     beforeEach(() => {
-      checkOpportunityAIConfig.mockReturnValue(configuredOk());
+      // Most tests in this block are about extraction *logic*, not the
+      // config-presence check itself — give them a key so they exercise
+      // the callClaudeJSON path. The specific "key is missing" behavior
+      // is covered by its own tests below, which delete/restore this
+      // themselves.
+      process.env.ANTHROPIC_API_KEY = "sk-ant-test-key";
     });
 
-    it("returns 400 for empty research text without ever calling the AI provider", async () => {
+    afterEach(() => {
+      if (ORIGINAL_ANTHROPIC_API_KEY !== undefined) {
+        process.env.ANTHROPIC_API_KEY = ORIGINAL_ANTHROPIC_API_KEY;
+      } else {
+        delete process.env.ANTHROPIC_API_KEY;
+      }
+    });
+
+    it("returns 400 for empty research text without ever calling Claude", async () => {
       const req = { body: { researchText: "   " } };
       const res = mockRes();
 
       await extractOpportunities(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(callOpportunityAI).not.toHaveBeenCalled();
+      expect(callClaudeJSON).not.toHaveBeenCalled();
     });
 
-    it("returns 400 for research text exceeding the max length, without calling the AI provider", async () => {
+    it("returns 400 for research text exceeding the max length, without calling Claude", async () => {
       const req = { body: { researchText: "x".repeat(20001) } };
       const res = mockRes();
 
       await extractOpportunities(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(callOpportunityAI).not.toHaveBeenCalled();
+      expect(callClaudeJSON).not.toHaveBeenCalled();
     });
 
     it("extracts a single opportunity from research text", async () => {
-      callOpportunityAI.mockResolvedValue({
+      callClaudeJSON.mockResolvedValue({
         opportunities: [validCandidate()],
       });
       const req = { body: { researchText: "MLH Fellowship details..." } };
@@ -130,7 +129,7 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("extracts multiple distinct opportunities from one pasted block", async () => {
-      callOpportunityAI.mockResolvedValue({
+      callClaudeJSON.mockResolvedValue({
         opportunities: [
           validCandidate({ title: "Smart India Hackathon 2026" }),
           validCandidate({ title: "ISRO Internship" }),
@@ -151,7 +150,7 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("never invents a missing officialApplicationUrl — leaves it empty and flags it", async () => {
-      callOpportunityAI.mockResolvedValue({
+      callClaudeJSON.mockResolvedValue({
         opportunities: [validCandidate({ officialApplicationUrl: null, flags: [] })],
       });
       const req = { body: { researchText: "some vague text" } };
@@ -164,8 +163,8 @@ describe("adminOpportunityImportController.js", () => {
       expect(candidate.flags.some((f) => f.toLowerCase().includes("application url"))).toBe(true);
     });
 
-    it("flags but does not silently drop an ambiguous field the provider already flagged", async () => {
-      callOpportunityAI.mockResolvedValue({
+    it("flags but does not silently drop an ambiguous field Claude already flagged", async () => {
+      callClaudeJSON.mockResolvedValue({
         opportunities: [
           validCandidate({ flags: ["Deadline mentioned as both Aug 31 and Sep 5 — verify with the admin."] }),
         ],
@@ -179,8 +178,8 @@ describe("adminOpportunityImportController.js", () => {
       expect(candidate.flags).toContain("Deadline mentioned as both Aug 31 and Sep 5 — verify with the admin.");
     });
 
-    it("always returns verificationStatus 'unverified' on every candidate, regardless of what the provider returns", async () => {
-      callOpportunityAI.mockResolvedValue({
+    it("always returns verificationStatus 'unverified' on every candidate, regardless of what Claude returns", async () => {
+      callClaudeJSON.mockResolvedValue({
         opportunities: [validCandidate({ verificationStatus: "verified" })],
       });
       const req = { body: { researchText: "text claiming verification" } };
@@ -192,7 +191,7 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("defaults an unrecognized type to 'other' and flags it rather than guessing", async () => {
-      callOpportunityAI.mockResolvedValue({
+      callClaudeJSON.mockResolvedValue({
         opportunities: [validCandidate({ type: "not-a-real-type" })],
       });
       const req = { body: { researchText: "text" } };
@@ -205,8 +204,8 @@ describe("adminOpportunityImportController.js", () => {
       expect(candidate.flags.some((f) => f.includes("Unrecognized type"))).toBe(true);
     });
 
-    it("handles malformed/non-JSON-shaped provider output gracefully (no opportunities array)", async () => {
-      callOpportunityAI.mockResolvedValue({ notWhatWeExpected: true });
+    it("handles malformed/non-JSON-shaped Claude output gracefully (no opportunities array)", async () => {
+      callClaudeJSON.mockResolvedValue({ notWhatWeExpected: true });
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -215,13 +214,8 @@ describe("adminOpportunityImportController.js", () => {
       expect(res.json.mock.calls[0][0].opportunities).toEqual([]);
     });
 
-    it("returns 503 (not 502) when the configured provider isn't ready — a missing config, not an upstream outage", async () => {
-      checkOpportunityAIConfig.mockReturnValue({
-        configured: false,
-        provider: "gemini",
-        envVar: "GEMINI_API_KEY",
-        reason: "Opportunity extraction is unavailable. Set GEMINI_API_KEY to enable.",
-      });
+    it("returns 503 (not 502) when ANTHROPIC_API_KEY is not set — a missing config, not an upstream outage", async () => {
+      delete process.env.ANTHROPIC_API_KEY;
 
       const req = { body: { researchText: "some research text" } };
       const res = mockRes();
@@ -231,28 +225,20 @@ describe("adminOpportunityImportController.js", () => {
       expect(res.status).toHaveBeenCalledWith(503);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          error: expect.stringContaining("Set GEMINI_API_KEY to enable"),
+          error: expect.stringContaining("Set ANTHROPIC_API_KEY to enable"),
         })
       );
-      // Confirms the root-cause fix: no provider call is even attempted
+      // Confirms the root-cause fix: no network call is even attempted
       // once the missing key is detected up front.
-      expect(callOpportunityAI).not.toHaveBeenCalled();
+      expect(callClaudeJSON).not.toHaveBeenCalled();
     });
 
-    it("still returns 503 (defensive fallback) if callOpportunityAI itself throws the missing-key error", async () => {
-      // Upfront check passes (first call), but callOpportunityAI throws
-      // the same "is not set" error it would if the env var vanished
-      // between the check and the call — the catch block re-checks
-      // config (second call), which should now report not-configured.
-      checkOpportunityAIConfig
-        .mockReturnValueOnce(configuredOk())
-        .mockReturnValueOnce({
-          configured: false,
-          provider: "gemini",
-          envVar: "GEMINI_API_KEY",
-          reason: "Opportunity extraction is unavailable. Set GEMINI_API_KEY to enable.",
-        });
-      callOpportunityAI.mockRejectedValue(new Error("GEMINI_API_KEY is not set"));
+    it("still returns 503 (defensive fallback) if callClaudeJSON itself throws the missing-key error", async () => {
+      // Key IS present (set by the block's beforeEach) so the upfront
+      // check passes, but callClaudeJSON throws the same error it would
+      // if the env var vanished between the check and the call — the
+      // catch block's own message-based fallback should still catch this.
+      callClaudeJSON.mockRejectedValue(new Error("ANTHROPIC_API_KEY is not set"));
 
       const req = { body: { researchText: "text" } };
       const res = mockRes();
@@ -262,10 +248,10 @@ describe("adminOpportunityImportController.js", () => {
       expect(res.status).toHaveBeenCalledWith(503);
     });
 
-    it("returns 502 (genuine upstream failure), distinct from the 503 config case, when the provider is reachable but errors", async () => {
-      const err = new Error("Provider API error (500): internal_server_error");
+    it("returns 502 (genuine upstream failure), distinct from the 503 config case, when Claude is reachable but errors", async () => {
+      const err = new Error("Anthropic API error (500): internal_server_error");
       err.status = 500;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
 
       const req = { body: { researchText: "text" } };
       const res = mockRes();
@@ -275,10 +261,10 @@ describe("adminOpportunityImportController.js", () => {
       expect(res.status).toHaveBeenCalledWith(502);
     });
 
-    it("returns 502 when the provider call itself fails", async () => {
-      const err = new Error("Provider API error (500)");
+    it("returns 502 when the Claude call itself fails", async () => {
+      const err = new Error("Anthropic API error (500)");
       err.status = 500;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -287,11 +273,10 @@ describe("adminOpportunityImportController.js", () => {
       expect(res.status).toHaveBeenCalledWith(502);
     });
 
-    it("returns 503 with a key-specific message (naming the configured provider's env var) on a 401 from the provider", async () => {
-      checkOpportunityAIConfig.mockReturnValue(configuredOk("anthropic"));
+    it("returns 503 with a key-specific message on a 401 (invalid/revoked key) from the provider", async () => {
       const err = new Error("Anthropic API error (401): authentication_error");
       err.status = 401;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -299,30 +284,14 @@ describe("adminOpportunityImportController.js", () => {
 
       expect(res.status).toHaveBeenCalledWith(503);
       expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.stringContaining("API key was rejected"),
-        })
+        expect.objectContaining({ error: expect.stringContaining("API key was rejected") })
       );
-      expect(res.json.mock.calls[0][0].error).toContain("ANTHROPIC_API_KEY");
-    });
-
-    it("names GEMINI_API_KEY specifically when Gemini is the configured provider and returns a 401", async () => {
-      checkOpportunityAIConfig.mockReturnValue(configuredOk("gemini"));
-      const err = new Error("Gemini API error (401): UNAUTHENTICATED");
-      err.status = 401;
-      callOpportunityAI.mockRejectedValue(err);
-      const req = { body: { researchText: "text" } };
-      const res = mockRes();
-
-      await extractOpportunities(req, res);
-
-      expect(res.json.mock.calls[0][0].error).toContain("GEMINI_API_KEY");
     });
 
     it("returns 503 with a key-specific message on a 403 from the provider too", async () => {
-      const err = new Error("Provider API error (403): permission_error");
+      const err = new Error("Anthropic API error (403): permission_error");
       err.status = 403;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -332,9 +301,9 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("returns 503 with a model-specific message on a 404 (invalid/unavailable model) from the provider", async () => {
-      const err = new Error("Provider API error (404): not_found_error");
+      const err = new Error("Anthropic API error (404): not_found_error");
       err.status = 404;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -347,9 +316,9 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("returns 502 with a rate-limit-specific message on a 429 from the provider", async () => {
-      const err = new Error("Provider API error (429): rate_limit_error");
+      const err = new Error("Anthropic API error (429): rate_limit_error");
       err.status = 429;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -362,9 +331,9 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("returns 502 with an overload-specific message on a 529 from the provider", async () => {
-      const err = new Error("Provider API error (529): overloaded_error");
+      const err = new Error("Anthropic API error (529): overloaded_error");
       err.status = 529;
-      callOpportunityAI.mockRejectedValue(err);
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
@@ -377,26 +346,26 @@ describe("adminOpportunityImportController.js", () => {
     });
 
     it("never echoes the provider's raw response body or the API key into the client-facing error message", async () => {
-      const err = new Error('Provider API error (401): {"error":{"message":"invalid key: sk-secret-value"}}');
+      const err = new Error("Anthropic API error (401): {\"error\":{\"message\":\"invalid x-api-key: sk-ant-secret-value\"}}");
       err.status = 401;
-      err.providerBody = '{"error":{"message":"invalid key: sk-secret-value"}}';
-      callOpportunityAI.mockRejectedValue(err);
+      err.providerBody = '{"error":{"message":"invalid x-api-key: sk-ant-secret-value"}}';
+      callClaudeJSON.mockRejectedValue(err);
       const req = { body: { researchText: "text" } };
       const res = mockRes();
 
       await extractOpportunities(req, res);
 
       const responseBody = res.json.mock.calls[0][0];
-      expect(JSON.stringify(responseBody)).not.toContain("sk-secret-value");
+      expect(JSON.stringify(responseBody)).not.toContain("sk-ant-secret-value");
     });
 
     describe("server-side diagnostic logging", () => {
       it("logs a structured diagnostic with name/message/status/code/providerType on a provider rejection", async () => {
-        const err = new Error("Provider API error (401): authentication_error");
+        const err = new Error("Anthropic API error (401): authentication_error");
         err.status = 401;
         err.code = null;
         err.providerType = "authentication_error";
-        callOpportunityAI.mockRejectedValue(err);
+        callClaudeJSON.mockRejectedValue(err);
 
         await extractOpportunities({ body: { researchText: "text" } }, mockRes());
 
@@ -410,28 +379,25 @@ describe("adminOpportunityImportController.js", () => {
         });
       });
 
-      it("bakes the diagnostic into the visible log message text, including which provider is active, not just a hidden merging-object field", async () => {
-        checkOpportunityAIConfig.mockReturnValue(configuredOk("gemini"));
-        const err = new Error("Provider API error (401): authentication_error");
+      it("bakes the diagnostic into the visible log message text, not just a hidden merging-object field", async () => {
+        const err = new Error("Anthropic API error (401): authentication_error");
         err.status = 401;
         err.providerType = "authentication_error";
-        callOpportunityAI.mockRejectedValue(err);
+        callClaudeJSON.mockRejectedValue(err);
 
         await extractOpportunities({ body: { researchText: "text" } }, mockRes());
 
         const [, message] = logger.error.mock.calls[0];
-        expect(message).toContain("[OpportunityImport] AI extraction call failed");
-        expect(message).toContain("provider: gemini");
+        expect(message).toContain("[OpportunityImport] Claude extraction call failed");
         expect(message).toContain('"status":401');
         expect(message).toContain('"providerType":"authentication_error"');
       });
 
       it("marks hasProviderResponse:false and kind:'network_or_config' when no HTTP status exists (fetch itself failed)", async () => {
-        const err = new Error("Failed to reach the AI provider: fetch failed");
-        // deliberately no err.status — simulates a network-level failure,
-        // which neither geminiClient.js nor anthropicClient.js ever
-        // attaches .status to.
-        callOpportunityAI.mockRejectedValue(err);
+        const err = new Error("Failed to reach Anthropic API: fetch failed");
+        // deliberately no err.status — simulates anthropicClient.js's
+        // network-failure path, which never sets .status
+        callClaudeJSON.mockRejectedValue(err);
 
         await extractOpportunities({ body: { researchText: "text" } }, mockRes());
 
@@ -442,10 +408,10 @@ describe("adminOpportunityImportController.js", () => {
       });
 
       it("marks hasProviderResponse:true and kind:'provider_response' when a real HTTP status came back", async () => {
-        const err = new Error("Provider API error (429): rate_limit_error");
+        const err = new Error("Anthropic API error (429): rate_limit_error");
         err.status = 429;
         err.providerType = "rate_limit_error";
-        callOpportunityAI.mockRejectedValue(err);
+        callClaudeJSON.mockRejectedValue(err);
 
         await extractOpportunities({ body: { researchText: "text" } }, mockRes());
 
@@ -455,9 +421,9 @@ describe("adminOpportunityImportController.js", () => {
       });
 
       it("includes err.code when present (e.g. a network-level failure code)", async () => {
-        const err = new Error("Failed to reach the AI provider: connect ECONNREFUSED");
+        const err = new Error("Failed to reach Anthropic API: connect ECONNREFUSED");
         err.code = "ECONNREFUSED";
-        callOpportunityAI.mockRejectedValue(err);
+        callClaudeJSON.mockRejectedValue(err);
 
         await extractOpportunities({ body: { researchText: "text" } }, mockRes());
 
@@ -465,15 +431,15 @@ describe("adminOpportunityImportController.js", () => {
         expect(diagnostic.code).toBe("ECONNREFUSED");
       });
 
-      it("never logs the configured provider's API key, providerBody, or the research text in the diagnostic", async () => {
-        const originalKey = process.env.GEMINI_API_KEY;
-        process.env.GEMINI_API_KEY = "the-real-configured-secret-key";
+      it("never logs the configured ANTHROPIC_API_KEY, providerBody, or the research text in the diagnostic", async () => {
+        const originalKey = process.env.ANTHROPIC_API_KEY;
+        process.env.ANTHROPIC_API_KEY = "sk-ant-the-real-configured-secret-key";
         try {
-          const err = new Error("Provider API error (401): authentication_error");
+          const err = new Error("Anthropic API error (401): authentication_error");
           err.status = 401;
-          err.providerBody = '{"error":{"message":"invalid key"}}'; // raw provider body — must not be logged
+          err.providerBody = '{"error":{"message":"invalid x-api-key"}}'; // raw provider body — must not be logged
           err.providerType = "authentication_error";
-          callOpportunityAI.mockRejectedValue(err);
+          callClaudeJSON.mockRejectedValue(err);
 
           const secretResearchText = "CONFIDENTIAL RESEARCH — must not leak into logs";
           await extractOpportunities({ body: { researchText: secretResearchText } }, mockRes());
@@ -483,8 +449,8 @@ describe("adminOpportunityImportController.js", () => {
 
           // The real configured secret must never appear anywhere in the
           // logged output, in either form.
-          expect(serializedDiagnostic).not.toContain(process.env.GEMINI_API_KEY);
-          expect(message).not.toContain(process.env.GEMINI_API_KEY);
+          expect(serializedDiagnostic).not.toContain(process.env.ANTHROPIC_API_KEY);
+          expect(message).not.toContain(process.env.ANTHROPIC_API_KEY);
           // The diagnostic is a fixed, narrow field set — providerBody
           // (the provider's raw, unbounded response text) is deliberately
           // excluded from it, only the extracted providerType is kept.
@@ -494,14 +460,14 @@ describe("adminOpportunityImportController.js", () => {
           expect(serializedDiagnostic).not.toContain(secretResearchText);
           expect(message).not.toContain(secretResearchText);
         } finally {
-          if (originalKey !== undefined) process.env.GEMINI_API_KEY = originalKey;
-          else delete process.env.GEMINI_API_KEY;
+          if (originalKey !== undefined) process.env.ANTHROPIC_API_KEY = originalKey;
+          else delete process.env.ANTHROPIC_API_KEY;
         }
       });
     });
 
-    it("caps extraction at MAX_OPPORTUNITIES_PER_IMPORT even if the provider returns more", async () => {
-      callOpportunityAI.mockResolvedValue({
+    it("caps extraction at MAX_OPPORTUNITIES_PER_IMPORT even if Claude returns more", async () => {
+      callClaudeJSON.mockResolvedValue({
         opportunities: Array.from({ length: 40 }, (_, i) => validCandidate({ title: `Opportunity ${i}` })),
       });
       const req = { body: { researchText: "a huge list" } };

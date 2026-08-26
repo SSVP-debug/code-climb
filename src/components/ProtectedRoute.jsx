@@ -1,10 +1,18 @@
 import { useAuth } from "../hooks/useAuth";
+import { useGuest } from "../hooks/useGuest";
 import { Navigate, useLocation } from "react-router-dom";
 import { buildLoginRedirect } from "../utils/authRedirect";
 import DailyQuizGate from "../routes/DailyQuizGate";
 
-function ProtectedRoute({ children }) {
+// Guest Mode: `guestPortal` is an optional prop naming which portal
+// (student | recruiter | tpo) this route is explorable for as a guest —
+// see hooks/useGuest.js / context/GuestProvider.jsx. Routes that must
+// always require a real account (Profile, Settings, Submit's own
+// persistence path, etc.) simply omit it and this behaves exactly as
+// before.
+function ProtectedRoute({ children, guestPortal = null }) {
   const { user, loading } = useAuth();
+  const { isGuest, guestPortal: activeGuestPortal } = useGuest();
   const location = useLocation();
 
   // Firebase is still resolving the persisted session.
@@ -18,8 +26,17 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  // Firebase has resolved — no user means not authenticated.
+  // Firebase has resolved — no user means not authenticated. A guest
+  // session exploring the matching portal is let through instead of being
+  // redirected to /login — this is the entire guest bypass for this
+  // route; DailyQuizGate below is still skipped for guests (see comment
+  // there) since it's an authenticated-progress feature with nothing to
+  // check for someone with no account.
   if (!user) {
+    if (guestPortal && isGuest && activeGuestPortal === guestPortal) {
+      return children;
+    }
+
     // Gate 3 audit, P0-1: preserve the page the person was trying to reach
     // (e.g. a shared contest link) as ?next= so LoginPage can send them
     // back here after they sign in, instead of always landing on the

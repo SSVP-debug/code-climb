@@ -31,7 +31,7 @@ export async function seedProblem(overrides = {}) {
     topic: "Arrays",
     description:
       "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-    hiddentestcases: [{ input: {}, expectedOutput: [] }],
+    hiddenTestcaseSet: { enabled: true, testcases: [{ input: {}, expectedOutput: [] }] },
     ...overrides,
   });
 }

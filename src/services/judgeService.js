@@ -1,4 +1,4 @@
-import { apiFetch } from "./api";
+import { apiFetch, apiFetchOptional } from "./api";
 import { classifyJudgeError } from "../utils/judgeErrorTaxonomy";
 import {
   buildRunRequestBody,
@@ -90,7 +90,12 @@ export const runTestcases = async ({ problem, code, language }) => {
   }
 
   try {
-    const result = await apiFetch("/api/judge/run", {
+    // Guest Mode: POST /api/judge/run is `optionalAuth` on the backend
+    // (backend/routes/judge.js) — apiFetchOptional (not apiFetch) so
+    // guests can Run without a Firebase session, at the stricter guest
+    // rate limit (backend/middleware/rateLimiter.js's judgeRunLimiter).
+    // Authenticated behavior is identical either way.
+    const result = await apiFetchOptional("/api/judge/run", {
       method: "POST",
       // Built from the SAME canonical contract backend/routes/judge.js
       // validates against and backend/routes/judge.contract.test.js

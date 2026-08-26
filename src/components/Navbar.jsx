@@ -4,6 +4,8 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContextObject";
 import { useTheme } from "../hooks/useTheme";
 import { useAppContext } from "../hooks/useAppContext";
+import { useGuest } from "../hooks/useGuest";
+import { buildLoginRedirect } from "../utils/authRedirect";
 import AvatarDropdown from "./AvatarDropdown";
 import StreakBadge from "./common/StreakBadge";
 import NotificationBell from "./notifications/NotificationBell";
@@ -27,6 +29,7 @@ function Navbar() {
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
   const { currentStreak, role, isBackendReady } = useAppContext();
+  const { isGuest, exitGuestMode } = useGuest();
   const [menuOpen, setMenuOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -41,6 +44,11 @@ function Navbar() {
 
   const handleLogout = async () => {
     await logoutUser();
+    // Guest Mode: harmless no-op for a real authenticated user (nothing
+    // to clear); for a guest, this is the "Logout"/"Exit guest session"
+    // action — clears guestPortal so the next visit to /portal starts
+    // clean instead of silently re-entering the same guest portal.
+    exitGuestMode();
     // JARVIS pass, spec §19: "provide subtle session-ended feedback" —
     // real feedback tied to the actual completed logout (this line only
     // runs after logoutUser() resolves), not a fabricated shutdown
@@ -267,6 +275,7 @@ function Navbar() {
 
           <AvatarDropdown
             user={user}
+            isGuest={isGuest}
             onLogout={handleLogout}
           />
         </div>
@@ -298,6 +307,7 @@ function Navbar() {
 
           <AvatarDropdown
             user={user}
+            isGuest={isGuest}
             onLogout={handleLogout}
             mobile
           />
@@ -361,15 +371,28 @@ function Navbar() {
           })}
           <div className="border-t border-zinc-800 mt-2 pt-3 flex items-center justify-between">
             <div>
-              <p className="font-semibold text-sm">{user?.displayName}</p>
-              <p className="text-zinc-400 text-xs">{user?.email}</p>
+              <p className="font-semibold text-sm">
+                {isGuest ? "Guest Session" : user?.displayName}
+              </p>
+              <p className="text-zinc-400 text-xs">
+                {isGuest ? "Sign in to save your progress." : user?.email}
+              </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
-            >
-              Logout
-            </button>
+            {isGuest ? (
+              <Link
+                to={buildLoginRedirect(location.pathname + location.search)}
+                className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
+              >
+                Sign In
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       )}

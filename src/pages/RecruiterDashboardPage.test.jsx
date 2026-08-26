@@ -9,6 +9,16 @@ vi.mock("../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
 }));
 
+// Guest Mode: RecruiterDashboardPage now checks useIdentity() before
+// fetching/rendering candidate data at all. Every test in this file
+// exercises the authenticated recruiter experience (candidate fetch/filter
+// behavior), not the guest gate — which has its own dedicated coverage in
+// RecruiterDashboardPage.guestMode.test.jsx — so a fixed "authenticated"
+// stub keeps this file's existing assertions meaningful.
+vi.mock("../hooks/useIdentity", () => ({
+  useIdentity: () => ({ isAuthenticated: true }),
+}));
+
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
 }));

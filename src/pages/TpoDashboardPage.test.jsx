@@ -9,6 +9,16 @@ vi.mock("../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
 }));
 
+// Guest Mode: TpoDashboardPage now checks useIdentity() before fetching/
+// rendering student/college data at all. Every test in this file
+// exercises the authenticated TPO experience, not the guest gate — which
+// has its own dedicated coverage in TpoDashboardPage.guestMode.test.jsx —
+// so a fixed "authenticated" stub keeps this file's existing assertions
+// meaningful.
+vi.mock("../hooks/useIdentity", () => ({
+  useIdentity: () => ({ isAuthenticated: true }),
+}));
+
 const toastMock = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
 vi.mock("react-hot-toast", () => ({
   default: toastMock,

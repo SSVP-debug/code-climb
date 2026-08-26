@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageMeta from "../components/seo/PageMeta";
 import { SITE_DOMAIN } from "../config/site.js";
+import { useGuest } from "../hooks/useGuest";
 import { GraduationCap, Briefcase, Building2 } from "lucide-react";
 
 // ── Role cards ───────────────────────────────────────────────────────────
@@ -66,6 +67,19 @@ const ACCENT_CLASSES = {
 };
 
 export default function PortalPage() {
+  const navigate = useNavigate();
+  const { enterGuestMode } = useGuest();
+
+  // Guest Mode: enters a portal-scoped guest session (see
+  // context/GuestProvider.jsx) and navigates straight to that portal's
+  // dashboard — same destination a real login for that role lands on
+  // (role.accessId, already used for the badge above each card), just
+  // without the /login step.
+  function handleGuestEnter(roleId, accessId) {
+    enterGuestMode(roleId);
+    navigate(accessId);
+  }
+
   return (
     <>
       <PageMeta
@@ -101,10 +115,9 @@ export default function PortalPage() {
             {ROLES.map((role) => {
               const accent = ACCENT_CLASSES[role.accent];
               return (
-                <Link
+                <div
                   key={role.id}
-                  to={`/login?role=${role.id}`}
-                  className={`group relative flex flex-col justify-between bg-ink-900/80 border border-ink-700 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${accent.border} ${accent.shadow}`}
+                  className={`group relative flex flex-col justify-between bg-ink-900/80 border border-ink-700 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 ${accent.border} ${accent.shadow}`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -129,12 +142,27 @@ export default function PortalPage() {
                     </p>
                   </div>
 
-                  <div
-                    className={`mt-6 inline-flex items-center justify-center gap-2 font-semibold text-sm text-white rounded-xl px-4 py-2.5 transition-colors ${accent.button}`}
-                  >
-                    Enter as {role.label} →
+                  <div className="mt-6 flex flex-col gap-2">
+                    <Link
+                      to={`/login?role=${role.id}`}
+                      className={`inline-flex items-center justify-center gap-2 font-semibold text-sm text-white rounded-xl px-4 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${accent.border} ${accent.button}`}
+                    >
+                      Enter as {role.label} →
+                    </Link>
+                    {/* Guest Mode: explores the real {role.label} portal
+                        with no account — see Guest Mode spec. Kept as a
+                        clearly secondary action (smaller, outlined, no
+                        accent fill) so "Enter as {role.label}" remains
+                        the obvious primary choice for a returning user. */}
+                    <button
+                      type="button"
+                      onClick={() => handleGuestEnter(role.id, role.accessId)}
+                      className="inline-flex items-center justify-center gap-2 font-medium text-xs text-zinc-400 hover:text-white rounded-xl px-4 py-2 border border-ink-700 hover:border-ink-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-zinc-500"
+                    >
+                      Continue as Guest
+                    </button>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

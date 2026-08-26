@@ -13,6 +13,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
 import { AuthProvider } from "./context/authContext";
+import { GuestProvider } from "./context/GuestProvider";
 import { PremiumProvider } from "./context/PremiumContext";
 import AppContextProvider from "./context/appContext";
 
@@ -65,6 +66,7 @@ ReactDOM.createRoot(
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
+          <GuestProvider>
           <PremiumProvider>
           <AppContextProvider>
 
@@ -105,6 +107,7 @@ ReactDOM.createRoot(
 
           </AppContextProvider>
           </PremiumProvider>
+          </GuestProvider>
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>

@@ -49,9 +49,12 @@ const baseBody = {
 const problemDoc = {
   slug: "two-sum",
   title: "Two Sum",
-  hiddentestcases: [
-    { input: { nums: [3, 3] }, expectedOutput: [0, 1] },
-  ],
+  hiddenTestcaseSet: {
+    enabled: true,
+    testcases: [
+      { input: { nums: [3, 3] }, expectedOutput: [0, 1] },
+    ],
+  },
 };
 
 describe("submitHandler", () => {
@@ -78,7 +81,10 @@ describe("submitHandler", () => {
     // This is the scenario the inline "CRITICAL GUARD" comment in
     // judge.js exists to prevent: a problem with zero gradeable
     // testcases must never be reachable as an "Accepted" verdict.
-    Problem.findOne.mockResolvedValue({ ...problemDoc, hiddentestcases: [] });
+    Problem.findOne.mockResolvedValue({
+      ...problemDoc,
+      hiddenTestcaseSet: { enabled: true, testcases: [] },
+    });
     const req = { body: baseBody, log: mockLog(), userDoc };
 
     await submitHandler(req, res);
@@ -240,9 +246,12 @@ describe("submitHandler", () => {
       slug: "top-k-frequent-elements",
       title: "Top K Frequent Elements",
       comparisonMode: "unordered",
-      hiddentestcases: [
-        { input: { nums: [1, 1, 1, 2, 2, 3], k: 2 }, expectedOutput: [1, 2] },
-      ],
+      hiddenTestcaseSet: {
+        enabled: true,
+        testcases: [
+          { input: { nums: [1, 1, 1, 2, 2, 3], k: 2 }, expectedOutput: [1, 2] },
+        ],
+      },
     };
 
     it("accepts a differently-ordered but equally correct array when the problem allows any order", async () => {

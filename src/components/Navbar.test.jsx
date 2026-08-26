@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContextObject";
+import { GuestContext } from "../context/GuestContextObject";
 import { AppContext } from "../context/AppContextObject";
 import Navbar from "./Navbar";
 
@@ -51,11 +52,16 @@ function renderNavbar({ role, user = { displayName: "Test User", email: "test@ex
   return render(
     <ThemeProvider>
       <AuthContext.Provider value={{ user, loading: false }}>
+        {/* Navbar now also reads GuestContext (Guest Mode) for its
+            Logout/guest-exit branch — none of these tests exercise a
+            guest session, so a stable "not a guest" stub is enough. */}
+        <GuestContext.Provider value={{ isGuest: false, guestPortal: null, enterGuestMode: () => {}, exitGuestMode: () => {} }}>
         <AppContext.Provider value={{ role, currentStreak: 0, isBackendReady }}>
           <MemoryRouter initialEntries={[path]}>
             <Navbar />
           </MemoryRouter>
         </AppContext.Provider>
+        </GuestContext.Provider>
       </AuthContext.Provider>
     </ThemeProvider>
   );

@@ -6,6 +6,8 @@ import PageMeta from "../components/seo/PageMeta";
 import { SUPPORT_EMAIL } from "../config/site.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Button from "../components/ui/Button";
+import AuthGate from "../components/auth/AuthGate";
+import { useIdentity } from "../hooks/useIdentity";
 import { SendTestModal, ExpressInterestModal } from "../components/recruiter/RecruiterActionModals";
 import { CheckCircle2, Info, Briefcase, Search } from "lucide-react";
 
@@ -270,6 +272,7 @@ function SentTestsTab() {
 
 export default function RecruiterDashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isAuthenticated } = useIdentity();
 
   // Deep-linkable via ?tab=candidates|tests — same pattern as the TPO
   // dashboard, so the admin console (or anyone) can link straight to
@@ -356,8 +359,19 @@ export default function RecruiterDashboardPage() {
   // function boundary. A real fix would mean adopting a data-fetching
   // library (React Query/SWR) or inlining every one of these fetchers —
   // out of scope for a lint-debt pass; suppressed and documented instead.
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
-  useEffect(() => { fetchCandidates(1); }, [fetchCandidates]);
+  // Guest Mode: a guest has no Firebase user, so apiFetch inside
+  // fetchCandidates would already throw before any network request is
+  // sent (see services/api.js) — this guard just makes that explicit and
+  // silent (no unhandled-rejection console noise, no attempted call at
+  // all) instead of relying on that incidental side effect. The backend's
+  // own requireAuth + requireRole + requireVerified on
+  // /api/recruiter/candidates (backend/routes/recruiter.js) remains the
+  // actual authorization boundary regardless of this guard.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-on-mount pattern: the called function is a useCallback-wrapped async fetcher that sets loading/data state after its own await, not synchronously; see src/hooks/useAdminSettings.js for the fullest write-up of this decision.
+    fetchCandidates(1);
+  }, [fetchCandidates, isAuthenticated]);
 
   function updateFilter(k, v) { setFilters(f => ({ ...f, [k]: v })); }
 
@@ -422,114 +436,125 @@ export default function RecruiterDashboardPage() {
           ))}
         </div>
 
-        {tab === "candidates" && (
+        {!isAuthenticated ? (
+          // Guest Mode: candidate/student data is never fetched (see the
+          // mount effect above) and never rendered — this AuthGate is the
+          // entire guest experience for both tabs. SentTestsTab isn't
+          // mounted at all in this branch, so its own /api/recruiter/
+          // skills-tests fetch never fires either.
+          <AuthGate reason="candidates" inline />
+        ) : (
           <>
-            <FilterBar filters={filters} onChange={updateFilter} />
-            <Button onClick={() => fetchCandidates(1)} className="mb-6">
-              Search
-            </Button>
+            {tab === "candidates" && (
+              <>
+                <FilterBar filters={filters} onChange={updateFilter} />
+                <Button onClick={() => fetchCandidates(1)} className="mb-6">
+                  Search
+                </Button>
 
-            {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                <div className="hidden sm:grid sm:grid-cols-[2fr_0.7fr_0.7fr_1fr_1.8fr] px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
-                  <span>Candidate</span>
-                  <span className="text-center">Solved</span>
-                  <span className="text-center">Hard</span>
-                  <span className="text-center inline-flex items-center justify-center gap-1">
-                    Verified <VerifiedInfoTooltip />
-                  </span>
-                  <span className="text-right">Action</span>
-                </div>
-                {candidates.length === 0 ? (
-                  <div className="text-center py-16 text-zinc-600">
-                    <Search size={28} strokeWidth={1.75} className="mx-auto mb-3" aria-hidden="true" />
-                    <p className="text-sm">No candidates match your filters.</p>
-                    <p className="text-xs mt-1">Try widening the college domain, dropping the min-solved bar, or clearing a role/grad-year filter.</p>
+                {loading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
                   </div>
-                ) : candidates.map(c => (
-                  // grid-cols-2 on mobile (name+badges spans both, each stat
-                  // gets its own cell) keeps the "div.grid" class present at
-                  // every breakpoint — a 6-equal-column grid was unreadable
-                  // below ~640px, squeezing the candidate's name/college
-                  // into a sliver next to four cramped stat columns. At
-                  // sm+, a weighted 5-column template (rather than 6 equal
-                  // columns) replaces it — equal columns left the Action
-                  // cell too narrow for View/Interested/Test to sit on one
-                  // line even at desktop widths, wrapping them into an
-                  // unnecessarily tall vertical stack.
-                  <div key={c.username} className="grid grid-cols-2 gap-y-2 sm:grid-cols-[2fr_0.7fr_0.7fr_1fr_1.8fr] sm:gap-y-0 sm:items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
-                    <div className="col-span-2 sm:col-span-1">
-                      <p className="text-sm text-white font-medium">{c.displayName}</p>
-                      <p className="text-xs text-zinc-500">{c.college || "—"}</p>
-                      <div className="flex gap-1 mt-1 flex-wrap">
-                        {c.availableForWork && (
-                          <span className="text-[9px] bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded font-medium">
-                            Open to work
-                          </span>
-                        )}
-                        {c.expectedGraduation && (
-                          <span className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">
-                            Grad {c.expectedGraduation}
-                          </span>
-                        )}
-                        {c.topTopics.map(t => (
-                          <span key={t} className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">{t}</span>
-                        ))}
+                ) : (
+                  <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                    <div className="hidden sm:grid sm:grid-cols-[2fr_0.7fr_0.7fr_1fr_1.8fr] px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+                      <span>Candidate</span>
+                      <span className="text-center">Solved</span>
+                      <span className="text-center">Hard</span>
+                      <span className="text-center inline-flex items-center justify-center gap-1">
+                        Verified <VerifiedInfoTooltip />
+                      </span>
+                      <span className="text-right">Action</span>
+                    </div>
+                    {candidates.length === 0 ? (
+                      <div className="text-center py-16 text-zinc-600">
+                        <Search size={28} strokeWidth={1.75} className="mx-auto mb-3" aria-hidden="true" />
+                        <p className="text-sm">No candidates match your filters.</p>
+                        <p className="text-xs mt-1">Try widening the college domain, dropping the min-solved bar, or clearing a role/grad-year filter.</p>
                       </div>
-                    </div>
-                    <span className="text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold sm:text-center">
-                      <span className="text-zinc-600 sm:hidden">Solved </span>{c.solvedCount}
-                    </span>
-                    <span className="text-sm text-red-400 sm:text-center">
-                      <span className="text-zinc-600 sm:hidden">Hard </span>{c.hard}
-                    </span>
-                    <span className="flex sm:justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
-                      <span className="text-zinc-600 sm:hidden mr-1">Verified</span>
-                      {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : <span className="text-sm">—</span>}
-                    </span>
-                    <div className="col-span-2 sm:col-span-1 text-right flex flex-wrap gap-2 justify-end">
-                      <Button
-                        href={`/u/${c.username}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        variant="secondary"
-                        size="sm"
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => setInterestTarget(c)}
-                      >
-                        Interested
-                      </Button>
-                      <Button size="sm" onClick={() => setSelected(c)}>
-                        Test
-                      </Button>
-                    </div>
+                    ) : candidates.map(c => (
+                      // grid-cols-2 on mobile (name+badges spans both, each stat
+                      // gets its own cell) keeps the "div.grid" class present at
+                      // every breakpoint — a 6-equal-column grid was unreadable
+                      // below ~640px, squeezing the candidate's name/college
+                      // into a sliver next to four cramped stat columns. At
+                      // sm+, a weighted 5-column template (rather than 6 equal
+                      // columns) replaces it — equal columns left the Action
+                      // cell too narrow for View/Interested/Test to sit on one
+                      // line even at desktop widths, wrapping them into an
+                      // unnecessarily tall vertical stack.
+                      <div key={c.username} className="grid grid-cols-2 gap-y-2 sm:grid-cols-[2fr_0.7fr_0.7fr_1fr_1.8fr] sm:gap-y-0 sm:items-center px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                        <div className="col-span-2 sm:col-span-1">
+                          <p className="text-sm text-white font-medium">{c.displayName}</p>
+                          <p className="text-xs text-zinc-500">{c.college || "—"}</p>
+                          <div className="flex gap-1 mt-1 flex-wrap">
+                            {c.availableForWork && (
+                              <span className="text-[9px] bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded font-medium">
+                                Open to work
+                              </span>
+                            )}
+                            {c.expectedGraduation && (
+                              <span className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">
+                                Grad {c.expectedGraduation}
+                              </span>
+                            )}
+                            {c.topTopics.map(t => (
+                              <span key={t} className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">{t}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <span className="text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold sm:text-center">
+                          <span className="text-zinc-600 sm:hidden">Solved </span>{c.solvedCount}
+                        </span>
+                        <span className="text-sm text-red-400 sm:text-center">
+                          <span className="text-zinc-600 sm:hidden">Hard </span>{c.hard}
+                        </span>
+                        <span className="flex sm:justify-center" title={c.isVerified ? VERIFIED_EXPLANATION : "Profile has not been signed yet."}>
+                          <span className="text-zinc-600 sm:hidden mr-1">Verified</span>
+                          {c.isVerified ? <CheckCircle2 size={15} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" /> : <span className="text-sm">—</span>}
+                        </span>
+                        <div className="col-span-2 sm:col-span-1 text-right flex flex-wrap gap-2 justify-end">
+                          <Button
+                            href={`/u/${c.username}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            variant="secondary"
+                            size="sm"
+                          >
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => setInterestTarget(c)}
+                          >
+                            Interested
+                          </Button>
+                          <Button size="sm" onClick={() => setSelected(c)}>
+                            Test
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+
+                {total > 20 && (
+                  <div className="flex justify-center gap-3 mt-6">
+                    <button onClick={() => fetchCandidates(page - 1)} disabled={page === 1}
+                      className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">← Prev</button>
+                    <span className="text-sm text-zinc-500 py-2">Page {page}</span>
+                    <button onClick={() => fetchCandidates(page + 1)} disabled={candidates.length < 20}
+                      className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">Next →</button>
+                  </div>
+                )}
+              </>
             )}
 
-            {total > 20 && (
-              <div className="flex justify-center gap-3 mt-6">
-                <button onClick={() => fetchCandidates(page - 1)} disabled={page === 1}
-                  className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">← Prev</button>
-                <span className="text-sm text-zinc-500 py-2">Page {page}</span>
-                <button onClick={() => fetchCandidates(page + 1)} disabled={candidates.length < 20}
-                  className="px-4 py-2 text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 rounded-xl disabled:opacity-40">Next →</button>
-              </div>
-            )}
+            {tab === "tests" && <SentTestsTab />}
           </>
         )}
-
-        {tab === "tests" && <SentTestsTab />}
       </div>
       {selected && <SendTestModal candidate={selected} onClose={() => setSelected(null)} onSent={() => { }} />}
       {interestTarget && (

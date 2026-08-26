@@ -9,8 +9,20 @@ import AdminLayout from "./AdminLayout";
 import AdminSettingsPage from "../pages/admin/AdminSettingsPage";
 import AdminCollegesPage from "../pages/admin/AdminCollegesPage";
 import { AuthContext } from "../context/AuthContextObject";
+import { GuestContext } from "../context/GuestContextObject";
 import { AppContext } from "../context/AppContextObject";
 import { DailyQuizContext } from "../context/DailyQuizContextObject";
+
+// RoleRoute now also reads GuestContext (Guest Mode) for its guest-bypass
+// branch — none of these tests exercise a guest session, so a stable
+// "not a guest" stub is enough, same direct-Provider pattern already used
+// for AuthContext/AppContext/DailyQuizContext below.
+const notGuestValue = {
+  isGuest: false,
+  guestPortal: null,
+  enterGuestMode: () => {},
+  exitGuestMode: () => {},
+};
 
 // This file tests the /admin/* role guard (RoleRoute), not the Daily Quiz
 // Gate — supply an already-"unlocked" quiz status so ProtectedRoute's
@@ -62,6 +74,7 @@ function renderAdmin({ user, loading = false, role }, initialEntries) {
     <HelmetProvider>
       <ThemeProvider>
       <AuthContext.Provider value={{ user, loading }}>
+        <GuestContext.Provider value={notGuestValue}>
         <AppContext.Provider value={{ role, isBackendReady: true }}>
           <DailyQuizContext.Provider value={unlockedQuizValue}>
           <MemoryRouter initialEntries={initialEntries}>
@@ -85,6 +98,7 @@ function renderAdmin({ user, loading = false, role }, initialEntries) {
           </MemoryRouter>
           </DailyQuizContext.Provider>
         </AppContext.Provider>
+        </GuestContext.Provider>
       </AuthContext.Provider>
       </ThemeProvider>
     </HelmetProvider>

@@ -41,9 +41,12 @@ function mockLog() {
 // source of truth rather than being duplicated here.
 async function seedProblem(overrides = {}) {
   return seedBaseProblem({
-    hiddentestcases: [
-      { input: { nums: [3, 3], target: 6 }, expectedOutput: [0, 1] },
-    ],
+    hiddenTestcaseSet: {
+      enabled: true,
+      testcases: [
+        { input: { nums: [3, 3], target: 6 }, expectedOutput: [0, 1] },
+      ],
+    },
     ...overrides,
   });
 }

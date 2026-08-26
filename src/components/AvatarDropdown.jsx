@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck, User as UserIcon } from "lucide-react";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePremium } from "../hooks/usePremium";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { getLastVisitedProblem } from "../utils/recentProblem";
+import { buildLoginRedirect } from "../utils/authRedirect";
 
-function AvatarDropdown({ user, onLogout, mobile = false }) {
+function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
   const [open, setOpen] = useState(false);
   const [dailyChallengeSlug, setDailyChallengeSlug] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { totalXP, currentStreak, solvedProblems, role } = useAppContext();
   const { monetizationEnabled, isPremium } = usePremium();
   const isStudent = role === "student" || !role;
@@ -69,7 +71,16 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
         onClick={() => setOpen((prev) => !prev)}
         className="focus:outline-none"
       >
-        {user?.photoURL ? (
+        {isGuest ? (
+          <div
+            className={mobile
+              ? "w-8 h-8 rounded-full bg-zinc-800 border border-dashed border-zinc-600 flex items-center justify-center"
+              : "w-9 h-9 rounded-full bg-zinc-800 border border-dashed border-zinc-600 flex items-center justify-center"}
+            title="Guest session"
+          >
+            <UserIcon size={mobile ? 14 : 16} className="text-zinc-500" aria-hidden="true" />
+          </div>
+        ) : user?.photoURL ? (
           <img
             src={user.photoURL}
             alt={user.displayName ?? "User"}
@@ -90,6 +101,31 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
 
       {open && (
         <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
+          {isGuest ? (
+            // Guest Mode: a much shorter menu — none of Quick Stats/Quick
+            // Actions/View Profile/Settings/Pricing apply to a session
+            // with no account, so showing them (blank/zeroed) would read
+            // as broken rather than simplified. Just the one action that
+            // matters: sign in.
+            <>
+              <div className="px-4 py-4 border-b border-zinc-800">
+                <p className="font-semibold">Guest Session</p>
+                <p className="text-xs text-zinc-400">
+                  Sign in to save your progress and unlock the rest of Code Club.
+                </p>
+              </div>
+              <div className="p-2">
+                <Link
+                  to={buildLoginRedirect(location.pathname + location.search)}
+                  onClick={() => setOpen(false)}
+                  className="block w-full text-center rounded-lg bg-white text-black py-2 font-semibold hover:bg-zinc-200"
+                >
+                  Sign In
+                </Link>
+              </div>
+            </>
+          ) : (
+          <>
           <div className="px-4 py-4 border-b border-zinc-800">
             <div className="flex items-center justify-between gap-2">
               <p className="font-semibold">{user?.displayName}</p>
@@ -228,6 +264,8 @@ function AvatarDropdown({ user, onLogout, mobile = false }) {
               Logout
             </button>
           </div>
+          </>
+          )}
         </div>
       )}
     </div>

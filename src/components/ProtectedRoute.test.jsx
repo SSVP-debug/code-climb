@@ -3,7 +3,19 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import { AuthContext } from "../context/AuthContextObject";
+import { GuestContext } from "../context/GuestContextObject";
 import { DailyQuizContext } from "../context/DailyQuizContextObject";
+
+// ProtectedRoute now also reads GuestContext (Guest Mode) for its
+// guest-bypass branch — none of these tests exercise a guest session, so
+// a stable "not a guest" stub is enough, same direct-Provider pattern
+// already used for AuthContext/DailyQuizContext above.
+const notGuestValue = {
+  isGuest: false,
+  guestPortal: null,
+  enterGuestMode: () => {},
+  exitGuestMode: () => {},
+};
 
 // DailyQuickQuiz owns the actual question UI and is covered by its own
 // tests — stub it down to a single button that calls onComplete, same
@@ -23,9 +35,10 @@ const unlockedQuizValue = {
   completeError: null,
 };
 
-function renderWithAuth(authValue, initialEntries = ["/protected"], quizValue = unlockedQuizValue) {
+function renderWithAuth(authValue, initialEntries = ["/protected"], quizValue = unlockedQuizValue, guestValue = notGuestValue) {
   return render(
     <AuthContext.Provider value={authValue}>
+      <GuestContext.Provider value={guestValue}>
       <DailyQuizContext.Provider value={quizValue}>
         <MemoryRouter initialEntries={initialEntries}>
           <Routes>
@@ -45,6 +58,17 @@ function renderWithAuth(authValue, initialEntries = ["/protected"], quizValue = 
                 </ProtectedRoute>
               }
             />
+            {/* Guest Mode: a route that opts in to guest browsing for the
+                "student" portal, same shape App.jsx uses for /dashboard,
+                /problems, /problems/:slug. */}
+            <Route
+              path="/guest-allowed"
+              element={
+                <ProtectedRoute guestPortal="student">
+                  <div>Guest-Allowed Content</div>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/login"
               element={<LoginRouteProbe />}
@@ -52,6 +76,7 @@ function renderWithAuth(authValue, initialEntries = ["/protected"], quizValue = 
           </Routes>
         </MemoryRouter>
       </DailyQuizContext.Provider>
+      </GuestContext.Provider>
     </AuthContext.Provider>
   );
 }
@@ -125,5 +150,93 @@ describe("ProtectedRoute", () => {
     expect(
       screen.getByText("Login Page: /login?next=%2Fclub%2Fpublic-contests%2Fabc123%3Futm_source%3Dfest")
     ).toBeInTheDocument();
+  });
+});
+
+// Guest Mode: guest-bypass branch — a route with a matching guestPortal
+// prop must be reachable by a guest with NO Firebase user, instead of
+// redirecting to /login the way every other unauthenticated case does.
+describe("ProtectedRoute — Guest Mode bypass", () => {
+  const guestStudentValue = {
+    isGuest: true,
+    guestPortal: "student",
+    enterGuestMode: () => {},
+    exitGuestMode: () => {},
+  };
+  const guestRecruiterValue = {
+    isGuest: true,
+    guestPortal: "recruiter",
+    enterGuestMode: () => {},
+    exitGuestMode: () => {},
+  };
+
+  it("renders children for a guest whose portal matches the route's guestPortal prop", () => {
+    renderWithAuth(
+      { user: null, loading: false },
+      ["/guest-allowed"],
+      unlockedQuizValue,
+      guestStudentValue
+    );
+
+    expect(screen.getByText("Guest-Allowed Content")).toBeInTheDocument();
+  });
+
+  it("skips DailyQuizGate entirely for a guest (no account, nothing to gate)", () => {
+    renderWithAuth(
+      { user: null, loading: false },
+      ["/guest-allowed"],
+      { ...unlockedQuizValue, status: "required" }, // would normally force the quiz screen
+      guestStudentValue
+    );
+
+    expect(screen.getByText("Guest-Allowed Content")).toBeInTheDocument();
+    expect(screen.queryByText("finish quiz")).not.toBeInTheDocument();
+  });
+
+  it("still redirects to login for a guest whose portal does NOT match the route's guestPortal prop", () => {
+    renderWithAuth(
+      { user: null, loading: false },
+      ["/guest-allowed"],
+      unlockedQuizValue,
+      guestRecruiterValue
+    );
+
+    expect(screen.queryByText("Guest-Allowed Content")).not.toBeInTheDocument();
+    expect(screen.getByText("Login Page: /login?next=%2Fguest-allowed")).toBeInTheDocument();
+  });
+
+  it("still redirects a non-guest, unauthenticated visitor to login even for a guestPortal-enabled route with no guest session active", () => {
+    renderWithAuth(
+      { user: null, loading: false },
+      ["/guest-allowed"],
+      unlockedQuizValue,
+      notGuestValue
+    );
+
+    expect(screen.queryByText("Guest-Allowed Content")).not.toBeInTheDocument();
+    expect(screen.getByText("Login Page: /login?next=%2Fguest-allowed")).toBeInTheDocument();
+  });
+
+  it("a route with NO guestPortal prop is never guest-bypassable, even with an active guest session", () => {
+    renderWithAuth(
+      { user: null, loading: false },
+      ["/protected"], // no guestPortal prop on this route
+      unlockedQuizValue,
+      guestStudentValue
+    );
+
+    expect(screen.queryByText("Secret")).not.toBeInTheDocument();
+    expect(screen.getByText("Login Page: /login?next=%2Fprotected")).toBeInTheDocument();
+  });
+
+  it("an authenticated user always wins over any guest state on a guestPortal route", () => {
+    renderWithAuth(
+      { user: { uid: "1" }, loading: false },
+      ["/guest-allowed"],
+      unlockedQuizValue,
+      guestStudentValue
+    );
+
+    expect(screen.getByText("Guest-Allowed Content")).toBeInTheDocument();
   });
 });

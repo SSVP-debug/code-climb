@@ -141,6 +141,33 @@ const problemSchema = new mongoose.Schema(
       index: true,
     },
 
+    // ── Availability switch (Content & Execution Architecture, Phase 1) ────
+    // The authoritative on/off switch for a problem. Defaults to `true` so
+    // every existing problem stays exactly as reachable as it always was —
+    // this field is additive, not a re-interpretation of anything that came
+    // before it. When `false`, the problem must behave as if it doesn't
+    // exist to ordinary discovery/Run/Submit: see problemController.js
+    // (getProblems/getProblemBySlug) and judgeController.js
+    // (runHandler/submitHandler), which both gate on this the same way
+    // they already gate on `visibility === "contest"` above — same generic
+    // 404 shape, same "don't confirm existence to someone not entitled to
+    // it" reasoning, deliberately reusing that existing pattern rather than
+    // introducing a new access-policy concept.
+    //
+    // Distinct from `visibility`: `visibility` controls WHO can currently
+    // see an otherwise-live problem (contest gating, time-boxed); `enabled`
+    // is a hard kill switch with no notion of "opens up later." The two are
+    // independent and both checked wherever a problem is resolved.
+    //
+    // Note for admins editing a "catalog" problem (see adminSource above):
+    // unlike topic/pattern/sourceType, `enabled` is never reverted by a
+    // seed run — src/data/problems.js entries don't declare this field, so
+    // seedProblems.js's `$set: problem` never touches it once toggled here.
+    enabled: {
+      type: Boolean,
+      default: true,
+    },
+
     // Content-library identifier for problems that belong to a separate,
     // independently-versioned collection (e.g. Code Club Edition missions:
     // "CCE-001", "CCE-002", …). null/absent for the standard interview
@@ -208,9 +235,43 @@ const problemSchema = new mongoose.Schema(
     // Visible testcases — returned to the client for "Run" mode
     testcases: { type: [testcaseSchema], default: [] },
 
-    // Hidden testcases — NEVER sent to the client.
-    // Only read server-side by the judge route.
-    hiddentestcases: { type: [testcaseSchema], default: [] },
+    // ── Hidden testcases (Content & Execution Architecture, Phase 3) ───────
+    // NEVER sent to the client — only read server-side by submitHandler
+    // (see judgeController.js). Restructured from a bare
+    // `hiddentestcases: [...]` array into a sub-document so a set of
+    // hidden tests can be independently enabled/disabled without deleting
+    // the data — mirrors the reasoning behind `Problem.enabled` above,
+    // one level down.
+    //
+    // `enabled` defaults to `true` so every existing problem's hidden
+    // tests keep grading exactly as before — this is additive, the same
+    // "don't reinterpret existing behavior" principle as `Problem.enabled`.
+    // When `false`, submitHandler must fail CLOSED (return a 4xx grading-
+    // unavailable response), never grade against visible tests only and
+    // never silently return Accepted — see submitHandler's own comment at
+    // the point it reads this field.
+    //
+    // MIGRATION NOTE: this field was previously a bare array named
+    // `hiddentestcases`. See scripts/migrateHiddenTestcaseSet.js for the
+    // one-time migration that copies existing data into this shape. That
+    // migration deliberately does NOT delete the old `hiddentestcases`
+    // field from already-migrated documents (rollback safety) — every
+    // read path that used to exclude `hiddentestcases` now excludes BOTH
+    // field names (see publicFields below and problemController.js) so
+    // the leftover legacy field can never leak even though it isn't
+    // removed. A later, separate cleanup pass can drop it once the
+    // restructuring has been live and verified for a while.
+    //
+    // Also required a small adapter in scripts/seedProblems.js and
+    // scripts/importProblems.js (the two writers of this field) — both
+    // explicitly out of scope for the broader "consolidate problem
+    // content sources" project, but unavoidably touched here because
+    // Mongoose's default strict-schema behavior would otherwise silently
+    // drop their writes to a field this schema no longer declares.
+    hiddenTestcaseSet: {
+      enabled: { type: Boolean, default: true },
+      testcases: { type: [testcaseSchema], default: [] },
+    },
 
     // ── Contest visibility (Fest Readiness Audit, P0-2) ────────────────────
     // "public"  — default. Behaves exactly as every problem always has:
@@ -294,9 +355,29 @@ const problemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Strip hiddentestcases from any client-facing query
+// Strip both the current and (pre-migration/rollback-safety) legacy
+// hidden-testcase field names from any client-facing query. Content &
+// Execution Architecture, Phase 3: excluding both — not just the new
+// hiddenTestcaseSet — is deliberate belt-and-suspenders: the migration
+// (scripts/migrateHiddenTestcaseSet.js) intentionally leaves the old
+// `hiddentestcases` field physically in place on already-migrated
+// documents for rollback safety rather than immediately deleting it, so
+// every read path that used to exclude it must keep excluding it too,
+// permanently, until a later, separate cleanup pass actually removes the
+// legacy field from the database. There must never be a moment where a
+// document could have data under the old field name that isn't excluded
+// here.
 problemSchema.statics.publicFields =
-  "-hiddentestcases -__v -createdAt -updatedAt";
+  "-hiddentestcases -hiddenTestcaseSet -__v -createdAt -updatedAt";
+
+// Compound index covering the two boolean/enum catalog-filter fields
+// checked on every normal-discovery read (getProblems/getProblemBySlug) —
+// `enabled` (Phase 1) and `visibility` (contest gating, pre-existing).
+// Both are filtered together in practice, so one compound index serves
+// both rather than two single-field indexes competing for the planner's
+// choice. Not performance-critical at today's problem count, but cheap to
+// add now and avoids a later migration once the catalog grows.
+problemSchema.index({ enabled: 1, visibility: 1 });
 
 const Problem = mongoose.model("Problem", problemSchema);
 

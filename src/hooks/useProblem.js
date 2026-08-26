@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../services/api";
+import { apiFetchOptional } from "../services/api";
 
 /**
  * Fetches a problem by slug from the API (not a local file), so newly
  * seeded problems appear without a frontend redeploy. Also resolves the
  * adjacent prev/next slugs for problem-to-problem navigation.
+ *
+ * Guest Mode: GET /api/problems/:slug is `optionalAuth` on the backend
+ * (backend/routes/problemRoutes.js) — public, but personalizes the
+ * Next Best Problem recommendation when a real session exists. Uses
+ * apiFetchOptional (not apiFetch, which throws with no Firebase user) so
+ * guests can open problem details, same as authenticated users.
  */
 export function useProblem(slug, pathId = null) {
   const [problem, setProblem] = useState(null);
@@ -30,7 +36,7 @@ export function useProblem(slug, pathId = null) {
         const query = pathId ? `?path=${encodeURIComponent(pathId)}` : "";
 
         const [problemResponse] = await Promise.all([
-          apiFetch(`/api/problems/${slug}${query}`),
+          apiFetchOptional(`/api/problems/${slug}${query}`),
         ]);
 
         setProblem(problemResponse.problem);

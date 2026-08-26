@@ -1,0 +1,253 @@
+// Content & Execution Architecture, Phase 2 — the language registry is
+// the single source of truth for language identity/availability. These
+// tests cover the registry's derived exports directly (unit-level) plus
+// the GET /api/languages controller and the enabled-gating behavior in
+// routes/judge.js and routes/compiler.js (integration-with-mocks level,
+// mirroring the existing pattern in routes/compiler.test.js /
+// routes/judge.contract.test.js).
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
+// routes/judge.js pulls in judgeController.js at module load, which in
+// turn touches models/Problem.js (mongoose.model(...)) — mocked here the
+// same way routes/judge.test.js already does, so re-importing routes/
+// judge.js after vi.resetModules() below doesn't hit mongoose's
+// "Cannot overwrite `Problem` model once compiled" the second time.
+vi.mock("../models/Problem.js", () => ({
+  default: { findOne: vi.fn() },
+}));
+// Guest Mode integration: routes/judge.js and routes/compiler.js now also
+// import requireAuth/optionalAuth from middleware/auth.js, which itself
+// touches models/User.js and (transitively, via
+// services/collegeAutoProvision.js) models/College.js — each a
+// mongoose.model(...) call at module load, and each hitting the same
+// "Cannot overwrite `<Model>` model once compiled" hazard as Problem
+// above the second time this file is re-imported after
+// vi.resetModules(). Mocked at the middleware/auth.js boundary (rather
+// than chasing every transitive model import individually) since this
+// file only exercises schema-validation exports from routes/judge.js and
+// routes/compiler.js, never the auth middleware's own behavior.
+vi.mock("../middleware/auth.js", () => ({
+  requireAuth: (req, res, next) => next(),
+  optionalAuth: (req, res, next) => next(),
+}));
+// This test file's mock is deliberately a full lightweight replacement,
+// NOT `importOriginal()` + override (unlike routes/judge.test.js, which
+// legitimately exercises callJudge0's real interaction with the driver-code
+// generator and DOES need the actual module). This file only imports
+// routes/judge.js and routes/compiler.js for their exported Zod schemas —
+// runSchema/submitSchema/runCodeSchema — and never calls runHandler,
+// submitHandler, or callJudge0 itself. Using importOriginal() here was
+// pulling in compilerController.js's full real dependency graph
+// (utils/generateDriverCode.js, utils/operationSequenceDriver.js,
+// utils/operationSequenceShape.js, services/executionQueue.js →
+// services/redisExecutionQueue.js/directExecutionQueue.js →
+// config/redis.js's dynamic `ioredis` import, services/judge0Health.js,
+// config/logger.js — over 1,000 lines of execution-queue/Redis/driver-code
+// machinery this file's assertions never touch) to be re-transformed and
+// re-executed on every one of this file's three separate
+// vi.resetModules() cycles, which is exactly the kind of unnecessary
+// module-graph weight that turns a normally-fast dynamic re-import slow
+// enough to trip a 5s test timeout in a fuller, real checkout. Full
+// replacement removes that weight entirely with no loss of coverage for
+// what this file actually tests — both `callJudge0` and `runCode` are
+// stubbed since routes/compiler.js imports `runCode` directly as its
+// route handler (routes/judge.js only needs `callJudge0`, imported
+// transitively via judgeController.js).
+vi.mock("../controllers/compilerController.js", () => ({
+  callJudge0: vi.fn(),
+  runCode: vi.fn(),
+}));
+vi.mock("../controllers/submissionController.js", () => ({
+  recordVerifiedSubmission: vi.fn().mockResolvedValue({ _id: "sub1" }),
+}));
+vi.mock("../services/contestScoring.js", () => ({
+  awardContestSolve: vi.fn(),
+}));
+vi.mock("../services/battleRoomScoring.js", () => ({
+  awardBattleRoomSolve: vi.fn(),
+}));
+vi.mock("../services/contestProblemAccess.js", () => ({
+  canAccessContestProblem: vi.fn(),
+}));
+
+// Root-cause fix: three tests below dynamically re-mock "./languages.js"
+// via vi.doMock() to simulate a disabled language, then call
+// vi.doUnmock()/vi.resetModules() as the LAST lines of their own test
+// body to restore the real registry for whatever test runs next. That
+// cleanup is not atomic with the test — if the test times out or throws
+// before reaching those lines, the mocked/restricted registry silently
+// leaks into every subsequent test in this file (they all share one
+// module registry; only vi.resetModules() clears it). That's exactly
+// what turned one slow/timed-out test into two failures: the very next
+// test does a plain, unmocked import expecting the real four-language
+// registry and instead inherits the previous test's mocked
+// three-language one.
+//
+// A single file-scoped afterEach is Vitest's guaranteed-to-run cleanup
+// hook — it still fires after a timeout or a thrown assertion, unlike
+// code at the end of a test body — so cleanup can no longer be skipped.
+// vi.doUnmock() on a specifier that isn't currently mocked is a no-op, so
+// this is safe to run after every test, including the ones in this file
+// that never touch "./languages.js" at all.
+afterEach(() => {
+  vi.doUnmock("./languages.js");
+  vi.resetModules();
+});
+
+describe("config/languages.js — registry", () => {
+  it("keeps SUPPORTED_* exports covering every registered language regardless of enabled state", async () => {
+    const {
+      LANGUAGES,
+      SUPPORTED_LANGUAGES,
+      SUPPORTED_LANGUAGE_IDS,
+      SUPPORTED_LANGUAGE_KEYS,
+      LANGUAGE_ID_TO_STRING,
+      LANGUAGE_KEY_TO_ID,
+    } = await import("./languages.js");
+
+    const keys = Object.keys(LANGUAGES);
+    expect(SUPPORTED_LANGUAGE_KEYS).toEqual(keys);
+    expect(SUPPORTED_LANGUAGE_IDS).toEqual(keys.map((k) => LANGUAGES[k].judge0Id));
+    for (const key of keys) {
+      expect(SUPPORTED_LANGUAGES[LANGUAGES[key].judge0Id]).toBe(LANGUAGES[key].name);
+      expect(LANGUAGE_ID_TO_STRING[LANGUAGES[key].judge0Id]).toBe(key);
+      expect(LANGUAGE_KEY_TO_ID[key]).toBe(LANGUAGES[key].judge0Id);
+    }
+  });
+
+  it("matches the historically hardcoded four languages and their Judge0 IDs exactly (no accidental value drift during consolidation)", async () => {
+    const { LANGUAGES } = await import("./languages.js");
+
+    expect(LANGUAGES.python.judge0Id).toBe(71);
+    expect(LANGUAGES.javascript.judge0Id).toBe(63);
+    expect(LANGUAGES.java.judge0Id).toBe(62);
+    expect(LANGUAGES.cpp.judge0Id).toBe(54);
+  });
+
+  it("ENABLED_* exports exclude a disabled language while SUPPORTED_* keeps including it", async () => {
+    vi.resetModules();
+    vi.doMock("./languages.js", async (importOriginal) => {
+      const actual = await importOriginal();
+      const LANGUAGES = {
+        ...actual.LANGUAGES,
+        cpp: { ...actual.LANGUAGES.cpp, enabled: false },
+      };
+      // Re-derive exactly the way the real module does, so this test
+      // exercises the same derivation logic rather than hand-computing
+      // an independent expectation.
+      const ENABLED_LANGUAGE_KEYS = Object.entries(LANGUAGES)
+        .filter(([, l]) => l.enabled)
+        .map(([k]) => k);
+      const ENABLED_LANGUAGE_IDS = Object.values(LANGUAGES)
+        .filter((l) => l.enabled)
+        .map((l) => l.judge0Id);
+      return {
+        ...actual,
+        LANGUAGES,
+        ENABLED_LANGUAGE_KEYS,
+        ENABLED_LANGUAGE_IDS,
+        isEnabledLanguageKey: (k) => Boolean(LANGUAGES[k]?.enabled),
+        isEnabledLanguageId: (id) => ENABLED_LANGUAGE_IDS.includes(id),
+        getEnabledLanguagesForApi: () =>
+          Object.entries(LANGUAGES)
+            .filter(([, l]) => l.enabled)
+            .map(([k, l]) => ({ id: k, name: l.name, extension: l.extension })),
+      };
+    });
+
+    const mod = await import("./languages.js");
+
+    expect(mod.ENABLED_LANGUAGE_KEYS).not.toContain("cpp");
+    expect(mod.ENABLED_LANGUAGE_IDS).not.toContain(54);
+    expect(mod.isEnabledLanguageKey("cpp")).toBe(false);
+    expect(mod.isEnabledLanguageId(54)).toBe(false);
+    expect(mod.SUPPORTED_LANGUAGE_KEYS).toContain("cpp");
+    expect(mod.SUPPORTED_LANGUAGE_IDS).toContain(54);
+    expect(mod.getEnabledLanguagesForApi().map((l) => l.id)).not.toContain("cpp");
+  });
+
+  it("formatEnabledLanguageKeysMessage produces the historical message text when all four are enabled", async () => {
+    const { formatEnabledLanguageKeysMessage } = await import("./languages.js");
+    expect(formatEnabledLanguageKeysMessage()).toBe("python, javascript, java, or cpp");
+  });
+});
+
+describe("GET /api/languages — languageController.getLanguages", () => {
+  it("returns only currently-enabled languages in the registry's shape", async () => {
+    const { getLanguages } = await import("../controllers/languageController.js");
+    const res = { json: vi.fn() };
+
+    getLanguages({}, res);
+
+    expect(res.json).toHaveBeenCalledWith({
+      languages: [
+        { id: "python", name: "Python", extension: "py" },
+        { id: "javascript", name: "JavaScript", extension: "js" },
+        { id: "java", name: "Java", extension: "java" },
+        { id: "cpp", name: "C++", extension: "cpp" },
+      ],
+    });
+  });
+});
+
+describe("routes/judge.js — language enum sourced from the enabled registry", () => {
+  it("rejects a disabled language with a message reflecting the currently-enabled set", async () => {
+    vi.resetModules();
+    vi.doMock("./languages.js", async (importOriginal) => {
+      const actual = await importOriginal();
+      return {
+        ...actual,
+        ENABLED_LANGUAGE_KEYS: ["python", "javascript", "java"],
+        formatEnabledLanguageKeysMessage: () => "python, javascript, or java",
+      };
+    });
+
+    const { runSchema } = await import("../routes/judge.js");
+    const result = runSchema.safeParse({
+      code: "print(1)",
+      language: "cpp",
+      testcases: [{ input: {}, expectedOutput: 1 }],
+      problemSlug: "two-sum",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error.issues.find((i) => i.path[0] === "language").message).toBe(
+      "language must be: python, javascript, or java"
+    );
+  });
+
+  it("still accepts all four languages by default (nothing disabled)", async () => {
+    // Static-equivalent import (no resetModules beforehand) — exercises
+    // the real, un-mocked registry, same module instance the rest of the
+    // suite already shares.
+    const { runSchema } = await import("../routes/judge.js");
+    for (const language of ["python", "javascript", "java", "cpp"]) {
+      const result = runSchema.safeParse({
+        code: "print(1)",
+        language,
+        testcases: [{ input: {}, expectedOutput: 1 }],
+        problemSlug: "two-sum",
+      });
+      expect(result.success).toBe(true);
+    }
+  });
+});
+
+describe("routes/compiler.js — language_id gate sourced from the enabled registry", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it("rejects a disabled language's Judge0 ID even though it's a structurally valid, registered ID", async () => {
+    vi.doMock("./languages.js", async (importOriginal) => {
+      const actual = await importOriginal();
+      return { ...actual, ENABLED_LANGUAGE_IDS: [71, 63, 62] }; // cpp (54) disabled
+    });
+
+    const { runCodeSchema } = await import("../routes/compiler.js");
+    const result = runCodeSchema.safeParse({ source_code: "int main(){}", language_id: 54 });
+
+    expect(result.success).toBe(false);
+    expect(result.error.issues[0].message).toMatch(/supported languages/i);
+  });
+});

@@ -83,7 +83,7 @@ export const ProblemFolderSchema =
 // not re-declared here, so there's exactly one place these rules can drift.
 // What differs from ProblemFolderSchema is purely SHAPE, not rules: this is
 // flat (no nested `meta` key) and uses Problem.js's actual Mongoose field
-// names (`testcases`/`hiddentestcases`) instead of the folder-representation
+// names (`testcases`/`hiddenTestcaseSet`) instead of the folder-representation
 // names (`visibleTestcases`/`hiddenTestcases`) — needed because the admin
 // UI's create payload maps directly onto Mongoose's Problem document, not
 // onto a problems/<slug>/ folder's file layout.
@@ -103,7 +103,18 @@ export const ProblemFolderSchema =
 export const AdminProblemCreateSchema = MetaSchema.extend({
     description: z.string().min(1),
     testcases: z.array(TestcaseSchema).default([]),
-    hiddentestcases: z.array(TestcaseSchema).default([]),
+    // Content & Execution Architecture, Phase 3: was a flat
+    // `hiddentestcases: z.array(TestcaseSchema).default([])`, matching
+    // Problem.js's old field name/shape 1:1. Now matches Problem.js's
+    // restructured `hiddenTestcaseSet` sub-document instead — this schema
+    // is the admin-console API's own contract (adminSource: "admin"
+    // problems, not the folder/catalog authoring pipeline), so it moves
+    // in lockstep with Problem.js rather than needing a separate adapter
+    // the way seedProblems.js/importProblems.js do.
+    hiddenTestcaseSet: z.object({
+        enabled: z.boolean().default(true),
+        testcases: z.array(TestcaseSchema).default([]),
+    }).default({}),
     starterCode: z.object({
         python: z.string(),
         javascript: z.string(),

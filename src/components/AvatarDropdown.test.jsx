@@ -9,6 +9,14 @@ vi.mock("react-router-dom", () => ({
     </a>
   ),
   useNavigate: () => vi.fn(),
+  // AvatarDropdown now also reads useLocation (Guest Mode's Sign In link
+  // preserves ?next=) — a fixed stub location is enough since none of
+  // these tests exercise the guest branch that reads it.
+  useLocation: () => ({ pathname: "/dashboard", search: "" }),
+}));
+
+vi.mock("../utils/authRedirect", () => ({
+  buildLoginRedirect: (next) => `/login?next=${encodeURIComponent(next)}`,
 }));
 
 let appContextValue = { totalXP: 0, currentStreak: 0, solvedProblems: [], role: "student" };
