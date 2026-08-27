@@ -36,15 +36,12 @@ const STAGES = [
 const ACCENT = {
   teal: {
     icon: "text-teal-400 bg-teal-500/10 border-teal-500/25",
-    line: "bg-teal-500/30",
   },
   violet: {
     icon: "text-violet-400 bg-violet-500/10 border-violet-500/25",
-    line: "bg-violet-500/30",
   },
   sky: {
     icon: "text-sky-400 bg-sky-500/10 border-sky-500/25",
-    line: "bg-sky-500/30",
   },
 };
 
@@ -64,17 +61,14 @@ function CompetitorComparison() {
         </p>
       </Reveal>
 
-      <Reveal className="grid md:grid-cols-3 gap-6 md:gap-0">
-        {STAGES.map((s, i) => {
+      <Reveal className="grid md:grid-cols-3 gap-5">
+        {STAGES.map((s) => {
           const a = ACCENT[s.accent];
           return (
-            <div key={s.id} className="relative md:px-6">
-              {i > 0 && (
-                <span
-                  className={`hidden md:block absolute top-6 left-0 w-6 h-px ${a.line}`}
-                  aria-hidden="true"
-                />
-              )}
+            <div
+              key={s.id}
+              className="bg-ink-800 border border-ink-700 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col"
+            >
               <span
                 className={`inline-flex items-center justify-center w-11 h-11 rounded-xl border mb-4 ${a.icon}`}
                 aria-hidden="true"

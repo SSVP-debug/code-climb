@@ -23,14 +23,6 @@ const THEMES_PREVIEW = ["codeHeist", "breakingBug"].map((id) => {
     accepted: id === "codeHeist" ? "Vault Breached" : "Crystal Clear",
     error: id === "codeHeist" ? "Escape Failed" : "Lab Explosion",
     ErrorIcon: id === "codeHeist" ? AlertTriangle : Bomb,
-    texture:
-      id === "codeHeist"
-        ? {
-            backgroundImage: `repeating-linear-gradient(45deg, ${withAlpha(colors.primary, "0f")} 0px, ${withAlpha(colors.primary, "0f")} 2px, transparent 2px, transparent 14px)`,
-          }
-        : {
-            backgroundImage: `repeating-linear-gradient(0deg, ${withAlpha(colors.primary, "12")} 0px, ${withAlpha(colors.primary, "12")} 1px, transparent 1px, transparent 24px), repeating-linear-gradient(90deg, ${withAlpha(colors.primary, "12")} 0px, ${withAlpha(colors.primary, "12")} 1px, transparent 1px, transparent 24px)`,
-          },
   };
 });
 
@@ -54,50 +46,39 @@ function ThemesShowcase({ user }) {
         {THEMES_PREVIEW.map((t) => (
           <Reveal
             key={t.id}
-            className="relative bg-ink-800 border rounded-2xl p-7 overflow-hidden"
-            style={{ borderColor: withAlpha(t.colors.primary, "40") }}
+            className="bg-ink-800 border border-ink-700 hover:border-zinc-700 rounded-2xl p-7 transition-colors"
           >
-            <div style={t.texture} className="absolute inset-0 pointer-events-none" />
             <div
-              aria-hidden="true"
-              className="absolute top-0 left-0 right-0 h-1"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
               style={{
-                background: `linear-gradient(90deg, ${t.colors.primary}, ${t.colors.accent})`,
+                backgroundColor: withAlpha(t.colors.primary, "1f"),
+                color: t.colors.primary,
               }}
-            />
-            <div className="relative">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
-                style={{
-                  backgroundColor: withAlpha(t.colors.primary, "1f"),
-                  color: t.colors.primary,
-                }}
-              >
-                <t.Icon size={26} strokeWidth={2} aria-hidden="true" />
+            >
+              <t.Icon size={26} strokeWidth={2} aria-hidden="true" />
+            </div>
+            <h3 className="text-xl font-bold mb-1">{t.name}</h3>
+            <div className="space-y-2 mt-4 text-sm font-mono-ui">
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Accepted</span>
+                <span
+                  className="border px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+                  style={{
+                    color: t.colors.primary,
+                    borderColor: withAlpha(t.colors.primary, "40"),
+                    backgroundColor: withAlpha(t.colors.primary, "1a"),
+                  }}
+                >
+                  <CheckCircle2 size={13} strokeWidth={2.25} aria-hidden="true" />
+                  {t.accepted}
+                </span>
               </div>
-              <h3 className="text-xl font-bold mb-1">{t.name}</h3>
-              <div className="space-y-2 mt-4 text-sm font-mono-ui">
-                <div className="flex items-center gap-3">
-                  <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Accepted</span>
-                  <span
-                    className="border px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5"
-                    style={{
-                      color: t.colors.primary,
-                      borderColor: withAlpha(t.colors.primary, "40"),
-                      backgroundColor: withAlpha(t.colors.primary, "1a"),
-                    }}
-                  >
-                    <CheckCircle2 size={13} strokeWidth={2.25} aria-hidden="true" />
-                    {t.accepted}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Error</span>
-                  <span className="border border-verdict-reject/25 bg-verdict-reject/10 text-verdict-reject px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                    <t.ErrorIcon size={13} strokeWidth={2.25} aria-hidden="true" />
-                    {t.error}
-                  </span>
-                </div>
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500 w-20 flex-shrink-0 text-xs">Error</span>
+                <span className="border border-verdict-reject/25 bg-verdict-reject/10 text-verdict-reject px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                  <t.ErrorIcon size={13} strokeWidth={2.25} aria-hidden="true" />
+                  {t.error}
+                </span>
               </div>
             </div>
           </Reveal>
