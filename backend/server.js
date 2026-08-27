@@ -53,6 +53,7 @@ import dailyQuizRoutes from "./routes/dailyQuiz.js";
 import initRoutes from "./routes/init.js";
 import statsRoutes from "./routes/stats.js";
 import referralRoutes from "./routes/referral.js";
+import rewardRoutes from "./routes/rewards.js";
 import ambassadorRoutes from "./routes/ambassador.js";
 import leetcodeRoutes from "./routes/leetcode.js";
 import leaderboardRoutes from "./routes/leaderboard.js";
@@ -212,6 +213,7 @@ app.use("/api/profile/pdf", requireAuth, profilePdfRoutes);
 // Single boot endpoint: replaces 3 sequential API calls (initProgress + getProgress + getSubmissions)
 app.use("/api/init", requireAuth, apiLimiter, initRoutes);
 app.use("/api/referral", requireAuth, apiLimiter, referralRoutes);
+app.use("/api/rewards", requireAuth, apiLimiter, rewardRoutes);
 app.use("/api/ambassador", requireAuth, apiLimiter, ambassadorRoutes);
 app.use("/api/leetcode", requireAuth, apiLimiter, leetcodeRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);

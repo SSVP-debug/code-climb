@@ -62,6 +62,7 @@ import {
   extractOpportunities,
   importSelectedOpportunities,
 } from "../controllers/adminOpportunityImportController.js";
+import { getUserLedgerAdmin } from "../controllers/rewardController.js";
 
 const router = Router();
 
@@ -142,6 +143,16 @@ router.post("/opportunities/:id/archive", requireAdmin, archiveOpportunity);
 router.post("/opportunities/:id/mark-expired", requireAdmin, markExpiredOpportunity);
 router.post("/opportunities/:id/duplicate", requireAdmin, duplicateOpportunity);
 router.get("/opportunities/:id/analytics", requireAdmin, getOpportunityAnalytics);
+
+// ── Reward Ledger (Phase 2 — Contribution Infrastructure + Referral System) ──
+// Read-only: any mutation to the ledger happens exclusively through
+// services/rewardLedger.js's issueReward(), called from the referral-
+// qualification and (future) contribution-approval flows — never from an
+// admin-facing write endpoint. This exists for support/dispute lookups
+// ("why does this user have N tokens") on an account other than the
+// caller's own — see routes/rewards.js for the equivalent self-service
+// endpoints every user has for their own balance/ledger.
+router.get("/rewards/ledger", requireAdmin, getUserLedgerAdmin);
 
 // ── System health ────────────────────────────────────────────────────────────
 router.get("/system-health", requireAdmin, getSystemHealth);
