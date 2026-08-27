@@ -20,6 +20,70 @@
   --color-verdict-reject: #ff5d5d;
 }
 
+/* ── Landing redesign — Phase 3A foundation tokens ───────────────────────
+   Established by the Phase 2 visual + narrative architecture blueprint.
+   These are infrastructure only: named, documented values that Phase 3B+
+   will consume as the individual sections are rebuilt. Nothing in the
+   currently-rendered landing page (or anywhere else in the app) reads
+   these yet, so defining them here has no visual effect on its own —
+   the point is to have one source of truth for the redesign's type scale
+   and role-color vocabulary before any component starts using it, rather
+   than each rebuilt section re-deriving its own sizes ad hoc the way the
+   pre-redesign sections currently do (see Phase 1 audit, §4).
+
+   Deliberately namespaced under `lp-`/`role-` rather than redefining
+   Tailwind's built-in `--text-*` scale (`text-4xl`, etc.) or introducing
+   a second generic `--color-accent`: this app's other routes (dashboard,
+   admin, problem workspace) already depend on the stock Tailwind scale
+   and the existing verdict/ink tokens, and none of that should shift as
+   a side effect of a landing-page-only redesign. ─────────────────────*/
+@theme {
+  /* Type scale — blueprint §13. Sizes are clamp()-based so they scale
+     with viewport width without each consuming component needing its
+     own md:/lg: breakpoint overrides for font-size specifically. */
+  --text-lp-eyebrow: 0.75rem;
+  --text-lp-eyebrow--line-height: 1;
+
+  --text-lp-h1: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+  --text-lp-h1--line-height: 1.05;
+
+  /* Two H2 sizes, not one — blueprint §13 calls for the core-narrative
+     "spine" sections (Problem, Product Demonstration, Verification,
+     Community, Opportunities) to read visually heavier than the
+     supporting-detail sections (Themed Practice, Feature Constellation),
+     so scale itself signals which sections carry the main argument. */
+  --text-lp-h2-spine: clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem);
+  --text-lp-h2-spine--line-height: 1.15;
+
+  --text-lp-h2-detail: clamp(1.5rem, 1.25rem + 1.1vw, 2rem);
+  --text-lp-h2-detail--line-height: 1.2;
+
+  --text-lp-h3: 1.125rem;
+  --text-lp-h3--line-height: 1.35;
+
+  --text-lp-body: 1.0625rem;
+  --text-lp-body--line-height: 1.65;
+
+  --text-lp-label: 0.6875rem;
+  --text-lp-label--line-height: 1;
+
+  --tracking-lp-eyebrow: 0.08em;
+  --tracking-lp-label: 0.1em;
+
+  /* Role colors — blueprint §12. Centralizes the three role accents that
+     today live only as inline, undocumented Tailwind classes inside
+     AudienceGrid.jsx's ACCENT map and CompetitorComparison.jsx (see
+     Phase 1 audit, §4). Values are hex-matched to the exact Tailwind
+     teal-400/sky-400/violet-400 shades those components already render,
+     so swapping a component over to these tokens later is a no-op, not
+     a color change. Scope stays deliberately narrow per blueprint §12 —
+     these are for the Opportunities section specifically, not a
+     page-wide role system. */
+  --color-role-student: #2dd4bf;
+  --color-role-recruiter: #38bdf8;
+  --color-role-tpo: #a78bfa;
+}
+
 /* ── Black & White Mode ───────────────────────────────────────────────────
    Platform-wide grayscale filter, toggled via the switch in Navbar (see
    BWModeContext + BWModeToggle). Applied to <html> so it covers every
@@ -206,11 +270,6 @@ html.bw-mode {
   100% { transform: translate3d(0, 0, 0); }
 }
 
-@keyframes lp-ticker {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
 .lp-reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -228,10 +287,6 @@ html.bw-mode {
   animation: lp-drift 6s ease-in-out infinite;
 }
 
-.lp-ticker-track {
-  animation: lp-ticker 28s linear infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .lp-reveal {
     opacity: 1;
@@ -239,8 +294,7 @@ html.bw-mode {
     animation: none;
   }
   .lp-cursor,
-  .lp-drift,
-  .lp-ticker-track {
+  .lp-drift {
     animation: none;
   }
 
