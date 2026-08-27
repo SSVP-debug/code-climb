@@ -8,6 +8,7 @@ import { useGuest } from "../hooks/useGuest";
 import { buildLoginRedirect } from "../utils/authRedirect";
 import AvatarDropdown from "./AvatarDropdown";
 import StreakBadge from "./common/StreakBadge";
+import BWModeToggle from "./common/BWModeToggle";
 import NotificationBell from "./notifications/NotificationBell";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import CommandPalette from "./CommandPalette";
@@ -266,6 +267,8 @@ function Navbar() {
             </button>
           )}
 
+          <BWModeToggle />
+
           <StreakBadge
             streak={currentStreak}
             size="sm"
@@ -369,7 +372,10 @@ function Navbar() {
               </Link>
             );
           })}
-          <div className="border-t border-zinc-800 mt-2 pt-3 flex items-center justify-between">
+          <div className="border-t border-zinc-800 mt-2 pt-3">
+            <BWModeToggle showLabel />
+          </div>
+          <div className="border-t border-zinc-800 mt-3 pt-3 flex items-center justify-between">
             <div>
               <p className="font-semibold text-sm">
                 {isGuest ? "Guest Session" : user?.displayName}

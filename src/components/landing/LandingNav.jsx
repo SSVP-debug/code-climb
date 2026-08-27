@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Button from "../ui/Button";
+import BWModeToggle from "../common/BWModeToggle";
 
 function LandingNav({ user }) {
   return (
@@ -14,6 +15,7 @@ function LandingNav({ user }) {
         >
           Problems
         </Link>
+        <BWModeToggle />
         <Button to={user ? "/dashboard" : "/portal"} variant="theme" size="sm">
           {user ? "Dashboard →" : "Get Started"}
         </Button>

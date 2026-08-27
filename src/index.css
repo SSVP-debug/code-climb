@@ -20,6 +20,27 @@
   --color-verdict-reject: #ff5d5d;
 }
 
+/* ── Black & White Mode ───────────────────────────────────────────────────
+   Platform-wide grayscale filter, toggled via the switch in Navbar (see
+   BWModeContext + BWModeToggle). Applied to <html> so it covers every
+   route/role/theme uniformly — the filter itself is cheap and animatable,
+   which is what gives the toggle its smooth "fade to gray" transition
+   instead of an instant, jarring flip. Respects prefers-reduced-motion by
+   skipping the animated transition (the mode still applies instantly). */
+html {
+  transition: filter 450ms ease;
+}
+
+html.bw-mode {
+  filter: grayscale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    transition: none;
+  }
+}
+
 @layer base {
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;

@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "@sentry/react";
 
 import { ThemeProvider } from "./context/ThemeContext";
+import { BWModeProvider } from "./context/BWModeContext";
 
 import AchievementToastContainer from "./components/ui/AchievementToastContainer";
 import GlobalErrorFallback from "./components/GlobalErrorFallback";
@@ -63,6 +64,7 @@ ReactDOM.createRoot(
 ).render(
   <React.StrictMode>
     <HelmetProvider>
+    <BWModeProvider>
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
@@ -111,6 +113,7 @@ ReactDOM.createRoot(
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
+    </BWModeProvider>
     </HelmetProvider>
   </React.StrictMode>
 );
