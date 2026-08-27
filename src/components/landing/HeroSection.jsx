@@ -1,62 +1,130 @@
 import Button from "../ui/Button";
-import HeroTerminal from "./HeroTerminal";
-import ConstellationBackground from "./ConstellationBackground";
 
 const TRUST_SIGNALS = "Free to use · No credit card · Google login in 10 sec";
 
-function HeroSection({ user }) {
+const CODE_PREVIEW = `def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []`;
+
+/**
+ * A single, frozen "Accepted" verdict card — the Hero's one visual anchor.
+ *
+ * Deliberately NOT the animated HeroTerminal. Blueprint §7 moves the live
+ * type → run → accept cycle into its own Product Demonstration section
+ * (Phase 3D), where it gets a full section's attention budget instead of
+ * competing with the H1 for the first three seconds. HeroTerminal.jsx and
+ * ConstellationBackground.jsx are untouched and unchanged — still exactly
+ * as they were — and simply aren't rendered by the Hero anymore; they're
+ * reserved for that later reuse. This card borrows their visual
+ * vocabulary (window chrome, verdict badge, runtime/memory row) without
+ * any of their timers or canvas loop, per Phase 2 reference (A): a
+ * confident static composition over a generic-feeling animation.
+ *
+ * Purely illustrative — every fact it shows is already stated in the H1
+ * and subhead — so the whole thing is aria-hidden rather than have a
+ * screen reader narrate a fake code file.
+ */
+function ProofCard() {
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-12 pt-16 md:pt-20 pb-16">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        {/* Left — copy. Above the fold, so it's marked already-in-view
-            rather than waiting on a scroll trigger like sections below. */}
-        <div className="lp-reveal lp-in-view">
-          <div className="inline-flex items-center gap-2 bg-ink-800 border border-ink-700 rounded-full px-4 py-1.5 text-xs font-mono-ui text-zinc-400 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-verdict-pending" />
-            Placement season 2026 · batches open now
-          </div>
+    <div aria-hidden="true" className="relative w-full">
+      <span className="absolute -top-3 -right-3 z-10 rotate-3 rounded-full border border-verdict-accept/30 bg-ink-900 px-3 py-1 font-mono-ui text-[11px] tracking-wide text-verdict-accept shadow-lg shadow-black/40 md:-top-4 md:-right-5">
+        Verified server-side
+      </span>
 
-          <h1 className="text-4xl md:text-5xl font-bold leading-[1.1] mb-5 tracking-tight">
-            DSA practice that
-            <span className="text-verdict-accept"> actually keeps</span>
-            <br />you coming back.
-          </h1>
-
-          <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-            Solve real interview problems, practice live AI mock interviews,
-            and build a solve history that's{" "}
-            <span className="text-verdict-pending">verified</span>, not
-            self-reported  {" "}
-            <strong className="text-white">the kind recruiters actually check.</strong>
-          </p>
-
-          <div className="flex flex-wrap gap-3 mb-10">
-            <Button
-              to={user ? "/dashboard" : "/portal"}
-              variant="theme"
-              size="lg"
-              className="shadow-lg shadow-verdict-accept/10"
-            >
-              {user ? "Go to Dashboard →" : "Start for Free →"}
-            </Button>
-            <Button
-              to={user ? "/problems" : "/login?role=student"}
-              variant="secondary"
-              size="lg"
-            >
-              Browse Problems
-            </Button>
-          </div>
-
-          <p className="text-xs text-zinc-500 font-mono-ui">{TRUST_SIGNALS}</p>
+      <div className="overflow-hidden rounded-2xl border border-ink-700 bg-ink-800 font-mono-ui shadow-2xl shadow-black/30 rotate-1">
+        <div className="flex items-center gap-2 border-b border-ink-700 bg-ink-900 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-verdict-reject/60" />
+          <span className="h-3 w-3 rounded-full bg-verdict-pending/60" />
+          <span className="h-3 w-3 rounded-full bg-verdict-accept/60" />
+          <span className="ml-3 text-xs text-zinc-500">two-sum.py</span>
+          <span className="ml-auto rounded-full border border-verdict-accept/30 bg-verdict-accept/10 px-2 py-0.5 text-xs font-semibold text-verdict-accept">
+            Accepted
+          </span>
         </div>
 
-        {/* Right — the signature moment: a live-running judge, with the
-            skill-graph canvas confined to this one panel instead of
-            wallpapering the whole page behind every section below. */}
-        <div className="lp-reveal lp-in-view relative p-6 md:p-10 -m-6 md:-m-10">
-          <ConstellationBackground />
-          <HeroTerminal />
+        <pre className="overflow-x-auto p-5 text-sm leading-relaxed text-zinc-300">
+          <code>{CODE_PREVIEW}</code>
+        </pre>
+
+        <div className="flex items-center justify-between border-t border-ink-700 bg-ink-900 px-5 py-3 text-xs">
+          <span className="text-zinc-500">Runtime: 48ms · Memory: 14.0 MB</span>
+          <span className="font-semibold text-verdict-accept">+50 XP earned</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Hero — Phase 3B redesign.
+ *
+ * Single-column, centered, editorial (blueprint §7) rather than the
+ * pre-redesign two-column copy/terminal split — the eye no longer has to
+ * choose between reading the H1 and watching an animation in the same
+ * three seconds. Copy leads with the product's actual differentiator
+ * (verified solves → provable profile) instead of a retention framing.
+ *
+ * The one deliberate asymmetric/bleed moment: the ProofCard sits in its
+ * own wider container and, from `md` up, is pushed toward the right edge
+ * rather than centered under the text — plus the small floating
+ * "Verified server-side" chip breaks the card's own top-right corner.
+ * That's the section's only out-of-layout gesture; everything else stays
+ * centered and quiet on purpose (Phase 2 design philosophy: selective,
+ * not everywhere). On mobile the card simply centers full-width — the
+ * asymmetry is desktop-space only, not fought for on a narrow viewport.
+ *
+ * Auth-aware CTA destinations/labels are unchanged from the pre-redesign
+ * version.
+ */
+function HeroSection({ user }) {
+  return (
+    <section className="px-6 pt-24 pb-20 md:px-12 md:pb-28 md:pt-32 lg:pt-36">
+      <div className="lp-reveal lp-in-view mx-auto max-w-2xl text-center">
+        <p className="mb-6 inline-flex items-center justify-center gap-2 font-mono-ui text-lp-eyebrow uppercase tracking-lp-eyebrow text-zinc-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-verdict-pending" />
+          Placement season 2026 — batches open now
+        </p>
+
+        <h1 className="text-lp-h1 font-display font-bold tracking-tight text-white">
+          Every solve, <span className="text-verdict-accept">verified.</span>
+          <br />
+          Every profile, provable.
+        </h1>
+
+        <p className="mt-6 text-lg leading-relaxed text-zinc-400">
+          Code Club checks every submission server-side, so your solve
+          history means something to the people looking at it.
+        </p>
+
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            to={user ? "/dashboard" : "/portal"}
+            variant="theme"
+            size="lg"
+            className="shadow-lg shadow-verdict-accept/10"
+          >
+            {user ? "Go to Dashboard →" : "Start for Free →"}
+          </Button>
+          <Button
+            to={user ? "/problems" : "/login?role=student"}
+            variant="secondary"
+            size="lg"
+          >
+            Browse Problems
+          </Button>
+        </div>
+
+        <p className="mt-5 font-mono-ui text-xs text-zinc-500">{TRUST_SIGNALS}</p>
+      </div>
+
+      <div className="lp-reveal lp-in-view mx-auto mt-16 max-w-5xl md:mt-20 md:flex md:justify-end">
+        <div className="mx-auto w-full md:mx-0 md:mr-4 md:max-w-lg lg:mr-10">
+          <ProofCard />
         </div>
       </div>
     </section>
