@@ -5,6 +5,7 @@ import LandingNav from "../components/landing/LandingNav";
 import HeroSection from "../components/landing/HeroSection";
 import StatsBar from "../components/landing/StatsBar";
 import ProblemSection from "../components/landing/ProblemSection";
+import ProductDemonstration from "../components/landing/ProductDemonstration";
 import ThemesShowcase from "../components/landing/ThemesShowcase";
 import FeatureGrid from "../components/landing/FeatureGrid";
 import AudienceGrid from "../components/landing/AudienceGrid";
@@ -76,6 +77,7 @@ export default function LandingPage() {
         <HeroSection user={user} />
         <StatsBar stats={stats} />
         <ProblemSection />
+        <ProductDemonstration />
         <ThemesShowcase user={user} />
         <FeatureGrid />
         <AudienceGrid user={user} />
