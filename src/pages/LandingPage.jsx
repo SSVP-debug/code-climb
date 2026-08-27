@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import LandingNav from "../components/landing/LandingNav";
 import HeroSection from "../components/landing/HeroSection";
 import StatsBar from "../components/landing/StatsBar";
+import ProblemSection from "../components/landing/ProblemSection";
 import ThemesShowcase from "../components/landing/ThemesShowcase";
 import FeatureGrid from "../components/landing/FeatureGrid";
 import AudienceGrid from "../components/landing/AudienceGrid";
@@ -74,6 +75,7 @@ export default function LandingPage() {
         <LandingNav user={user} />
         <HeroSection user={user} />
         <StatsBar stats={stats} />
+        <ProblemSection />
         <ThemesShowcase user={user} />
         <FeatureGrid />
         <AudienceGrid user={user} />
