@@ -50,3 +50,13 @@ export const DISCORD_INVITE_URL = import.meta.env.VITE_CODECLUB_DISCORD || null;
 
 export const CONTACT_EMAIL = import.meta.env.VITE_CODECLUB_EMAIL || null;
 export const CONTACT_EMAIL_LINK = CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : null;
+
+/**
+ * Public social profiles (GitHub org, X/Twitter, LinkedIn company page) —
+ * shown as icon links in the landing footer's social row. Same
+ * "unconfigured = hidden, never a dead link" contract as the channels
+ * above, so a fresh clone with no .env doesn't ship broken social icons.
+ */
+export const GITHUB_URL = import.meta.env.VITE_CODECLUB_GITHUB || null;
+export const TWITTER_URL = import.meta.env.VITE_CODECLUB_TWITTER || null;
+export const LINKEDIN_URL = import.meta.env.VITE_CODECLUB_LINKEDIN || null;

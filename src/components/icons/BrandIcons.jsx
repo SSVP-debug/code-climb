@@ -54,6 +54,21 @@ export function WhatsappMark({ size = 16, className = "" }) {
   );
 }
 
+export function XMark({ size = 16, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M18.24 2.5h3.3l-7.2 8.23 8.47 10.77h-6.63l-5.2-6.7-5.94 6.7H1.73l7.7-8.8L1.3 2.5h6.8l4.7 6.15 5.44-6.15zm-1.16 17.1h1.83L7.02 4.3H5.05l12.03 15.3z" />
+    </svg>
+  );
+}
+
 export function DiscordMark({ size = 16, className = "" }) {
   return (
     <svg
