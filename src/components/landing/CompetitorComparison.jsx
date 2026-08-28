@@ -1,90 +1,73 @@
-import { CheckCircle2, ShieldCheck, Eye } from "lucide-react";
+import { Terminal, ShieldCheck, BadgeCheck } from "lucide-react";
 import Reveal from "./Reveal";
 
-// Not a "them vs. us" table — a real, ordered pipeline. The numbering here
-// is earned: this is the literal sequence a solve goes through, and each
-// stage's accent matches the same role color used for it in AudienceGrid
-// (teal = student, violet = TPO, sky = recruiter), so the same three
-// colors mean the same three roles everywhere on the page.
+// Filename/export name kept as CompetitorComparison for this phase, even
+// though — per the Phase 1 audit — this was never really a competitor
+// comparison; it's Code Club's Solve → Verify → Prove pipeline. A rename
+// to VerificationSection.jsx is a reasonable follow-up for a dedicated
+// cleanup pass, but isn't bundled into this phase's already-scoped
+// rebuild (minimal footprint, no touch to LandingPage.jsx's import).
+//
+// Rebuilt for Phase 3E ("Verification", blueprint position 06) — the
+// direct payoff of Product Demonstration: the acceptance just watched
+// happening is what becomes provable. Per blueprint §12, role colors
+// (teal/sky/violet) are scoped to the Opportunities section only, so —
+// unlike the pre-redesign version, which individually role-tinted each
+// stage — all three stages here share one restrained accent. Content is
+// also refocused onto the verification mechanism itself (what actually
+// happens to a solve) rather than what a TPO or recruiter later does
+// with it, since that's Opportunities' job, not this section's.
 const STAGES = [
   {
     id: "solve",
-    Icon: CheckCircle2,
-    eyebrow: "01 · Student",
+    Icon: Terminal,
+    index: "01",
     title: "Solve",
-    body: "Submissions run against hidden test cases on our Judge0 sandbox. The verdict is set by the server, never by the client — there's no local \"mark as done.\"",
-    accent: "teal",
+    body: "You write and run code against the problem's public test cases — same as any online judge.",
   },
   {
     id: "verify",
     Icon: ShieldCheck,
-    eyebrow: "02 · TPO",
+    index: "02",
     title: "Verify",
-    body: "Every accepted solve rolls into your batch's readiness dashboard automatically streaks and topic coverage a TPO can trust without a spreadsheet.",
-    accent: "violet",
+    body: "On submit, the server checks your solution against hidden test cases it never exposes to the browser. The verdict is set there — not on your machine.",
   },
   {
-    id: "discover",
-    Icon: Eye,
-    eyebrow: "03 · Recruiter",
-    title: "Get discovered",
-    body: "Recruiters search by verified solve history and topic strength, and send a skills test directly no resume claims to take on faith.",
-    accent: "sky",
+    id: "prove",
+    Icon: BadgeCheck,
+    index: "03",
+    title: "Prove",
+    body: "An accepted solve becomes a permanent, verifiable entry on your profile — not a box you checked yourself.",
   },
 ];
 
-const ACCENT = {
-  teal: {
-    icon: "text-teal-400 bg-teal-500/10 border-teal-500/25",
-  },
-  violet: {
-    icon: "text-violet-400 bg-violet-500/10 border-violet-500/25",
-  },
-  sky: {
-    icon: "text-sky-400 bg-sky-500/10 border-sky-500/25",
-  },
-};
-
 function CompetitorComparison() {
   return (
-    <section className="max-w-5xl mx-auto px-6 md:px-12 py-20">
-      <Reveal className="text-center mb-14 max-w-2xl mx-auto">
-        <p className="text-xs text-verdict-accept font-mono-ui uppercase tracking-widest font-semibold mb-3">
-          What "verified" actually means
+    <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+          Verification
         </p>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-          A solved problem doesn't stop at "Accepted."
+        <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+          Solve. Verify. Prove.
         </h2>
-        <p className="text-zinc-400">
-          Most DSA practice tools end the moment you close the tab. Here's
-          what happens to a solve after that.
+        <p className="mt-4 text-zinc-400">
+          Every accepted solve goes through the same three steps — nothing
+          about it is self-reported.
         </p>
-      </Reveal>
+      </div>
 
-      <Reveal className="grid md:grid-cols-3 gap-5">
-        {STAGES.map((s) => {
-          const a = ACCENT[s.accent];
-          return (
-            <div
-              key={s.id}
-              className="bg-ink-800 border border-ink-700 hover:border-zinc-700 rounded-2xl p-6 transition-colors flex flex-col"
-            >
-              <span
-                className={`inline-flex items-center justify-center w-11 h-11 rounded-xl border mb-4 ${a.icon}`}
-                aria-hidden="true"
-              >
-                <s.Icon size={19} strokeWidth={2.2} />
-              </span>
-              <p className="text-[11px] font-mono-ui uppercase tracking-widest text-zinc-500 mb-1.5">
-                {s.eyebrow}
-              </p>
-              <h3 className="text-lg font-bold text-white mb-2">{s.title}</h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">{s.body}</p>
-            </div>
-          );
-        })}
-      </Reveal>
-    </section>
+      <ul className="mx-auto mt-14 max-w-4xl divide-y divide-ink-800 md:mt-16 md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
+        {STAGES.map((s) => (
+          <li key={s.id} className="py-8 first:pt-0 last:pb-0 md:px-8 md:py-0 md:first:pl-0 md:last:pr-0">
+            <s.Icon size={20} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" />
+            <p className="mt-4 font-mono-ui text-xs text-zinc-600">{s.index}</p>
+            <h3 className="mt-1 font-display text-lg font-semibold text-white">{s.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">{s.body}</p>
+          </li>
+        ))}
+      </ul>
+    </Reveal>
   );
 }
 
