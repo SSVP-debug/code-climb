@@ -8,6 +8,7 @@ import ProblemSection from "../components/landing/ProblemSection";
 import ProductDemonstration from "../components/landing/ProductDemonstration";
 import ThemesShowcase from "../components/landing/ThemesShowcase";
 import FeatureGrid from "../components/landing/FeatureGrid";
+import CommunitySection from "../components/landing/CommunitySection";
 import AudienceGrid from "../components/landing/AudienceGrid";
 import CompetitorComparison from "../components/landing/CompetitorComparison";
 import BrandSignoff from "../components/landing/BrandSignoff";
@@ -80,6 +81,7 @@ export default function LandingPage() {
         <ProductDemonstration />
         <ThemesShowcase user={user} />
         <FeatureGrid />
+        <CommunitySection />
         <AudienceGrid user={user} />
         <CompetitorComparison />
         <BrandSignoff />
