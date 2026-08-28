@@ -6,12 +6,13 @@ import HeroSection from "../components/landing/HeroSection";
 import StatsBar from "../components/landing/StatsBar";
 import ProblemSection from "../components/landing/ProblemSection";
 import ProductDemonstration from "../components/landing/ProductDemonstration";
+import CompetitorComparison from "../components/landing/CompetitorComparison";
 import ThemesShowcase from "../components/landing/ThemesShowcase";
 import FeatureGrid from "../components/landing/FeatureGrid";
 import CommunitySection from "../components/landing/CommunitySection";
 import AudienceGrid from "../components/landing/AudienceGrid";
-import CompetitorComparison from "../components/landing/CompetitorComparison";
 import BrandSignoff from "../components/landing/BrandSignoff";
+import FaqSection from "../components/landing/FaqSection";
 import CtaSection from "../components/landing/CtaSection";
 import LandingFooter from "../components/landing/LandingFooter";
 
@@ -79,11 +80,12 @@ export default function LandingPage() {
         <StatsBar stats={stats} />
         <ProblemSection />
         <ProductDemonstration />
+        <CompetitorComparison />
         <ThemesShowcase user={user} />
         <FeatureGrid />
         <CommunitySection />
         <AudienceGrid user={user} />
-        <CompetitorComparison />
+        <FaqSection />
         <BrandSignoff />
         <CtaSection user={user} />
         <LandingFooter user={user} />
