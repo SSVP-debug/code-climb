@@ -10,6 +10,19 @@ import {
 } from "../../config/site.js";
 import { GithubMark, LinkedinMark, WhatsappMark, DiscordMark, XMark } from "../icons/BrandIcons";
 
+// Footer — blueprint position 14, the final section on the page.
+//
+// The Final CTA (CtaSection) already closes the narrative/emotional
+// argument; this is the practical close underneath it — brand, real
+// navigation, real contact/community destinations, and a copyright line.
+// Kept deliberately quiet and static (no Reveal, no motion) so it reads
+// as the page settling rather than one more marketing beat.
+//
+// Every destination below is a route that exists in App.jsx or a channel
+// sourced from config/site.js — nothing here is invented. No newsletter
+// signup: the repo has no email-subscription backend, and a form that
+// only looks functional is worse than no form.
+
 // Social row: public profiles (GitHub/Twitter/LinkedIn) plus the same
 // official contact channels (WhatsApp/Discord) already used elsewhere,
 // unified into one icon-button style. Each is env-driven and simply
@@ -26,32 +39,41 @@ function useSocialLinks() {
   ].filter((l) => l.href);
 }
 
+// Link style shared by every column — quiet by default, brightens on
+// hover, and gets the same focus-visible ring treatment already used for
+// inline links elsewhere on the landing page (see CommunitySection.jsx /
+// FaqSection.jsx / AudienceGrid.jsx) so keyboard focus is always visible.
+const FOOTER_LINK_CLASSES =
+  "text-sm text-zinc-500 hover:text-zinc-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 rounded-sm";
+
+// A single grouped nav column. `aria-label` gives each group its own
+// navigation landmark (there are multiple on the page — Navbar's plus
+// these) rather than relying on the visual heading alone, and the
+// mono-ui uppercase label treatment matches every other section's
+// eyebrow/label style instead of introducing a one-off footer heading
+// size.
 function FooterColumn({ title, links }) {
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="text-sm font-semibold text-zinc-200 tracking-wide">{title}</h3>
+    <nav aria-label={title} className="flex flex-col gap-4">
+      <h3 className="font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+        {title}
+      </h3>
       <ul className="flex flex-col gap-2.5">
         {links.map(({ label, ...linkProps }) => (
           <li key={label}>
             {linkProps.to ? (
-              <Link
-                to={linkProps.to}
-                className="text-sm text-zinc-500 hover:text-zinc-200 transition"
-              >
+              <Link to={linkProps.to} className={FOOTER_LINK_CLASSES}>
                 {label}
               </Link>
             ) : (
-              <a
-                href={linkProps.href}
-                className="text-sm text-zinc-500 hover:text-zinc-200 transition"
-              >
+              <a href={linkProps.href} className={FOOTER_LINK_CLASSES}>
                 {label}
               </a>
             )}
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   );
 }
 
@@ -78,9 +100,8 @@ function LandingFooter({ user }) {
             <span className="text-xl font-bold tracking-tight">Code Club</span>
           </div>
           <p className="text-sm text-zinc-500 leading-relaxed max-w-sm">
-            Solve curated DSA problems, run live AI mock interviews, and build
-            a placement-ready profile. Gamified progress tracking, built for
-            engineering students.
+            Verified solves, a provable profile, and everywhere that leads —
+            practice, community, and real placement opportunity.
           </p>
           <p className="flex items-center gap-1.5 text-xs text-zinc-600">
             Made with
@@ -91,7 +112,7 @@ function LandingFooter({ user }) {
 
         <div className="lg:col-span-3">
           <FooterColumn
-            title="Quick Links"
+            title="Platform"
             links={[
               { label: "Problems", to: "/problems" },
               { label: "Dashboard", to: dashboardOrPortal },
@@ -105,8 +126,8 @@ function LandingFooter({ user }) {
           <FooterColumn
             title="Resources"
             links={[
-              { label: "For TPOs", to: "/portal" },
               { label: "For Recruiters", to: "/portal" },
+              { label: "For TPOs", to: "/portal" },
               { label: "Privacy Policy", to: "/privacy" },
               { label: "Terms of Service", to: "/terms" },
               { label: "Contact", href: `mailto:${SUPPORT_EMAIL}` },
@@ -130,7 +151,7 @@ function LandingFooter({ user }) {
                   rel={key === "email" ? undefined : "noopener noreferrer"}
                   aria-label={label}
                   title={label}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-800/80 text-zinc-400 border border-zinc-800 hover:text-white hover:bg-zinc-700 hover:border-zinc-700 transition"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-800/80 text-zinc-400 border border-zinc-800 hover:text-white hover:bg-zinc-700 hover:border-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
                 >
                   <Icon size={15} />
                 </a>
