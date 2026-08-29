@@ -64,6 +64,16 @@ import {
 } from "../controllers/adminOpportunityImportController.js";
 import { getUserLedgerAdmin } from "../controllers/rewardController.js";
 import { retryReferralRewards } from "../controllers/adminReferralController.js";
+import {
+  ContributionRejectSchema,
+  ContributionRetrySchema,
+} from "../schemas/contributionSchema.js";
+import {
+  listContributionsAdmin,
+  approveContributionAdmin,
+  rejectContributionAdmin,
+  retryContributionRewardsAdmin,
+} from "../controllers/adminContributionController.js";
 
 const router = Router();
 
@@ -162,6 +172,27 @@ router.get("/rewards/ledger", requireAdmin, getUserLedgerAdmin);
 // can never itself cause a double-issue (RewardLedger's own idempotency
 // index is what prevents that, unmodified by this route).
 router.post("/referral/retry-rewards", requireAdmin, retryReferralRewards);
+
+// ── Contribution Infrastructure (Phase 2F) — review queue + reward retry ───
+// Same shape as the Referral Qualification retry route immediately above:
+// approve/reject are atomic state transitions (services/contribution.js),
+// and retry-rewards is an idempotent reconciliation pass, not a direct
+// ledger write — RewardLedger's own idempotency index is what actually
+// prevents a double-issue, unmodified by any of these routes.
+router.get("/contributions", requireAdmin, listContributionsAdmin);
+router.post("/contributions/:id/approve", requireAdmin, approveContributionAdmin);
+router.post(
+  "/contributions/:id/reject",
+  requireAdmin,
+  validateBody(ContributionRejectSchema),
+  rejectContributionAdmin
+);
+router.post(
+  "/contributions/retry-rewards",
+  requireAdmin,
+  validateBody(ContributionRetrySchema),
+  retryContributionRewardsAdmin
+);
 
 // ── System health ────────────────────────────────────────────────────────────
 router.get("/system-health", requireAdmin, getSystemHealth);
