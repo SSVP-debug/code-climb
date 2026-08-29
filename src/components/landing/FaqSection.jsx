@@ -79,9 +79,12 @@ function FaqSection() {
           Questions worth answering upfront.
         </h2>
 
-        <div className="mt-10 border-t border-[var(--border)]">
+        <div className="mt-10 flex flex-col gap-3">
           {FAQS.map((item, i) => (
-            <details key={item.q} className="group border-b border-[var(--border)] py-5">
+            <details
+              key={item.q}
+              className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4"
+            >
               <summary
                 className="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm [&::-webkit-details-marker]:hidden"
                 id={`faq-summary-${i}`}
@@ -90,7 +93,7 @@ function FaqSection() {
                 <Plus
                   size={16}
                   strokeWidth={2}
-                  className="flex-shrink-0 text-[var(--muted-foreground)] transition-transform duration-200 group-open:rotate-45"
+                  className="flex-shrink-0 text-[var(--accent-text)] transition-transform duration-200 group-open:rotate-45"
                   aria-hidden="true"
                 />
               </summary>

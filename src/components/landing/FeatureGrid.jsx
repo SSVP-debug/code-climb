@@ -2,12 +2,11 @@ import { Mic, Layers, Zap, Brain, Flame, BarChart3, Trophy } from "lucide-react"
 import Reveal from "./Reveal";
 import { SITE_DOMAIN } from "../../config/site.js";
 
-// Feature Constellation — Phase "08" (blueprint position), supporting-
-// detail section. Rebuilt as an editorial list per the blueprint's
-// explicit instruction ("FeatureGrid → editorial list, NOT 7 equal
-// cards"), replacing the previous rounded-card grid. Content is the same
-// real product capabilities as before — nothing invented, nothing
-// removed, just no longer boxed.
+// Feature Constellation — supporting-detail section, now a card grid:
+// each capability in its own bordered box, with the featured item
+// (AI Mock Interviews) spanning the full row so its transcript preview
+// has room to breathe. Content is the same real product capabilities as
+// before — nothing invented, nothing removed.
 const FEATURES = [
   {
     Icon: Mic,
@@ -94,33 +93,33 @@ function FeatureGrid() {
         </p>
       </div>
 
-      <ol className="mx-auto mt-12 max-w-2xl divide-y divide-[var(--border)]">
-        {FEATURES.map((f, i) => (
-          <li key={f.title} className="flex items-start gap-5 py-6">
-            <span className="mt-0.5 w-5 flex-shrink-0 font-mono-ui text-xs text-[var(--muted-foreground)]">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <f.Icon
-              size={18}
-              strokeWidth={2}
-              className="mt-0.5 flex-shrink-0 text-[var(--accent-text)]"
+      <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2">
+        {FEATURES.map((f) => (
+          <div
+            key={f.title}
+            className={`rounded-2xl border border-[var(--border-strong)] bg-[var(--background)] p-6 ${
+              f.featured ? "sm:col-span-2" : ""
+            }`}
+          >
+            <span
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-verdict-accept/10 text-[var(--accent-text)]"
               aria-hidden="true"
-            />
-            <div>
-              <h3 className={`font-display font-semibold text-[var(--foreground)] ${f.featured ? "text-lg" : ""}`}>
-                {f.title}
-                {f.tag && (
-                  <span className="ml-2 font-mono-ui text-[11px] uppercase tracking-lp-label text-[var(--muted-foreground)]">
-                    · {f.tag}
-                  </span>
-                )}
-              </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-[var(--muted-foreground)]">{f.description}</p>
-              {f.featured && <InterviewSnippet />}
-            </div>
-          </li>
+            >
+              <f.Icon size={20} strokeWidth={2} />
+            </span>
+            <h3 className={`mt-4 font-display font-semibold text-[var(--foreground)] ${f.featured ? "text-lg" : ""}`}>
+              {f.title}
+              {f.tag && (
+                <span className="ml-2 font-mono-ui text-[11px] uppercase tracking-lp-label text-[var(--muted-foreground)]">
+                  · {f.tag}
+                </span>
+              )}
+            </h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-[var(--muted-foreground)]">{f.description}</p>
+            {f.featured && <InterviewSnippet />}
+          </div>
         ))}
-      </ol>
+      </div>
     </Reveal>
   );
 }

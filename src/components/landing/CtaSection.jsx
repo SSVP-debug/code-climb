@@ -25,9 +25,9 @@ function CtaSection({ user }) {
   return (
     <Reveal
       as="section"
-      className="border-t border-[var(--border-strong)] bg-[var(--surface)] px-6 py-24 text-center md:px-12 md:py-32"
+      className="border-t border-[var(--border-strong)] bg-[var(--surface)] px-6 py-24 md:px-12 md:py-32"
     >
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-2xl rounded-3xl border border-verdict-accept/25 bg-verdict-accept/[0.05] px-6 py-12 text-center md:px-14 md:py-16">
         <p className="mb-5 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           Get started
         </p>

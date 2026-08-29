@@ -76,65 +76,66 @@ function CommunitySection() {
         {/* Right — destinations. The Club gets the visual weight; chat
             channels sit underneath, quieter, exactly matching the
             hierarchy the brief calls for. */}
-        <div className="md:col-span-6 md:col-start-7">
-          <div className="flex items-start gap-5 border-t border-[var(--border)] py-6 first:pt-0">
-            <span
-              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-verdict-accept/10 text-[var(--accent-text)]"
-              aria-hidden="true"
-            >
-              <Users size={20} strokeWidth={2} />
-            </span>
-            <div className="flex-1">
-              <p className="font-display text-lg font-semibold text-[var(--foreground)]">
-                The Club
-              </p>
-              <p className="mt-1.5 text-[var(--muted-foreground)]">
-                Leaderboards, public and private contests, and everyone
-                else working through the same problems — all under one
-                roof.
-              </p>
-              <Button to="/club" variant="secondary" size="sm" className="mt-4 group">
-                Open the Club
-                <ArrowRight
-                  size={14}
-                  className="transition group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </Button>
+        <div className="flex flex-col gap-4 md:col-span-6 md:col-start-7">
+          <div className="rounded-2xl border border-verdict-accept/30 bg-verdict-accept/[0.06] p-6">
+            <div className="flex items-start gap-5">
+              <span
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-verdict-accept/10 text-[var(--accent-text)]"
+                aria-hidden="true"
+              >
+                <Users size={20} strokeWidth={2} />
+              </span>
+              <div className="flex-1">
+                <p className="font-display text-lg font-semibold text-[var(--foreground)]">
+                  The Club
+                </p>
+                <p className="mt-1.5 text-[var(--muted-foreground)]">
+                  Leaderboards, public and private contests, and everyone
+                  else working through the same problems — all under one
+                  roof.
+                </p>
+                <Button to="/club" variant="secondary" size="sm" className="mt-4 group">
+                  Open the Club
+                  <ArrowRight
+                    size={14}
+                    className="transition group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Button>
+              </div>
             </div>
           </div>
 
           {secondaryChannels.length > 0 && (
-            <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
+            <div className="grid gap-4 sm:grid-cols-2">
               {secondaryChannels.map(({ key, label, href, Icon, description }) => (
-                <li key={key}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center gap-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm"
-                  >
-                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--surface-elevated)] text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]">
-                      <Icon size={18} aria-hidden="true" />
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col gap-3 rounded-2xl border border-[var(--border-strong)] bg-[var(--background)] p-5 transition hover:border-[var(--accent-text)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+                >
+                  <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--surface-elevated)] text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]">
+                    <Icon size={18} aria-hidden="true" />
+                  </span>
+                  <span>
+                    <span className="flex items-center gap-1.5 font-display font-semibold text-[var(--foreground)]">
+                      {label}
+                      <ArrowRight
+                        size={14}
+                        className="flex-shrink-0 text-[var(--muted-foreground)] transition group-hover:translate-x-0.5 group-hover:text-[var(--foreground)]"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only"> (opens in a new tab)</span>
                     </span>
-                    <span className="flex-1">
-                      <span className="block font-display font-semibold text-[var(--foreground)]">
-                        {label}
-                        <span className="sr-only"> (opens in a new tab)</span>
-                      </span>
-                      <span className="mt-0.5 block text-sm text-[var(--muted-foreground)]">
-                        {description}
-                      </span>
+                    <span className="mt-0.5 block text-sm text-[var(--muted-foreground)]">
+                      {description}
                     </span>
-                    <ArrowRight
-                      size={16}
-                      className="flex-shrink-0 text-[var(--muted-foreground)] transition group-hover:translate-x-0.5 group-hover:text-[var(--foreground)]"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
+                  </span>
+                </a>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>

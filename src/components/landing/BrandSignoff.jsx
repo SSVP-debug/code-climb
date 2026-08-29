@@ -13,8 +13,10 @@ import Reveal from "./Reveal";
 // (py-20, matching FeatureGrid/AudienceGrid/CompetitorComparison).
 function BrandSignoff() {
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-12 py-20 text-center">
-      <Reveal>
+    <section className="max-w-6xl mx-auto px-6 md:px-12 py-20">
+      <Reveal
+        className="mx-auto max-w-3xl rounded-3xl border border-[var(--border-strong)] bg-[var(--surface)] px-6 py-14 text-center md:px-12 md:py-16"
+      >
         <p className="font-display text-base md:text-lg text-[var(--muted-foreground)] mb-6">
           Where solved problems compile into proof.
         </p>

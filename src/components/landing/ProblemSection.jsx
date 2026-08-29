@@ -24,20 +24,17 @@ const PROBLEMS = [
 ];
 
 /**
- * The Problem — Phase 3C, new section.
- *
- * One short beat between the Proof Strip and the future Product
- * Demonstration section (Phase 3D): names the pain the rest of the
- * page's narrative spine exists to answer. Deliberately brief — this is
- * the setup, not the pitch.
+ * The Problem — one short beat between the Proof Strip and Product
+ * Demonstration: names the pain the rest of the page's narrative spine
+ * exists to answer. Deliberately brief — this is the setup, not the
+ * pitch.
  *
  * Asymmetric two-column composition on desktop — an offset heading
  * column against a wider, offset statement column with a deliberate
  * empty gutter between them (12-col grid: col-span-5, then col-span-6
- * starting at col 7) — rather than a centered block or a card grid.
- * No card backgrounds, no icons: hairline-divided text only, per this
- * phase's "restrained surfaces, no decorative noise" brief. Reuses the
- * existing Reveal scroll-in infrastructure; no new animation.
+ * starting at col 7). The three points are now individual bordered
+ * cards rather than a hairline-divided list, matching the card language
+ * used across the rest of the page.
  */
 function ProblemSection() {
   return (
@@ -58,18 +55,19 @@ function ProblemSection() {
           </p>
         </div>
 
-        <div className="md:col-span-6 md:col-start-7">
-          <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
-            {PROBLEMS.map((p) => (
-              <li key={p.index} className="flex gap-5 py-6">
-                <span className="font-mono-ui text-sm text-[var(--muted-foreground)]">{p.index}</span>
-                <div>
-                  <p className="font-display font-semibold text-[var(--foreground)]">{p.title}</p>
-                  <p className="mt-1.5 text-[var(--muted-foreground)]">{p.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col gap-3 md:col-span-6 md:col-start-7">
+          {PROBLEMS.map((p) => (
+            <div
+              key={p.index}
+              className="flex gap-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-5"
+            >
+              <span className="font-mono-ui text-sm text-[var(--accent-text)]">{p.index}</span>
+              <div>
+                <p className="font-display font-semibold text-[var(--foreground)]">{p.title}</p>
+                <p className="mt-1.5 text-[var(--muted-foreground)]">{p.detail}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </Reveal>

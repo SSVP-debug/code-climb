@@ -41,16 +41,19 @@ const ACCENT_CLASSES = {
     text: "text-role-student",
     ring: "focus-visible:ring-role-student",
     badge: "bg-role-student/10",
+    card: "border-role-student/30 bg-role-student/[0.06]",
   },
   "role-recruiter": {
     text: "text-role-recruiter",
     ring: "focus-visible:ring-role-recruiter",
     badge: "bg-role-recruiter/10",
+    card: "border-role-recruiter/30 bg-role-recruiter/[0.06]",
   },
   "role-tpo": {
     text: "text-role-tpo",
     ring: "focus-visible:ring-role-tpo",
     badge: "bg-role-tpo/10",
+    card: "border-role-tpo/30 bg-role-tpo/[0.06]",
   },
 };
 
@@ -104,40 +107,38 @@ function AudienceGrid({ user }) {
           </p>
         </div>
 
-        <div className="md:col-span-6 md:col-start-7">
-          <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
-            {ROLES.map((r) => {
-              const a = ACCENT_CLASSES[r.accent];
-              return (
-                <li key={r.id} className="flex gap-5 py-6">
-                  <span
-                    className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${a.badge} ${a.text}`}
-                    aria-hidden="true"
-                  >
-                    <r.Icon size={20} strokeWidth={2} />
-                  </span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono-ui text-xs text-[var(--muted-foreground)]">
-                        {r.index}
-                      </span>
-                      <p className="font-display font-semibold text-[var(--foreground)]">
-                        {r.title}
-                      </p>
-                    </div>
-                    <p className="mt-1.5 text-[var(--muted-foreground)]">{r.body}</p>
-                    <Link
-                      to={destination}
-                      className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${a.text} hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 ${a.ring} focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm`}
-                    >
-                      {r.cta}
-                      <ArrowRight size={14} aria-hidden="true" />
-                    </Link>
+        <div className="flex flex-col gap-4 md:col-span-6 md:col-start-7">
+          {ROLES.map((r) => {
+            const a = ACCENT_CLASSES[r.accent];
+            return (
+              <div key={r.id} className={`flex gap-5 rounded-2xl border p-5 ${a.card}`}>
+                <span
+                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${a.badge} ${a.text}`}
+                  aria-hidden="true"
+                >
+                  <r.Icon size={20} strokeWidth={2} />
+                </span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono-ui text-xs text-[var(--muted-foreground)]">
+                      {r.index}
+                    </span>
+                    <p className="font-display font-semibold text-[var(--foreground)]">
+                      {r.title}
+                    </p>
                   </div>
-                </li>
-              );
-            })}
-          </ul>
+                  <p className="mt-1.5 text-[var(--muted-foreground)]">{r.body}</p>
+                  <Link
+                    to={destination}
+                    className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${a.text} hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 ${a.ring} focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm`}
+                  >
+                    {r.cta}
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </Reveal>

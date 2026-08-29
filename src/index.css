@@ -147,6 +147,19 @@ html {
      Community/Footer focus rings, etc.) — see the comment above for why
      this is separate from --color-verdict-accept. */
   --accent-text: #2dd4bf;
+
+  /* Inverted set — always the *other* mode's values, used for the one
+     deliberately-inverted band on the page (currently just the Hero).
+     Not a third theme: at any given moment these are simply whatever
+     --background/--foreground/etc. resolve to under the opposite of the
+     current html.bw-mode state, so a card using --inverted-* always
+     reads correctly regardless of which mode is active. */
+  --inverted-background: #ffffff;
+  --inverted-foreground: #0a0a0a;
+  --inverted-surface: #f4f4f5;
+  --inverted-border: #e4e4e7;
+  --inverted-muted-foreground: #52525b;
+  --inverted-accent-text: #0f766e;
 }
 
 html.bw-mode {
@@ -169,6 +182,14 @@ html.bw-mode {
 
   /* Same reasoning as role-student above: #2dd4bf is ~1.9:1 on white. */
   --accent-text: #0f766e;
+
+  /* White Mode's "opposite" is the dark palette. */
+  --inverted-background: #0b0d10;
+  --inverted-foreground: #f4f4f5;
+  --inverted-surface: #10131a;
+  --inverted-border: #141820;
+  --inverted-muted-foreground: #a1a1aa;
+  --inverted-accent-text: #2dd4bf;
 }
 
 @layer base {

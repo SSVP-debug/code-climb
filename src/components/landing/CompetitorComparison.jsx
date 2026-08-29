@@ -57,9 +57,12 @@ function CompetitorComparison() {
         </p>
       </div>
 
-      <ul className="mx-auto mt-14 max-w-4xl divide-y divide-[var(--border)] md:mt-16 md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
+      <div className="mx-auto mt-14 grid max-w-4xl gap-4 md:mt-16 md:grid-cols-3">
         {STAGES.map((s) => (
-          <li key={s.id} className="py-8 first:pt-0 last:pb-0 md:px-8 md:py-0 md:first:pl-0 md:last:pr-0">
+          <div
+            key={s.id}
+            className="rounded-2xl border border-[var(--border-strong)] bg-[var(--background)] p-6"
+          >
             <span
               className="flex h-11 w-11 items-center justify-center rounded-xl bg-verdict-accept/10 text-[var(--accent-text)]"
               aria-hidden="true"
@@ -69,9 +72,9 @@ function CompetitorComparison() {
             <p className="mt-4 font-mono-ui text-xs text-[var(--muted-foreground)]">{s.index}</p>
             <h3 className="mt-1 font-display text-lg font-semibold text-[var(--foreground)]">{s.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">{s.body}</p>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </Reveal>
   );
 }
