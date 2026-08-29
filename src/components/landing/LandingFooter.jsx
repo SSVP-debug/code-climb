@@ -44,7 +44,7 @@ function useSocialLinks() {
 // inline links elsewhere on the landing page (see CommunitySection.jsx /
 // FaqSection.jsx / AudienceGrid.jsx) so keyboard focus is always visible.
 const FOOTER_LINK_CLASSES =
-  "text-sm text-zinc-500 hover:text-zinc-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 rounded-sm";
+  "text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm";
 
 // A single grouped nav column. `aria-label` gives each group its own
 // navigation landmark (there are multiple on the page — Navbar's plus
@@ -55,7 +55,7 @@ const FOOTER_LINK_CLASSES =
 function FooterColumn({ title, links }) {
   return (
     <nav aria-label={title} className="flex flex-col gap-4">
-      <h3 className="font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+      <h3 className="font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
         {title}
       </h3>
       <ul className="flex flex-col gap-2.5">
@@ -83,9 +83,12 @@ function LandingFooter({ user }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-ink-700 bg-ink-900/40">
+    <footer className="border-t border-[var(--border-strong)] bg-[var(--surface)]">
       <div className="max-w-6xl mx-auto px-6 md:px-12 py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
-        {/* Brand */}
+        {/* Brand. Icon badge intentionally left on --theme-primary (the
+            separate gamified skin system's accent) rather than this
+            section's own theme tokens — same reasoning and known
+            limitation as the identical badge in BrandSignoff.jsx. */}
         <div className="lg:col-span-5 flex flex-col gap-4 sm:col-span-2">
           <div className="flex items-center gap-2.5">
             <span
@@ -97,15 +100,15 @@ function LandingFooter({ user }) {
             >
               <Code2 size={18} aria-hidden="true" />
             </span>
-            <span className="text-xl font-bold tracking-tight">Code Club</span>
+            <span className="text-xl font-bold tracking-tight text-[var(--foreground)]">Code Club</span>
           </div>
-          <p className="text-sm text-zinc-500 leading-relaxed max-w-sm">
+          <p className="text-sm text-[var(--muted-foreground)] leading-relaxed max-w-sm">
             Verified solves, a provable profile, and everywhere that leads —
             practice, community, and real placement opportunity.
           </p>
-          <p className="flex items-center gap-1.5 text-xs text-zinc-600">
+          <p className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]">
             Made with
-            <Heart size={12} className="fill-current text-zinc-600" aria-hidden="true" />
+            <Heart size={12} className="fill-current text-[var(--muted-foreground)]" aria-hidden="true" />
             by developers, for developers
           </p>
         </div>
@@ -136,11 +139,20 @@ function LandingFooter({ user }) {
         </div>
       </div>
 
-      <div className="border-t border-ink-700">
+      <div className="border-t border-[var(--border-strong)]">
         <div className="max-w-6xl mx-auto px-6 md:px-12 py-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-[var(--muted-foreground)]">
             © {year} Code Club. All rights reserved.
           </p>
+          {/* Theme note (Phase 1, deferred): this chip uses the generic
+              Tailwind zinc-700/800 palette rather than the landing's
+              ink-*-derived semantic tokens — reusing --surface/--border
+              here would visibly shift Black Mode (ink-800 is a
+              noticeably darker, bluer tone than zinc-800), so rather
+              than introduce a token just for this one spot, it's left
+              hardcoded for now and flagged for the next migration batch,
+              where it currently renders identically in both modes
+              instead of adapting to White Mode. */}
           {socialLinks.length > 0 && (
             <div className="flex items-center gap-2.5">
               {socialLinks.map(({ key, label, href, Icon }) => (
@@ -151,7 +163,7 @@ function LandingFooter({ user }) {
                   rel={key === "email" ? undefined : "noopener noreferrer"}
                   aria-label={label}
                   title={label}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-800/80 text-zinc-400 border border-zinc-800 hover:text-white hover:bg-zinc-700 hover:border-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-800/80 text-zinc-400 border border-zinc-800 hover:text-white hover:bg-zinc-700 hover:border-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
                 >
                   <Icon size={15} />
                 </a>

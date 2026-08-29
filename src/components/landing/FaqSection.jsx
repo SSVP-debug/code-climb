@@ -69,32 +69,32 @@ function FaqSection() {
   return (
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-24" aria-labelledby="faq-heading">
       <div className="mx-auto max-w-2xl">
-        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           FAQ
         </p>
         <h2
           id="faq-heading"
-          className="text-lp-h2-detail font-display font-bold tracking-tight text-white"
+          className="text-lp-h2-detail font-display font-bold tracking-tight text-[var(--foreground)]"
         >
           Questions worth answering upfront.
         </h2>
 
-        <div className="mt-10 border-t border-ink-800">
+        <div className="mt-10 border-t border-[var(--border)]">
           {FAQS.map((item, i) => (
-            <details key={item.q} className="group border-b border-ink-800 py-5">
+            <details key={item.q} className="group border-b border-[var(--border)] py-5">
               <summary
-                className="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 rounded-sm [&::-webkit-details-marker]:hidden"
+                className="flex cursor-pointer list-none items-center justify-between gap-4 font-display font-semibold text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm [&::-webkit-details-marker]:hidden"
                 id={`faq-summary-${i}`}
               >
                 <span>{item.q}</span>
                 <Plus
                   size={16}
                   strokeWidth={2}
-                  className="flex-shrink-0 text-zinc-500 transition-transform duration-200 group-open:rotate-45"
+                  className="flex-shrink-0 text-[var(--muted-foreground)] transition-transform duration-200 group-open:rotate-45"
                   aria-hidden="true"
                 />
               </summary>
-              <p className="mt-3 pr-8 leading-relaxed text-zinc-400">{item.a}</p>
+              <p className="mt-3 pr-8 leading-relaxed text-[var(--muted-foreground)]">{item.a}</p>
             </details>
           ))}
         </div>

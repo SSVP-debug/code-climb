@@ -15,10 +15,19 @@ function BrandSignoff() {
   return (
     <section className="max-w-6xl mx-auto px-6 md:px-12 py-20 text-center">
       <Reveal>
-        <p className="font-display text-base md:text-lg text-zinc-500 mb-6">
+        <p className="font-display text-base md:text-lg text-[var(--muted-foreground)] mb-6">
           Where solved problems compile into proof.
         </p>
 
+        {/* Icon badge intentionally left on --theme-primary (the separate
+            gamified skin system's accent, unchanged here) rather than
+            moved onto this section's own theme tokens — see Phase 1
+            report for why: it's shared with LandingFooter's identical
+            badge, and giving it a light-mode override would mean
+            special-casing the landing page's brand mark independently of
+            whatever skin a logged-in visitor has selected, which is a
+            separate concern from this phase's dark/light theming. Its
+            light-mode contrast is flagged as a known limitation. */}
         <div className="inline-flex items-center gap-3 md:gap-4 mb-8">
           <span
             className="w-10 h-10 md:w-14 md:h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
@@ -30,12 +39,12 @@ function BrandSignoff() {
           >
             <Code2 size={24} strokeWidth={2} />
           </span>
-          <h2 className="font-display font-bold tracking-tight text-verdict-accept leading-none text-4xl sm:text-5xl md:text-7xl">
+          <h2 className="font-display font-bold tracking-tight text-[var(--accent-text)] leading-none text-4xl sm:text-5xl md:text-7xl">
             Code Club
           </h2>
         </div>
 
-        <div className="inline-flex items-center gap-2 text-xs md:text-sm font-mono-ui font-semibold px-3 py-1.5 rounded-full border bg-verdict-accept/10 text-verdict-accept border-verdict-accept/30">
+        <div className="inline-flex items-center gap-2 text-xs md:text-sm font-mono-ui font-semibold px-3 py-1.5 rounded-full border bg-verdict-accept/10 text-[var(--accent-text)] border-verdict-accept/30">
           <CheckCircle2 size={14} strokeWidth={2.4} aria-hidden="true" />
           Accepted.
         </div>

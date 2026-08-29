@@ -58,15 +58,15 @@ function CommunitySection() {
         {/* Left — narrative beat, mirrors The Problem's column width so the
             spine reads consistently on desktop. */}
         <div className="md:col-span-5">
-          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             Community
           </p>
-          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-[var(--foreground)]">
             Solving is solo.
             <br />
             The rest of it isn&apos;t.
           </h2>
-          <p className="mt-4 max-w-sm text-zinc-400">
+          <p className="mt-4 max-w-sm text-[var(--muted-foreground)]">
             Every problem is yours to work through on your own. The
             leaderboard, the contests, and everyone else grinding the same
             catalog aren&apos;t.
@@ -77,18 +77,18 @@ function CommunitySection() {
             channels sit underneath, quieter, exactly matching the
             hierarchy the brief calls for. */}
         <div className="md:col-span-6 md:col-start-7">
-          <div className="flex items-start gap-5 border-t border-ink-800 py-6 first:pt-0">
+          <div className="flex items-start gap-5 border-t border-[var(--border)] py-6 first:pt-0">
             <Users
               size={20}
               strokeWidth={2}
-              className="mt-0.5 flex-shrink-0 text-verdict-accept"
+              className="mt-0.5 flex-shrink-0 text-[var(--accent-text)]"
               aria-hidden="true"
             />
             <div className="flex-1">
-              <p className="font-display text-lg font-semibold text-white">
+              <p className="font-display text-lg font-semibold text-[var(--foreground)]">
                 The Club
               </p>
-              <p className="mt-1.5 text-zinc-400">
+              <p className="mt-1.5 text-[var(--muted-foreground)]">
                 Leaderboards, public and private contests, and everyone
                 else working through the same problems — all under one
                 roof.
@@ -105,32 +105,32 @@ function CommunitySection() {
           </div>
 
           {secondaryChannels.length > 0 && (
-            <ul className="border-t border-ink-800 divide-y divide-ink-800">
+            <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
               {secondaryChannels.map(({ key, label, href, Icon, description }) => (
                 <li key={key}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-verdict-accept focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 rounded-sm"
+                    className="group flex items-center gap-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm"
                   >
                     <Icon
                       size={18}
-                      className="flex-shrink-0 text-zinc-500 transition group-hover:text-zinc-300"
+                      className="flex-shrink-0 text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]"
                       aria-hidden="true"
                     />
                     <span className="flex-1">
-                      <span className="block font-display font-semibold text-white">
+                      <span className="block font-display font-semibold text-[var(--foreground)]">
                         {label}
                         <span className="sr-only"> (opens in a new tab)</span>
                       </span>
-                      <span className="mt-0.5 block text-sm text-zinc-500">
+                      <span className="mt-0.5 block text-sm text-[var(--muted-foreground)]">
                         {description}
                       </span>
                     </span>
                     <ArrowRight
                       size={16}
-                      className="flex-shrink-0 text-zinc-600 transition group-hover:translate-x-0.5 group-hover:text-zinc-400"
+                      className="flex-shrink-0 text-[var(--muted-foreground)] transition group-hover:translate-x-0.5 group-hover:text-[var(--foreground)]"
                       aria-hidden="true"
                     />
                   </a>

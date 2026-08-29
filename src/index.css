@@ -79,30 +79,96 @@
      a color change. Scope stays deliberately narrow per blueprint §12 —
      these are for the Opportunities section specifically, not a
      page-wide role system. */
-  --color-role-student: #2dd4bf;
-  --color-role-recruiter: #38bdf8;
-  --color-role-tpo: #a78bfa;
+  /* @theme inline (not a static @theme value): keeps each token as a live
+     reference to the *-rt custom property below instead of baking in a
+     build-time hex, so the existing `text-role-*`/`ring-role-*` utility
+     classes in AudienceGrid.jsx automatically pick up the White Mode
+     value defined further down — zero JSX changes needed. Safe to do
+     here specifically because these three tokens have exactly one
+     consumer (AudienceGrid.jsx, per the comment above) and are never
+     used inside an intentional dark surface — unlike --color-verdict-*
+     below, which is NOT given this treatment for that exact reason. */
+  --color-role-student: var(--role-student-rt);
+  --color-role-recruiter: var(--role-recruiter-rt);
+  --color-role-tpo: var(--role-tpo-rt);
 }
 
-/* ── Black & White Mode ───────────────────────────────────────────────────
-   Platform-wide grayscale filter, toggled via the switch in Navbar (see
-   BWModeContext + BWModeToggle). Applied to <html> so it covers every
-   route/role/theme uniformly — the filter itself is cheap and animatable,
-   which is what gives the toggle its smooth "fade to gray" transition
-   instead of an instant, jarring flip. Respects prefers-reduced-motion by
-   skipping the animated transition (the mode still applies instantly). */
+/* ── Black & White Mode — platform theme (Phase 1) ───────────────────────
+   Was previously a platform-wide grayscale `filter`, applied here via a
+   class on <html>. As of this phase, `html.bw-mode` no longer means
+   "grayscale the current dark design" — it means "switch the platform
+   to a full light theme." The toggle, its persistence, and the class it
+   flips are all unchanged (see BWModeContext/BWModeToggle/bwModeStorage);
+   only what the class *does* has changed.
+
+   `--color-verdict-accept`/`pending`/`reject` above are deliberately
+   NOT given the same runtime-variable treatment as the role-* colors:
+   they're used both as plain text/icon color on the ordinary page
+   background (needs to react to the theme) AND inside intentional dark
+   code-surface mockups like HeroTerminal and the Hero ProofCard, which
+   stay dark in both modes (must NOT react to the theme — flipping them
+   would put dark teal text on a dark surface). Splitting those two
+   usages was safer than one token trying to serve both, so the plain
+   custom property `--accent-text` below exists specifically for the
+   first case and is applied at each call site instead. */
 html {
-  transition: filter 450ms ease;
+  /* Instant swap, not a page-wide cross-fade: transitioning background-
+     color/color on every themed element would mean adding `transition`
+     to dozens of components just for this, which risks exactly the
+     "large page-wide transition" the brief calls out. The toggle's own
+     track/thumb/icon animation (unchanged, see BWModeToggle.jsx) is
+     what actually communicates "something happened" when it's pressed.
+     (This also means the old `transition: filter 450ms ease` rule and
+     its prefers-reduced-motion override are gone along with the filter
+     itself — there's nothing left on <html> to transition.) */
+  --background: #0b0d10;
+  --foreground: #f4f4f5;
+  --surface: #10131a;
+  --surface-elevated: #141820;
+  /* --border (ink-800) is the hairline weight used for dividers/list
+     rules; --border-strong (ink-700, one step lighter — this palette
+     gets lighter as it "elevates," the reverse of Tailwind's zinc scale)
+     is the slightly more visible weight used for a handful of card-style
+     outlines (CtaSection's band, FeatureGrid's snippet, Footer's rules).
+     Kept as two tokens specifically so each landing call site can keep
+     its exact current Black Mode weight instead of flattening both into
+     one. */
+  --border: #141820;
+  --border-strong: #1b212c;
+  --muted-foreground: #a1a1aa;
+
+  /* Runtime-variable indirection for the role-* theme tokens above. */
+  --role-student-rt: #2dd4bf;
+  --role-recruiter-rt: #38bdf8;
+  --role-tpo-rt: #a78bfa;
+
+  /* Standalone accent-as-text/icon color for the ordinary page
+     background (Hero's "verified." span, BrandSignoff's heading, FAQ/
+     Community/Footer focus rings, etc.) — see the comment above for why
+     this is separate from --color-verdict-accept. */
+  --accent-text: #2dd4bf;
 }
 
 html.bw-mode {
-  filter: grayscale(1);
-}
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --surface: #f4f4f5;
+  --surface-elevated: #e4e4e7;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --muted-foreground: #52525b;
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    transition: none;
-  }
+  /* teal-700/sky-700/violet-700 — the 400-shade brand colors above read
+     at roughly 1.9–2.7:1 against white (fails WCAG AA's 4.5:1 body-text
+     minimum), so White Mode uses a darker step of each brand hue rather
+     than a different color, per "don't change the visual identity
+     unnecessarily." */
+  --role-student-rt: #0f766e;
+  --role-recruiter-rt: #0369a1;
+  --role-tpo-rt: #6d28d9;
+
+  /* Same reasoning as role-student above: #2dd4bf is ~1.9:1 on white. */
+  --accent-text: #0f766e;
 }
 
 @layer base {

@@ -67,7 +67,7 @@ export default function LandingPage() {
   const stats = useLiveStats();
 
   return (
-    <div className="min-h-screen bg-ink-950 text-zinc-100 overflow-x-clip font-display">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] overflow-x-clip font-display">
       <PageMeta
         title="Code Club DSA Practice for Placement Season"
         description="Solve curated DSA problems, practice live AI mock interviews, and get discovered. Free for students, with a placement dashboard for TPOs and a candidate search portal for recruiters."

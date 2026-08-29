@@ -37,19 +37,23 @@ function ThemesShowcase({ user }) {
   return (
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           Themed practice
         </p>
-        <h2 className="text-lp-h2-detail font-display font-bold tracking-tight text-white">
+        <h2 className="text-lp-h2-detail font-display font-bold tracking-tight text-[var(--foreground)]">
           Same DSA. A different way to grind.
         </h2>
-        <p className="mt-4 text-zinc-400">
+        <p className="mt-4 text-[var(--muted-foreground)]">
           Pick a universe and Code Club reframes the whole experience
           around it — same problems, same judge, a different story.
         </p>
       </div>
 
-      <ul className="mx-auto mt-12 max-w-2xl divide-y divide-ink-800">
+      {/* Each t.color below is that story-universe's own fixed brand
+          color (src/themes), not a page-theme value — intentionally left
+          as-is in both Black and White Mode, same as the identical
+          per-universe icon colors used on ThemeSelectionPage itself. */}
+      <ul className="mx-auto mt-12 max-w-2xl divide-y divide-[var(--border)]">
         {THEMES_PREVIEW.map((t) => (
           <li key={t.id} className="flex items-start gap-4 py-5">
             <t.Icon
@@ -60,8 +64,8 @@ function ThemesShowcase({ user }) {
               className="mt-0.5 flex-shrink-0"
             />
             <div>
-              <h3 className="font-display font-semibold text-white">{t.name}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-400">{t.description}</p>
+              <h3 className="font-display font-semibold text-[var(--foreground)]">{t.name}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--muted-foreground)]">{t.description}</p>
             </div>
           </li>
         ))}
@@ -70,7 +74,7 @@ function ThemesShowcase({ user }) {
       <div className="mt-10 text-center">
         <Link
           to={user ? "/theme-selection" : "/login?role=student"}
-          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition"
+          className="inline-flex items-center gap-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
         >
           Explore all universes
           {ARROW}

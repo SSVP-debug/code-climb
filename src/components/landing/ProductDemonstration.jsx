@@ -56,6 +56,17 @@ function useInViewport(threshold = 0.35) {
  * is aria-hidden with a plain-language sr-only summary standing in for
  * it, and it's captioned on-screen as illustrative so a sighted visitor
  * doesn't mistake it for their own or someone else's real submission.
+ *
+ * Theme note (Phase 1): everything inside the aria-hidden block below —
+ * the Problem/Proof chips, connecting lines, terminal placeholder, and
+ * the hand-drawn annotation — is one continuous code-mockup apparatus
+ * built from the same ink-800/900/700 vocabulary as HeroTerminal, and is
+ * kept an intentional dark surface in both Black and White Mode rather
+ * than migrated: it visually reads as a single unit, and lighting the
+ * chips while the terminal in the middle stays dark (it must, since it's
+ * HeroTerminal itself) would split that unit apart. Only the section's
+ * own heading/subhead/caption outside that block use the semantic theme
+ * tokens.
  */
 function ProductDemonstration() {
   const [panelRef, inView] = useInViewport();
@@ -64,13 +75,13 @@ function ProductDemonstration() {
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
       <div className="mx-auto max-w-5xl">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             See the proof in action
           </p>
-          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-[var(--foreground)]">
             This is what "verified" looks like.
           </h2>
-          <p className="mt-4 text-zinc-400">
+          <p className="mt-4 text-[var(--muted-foreground)]">
             What happens between hitting Run and a solve becoming part of
             your proof — shown step by step, not as a live submission.
           </p>
@@ -133,7 +144,7 @@ function ProductDemonstration() {
             </div>
           </div>
 
-          <p className="mt-4 text-center font-mono-ui text-[11px] text-zinc-600">
+          <p className="mt-4 text-center font-mono-ui text-[11px] text-[var(--muted-foreground)]">
             Illustrative walkthrough — not a live submission.
           </p>
         </div>

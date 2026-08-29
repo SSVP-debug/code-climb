@@ -25,16 +25,16 @@ function CtaSection({ user }) {
   return (
     <Reveal
       as="section"
-      className="border-t border-ink-700 bg-ink-900/60 px-6 py-24 text-center md:px-12 md:py-32"
+      className="border-t border-[var(--border-strong)] bg-[var(--surface)] px-6 py-24 text-center md:px-12 md:py-32"
     >
       <div className="mx-auto max-w-2xl">
-        <p className="mb-5 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+        <p className="mb-5 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           Get started
         </p>
-        <h2 className="text-lp-h1 font-display font-bold tracking-tight text-white">
+        <h2 className="text-lp-h1 font-display font-bold tracking-tight text-[var(--foreground)]">
           Prove it. Don&apos;t just say it.
         </h2>
-        <p className="mt-5 text-zinc-400">
+        <p className="mt-5 text-[var(--muted-foreground)]">
           Every problem here is graded the same way — hidden test cases,
           checked server-side, no exceptions. Start building a solve
           history that means something.
@@ -51,7 +51,7 @@ function CtaSection({ user }) {
           </Button>
         </div>
 
-        <p className="mt-5 font-mono-ui text-xs text-zinc-600">
+        <p className="mt-5 font-mono-ui text-xs text-[var(--muted-foreground)]">
           Google sign-in · Ready in 10 seconds
         </p>
       </div>

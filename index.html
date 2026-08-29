@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Pre-paint theme sync. Mirrors bwModeStorage.js's storage key and
+      // "true"/"false" string format exactly, and sets the same class
+      // BWModeProvider applies on mount (see BWModeContext.jsx) — this
+      // isn't a second source of truth, just a head start before React
+      // and its first CSS paint, so a returning White Mode visitor
+      // doesn't see a flash of the (default) Black Mode first. Wrapped
+      // in try/catch and kept dependency-free so a blocked/unavailable
+      // localStorage (privacy mode, disabled storage, etc.) can never
+      // stop the app from loading — it just falls back to Black Mode.
+      try {
+        if (localStorage.getItem("codeclub.bwMode") === "true") {
+          document.documentElement.classList.add("bw-mode");
+        }
+      } catch (e) {}
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />

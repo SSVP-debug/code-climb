@@ -16,11 +16,11 @@ import Reveal from "./Reveal";
 function StatsBar({ stats }) {
   return (
     <Reveal as="section" className="px-6 py-14 md:px-12 md:py-16">
-      <div className="mx-auto grid max-w-4xl grid-cols-2 gap-y-8 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-ink-800">
+      <div className="mx-auto grid max-w-4xl grid-cols-2 gap-y-8 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-[var(--border)]">
         {stats.map((s) => (
           <div key={s.label} className="px-4 text-center first:pl-0 last:pr-0">
-            <p className="mb-1 text-2xl font-bold text-white md:text-3xl">{s.value}</p>
-            <p className="font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+            <p className="mb-1 text-2xl font-bold text-[var(--foreground)] md:text-3xl">{s.value}</p>
+            <p className="font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
               {s.label}
             </p>
           </div>

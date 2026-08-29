@@ -44,28 +44,28 @@ function ProblemSection() {
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-5">
-          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             The problem
           </p>
-          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-[var(--foreground)]">
             Anyone can say they solved it.
             <br />
             Proving it is different.
           </h2>
-          <p className="mt-4 max-w-sm text-zinc-400">
+          <p className="mt-4 max-w-sm text-[var(--muted-foreground)]">
             Most platforms take your word for it — a checklist you fill in
             yourself, with nothing behind it once someone actually asks.
           </p>
         </div>
 
         <div className="md:col-span-6 md:col-start-7">
-          <ul className="border-t border-ink-800 divide-y divide-ink-800">
+          <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
             {PROBLEMS.map((p) => (
               <li key={p.index} className="flex gap-5 py-6">
-                <span className="font-mono-ui text-sm text-zinc-600">{p.index}</span>
+                <span className="font-mono-ui text-sm text-[var(--muted-foreground)]">{p.index}</span>
                 <div>
-                  <p className="font-display font-semibold text-white">{p.title}</p>
-                  <p className="mt-1.5 text-zinc-400">{p.detail}</p>
+                  <p className="font-display font-semibold text-[var(--foreground)]">{p.title}</p>
+                  <p className="mt-1.5 text-[var(--muted-foreground)]">{p.detail}</p>
                 </div>
               </li>
             ))}

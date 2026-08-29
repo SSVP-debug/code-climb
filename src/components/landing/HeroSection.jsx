@@ -28,6 +28,11 @@ const CODE_PREVIEW = `def twoSum(nums, target):
  * Purely illustrative — every fact it shows is already stated in the H1
  * and subhead — so the whole thing is aria-hidden rather than have a
  * screen reader narrate a fake code file.
+ *
+ * Theme note (Phase 1): intentional dark surface, unchanged in White
+ * Mode — same reasoning as HeroTerminal, which this borrows its visual
+ * vocabulary from. The surrounding Hero copy (H1/subhead/eyebrow/trust
+ * signal, below) uses the semantic theme tokens; this card does not.
  */
 function ProofCard() {
   return (
@@ -85,18 +90,18 @@ function HeroSection({ user }) {
   return (
     <section className="px-6 pt-24 pb-20 md:px-12 md:pb-28 md:pt-32 lg:pt-36">
       <div className="lp-reveal lp-in-view mx-auto max-w-2xl text-center">
-        <p className="mb-6 inline-flex items-center justify-center gap-2 font-mono-ui text-lp-eyebrow uppercase tracking-lp-eyebrow text-zinc-500">
+        <p className="mb-6 inline-flex items-center justify-center gap-2 font-mono-ui text-lp-eyebrow uppercase tracking-lp-eyebrow text-[var(--muted-foreground)]">
           <span className="h-1.5 w-1.5 rounded-full bg-verdict-pending" />
           Placement season 2026 — batches open now
         </p>
 
-        <h1 className="text-lp-h1 font-display font-bold tracking-tight text-white">
-          Every solve, <span className="text-verdict-accept">verified.</span>
+        <h1 className="text-lp-h1 font-display font-bold tracking-tight text-[var(--foreground)]">
+          Every solve, <span className="text-[var(--accent-text)]">verified.</span>
           <br />
           Every profile, provable.
         </h1>
 
-        <p className="mt-6 text-lg leading-relaxed text-zinc-400">
+        <p className="mt-6 text-lg leading-relaxed text-[var(--muted-foreground)]">
           Code Club checks every submission server-side, so your solve
           history means something to the people looking at it.
         </p>
@@ -119,7 +124,7 @@ function HeroSection({ user }) {
           </Button>
         </div>
 
-        <p className="mt-5 font-mono-ui text-xs text-zinc-500">{TRUST_SIGNALS}</p>
+        <p className="mt-5 font-mono-ui text-xs text-[var(--muted-foreground)]">{TRUST_SIGNALS}</p>
       </div>
 
       <div className="lp-reveal lp-in-view mx-auto mt-16 max-w-5xl md:mt-20 md:flex md:justify-end">

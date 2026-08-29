@@ -25,27 +25,32 @@ import BWModeToggle from "../common/BWModeToggle";
  * crowding the CTA on narrow viewports (Phase 1 audit flagged this as
  * the nav's one responsive risk); the route stays reachable via the
  * primary CTA and the footer either way.
+ *
+ * Surfaces/text below use the semantic theme tokens from index.css
+ * (--background/--foreground/--border/--muted-foreground/--accent-text)
+ * so this bar renders correctly in both Black and White Mode; see
+ * index.css for what each resolves to per mode.
  */
 function LandingNav({ user }) {
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-ink-800 bg-ink-950/80 px-6 py-4 backdrop-blur-md md:px-12">
+    <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/80 px-6 py-4 backdrop-blur-md md:px-12">
       <Link
         to="/"
-        className="flex items-center font-display text-lg font-semibold tracking-tight text-white"
+        className="flex items-center font-display text-lg font-semibold tracking-tight text-[var(--foreground)]"
       >
         Code Club
-        <span className="text-verdict-accept">.</span>
+        <span className="text-[var(--accent-text)]">.</span>
       </Link>
 
       <div className="flex items-center gap-2 md:gap-4">
         <Link
           to={user ? "/problems" : "/login?role=student"}
-          className="hidden px-3 py-2 text-sm text-zinc-400 transition hover:text-white sm:inline-block"
+          className="hidden px-3 py-2 text-sm text-[var(--muted-foreground)] transition hover:text-[var(--foreground)] sm:inline-block"
         >
           Problems
         </Link>
 
-        <div className="rounded-full border border-ink-700 bg-ink-900/60 p-1">
+        <div className="rounded-full border border-[var(--border)] bg-[var(--surface)]/60 p-1">
           <BWModeToggle />
         </div>
 

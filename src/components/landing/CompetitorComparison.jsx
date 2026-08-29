@@ -45,25 +45,25 @@ function CompetitorComparison() {
   return (
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+        <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           Verification
         </p>
-        <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+        <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-[var(--foreground)]">
           Solve. Verify. Prove.
         </h2>
-        <p className="mt-4 text-zinc-400">
+        <p className="mt-4 text-[var(--muted-foreground)]">
           Every accepted solve goes through the same three steps — nothing
           about it is self-reported.
         </p>
       </div>
 
-      <ul className="mx-auto mt-14 max-w-4xl divide-y divide-ink-800 md:mt-16 md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
+      <ul className="mx-auto mt-14 max-w-4xl divide-y divide-[var(--border)] md:mt-16 md:grid md:grid-cols-3 md:divide-x md:divide-y-0">
         {STAGES.map((s) => (
           <li key={s.id} className="py-8 first:pt-0 last:pb-0 md:px-8 md:py-0 md:first:pl-0 md:last:pr-0">
-            <s.Icon size={20} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" />
-            <p className="mt-4 font-mono-ui text-xs text-zinc-600">{s.index}</p>
-            <h3 className="mt-1 font-display text-lg font-semibold text-white">{s.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-400">{s.body}</p>
+            <s.Icon size={20} strokeWidth={2} className="text-[var(--accent-text)]" aria-hidden="true" />
+            <p className="mt-4 font-mono-ui text-xs text-[var(--muted-foreground)]">{s.index}</p>
+            <h3 className="mt-1 font-display text-lg font-semibold text-[var(--foreground)]">{s.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">{s.body}</p>
           </li>
         ))}
       </ul>

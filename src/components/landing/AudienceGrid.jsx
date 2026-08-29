@@ -24,6 +24,14 @@ import Reveal from "./Reveal";
 // section) rather than raw Tailwind teal/sky/violet classes, so the
 // accent is centralized in one place. Used only as a small dot + label
 // + link color per row — never a card background or a glow.
+//
+// Theme note (Phase 1): each --color-role-* token above now resolves to
+// a runtime CSS variable (see index.css) that's a darker step of the
+// same hue in White Mode — the 400-shade brand colors used in Black Mode
+// read at ~1.9–2.7:1 against a white page, well under WCAG AA's 4.5:1
+// text minimum. No change needed here in AudienceGrid.jsx itself; the
+// class names below (text-role-student, etc.) automatically pick up
+// whichever value is active.
 // Literal class strings only (Tailwind JIT can't resolve interpolated
 // class names like `text-${accent}` — same constraint documented in
 // ContactChannels.jsx) — keyed by role so each row's icon/label/link
@@ -80,13 +88,13 @@ function AudienceGrid({ user }) {
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-5">
-          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-zinc-500">
+          <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             Opportunities
           </p>
-          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-white">
+          <h2 className="text-lp-h2-spine font-display font-bold tracking-tight text-[var(--foreground)]">
             Verified work doesn&apos;t stop at your dashboard.
           </h2>
-          <p className="mt-4 max-w-sm text-zinc-400">
+          <p className="mt-4 max-w-sm text-[var(--muted-foreground)]">
             Practice and proof stay yours. What happens with them depends
             on who&apos;s looking — a recruiter searching by real solve
             history, or a TPO reading a whole batch&apos;s readiness.
@@ -94,7 +102,7 @@ function AudienceGrid({ user }) {
         </div>
 
         <div className="md:col-span-6 md:col-start-7">
-          <ul className="border-t border-ink-800 divide-y divide-ink-800">
+          <ul className="border-t border-[var(--border)] divide-y divide-[var(--border)]">
             {ROLES.map((r) => {
               const a = ACCENT_CLASSES[r.accent];
               return (
@@ -104,17 +112,17 @@ function AudienceGrid({ user }) {
                   </span>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono-ui text-xs text-zinc-600">
+                      <span className="font-mono-ui text-xs text-[var(--muted-foreground)]">
                         {r.index}
                       </span>
-                      <p className="font-display font-semibold text-white">
+                      <p className="font-display font-semibold text-[var(--foreground)]">
                         {r.title}
                       </p>
                     </div>
-                    <p className="mt-1.5 text-zinc-400">{r.body}</p>
+                    <p className="mt-1.5 text-[var(--muted-foreground)]">{r.body}</p>
                     <Link
                       to={destination}
-                      className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${a.text} hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 ${a.ring} focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950 rounded-sm`}
+                      className={`mt-3 inline-flex items-center gap-1.5 text-sm font-semibold ${a.text} hover:brightness-110 transition focus-visible:outline-none focus-visible:ring-2 ${a.ring} focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm`}
                     >
                       {r.cta}
                       <ArrowRight size={14} aria-hidden="true" />
