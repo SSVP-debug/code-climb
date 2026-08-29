@@ -321,10 +321,25 @@ describe("Timing rule (Option A): referral applied after first accepted practice
     expect(row.ineligibleReason).toBe("referral_applied_after_first_accepted_practice_solve");
 
     // Even a later genuine Accepted practice submission must not qualify it.
+    // This has to be a real, persisted Submission — qualifyReferralIfFirstSolve
+    // determines "first solve" from actual Accepted-practice submission
+    // COUNT, so without a second real row here this call would still see
+    // count === 1 and misleadingly hit the (different) not_referred_or_not_pending
+    // path instead of exercising the "later solve" case this test is
+    // actually named for. Its real _id is also what qualificationSourceSubmissionId
+    // expects (an ObjectId reference to a real Submission), not a fake string.
     await seedProblem({ id: 2, slug: "three-sum", title: "Three Sum", functionName: "threeSum" });
+    const laterSubmission = await Submission.create({
+      userId: referred._id,
+      problemSlug: "three-sum",
+      language: "python",
+      status: "Accepted",
+      passed: 1,
+      total: 1,
+    });
     const result = await qualifyReferralIfFirstSolve({
       userId: referred._id,
-      submissionId: "someOtherSubmission",
+      submissionId: laterSubmission._id,
     });
 
     expect(result).toEqual({ qualified: false, reason: "not_first_solve" });
@@ -418,7 +433,12 @@ describe("qualifyReferralIfFirstSolve — idempotency under concurrency (real Mo
 
     const referrer = await seedUser({ email: "referrerC@test.com" });
     const referred = await seedUser({ email: "referredC@test.com" });
-    await Submission.create({
+    // A single real Submission — both concurrent calls below represent two
+    // callers racing on this SAME first-solve event (e.g. a retried judge
+    // request), not two different submissions. qualificationSourceSubmissionId
+    // is a real ObjectId reference to Submission._id in production, so the
+    // fixture uses the actual persisted _id rather than a fake string.
+    const submission = await Submission.create({
       userId: referred._id,
       problemSlug: "two-sum",
       language: "python",
@@ -433,8 +453,8 @@ describe("qualifyReferralIfFirstSolve — idempotency under concurrency (real Mo
     });
 
     await Promise.all([
-      qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: "sub1" }),
-      qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: "sub2" }),
+      qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: submission._id }),
+      qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: submission._id }),
     ]);
 
     const reloaded = await ReferralQualification.findById(qualRow._id);
@@ -485,7 +505,9 @@ describe("Reward failure recovery: retryPendingReferralRewards (real Mongo)", ()
   it("successfully issues a reward on retry that was skipped_unconfigured at qualification time", async () => {
     const referrer = await seedUser({ email: "retryReferrer@test.com" });
     const referred = await seedUser({ email: "retryReferred@test.com" });
-    await Submission.create({
+    // Real Submission ObjectId — see the concurrency test above for why a
+    // fake string like "sub1" isn't valid against the schema.
+    const submission = await Submission.create({
       userId: referred._id,
       problemSlug: "two-sum",
       language: "python",
@@ -502,7 +524,7 @@ describe("Reward failure recovery: retryPendingReferralRewards (real Mongo)", ()
     // Qualify with no reward amounts configured yet.
     const firstAttempt = await qualifyReferralIfFirstSolve({
       userId: referred._id,
-      submissionId: "sub1",
+      submissionId: submission._id,
     });
     expect(firstAttempt).toEqual({ qualified: true, rewardStatus: "skipped_unconfigured" });
     expect(await RewardLedger.countDocuments({})).toBe(0);
@@ -526,7 +548,9 @@ describe("Reward failure recovery: retryPendingReferralRewards (real Mongo)", ()
 
     const referrer = await seedUser({ email: "retryReferrer2@test.com" });
     const referred = await seedUser({ email: "retryReferred2@test.com" });
-    await Submission.create({
+    // Real Submission ObjectId — see the concurrency test above for why a
+    // fake string like "sub1" isn't valid against the schema.
+    const submission = await Submission.create({
       userId: referred._id,
       problemSlug: "two-sum",
       language: "python",
@@ -540,7 +564,7 @@ describe("Reward failure recovery: retryPendingReferralRewards (real Mongo)", ()
       referralCodeUsed: "abc123",
     });
 
-    await qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: "sub1" });
+    await qualifyReferralIfFirstSolve({ userId: referred._id, submissionId: submission._id });
     expect(await RewardLedger.countDocuments({})).toBe(2); // referrer + referred
 
     // retryPendingReferralRewards only selects rows where rewardStatus !=

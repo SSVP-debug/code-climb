@@ -374,26 +374,38 @@ describe("createReferralAssociationQualification", () => {
     expect(result).toBe(row);
   });
 
-  it("marks the row ineligible immediately when the referred user already has a prior accepted practice submission (timing rule)", async () => {
-    const row = { _id: "qual1" };
+  it("marks the row ineligible immediately when the referred user already has a prior accepted practice submission (timing rule), and RETURNS the updated document (not the stale pre-update snapshot)", async () => {
+    const row = { _id: "qual1", status: "pending" };
+    const updatedRow = {
+      _id: "qual1",
+      status: "ineligible",
+      ineligibleReason: "referral_applied_after_first_accepted_practice_solve",
+    };
     ReferralQualification.create.mockResolvedValueOnce(row);
     Submission.countDocuments.mockResolvedValueOnce(1);
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(updatedRow);
 
-    await createReferralAssociationQualification({
+    const result = await createReferralAssociationQualification({
       referrerId: "referrer1",
       referredUserId: userId,
       referralCodeUsed: "abc123",
     });
 
-    expect(ReferralQualification.updateOne).toHaveBeenCalledWith(
+    expect(ReferralQualification.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: "qual1" },
       {
         $set: {
           status: "ineligible",
           ineligibleReason: "referral_applied_after_first_accepted_practice_solve",
         },
-      }
+      },
+      { new: true }
     );
+    // The function's return value must be the freshly-updated document —
+    // callers inspecting the return value (rather than re-querying) must
+    // see "ineligible", never the stale "pending" snapshot from create().
+    expect(result).toBe(updatedRow);
+    expect(result.status).toBe("ineligible");
   });
 
   it("does NOT mark ineligible based on a prior accepted CONTEST/Battle Room submission alone (practice-scope consistency)", async () => {
@@ -405,13 +417,14 @@ describe("createReferralAssociationQualification", () => {
     // returns 0 in that scenario.
     Submission.countDocuments.mockResolvedValueOnce(0);
 
-    await createReferralAssociationQualification({
+    const result = await createReferralAssociationQualification({
       referrerId: "referrer1",
       referredUserId: userId,
       referralCodeUsed: "abc123",
     });
 
-    expect(ReferralQualification.updateOne).not.toHaveBeenCalled();
+    expect(ReferralQualification.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(result).toBe(row);
   });
 });
 

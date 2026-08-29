@@ -415,14 +415,24 @@ export async function createReferralAssociationQualification({
   });
 
   if (priorAcceptedPracticeCount > 0) {
-    await ReferralQualification.updateOne(
+    // findOneAndUpdate with { new: true } — NOT a detached updateOne() —
+    // because this function's return value has to reflect the ineligible
+    // status. A bare updateOne() persists the change correctly but returns
+    // only a write-result summary; `row` (the create()'d snapshot) would
+    // stay stale at status "pending" in memory even though the DB was
+    // already correct, so any caller inspecting the returned document
+    // (not re-querying) would incorrectly still see "pending". Using the
+    // freshly-updated document as the return value keeps the return value
+    // and persisted state from ever disagreeing.
+    return ReferralQualification.findOneAndUpdate(
       { _id: row._id },
       {
         $set: {
           status: "ineligible",
           ineligibleReason: "referral_applied_after_first_accepted_practice_solve",
         },
-      }
+      },
+      { new: true }
     );
   }
 
