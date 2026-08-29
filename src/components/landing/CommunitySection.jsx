@@ -54,7 +54,7 @@ function CommunitySection() {
 
   return (
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
-      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:gap-8">
+      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:items-center md:gap-8">
         {/* Left — narrative beat, mirrors The Problem's column width so the
             spine reads consistently on desktop. */}
         <div className="md:col-span-5">
@@ -78,12 +78,12 @@ function CommunitySection() {
             hierarchy the brief calls for. */}
         <div className="md:col-span-6 md:col-start-7">
           <div className="flex items-start gap-5 border-t border-[var(--border)] py-6 first:pt-0">
-            <Users
-              size={20}
-              strokeWidth={2}
-              className="mt-0.5 flex-shrink-0 text-[var(--accent-text)]"
+            <span
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-verdict-accept/10 text-[var(--accent-text)]"
               aria-hidden="true"
-            />
+            >
+              <Users size={20} strokeWidth={2} />
+            </span>
             <div className="flex-1">
               <p className="font-display text-lg font-semibold text-[var(--foreground)]">
                 The Club
@@ -114,11 +114,9 @@ function CommunitySection() {
                     rel="noopener noreferrer"
                     className="group flex items-center gap-5 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] rounded-sm"
                   >
-                    <Icon
-                      size={18}
-                      className="flex-shrink-0 text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]"
-                      aria-hidden="true"
-                    />
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--surface-elevated)] text-[var(--muted-foreground)] transition group-hover:text-[var(--foreground)]">
+                      <Icon size={18} aria-hidden="true" />
+                    </span>
                     <span className="flex-1">
                       <span className="block font-display font-semibold text-[var(--foreground)]">
                         {label}

@@ -40,14 +40,17 @@ const ACCENT_CLASSES = {
   "role-student": {
     text: "text-role-student",
     ring: "focus-visible:ring-role-student",
+    badge: "bg-role-student/10",
   },
   "role-recruiter": {
     text: "text-role-recruiter",
     ring: "focus-visible:ring-role-recruiter",
+    badge: "bg-role-recruiter/10",
   },
   "role-tpo": {
     text: "text-role-tpo",
     ring: "focus-visible:ring-role-tpo",
+    badge: "bg-role-tpo/10",
   },
 };
 
@@ -85,8 +88,8 @@ function AudienceGrid({ user }) {
   const destination = user ? "/dashboard" : "/portal";
 
   return (
-    <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
-      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:gap-8">
+    <Reveal as="section" className="bg-[var(--surface)] px-6 py-20 md:px-12 md:py-28">
+      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:items-center md:gap-8">
         <div className="md:col-span-5">
           <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             Opportunities
@@ -107,7 +110,10 @@ function AudienceGrid({ user }) {
               const a = ACCENT_CLASSES[r.accent];
               return (
                 <li key={r.id} className="flex gap-5 py-6">
-                  <span className={`mt-0.5 flex-shrink-0 ${a.text}`} aria-hidden="true">
+                  <span
+                    className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl ${a.badge} ${a.text}`}
+                    aria-hidden="true"
+                  >
                     <r.Icon size={20} strokeWidth={2} />
                   </span>
                   <div className="flex-1">

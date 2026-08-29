@@ -81,7 +81,7 @@ function InterviewSnippet() {
 
 function FeatureGrid() {
   return (
-    <Reveal as="section" className="px-6 py-20 md:px-12 md:py-24">
+    <Reveal as="section" className="bg-[var(--surface)] px-6 py-20 md:px-12 md:py-24">
       <div className="mx-auto max-w-2xl text-center">
         <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
           What's included

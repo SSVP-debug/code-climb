@@ -56,13 +56,13 @@ function ThemesShowcase({ user }) {
       <ul className="mx-auto mt-12 max-w-2xl divide-y divide-[var(--border)]">
         {THEMES_PREVIEW.map((t) => (
           <li key={t.id} className="flex items-start gap-4 py-5">
-            <t.Icon
-              size={20}
-              strokeWidth={2}
-              style={{ color: t.color }}
+            <span
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `${t.color}1a`, color: t.color }}
               aria-hidden="true"
-              className="mt-0.5 flex-shrink-0"
-            />
+            >
+              <t.Icon size={20} strokeWidth={2} />
+            </span>
             <div>
               <h3 className="font-display font-semibold text-[var(--foreground)]">{t.name}</h3>
               <p className="mt-1 text-sm leading-relaxed text-[var(--muted-foreground)]">{t.description}</p>

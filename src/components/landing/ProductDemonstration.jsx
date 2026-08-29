@@ -95,7 +95,7 @@ function ProductDemonstration() {
 
         <div ref={panelRef} className="mx-auto mt-14 max-w-xl md:mt-16">
           <div aria-hidden="true">
-            <div className="mb-3 flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900/60 px-4 py-3 font-mono-ui text-xs">
+            <div className="mb-3 flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900 px-4 py-3 font-mono-ui text-xs">
               <span className="uppercase tracking-lp-label text-zinc-500">Problem</span>
               <span className="text-zinc-300">Two Sum · Arrays, Hashing · Easy</span>
             </div>
@@ -109,7 +109,7 @@ function ProductDemonstration() {
                   <HeroTerminal />
                 </>
               ) : (
-                <div className="h-[380px] rounded-2xl border border-ink-700 bg-ink-800/60" />
+                <div className="h-[380px] rounded-2xl border border-ink-700 bg-ink-800" />
               )}
 
               <div className="pointer-events-none absolute -right-6 top-8 hidden lg:block">
@@ -138,7 +138,7 @@ function ProductDemonstration() {
 
             <div className="ml-4 h-3 w-px bg-ink-800" />
 
-            <div className="mt-3 flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900/60 px-4 py-3 font-mono-ui text-xs">
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-ink-800 bg-ink-900 px-4 py-3 font-mono-ui text-xs">
               <span className="uppercase tracking-lp-label text-zinc-500">Proof</span>
               <span className="text-verdict-accept">Added to your verified profile</span>
             </div>

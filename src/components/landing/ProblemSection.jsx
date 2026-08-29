@@ -42,7 +42,7 @@ const PROBLEMS = [
 function ProblemSection() {
   return (
     <Reveal as="section" className="px-6 py-20 md:px-12 md:py-28">
-      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:gap-8">
+      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-12 md:items-center md:gap-8">
         <div className="md:col-span-5">
           <p className="mb-4 font-mono-ui text-lp-label uppercase tracking-lp-label text-[var(--muted-foreground)]">
             The problem
