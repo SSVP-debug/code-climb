@@ -440,6 +440,26 @@ const userSchema = new mongoose.Schema(
     referredBy: { type: String, default: null },
     referralRewardDays: { type: Number, default: 0 },
 
+    // ── Referral Qualification timing anchor (Plan 2 refinement) ─────────
+    // Set atomically alongside referredBy (see routes/referral.js's
+    // POST /apply, via services/userSubscriptionService.js's
+    // saveSubscriptionIfMatch) — the durable, immutable "referral was
+    // applied at" timestamp. Added specifically because no existing field
+    // could serve this reliably: User.updatedAt gets overwritten by every
+    // unrelated subsequent write (XP, streaks, progress — see
+    // services/userProgressService.js's saveProgress), and
+    // ReferralQualification.createdAt is unreliable on its own because
+    // that row can legitimately be created late (eager creation at
+    // /apply time can fail; a self-healing reconstruction later
+    // materializes it — see services/referralQualification.js's module
+    // comment). This field is what makes "was the referral applied
+    // before the first accepted practice solve" a deterministic
+    // timestamp comparison instead of an operation-ordering-dependent
+    // check. Purely additive: referralRewardDays, the Pro-subscription
+    // day-bonus flow (routes/billing.js), and Ambassador's referredCount
+    // (routes/ambassador.js) never read this field.
+    referredAt: { type: Date, default: null },
+
     // ── Weekly AI review email (commit 097) ──────────────────────────────
     emailPreferences: {
       weeklyReview: { type: Boolean, default: true }, // opt-out, not opt-in

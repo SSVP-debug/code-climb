@@ -4,6 +4,7 @@ import Problem from "../models/Problem.js";
 import { recordVerifiedSubmission } from "./submissionController.js";
 import { awardContestSolve } from "../services/contestScoring.js";
 import { awardBattleRoomSolve } from "../services/battleRoomScoring.js";
+import { qualifyReferralIfFirstSolve } from "../services/referralQualification.js";
 import { canAccessContestProblem } from "../services/contestProblemAccess.js";
 import { LANGUAGE_KEY_TO_ID } from "../config/languages.js";
 
@@ -584,6 +585,47 @@ export async function submitHandler(req, res) {
             "[Judge] Failed to record Battle Room score"
           );
           responseExtras.battleRoom = { scored: false, reason: "error" };
+        }
+      }
+      // ── Referral Qualification (Plan 2) ─────────────────────────────────
+      // Same trust model as contest/battle-room scoring immediately above:
+      // the ONLY trigger is THIS server having just computed "Accepted"
+      // itself via Judge0 — never a bare client claim. See
+      // services/referralQualification.js for the full "why this event,
+      // why here, why practice-only" reasoning. Awaited (not
+      // fire-and-forget) for the same reason contest/battle-room scoring
+      // above is awaited: it keeps this deterministic before the response
+      // is sent. Best-effort and isolated, same as both blocks above: a
+      // qualification-check hiccup must not turn a real, already-returned
+      // Accepted verdict into a failure for the user — the
+      // qualification/reward result itself is intentionally NOT included
+      // in the response payload (unlike contest/battleRoom above), since
+      // it's the referrer's/referred user's reward status, not something
+      // this submitter needs to see synchronously.
+      //
+      // Practice-only scope: gated on persistedContestId/persistedBattleRoomId
+      // (the validated, actually-persisted values — see this function's own
+      // top-of-file variable, not the raw, client-sent contestId/battleRoomId
+      // used by the scoring blocks above) both being null. A Contest or
+      // Battle Room Accepted submission never reaches this check at all —
+      // Contest/Battle Room scoring stays entirely separate, per Code
+      // Club's stated preferred product behavior.
+      if (
+        status === "Accepted" &&
+        responseExtras.submissionId &&
+        !persistedContestId &&
+        !persistedBattleRoomId
+      ) {
+        try {
+          await qualifyReferralIfFirstSolve({
+            userId: req.userDoc._id,
+            submissionId: responseExtras.submissionId,
+          });
+        } catch (err) {
+          req.log.error(
+            { err, problemSlug },
+            "[Judge] Referral qualification check failed"
+          );
         }
       }
     }

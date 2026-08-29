@@ -63,6 +63,7 @@ import {
   importSelectedOpportunities,
 } from "../controllers/adminOpportunityImportController.js";
 import { getUserLedgerAdmin } from "../controllers/rewardController.js";
+import { retryReferralRewards } from "../controllers/adminReferralController.js";
 
 const router = Router();
 
@@ -153,6 +154,14 @@ router.get("/opportunities/:id/analytics", requireAdmin, getOpportunityAnalytics
 // caller's own — see routes/rewards.js for the equivalent self-service
 // endpoints every user has for their own balance/ledger.
 router.get("/rewards/ledger", requireAdmin, getUserLedgerAdmin);
+
+// ── Referral Qualification reward retry (Plan 2 refinement) ────────────────
+// Idempotent reconciliation, not a direct ledger write — see
+// controllers/adminReferralController.js and services/
+// referralQualification.js's retryPendingReferralRewards() for why this
+// can never itself cause a double-issue (RewardLedger's own idempotency
+// index is what prevents that, unmodified by this route).
+router.post("/referral/retry-rewards", requireAdmin, retryReferralRewards);
 
 // ── System health ────────────────────────────────────────────────────────────
 router.get("/system-health", requireAdmin, getSystemHealth);

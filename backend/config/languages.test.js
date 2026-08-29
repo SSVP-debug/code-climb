@@ -69,6 +69,17 @@ vi.mock("../services/battleRoomScoring.js", () => ({
 vi.mock("../services/contestProblemAccess.js", () => ({
   canAccessContestProblem: vi.fn(),
 }));
+// Referral Qualification (Plan 2) — same reasoning as contestScoring/
+// battleRoomScoring above: judgeController.js calls this on every Accepted
+// verdict, and unlike those two, its own import graph reaches the REAL
+// models/Submission.js and models/ReferralQualification.js. Left
+// unmocked, this file's vi.resetModules() + dynamic re-import cycles
+// (below) re-run Submission.js's top-level mongoose.model("Submission", ...)
+// on every re-import, which throws OverwriteModelError on the second
+// pass — mocking here avoids ever reaching those real model files.
+vi.mock("../services/referralQualification.js", () => ({
+  qualifyReferralIfFirstSolve: vi.fn().mockResolvedValue({ qualified: false }),
+}));
 
 // Root-cause fix: three tests below dynamically re-mock "./languages.js"
 // via vi.doMock() to simulate a disabled language, then call

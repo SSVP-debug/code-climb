@@ -1,9 +1,11 @@
 import { Router } from "express";
 import crypto from "crypto";
 import User from "../models/User.js";
+import ReferralQualification from "../models/ReferralQualification.js";
 import { REFERRAL_REWARD_DAYS } from "../config/featureFlags.js";
 import { SITE_URL } from "../config/site.js";
-import { saveSubscription } from "../services/userSubscriptionService.js";
+import { saveSubscription, saveSubscriptionIfMatch } from "../services/userSubscriptionService.js";
+import { createReferralAssociationQualification } from "../services/referralQualification.js";
 
 const router = Router();
 
@@ -67,8 +69,52 @@ router.post("/apply", async (req, res) => {
     const referrer = await User.findOne({ referralCode: code });
     if (!referrer) return res.status(404).json({ error: "Invalid referral code." });
 
-    await saveSubscription(req.userDoc._id, { referredBy: code });
+    // ── Atomic conditional association (race-condition fix) ────────────────
+    // Replaces the old check-then-act pair (the `if (req.userDoc.referredBy)`
+    // check above is now just a fast-path/nicer-error pre-check, not the
+    // actual guarantee). Two concurrent /apply requests could previously
+    // both read referredBy as null before either write landed — this
+    // closes that by baking the precondition into the update's filter, so
+    // only one concurrent call can ever succeed. See
+    // services/userSubscriptionService.js's saveSubscriptionIfMatch() doc
+    // comment for the full reasoning. No transaction needed.
+    const updatedUser = await saveSubscriptionIfMatch(
+      req.userDoc._id,
+      { referredBy: null },
+      { referredBy: code }
+    );
+    if (!updatedUser) {
+      // Lost the race (or the pre-check above was stale) — same response
+      // as the existing "already applied" case.
+      return res.status(400).json({ error: "Referral code already applied to this account." });
+    }
     req.userDoc.referredBy = code;
+
+    // ── Referral Qualification tracking (Plan 2, additive) ────────────────
+    // Independent of the day-bonus reward above — this is the new,
+    // engagement-gated track that eventually feeds the token RewardLedger
+    // once the referred user's first Accepted PRACTICE submission fires
+    // (see services/referralQualification.js, called from
+    // controllers/judgeController.js). Best-effort: a failure here must
+    // not undo the referredBy association that already succeeded above.
+    // Also determines eligibility up front (timing rule — see that
+    // service's module comment): if this user already solved a practice
+    // problem before applying, the row is created already marked
+    // ineligible rather than left in a state that can never actually
+    // qualify. referredUserId's unique index is the real guard against a
+    // duplicate row (e.g. a concurrent double /apply); a race losing that
+    // insert is expected and safely ignored, not an error.
+    try {
+      await createReferralAssociationQualification({
+        referrerId: referrer._id,
+        referredUserId: req.userDoc._id,
+        referralCodeUsed: code,
+      });
+    } catch (err) {
+      if (err?.code !== 11000) {
+        req.log.error({ err }, "[Referral] Failed to create ReferralQualification record");
+      }
+    }
 
     return res.json({
       success: true,
@@ -84,14 +130,21 @@ router.post("/apply", async (req, res) => {
 router.get("/stats", async (req, res) => {
   try {
     if (!req.userDoc?.referralCode) {
-      return res.json({ referredCount: 0, rewardDaysEarned: 0 });
+      return res.json({ referredCount: 0, rewardDaysEarned: 0, qualifiedCount: 0 });
     }
 
-    const referredCount = await User.countDocuments({ referredBy: req.userDoc.referralCode });
+    const [referredCount, qualifiedCount] = await Promise.all([
+      User.countDocuments({ referredBy: req.userDoc.referralCode }),
+      ReferralQualification.countDocuments({
+        referrerId: req.userDoc._id,
+        status: "qualified",
+      }),
+    ]);
 
     return res.json({
       referredCount,
       rewardDaysEarned: req.userDoc.referralRewardDays || 0,
+      qualifiedCount,
     });
   } catch (err) {
     return res.status(500).json({ error: "Failed to load referral stats." });
