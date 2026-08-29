@@ -4,7 +4,16 @@ vi.mock("../models/Submission.js", () => ({
   default: { countDocuments: vi.fn() },
 }));
 vi.mock("../models/ReferralQualification.js", () => ({
-  default: { findOneAndUpdate: vi.fn(), updateOne: vi.fn(), create: vi.fn(), find: vi.fn() },
+  default: {
+    findOneAndUpdate: vi.fn(),
+    updateOne: vi.fn(),
+    create: vi.fn(),
+    find: vi.fn(),
+    exists: vi.fn(),
+  },
+}));
+vi.mock("../models/User.js", () => ({
+  default: { findById: vi.fn(), findOne: vi.fn() },
 }));
 vi.mock("./rewardPolicyService.js", () => ({
   issueReferralQualifiedRewards: vi.fn(),
@@ -15,6 +24,7 @@ vi.mock("../config/logger.js", () => ({
 
 import Submission from "../models/Submission.js";
 import ReferralQualification from "../models/ReferralQualification.js";
+import User from "../models/User.js";
 import { issueReferralQualifiedRewards } from "./rewardPolicyService.js";
 import { logger } from "../config/logger.js";
 import {
@@ -26,8 +36,26 @@ import {
 const userId = "user1";
 const submissionId = "submission1";
 
+// Self-heal (services/referralQualification.js §5) helper mocks —
+// User.findById(...).select(...).lean() and User.findOne(...).select(...).lean().
+function mockReferredByLookup(referredBy) {
+  User.findById.mockReturnValue({
+    select: () => ({ lean: () => Promise.resolve(referredBy != null ? { referredBy } : null) }),
+  });
+}
+function mockReferrerLookup(referrerDoc) {
+  User.findOne.mockReturnValue({
+    select: () => ({ lean: () => Promise.resolve(referrerDoc) }),
+  });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
+  // Default: a ReferralQualification row already exists for the given
+  // user, so selfHealMissingReferralQualification() short-circuits on its
+  // first (cheap) check and every pre-existing test below is unaffected.
+  // Tests that specifically exercise self-heal override this.
+  ReferralQualification.exists.mockResolvedValue(true);
 });
 
 describe("qualifyReferralIfFirstSolve", () => {
@@ -180,6 +208,142 @@ describe("qualifyReferralIfFirstSolve", () => {
     await qualifyReferralIfFirstSolve({ userId, submissionId });
 
     expect(ReferralQualification.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("selfHealMissingReferralQualification (via qualifyReferralIfFirstSolve)", () => {
+  it("reconstructs a missing row and qualifies correctly when the triggering submission is the user's first-ever accepted practice solve", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(1); // this submission IS the first
+    ReferralQualification.exists.mockResolvedValueOnce(false); // row missing
+    mockReferredByLookup("code123");
+    mockReferrerLookup({ _id: "referrer1" });
+    ReferralQualification.create.mockResolvedValueOnce({ _id: "reconstructed1" });
+
+    const qualDoc = { _id: "reconstructed1", referrerId: "referrer1", referredUserId: userId };
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(qualDoc);
+    issueReferralQualifiedRewards.mockResolvedValueOnce({
+      referrer: { issued: true },
+      referred: { issued: true },
+    });
+    ReferralQualification.updateOne.mockResolvedValue({});
+
+    const result = await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(User.findById).toHaveBeenCalledWith(userId);
+    expect(User.findOne).toHaveBeenCalledWith({ referralCode: "code123" });
+    expect(ReferralQualification.create).toHaveBeenCalledWith({
+      referrerId: "referrer1",
+      referredUserId: userId,
+      referralCodeUsed: "code123",
+    });
+    // count === 1 → reconstructed as pending (default), so no ineligible
+    // updateOne call — only the later rewardStatus updateOne.
+    expect(ReferralQualification.updateOne).not.toHaveBeenCalledWith(
+      { _id: "reconstructed1" },
+      expect.objectContaining({ $set: expect.objectContaining({ status: "ineligible" }) })
+    );
+    // Reconstructed row is picked up by the normal atomic qualify step.
+    expect(ReferralQualification.findOneAndUpdate).toHaveBeenCalledWith(
+      { referredUserId: userId, status: "pending" },
+      expect.objectContaining({ $set: expect.objectContaining({ status: "qualified" }) }),
+      { new: true }
+    );
+    expect(result).toEqual({ qualified: true, rewardStatus: "issued" });
+  });
+
+  it("reconstructs a missing row as ineligible when the referral association happened after the first accepted practice solve", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(3); // prior accepted practice solves already existed
+    ReferralQualification.exists.mockResolvedValueOnce(false); // row missing
+    mockReferredByLookup("code123");
+    mockReferrerLookup({ _id: "referrer1" });
+    ReferralQualification.create.mockResolvedValueOnce({ _id: "reconstructed2" });
+
+    const result = await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(ReferralQualification.create).toHaveBeenCalledWith({
+      referrerId: "referrer1",
+      referredUserId: userId,
+      referralCodeUsed: "code123",
+    });
+    expect(ReferralQualification.updateOne).toHaveBeenCalledWith(
+      { _id: "reconstructed2" },
+      {
+        $set: {
+          status: "ineligible",
+          ineligibleReason: "reconstructed_after_prior_accepted_practice_solve",
+        },
+      }
+    );
+    // not_first_solve early return — the reconstructed row must NOT be
+    // qualified in this same call.
+    expect(ReferralQualification.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(issueReferralQualifiedRewards).not.toHaveBeenCalled();
+    expect(result).toEqual({ qualified: false, reason: "not_first_solve" });
+  });
+
+  it("does nothing when the user was never referred (no referredBy, no row) — preserves not_referred_or_not_pending", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(1);
+    ReferralQualification.exists.mockResolvedValueOnce(false); // no row
+    mockReferredByLookup(null); // never referred
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(null);
+
+    const result = await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(User.findOne).not.toHaveBeenCalled(); // no referrer lookup attempted
+    expect(ReferralQualification.create).not.toHaveBeenCalled();
+    expect(result).toEqual({ qualified: false, reason: "not_referred_or_not_pending" });
+  });
+
+  it("skips self-heal entirely (no User lookups) when a qualification row already exists", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(1);
+    ReferralQualification.exists.mockResolvedValueOnce(true); // row already present
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(null);
+
+    await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(User.findById).not.toHaveBeenCalled();
+    expect(User.findOne).not.toHaveBeenCalled();
+    expect(ReferralQualification.create).not.toHaveBeenCalled();
+  });
+
+  it("a losing concurrent reconstruction (E11000 on create) is swallowed silently and qualification still proceeds through the normal atomic step — no duplicate row, no duplicate reward", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(1);
+    ReferralQualification.exists.mockResolvedValueOnce(false); // this caller saw it missing
+    mockReferredByLookup("code123");
+    mockReferrerLookup({ _id: "referrer1" });
+    const dupError = Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
+    ReferralQualification.create.mockRejectedValueOnce(dupError); // another caller won the race
+
+    // The winning concurrent caller's row is what the atomic qualify step
+    // below actually picks up.
+    const qualDoc = { _id: "winner1", referrerId: "referrer1", referredUserId: userId };
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(qualDoc);
+    issueReferralQualifiedRewards.mockResolvedValueOnce({
+      referrer: { issued: true },
+      referred: { issued: true },
+    });
+    ReferralQualification.updateOne.mockResolvedValue({});
+
+    const result = await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(logger.error).not.toHaveBeenCalled(); // E11000 is expected, not an error
+    expect(ReferralQualification.create).toHaveBeenCalledTimes(1); // this caller only tried once
+    expect(issueReferralQualifiedRewards).toHaveBeenCalledTimes(1); // exactly one reward attempt
+    expect(result).toEqual({ qualified: true, rewardStatus: "issued" });
+  });
+
+  it("logs (but does not throw) when the referrer can no longer be resolved from the referredBy code", async () => {
+    Submission.countDocuments.mockResolvedValueOnce(1);
+    ReferralQualification.exists.mockResolvedValueOnce(false);
+    mockReferredByLookup("code123");
+    mockReferrerLookup(null); // referrer not found (e.g. deleted)
+    ReferralQualification.findOneAndUpdate.mockResolvedValueOnce(null);
+
+    const result = await qualifyReferralIfFirstSolve({ userId, submissionId });
+
+    expect(ReferralQualification.create).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalled();
+    expect(result).toEqual({ qualified: false, reason: "not_referred_or_not_pending" });
   });
 });
 

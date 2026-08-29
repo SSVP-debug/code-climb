@@ -1,5 +1,6 @@
 import Submission from "../models/Submission.js";
 import ReferralQualification from "../models/ReferralQualification.js";
+import User from "../models/User.js";
 import { issueReferralQualifiedRewards } from "./rewardPolicyService.js";
 import { logger } from "../config/logger.js";
 
@@ -105,9 +106,151 @@ import { logger } from "../config/logger.js";
  * retry/reconciliation mechanism," not "add new recurring-job infra."
  * Manually triggerable now; automating the trigger is a small, separate,
  * future decision that doesn't change this function's shape.
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * 5. MISSING-ROW SELF-HEAL: selfHealMissingReferralQualification()
+ * ═══════════════════════════════════════════════════════════════════════
+ * Closes the one remaining inconsistent state flagged in the architecture
+ * review: routes/referral.js's /apply calls
+ * createReferralAssociationQualification() best-effort, in a try/catch,
+ * AFTER User.referredBy has already been saved. A genuine (non-E11000)
+ * failure there — a real DB error, not the expected "already applied"
+ * race — previously left `User.referredBy` set with no corresponding
+ * ReferralQualification row and no path back. That user could solve
+ * problems forever and this file would always return
+ * `not_referred_or_not_pending`, silently, forever.
+ *
+ * qualifyReferralIfFirstSolve() now calls
+ * selfHealMissingReferralQualification() on every Accepted practice
+ * submission (not just the first), BEFORE the not_first_solve early
+ * return — it has to run unconditionally, because the row's correct
+ * status (pending vs. ineligible) depends on how many prior accepted
+ * practice solves already existed, which is exactly the information the
+ * early return would otherwise throw away.
+ *
+ * Cheap in the overwhelming common case: a single indexed
+ * `ReferralQualification.exists({ referredUserId })` check. Only a user
+ * who (a) was actually referred AND (b) is missing their row pays the
+ * extra cost of a User lookup + reconstruction attempt.
+ *
+ * Timing reconstruction: since Submission rows are already persisted
+ * before this service ever runs (see this function's own doc comment),
+ * `acceptedPracticeCount` passed in from qualifyReferralIfFirstSolve
+ * already includes the triggering submission itself.
+ *   - count === 1 → the triggering submission IS this user's first-ever
+ *     accepted practice solve. Because User.referredBy is already set at
+ *     the moment this function reads it, and it can only have been set
+ *     by an earlier, already-completed /apply request, the referral
+ *     necessarily preceded this solve. Reconstructed as "pending" — the
+ *     caller's own atomic qualify step immediately after this call picks
+ *     it up in the same request.
+ *   - count > 1 → at least one other accepted practice solve already
+ *     existed before this one. The original /apply-time timestamp is
+ *     unrecoverable, so — consistent with
+ *     createReferralAssociationQualification()'s own conservative
+ *     default — this is reconstructed directly as "ineligible" rather
+ *     than risk rewarding solving activity the referral had no
+ *     verifiable causal role in.
+ *
+ * Race-safe by construction, not by locking: two concurrent callers
+ * racing to reconstruct the same missing row both attempt
+ * ReferralQualification.create(); ReferralQualification.referredUserId's
+ * existing unique index (unmodified) lets exactly one succeed, and the
+ * loser's E11000 is caught and ignored — identical idiom to
+ * routes/referral.js's own existing E11000 handling around
+ * createReferralAssociationQualification().
  */
 
 const PRACTICE_SUBMISSION_FILTER = { contestId: null, battleRoomId: null };
+
+/**
+ * selfHealMissingReferralQualification — reconstructs a
+ * ReferralQualification row for a referred user whose row is missing
+ * (see this file's module comment, section 5, for the full "why" and the
+ * timing-reconstruction reasoning). Called unconditionally, on every
+ * Accepted practice submission, from qualifyReferralIfFirstSolve —
+ * before that function's own not_first_solve early return, because the
+ * correct reconstructed status depends on `acceptedPracticeCount`, which
+ * the early return would otherwise discard.
+ *
+ * Cheap no-op for the overwhelming majority of calls: a single indexed
+ * existence check. Never throws for expected outcomes (never referred,
+ * row already present, lost a concurrent reconstruction race) — only
+ * logs for a genuine unexpected DB error, matching this file's existing
+ * best-effort posture elsewhere.
+ *
+ * @param {Object} params
+ * @param {string|import("mongoose").Types.ObjectId} params.userId
+ * @param {number} params.acceptedPracticeCount - this user's total
+ *   Accepted PRACTICE submission count, already including the
+ *   submission that triggered this call.
+ */
+async function selfHealMissingReferralQualification({ userId, acceptedPracticeCount }) {
+  // Cheapest possible check first: does a row already exist? Covers both
+  // "never referred" (no row, but we haven't paid for a User lookup yet)
+  // and "referred, row present" (the overwhelming common case for
+  // referred users) — neither needs anything further.
+  const alreadyExists = await ReferralQualification.exists({ referredUserId: userId });
+  if (alreadyExists) {
+    return;
+  }
+
+  const userDoc = await User.findById(userId).select("referredBy").lean();
+  if (!userDoc?.referredBy) {
+    return; // never referred — nothing to heal
+  }
+
+  const referrer = await User.findOne({ referralCode: userDoc.referredBy })
+    .select("_id")
+    .lean();
+  if (!referrer) {
+    // Referrer no longer resolvable (e.g. deleted, or a data anomaly) —
+    // cannot reconstruct deterministically. Best-effort: log for manual
+    // investigation, same posture as the rest of this file.
+    logger.error(
+      { userId: String(userId), code: userDoc.referredBy },
+      "[ReferralQualification] self-heal: referrer not found for referredBy code — cannot reconstruct"
+    );
+    return;
+  }
+
+  try {
+    const row = await ReferralQualification.create({
+      referrerId: referrer._id,
+      referredUserId: userId,
+      referralCodeUsed: userDoc.referredBy,
+    });
+
+    // See module comment section 5 for the full timing reasoning:
+    // count === 1 means this triggering submission is the first-ever
+    // accepted practice solve, so the (already-set) referral necessarily
+    // preceded it — leave status at its "pending" default so the
+    // caller's atomic qualify step picks it up immediately. count > 1
+    // means prior accepted practice activity already existed, so this
+    // is reconstructed directly as ineligible.
+    if (acceptedPracticeCount > 1) {
+      await ReferralQualification.updateOne(
+        { _id: row._id },
+        {
+          $set: {
+            status: "ineligible",
+            ineligibleReason: "reconstructed_after_prior_accepted_practice_solve",
+          },
+        }
+      );
+    }
+  } catch (err) {
+    if (err?.code !== 11000) {
+      logger.error(
+        { err, userId: String(userId) },
+        "[ReferralQualification] self-heal: failed to reconstruct missing qualification row"
+      );
+    }
+    // E11000 = a concurrent caller (another self-heal race, or a very
+    // late-landing normal /apply creation) already created the row —
+    // expected and safely ignored, identical idiom to routes/referral.js.
+  }
+}
 
 /**
  * qualifyReferralIfFirstSolve — call after a Submission row with
@@ -149,6 +292,15 @@ export async function qualifyReferralIfFirstSolve({ userId, submissionId }) {
     status: "Accepted",
     ...PRACTICE_SUBMISSION_FILTER,
   });
+
+  // ── Self-heal: reconstruct a missing ReferralQualification row ─────────
+  // Must run here, unconditionally, BEFORE the not_first_solve early
+  // return below — see module comment section 5 and this helper's own
+  // doc comment for why the correct reconstructed status depends on
+  // acceptedPracticeCount, which that early return would otherwise
+  // discard for any user who needed reconstructing.
+  await selfHealMissingReferralQualification({ userId, acceptedPracticeCount });
+
   if (acceptedPracticeCount !== 1) {
     return { qualified: false, reason: "not_first_solve" };
   }

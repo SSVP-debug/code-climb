@@ -135,6 +135,17 @@ describe("config/languages.js — registry", () => {
     expect(LANGUAGES.cpp.judge0Id).toBe(54);
   });
 
+  // Timeout raised from the 5s default: this test does vi.resetModules()
+  // + vi.doMock() + a dynamic re-import of "./languages.js" itself, which
+  // re-runs module transform/collection for this file's whole graph. That
+  // consistently finishes in well under 1s in isolation (verified: ~860ms
+  // for the routes/judge.js variant below, which does the same dance plus
+  // judgeController.js's import graph) — the timeout was never about this
+  // test's own logic being slow, only about CPU contention when many
+  // other test files' worker threads are transforming/collecting at the
+  // same time in a full-suite run. 15s gives ample headroom under load
+  // without masking a genuine hang (a real hang wouldn't resolve
+  // intermittently pass/fail the way this was observed to).
   it("ENABLED_* exports exclude a disabled language while SUPPORTED_* keeps including it", async () => {
     vi.resetModules();
     vi.doMock("./languages.js", async (importOriginal) => {
@@ -175,7 +186,7 @@ describe("config/languages.js — registry", () => {
     expect(mod.SUPPORTED_LANGUAGE_KEYS).toContain("cpp");
     expect(mod.SUPPORTED_LANGUAGE_IDS).toContain(54);
     expect(mod.getEnabledLanguagesForApi().map((l) => l.id)).not.toContain("cpp");
-  });
+  }, 15000);
 
   it("formatEnabledLanguageKeysMessage produces the historical message text when all four are enabled", async () => {
     const { formatEnabledLanguageKeysMessage } = await import("./languages.js");
@@ -202,6 +213,14 @@ describe("GET /api/languages — languageController.getLanguages", () => {
 });
 
 describe("routes/judge.js — language enum sourced from the enabled registry", () => {
+  // Timeout raised from the 5s default — see the identical note on the
+  // "ENABLED_* exports..." test above. This is the heaviest of the three
+  // doMock/resetModules tests in this file: the dynamic re-import of
+  // routes/judge.js also re-runs controllers/judgeController.js's module
+  // graph (fully mocked at the boundary, but still re-transformed/
+  // re-collected on every re-import) plus mongoose itself. ~860ms in
+  // isolation; under full-suite parallel load that's what tripped the
+  // 5s default.
   it("rejects a disabled language with a message reflecting the currently-enabled set", async () => {
     vi.resetModules();
     vi.doMock("./languages.js", async (importOriginal) => {
@@ -225,7 +244,7 @@ describe("routes/judge.js — language enum sourced from the enabled registry", 
     expect(result.error.issues.find((i) => i.path[0] === "language").message).toBe(
       "language must be: python, javascript, or java"
     );
-  });
+  }, 15000);
 
   it("still accepts all four languages by default (nothing disabled)", async () => {
     // Static-equivalent import (no resetModules beforehand) — exercises
@@ -260,5 +279,5 @@ describe("routes/compiler.js — language_id gate sourced from the enabled regis
 
     expect(result.success).toBe(false);
     expect(result.error.issues[0].message).toMatch(/supported languages/i);
-  });
+  }, 15000);
 });
