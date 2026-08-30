@@ -256,6 +256,7 @@ describe("Contribution review race (atomic status:pending guard, real Mongo)", (
   });
 
   it("enforces status transitions at the database level, not just in application code — a second approve after the first always no-ops even without a race", async () => {
+    process.env[REWARD_ENV_KEY] = "75";
     const contributor = await seedUser({ email: "sequentialContributor@test.com" });
     const reviewer = await seedUser({ email: "sequentialReviewer@test.com" });
     const contribution = await createContribution({
