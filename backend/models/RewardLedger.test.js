@@ -43,8 +43,24 @@ describe("RewardLedger model", () => {
     expect(err.errors.amount).toBeDefined();
   });
 
-  it("rejects a negative amount", () => {
-    const doc = baseDoc({ amount: -50 });
+  it("accepts a negative amount (Phase 4: REDEMPTION debits) and REDEMPTION as a valid sourceType", () => {
+    // Phase 2 rejected negative amounts outright — Phase 4 (Rewards
+    // Store) re-derives this: a debit is represented as a negative
+    // amount on a REDEMPTION-sourced row. See this model's header
+    // comment and plans/004-rewards-store-scoping.md §3 for the full
+    // reasoning. Schema validation intentionally does NOT enforce
+    // "negative amount implies sourceType REDEMPTION" or vice versa —
+    // that correlation is an application-level concern
+    // (services/rewardStore.js), not a schema-level one, matching this
+    // model's existing "type is free-form, validated at the service
+    // boundary" philosophy for its `type` field.
+    const doc = baseDoc({ amount: -50, sourceType: "REDEMPTION", type: "REDEMPTION_DEBIT" });
+    const err = doc.validateSync();
+    expect(err).toBeUndefined();
+  });
+
+  it("rejects a non-finite amount", () => {
+    const doc = baseDoc({ amount: NaN });
     const err = doc.validateSync();
     expect(err.errors.amount).toBeDefined();
   });

@@ -460,6 +460,26 @@ const userSchema = new mongoose.Schema(
     // (routes/ambassador.js) never read this field.
     referredAt: { type: Date, default: null },
 
+    // ── Credits balance guard (Phase 4 — Rewards Store) ──────────────────
+    // NOT the audited/displayed balance — that remains
+    // services/rewardLedger.js's getBalance() aggregation over
+    // RewardLedger, unchanged. This field exists solely so a redemption
+    // debit (services/rewardStore.js) can be an atomic, race-safe single
+    // write — `findOneAndUpdate({ _id, creditsBalance: { $gte: cost } },
+    // { $inc: { creditsBalance: -cost } })` — rather than the classic
+    // read-balance-then-write-debit race two concurrent redemption
+    // requests could otherwise hit. Kept in sync by issueReward()
+    // (+= amount, alongside its RewardLedger row) and the redemption
+    // debit path (-= cost, guarded), with a reconciliation self-heal
+    // against the RewardLedger aggregation if the two ever disagree —
+    // same "derived value can drift from its source of truth; detect and
+    // repair cheaply" pattern services/referralQualification.js's
+    // selfHealMissingReferralQualification() already established for
+    // this codebase. See plans/004-rewards-store-scoping.md §3 for the
+    // full "why a stored field, and why this doesn't just quietly
+    // reverse the append-only-ledger decision" reasoning.
+    creditsBalance: { type: Number, default: 0, min: 0 },
+
     // ── Weekly AI review email (commit 097) ──────────────────────────────
     emailPreferences: {
       weeklyReview: { type: Boolean, default: true }, // opt-out, not opt-in

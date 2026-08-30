@@ -10,13 +10,23 @@ vi.mock("../models/RewardLedger.js", () => ({
     countDocuments: vi.fn(),
   },
 }));
+vi.mock("../models/User.js", () => ({
+  default: { updateOne: vi.fn() },
+}));
 vi.mock("../config/logger.js", () => ({
   logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
 import RewardLedger from "../models/RewardLedger.js";
+import User from "../models/User.js";
 import { logger } from "../config/logger.js";
-import { issueReward, getBalance, getLedger, REWARD_TYPES } from "./rewardLedger.js";
+import {
+  issueReward,
+  getBalance,
+  getLedger,
+  writeRedemptionLedgerEntry,
+  REWARD_TYPES,
+} from "./rewardLedger.js";
 
 const userId = new mongoose.Types.ObjectId();
 const sourceId = new mongoose.Types.ObjectId();
@@ -138,6 +148,116 @@ describe("issueReward", () => {
         sourceId,
       })
     ).rejects.toThrow();
+  });
+
+  it("increments User.creditsBalance by amount when a new row is written (Phase 4)", async () => {
+    RewardLedger.create.mockResolvedValueOnce({ _id: "entry1" });
+
+    await issueReward({
+      recipientId: userId,
+      type: REWARD_TYPES.CONTRIBUTION_APPROVED,
+      amount: 50,
+      sourceType: "CONTRIBUTION",
+      sourceId,
+    });
+
+    expect(User.updateOne).toHaveBeenCalledWith(
+      { _id: userId },
+      { $inc: { creditsBalance: 50 } }
+    );
+  });
+
+  it("does NOT increment User.creditsBalance again on a duplicate (idempotent) call", async () => {
+    const duplicateError = Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
+    RewardLedger.create.mockRejectedValueOnce(duplicateError);
+    RewardLedger.findOne.mockResolvedValueOnce({ _id: "existingEntry" });
+
+    await issueReward({
+      recipientId: userId,
+      type: REWARD_TYPES.REFERRAL_QUALIFIED,
+      amount: 100,
+      sourceType: "REFERRAL",
+      sourceId,
+    });
+
+    expect(User.updateOne).not.toHaveBeenCalled();
+  });
+});
+
+describe("writeRedemptionLedgerEntry (Phase 4)", () => {
+  it("creates a REDEMPTION-sourced debit row with a negative amount", async () => {
+    RewardLedger.create.mockResolvedValueOnce({ _id: "debit1" });
+
+    const result = await writeRedemptionLedgerEntry({
+      userId,
+      type: REWARD_TYPES.REDEMPTION_DEBIT,
+      amount: -50,
+      redemptionId: sourceId,
+    });
+
+    expect(RewardLedger.create).toHaveBeenCalledWith({
+      userId,
+      type: "REDEMPTION_DEBIT",
+      amount: -50,
+      sourceType: "REDEMPTION",
+      sourceId,
+      metadata: {},
+    });
+    expect(result).toEqual({ entry: { _id: "debit1" }, created: true });
+  });
+
+  it("creates a REDEMPTION-sourced reversal row with a positive amount", async () => {
+    RewardLedger.create.mockResolvedValueOnce({ _id: "reversal1" });
+
+    await writeRedemptionLedgerEntry({
+      userId,
+      type: REWARD_TYPES.REDEMPTION_REVERSED,
+      amount: 50,
+      redemptionId: sourceId,
+    });
+
+    expect(RewardLedger.create).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "REDEMPTION_REVERSED", amount: 50 })
+    );
+  });
+
+  it("is idempotent: a duplicate-key error returns the existing entry, created=false", async () => {
+    const duplicateError = Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
+    RewardLedger.create.mockRejectedValueOnce(duplicateError);
+    RewardLedger.findOne.mockResolvedValueOnce({ _id: "existingDebit" });
+
+    const result = await writeRedemptionLedgerEntry({
+      userId,
+      type: REWARD_TYPES.REDEMPTION_DEBIT,
+      amount: -50,
+      redemptionId: sourceId,
+    });
+
+    expect(result).toEqual({ entry: { _id: "existingDebit" }, created: false });
+  });
+
+  it("rejects a zero amount", async () => {
+    await expect(
+      writeRedemptionLedgerEntry({
+        userId,
+        type: REWARD_TYPES.REDEMPTION_DEBIT,
+        amount: 0,
+        redemptionId: sourceId,
+      })
+    ).rejects.toThrow();
+    expect(RewardLedger.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unknown type", async () => {
+    await expect(
+      writeRedemptionLedgerEntry({
+        userId,
+        type: "SOMETHING_ELSE",
+        amount: -50,
+        redemptionId: sourceId,
+      })
+    ).rejects.toThrow();
+    expect(RewardLedger.create).not.toHaveBeenCalled();
   });
 });
 

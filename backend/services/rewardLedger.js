@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
 import RewardLedger from "../models/RewardLedger.js";
+import User from "../models/User.js";
 import { logger } from "../config/logger.js";
 
 /**
  * services/rewardLedger.js — the SOLE writer of RewardLedger rows.
  *
  * Phase 2 architecture report, §13-17. Every reward-granting flow
- * (referral qualification, contribution approval, and any future source)
- * calls issueReward() with a description of what happened — none of them
- * do token arithmetic themselves. This is what keeps "don't put token
- * arithmetic directly inside contribution/referral controllers" true:
- * callers describe an event, this module decides what it means for the
- * ledger.
+ * (referral qualification, contribution approval, redemption debit/
+ * reversal, and any future source) calls issueReward() or (Phase 4)
+ * writeRedemptionLedgerEntry() with a description of what happened —
+ * none of them do token arithmetic themselves. This is what keeps
+ * "don't put token arithmetic directly inside contribution/referral/
+ * store controllers" true: callers describe an event, this module
+ * decides what it means for the ledger.
  *
  * Known reward types, kept here (not scattered across callers) so a
  * future config/rewardValues.js (architecture report §24) has one place
@@ -20,6 +22,9 @@ import { logger } from "../config/logger.js";
 export const REWARD_TYPES = Object.freeze({
   CONTRIBUTION_APPROVED: "CONTRIBUTION_APPROVED",
   REFERRAL_QUALIFIED: "REFERRAL_QUALIFIED",
+  // Phase 4 (Rewards Store) — see services/rewardStore.js.
+  REDEMPTION_DEBIT: "REDEMPTION_DEBIT",
+  REDEMPTION_REVERSED: "REDEMPTION_REVERSED",
 });
 
 /**
@@ -31,6 +36,20 @@ export const REWARD_TYPES = Object.freeze({
  * detected via the resulting E11000 error and treated as a no-op —
  * returns the existing row instead of throwing, so callers never need to
  * special-case "was this already issued?" themselves.
+ *
+ * Phase 4 addition: also keeps User.creditsBalance in sync (+= amount)
+ * after a genuinely new row is written — see User.js's creditsBalance
+ * comment and plans/004-rewards-store-scoping.md §3 for why that field
+ * exists and why it's updated here rather than left for callers to
+ * remember. Best-effort, not transactional with the ledger write above
+ * it: if the process crashes between the two, creditsBalance and the
+ * ledger's aggregate balance can briefly disagree — this is exactly what
+ * the reconciliation self-heal (services/rewardStore.js's
+ * reconcileCreditsBalance()) exists to repair, same "derived value can
+ * drift; detect and repair cheaply" posture
+ * services/referralQualification.js's self-heal already established.
+ * Not run for a duplicate (created=false) — the balance was already
+ * incremented the first time this exact reward was issued.
  *
  * @param {Object} params
  * @param {string|import("mongoose").Types.ObjectId} params.recipientId
@@ -68,6 +87,7 @@ export async function issueReward({
       sourceId,
       metadata,
     });
+    await User.updateOne({ _id: recipientId }, { $inc: { creditsBalance: amount } });
     return { entry, created: true };
   } catch (err) {
     // E11000 = the unique index caught a duplicate of this exact
@@ -78,6 +98,77 @@ export async function issueReward({
       logger.info(
         { recipientId: String(recipientId), type, sourceType, sourceId: String(sourceId) },
         "[RewardLedger] duplicate issueReward call ignored — reward already issued"
+      );
+      return { entry: existing, created: false };
+    }
+    throw err;
+  }
+}
+
+/**
+ * writeRedemptionLedgerEntry — Phase 4's REDEMPTION-sourceType writer.
+ * Kept separate from issueReward() rather than generalizing that
+ * function to accept negative amounts, because the two have genuinely
+ * different validation shapes (issueReward's callers always describe a
+ * non-negative credit from a known Phase 2 source; this one can be
+ * either a negative debit or a positive reversal from exactly one
+ * source, REDEMPTION) — see RewardLedger.js's header comment for the
+ * amount-sign convention this relies on.
+ *
+ * Does NOT touch User.creditsBalance itself — unlike issueReward(),
+ * callers (services/rewardStore.js) need to sequence the balance change
+ * differently depending on direction (the atomic $gte-guarded decrement
+ * for a debit has to happen BEFORE this is called, not after — see that
+ * file), so this function stays a pure ledger write, matching this
+ * file's "sole writer of RewardLedger rows" scope precisely rather than
+ * also owning balance arithmetic it can't safely order for every caller.
+ *
+ * @param {Object} params
+ * @param {string|import("mongoose").Types.ObjectId} params.userId
+ * @param {string} params.type - REWARD_TYPES.REDEMPTION_DEBIT or .REDEMPTION_REVERSED
+ * @param {number} params.amount - negative for a debit, positive for a reversal. Never zero.
+ * @param {string|import("mongoose").Types.ObjectId} params.redemptionId - the RewardRedemption._id this entry belongs to
+ * @param {Object} [params.metadata]
+ * @returns {Promise<{ entry: object, created: boolean }>} same
+ *   idempotent-duplicate shape as issueReward().
+ */
+export async function writeRedemptionLedgerEntry({
+  userId,
+  type,
+  amount,
+  redemptionId,
+  metadata = {},
+}) {
+  if (![REWARD_TYPES.REDEMPTION_DEBIT, REWARD_TYPES.REDEMPTION_REVERSED].includes(type)) {
+    throw new Error(`writeRedemptionLedgerEntry: unexpected type "${type}".`);
+  }
+  if (!userId || !redemptionId || typeof amount !== "number" || amount === 0) {
+    throw new Error(
+      "writeRedemptionLedgerEntry: userId, redemptionId, and a non-zero amount are required."
+    );
+  }
+
+  try {
+    const entry = await RewardLedger.create({
+      userId,
+      type,
+      amount,
+      sourceType: "REDEMPTION",
+      sourceId: redemptionId,
+      metadata,
+    });
+    return { entry, created: true };
+  } catch (err) {
+    if (err?.code === 11000) {
+      const existing = await RewardLedger.findOne({
+        sourceType: "REDEMPTION",
+        sourceId: redemptionId,
+        userId,
+        type,
+      });
+      logger.info(
+        { userId: String(userId), type, redemptionId: String(redemptionId) },
+        "[RewardLedger] duplicate writeRedemptionLedgerEntry call ignored — entry already written"
       );
       return { entry: existing, created: false };
     }
