@@ -57,7 +57,7 @@ export default function OpportunityDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -65,10 +65,10 @@ export default function OpportunityDetailPage() {
 
   if (notFound || !opportunity) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
-          <p className="text-white font-bold text-lg mb-2">Opportunity not found</p>
-          <p className="text-zinc-500 text-sm mb-6">
+          <p className="text-[var(--foreground)] font-bold text-lg mb-2">Opportunity not found</p>
+          <p className="text-[var(--muted-foreground)] text-sm mb-6">
             This opportunity may have been removed, or the link is incorrect.
           </p>
           <Button to="/opportunities" variant="secondary" size="sm">
@@ -83,7 +83,7 @@ export default function OpportunityDetailPage() {
   const isClosed = o.status === "expired";
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <PageMeta
         title={`${o.title} · ${o.organization} — Code Club Opportunity Radar`}
         description={o.shortSummary}
@@ -91,17 +91,17 @@ export default function OpportunityDetailPage() {
       />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-        <Link to="/opportunities" className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+        <Link to="/opportunities" className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
           ← Opportunity Radar
         </Link>
 
         <div className="flex items-center justify-between mt-4 mb-1">
-          <span className="text-[11px] font-mono text-zinc-600 tracking-wide">CODE CLUB OPPORTUNITY RADAR</span>
-          <span className="text-[11px] font-mono text-zinc-600">{o.ccId}</span>
+          <span className="text-[11px] font-mono text-[var(--muted-foreground)] tracking-wide">CODE CLUB OPPORTUNITY RADAR</span>
+          <span className="text-[11px] font-mono text-[var(--muted-foreground)]">{o.ccId}</span>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-white mt-2">{o.title}</h1>
-        <p className="text-zinc-400 font-semibold mt-1">{o.organization}</p>
+        <h1 className="text-2xl sm:text-3xl font-black text-[var(--foreground)] mt-2">{o.title}</h1>
+        <p className="text-[var(--muted-foreground)] font-semibold mt-1">{o.organization}</p>
 
         {isClosed && (
           <div className="mt-4 text-sm font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 w-fit">
@@ -143,22 +143,22 @@ export default function OpportunityDetailPage() {
               <ExternalLink size={16} strokeWidth={2} />
             </Button>
           )}
-          <p className="text-[11px] text-zinc-600 mt-2">
+          <p className="text-[11px] text-[var(--muted-foreground)] mt-2">
             Opens {new URL(o.officialApplicationUrl).hostname} — the organization's own application.
           </p>
         </div>
 
         <SectionCard title="Why this opportunity matters" className="mt-8">
-          <p className="text-zinc-300 text-sm leading-relaxed">{o.shortSummary}</p>
+          <p className="text-[var(--foreground)] text-sm leading-relaxed">{o.shortSummary}</p>
         </SectionCard>
 
         <SectionCard title="Full description" className="mt-4">
-          <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-line">{o.description}</p>
+          <p className="text-[var(--foreground)] text-sm leading-relaxed whitespace-pre-line">{o.description}</p>
         </SectionCard>
 
         {(o.eligibility || o.eligibleDegrees?.length > 0 || o.eligibleBranches?.length > 0) && (
           <SectionCard title="Eligibility" className="mt-4">
-            {o.eligibility && <p className="text-zinc-300 text-sm leading-relaxed mb-3">{o.eligibility}</p>}
+            {o.eligibility && <p className="text-[var(--foreground)] text-sm leading-relaxed mb-3">{o.eligibility}</p>}
             <div className="flex flex-wrap gap-2">
               {(o.eligibleDegrees || []).map((d) => (
                 <Tag key={d}>{d}</Tag>
@@ -175,13 +175,13 @@ export default function OpportunityDetailPage() {
 
         <SectionCard title="Verification" className="mt-4">
           <VerificationBadge verificationStatus={o.verificationStatus} lastVerifiedAt={o.lastVerifiedAt} />
-          <p className="text-xs text-zinc-500 mt-3">
+          <p className="text-xs text-[var(--muted-foreground)] mt-3">
             Official source:{" "}
             <a
               href={o.officialSourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-400 hover:text-white underline"
+              className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline"
             >
               {new URL(o.officialSourceUrl).hostname}
             </a>
@@ -192,7 +192,7 @@ export default function OpportunityDetailPage() {
         <div className="mt-8">
           <button
             onClick={() => setShowShareCard((v) => !v)}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-white transition"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           >
             <Share2 size={16} strokeWidth={2} />
             {showShareCard ? "Hide share card" : "Get shareable card"}
@@ -211,19 +211,19 @@ export default function OpportunityDetailPage() {
 
 function Fact({ icon, label, value }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5">
-      <div className="flex items-center gap-1.5 text-zinc-500 text-[10px] uppercase tracking-wide mb-1">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-3 py-2.5">
+      <div className="flex items-center gap-1.5 text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide mb-1">
         {icon}
         {label}
       </div>
-      <p className="text-white text-sm font-semibold truncate">{value}</p>
+      <p className="text-[var(--foreground)] text-sm font-semibold truncate">{value}</p>
     </div>
   );
 }
 
 function Tag({ children }) {
   return (
-    <span className="text-xs font-medium text-zinc-300 bg-zinc-800 px-2.5 py-1 rounded-full">{children}</span>
+    <span className="text-xs font-medium text-[var(--foreground)] bg-[var(--surface-elevated)] px-2.5 py-1 rounded-full">{children}</span>
   );
 }
 

@@ -4,7 +4,12 @@ import { useBWMode } from "../../hooks/useBWMode";
  * Platform-wide Black & White Mode switch. Lives in Navbar (desktop icon
  * row) and again inside the mobile dropdown (as a labeled row) so it's
  * reachable regardless of viewport — see BWModeContext for the actual
- * grayscale-filter logic, applied globally via a class on <html>.
+ * theme logic, applied globally via a class on <html>. As of Phase 1 of
+ * the theme migration, that class no longer applies a grayscale filter —
+ * it switches the platform between the dark (default) and light theme
+ * defined by index.css's semantic tokens. The switch's own visuals below
+ * are unchanged either way: they're a self-contained black/white track-
+ * and-thumb metaphor, not a reflection of the surrounding page's theme.
  *
  * The switch itself gets its own little animation independent of the
  * page-wide filter fade: the track recolors, the thumb slides, and the

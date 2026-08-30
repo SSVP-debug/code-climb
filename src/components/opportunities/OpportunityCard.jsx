@@ -23,20 +23,20 @@ export default function OpportunityCard({ opportunity }) {
   return (
     <Link
       to={`/opportunities/${o.ccNumber}`}
-      className="group block bg-zinc-900 border border-zinc-800 hover:border-[var(--theme-primary,#2dd4bf)]/40 rounded-2xl p-5 transition"
+      className="group block bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--theme-primary,#2dd4bf)]/40 rounded-2xl p-5 transition"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <span className="text-[11px] font-mono text-zinc-600 tracking-wide">{o.ccId}</span>
+        <span className="text-[11px] font-mono text-[var(--muted-foreground)] tracking-wide">{o.ccId}</span>
         <VerificationBadge verificationStatus={o.verificationStatus} compact />
       </div>
 
-      <h3 className="text-white font-bold text-base leading-snug group-hover:text-[var(--theme-primary,#2dd4bf)] transition">
+      <h3 className="text-[var(--foreground)] font-bold text-base leading-snug group-hover:text-[var(--theme-primary,#2dd4bf)] transition">
         {o.title}
       </h3>
-      <p className="text-zinc-500 text-sm mt-0.5">{o.organization}</p>
+      <p className="text-[var(--muted-foreground)] text-sm mt-0.5">{o.organization}</p>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3 text-xs text-zinc-500">
-        <span className="px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-3 text-xs text-[var(--muted-foreground)]">
+        <span className="px-2 py-0.5 rounded-full bg-[var(--surface-elevated)] text-[var(--foreground)] font-medium">
           {TYPE_LABELS[o.type] || o.type}
         </span>
         {o.location && (

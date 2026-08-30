@@ -30,9 +30,9 @@ function CommandPalette({ destinations, onClose }) {
         aria-label="Command palette"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-2xl bg-zinc-900 border border-zinc-800 shadow-2xl p-2"
+        className="w-full max-w-md rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl p-2"
       >
-        <p className="px-3 py-2 text-xs text-zinc-500 uppercase tracking-widest">
+        <p className="px-3 py-2 text-xs text-[var(--muted-foreground)] uppercase tracking-widest">
           Go to
         </p>
         <div className="flex flex-col">
@@ -44,7 +44,7 @@ function CommandPalette({ destinations, onClose }) {
                 onClose();
                 navigate(d.to);
               }}
-              className="text-left px-3 py-2.5 rounded-xl text-sm text-zinc-200 hover:bg-zinc-800 transition"
+              className="text-left px-3 py-2.5 rounded-xl text-sm text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
             >
               {d.label}
             </button>

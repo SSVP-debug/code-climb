@@ -10,9 +10,12 @@ export function BWModeProvider({ children }) {
     const [bwMode, setBwMode] = useState(() => loadBWModePreference());
 
     // Reflect state onto the document root rather than a component-level
-    // wrapper — Black & White Mode is a platform-wide filter (nav, pages,
+    // wrapper — Black & White Mode is a platform-wide theme (nav, pages,
     // modals, everything), and <html> is the one element every one of
-    // those renders underneath, regardless of route or role.
+    // those renders underneath, regardless of route or role. index.html
+    // has a small inline script that sets this same class before first
+    // paint from the same storage key, so a returning visitor doesn't
+    // see a flash of the wrong theme before this effect runs.
     useEffect(() => {
         document.documentElement.classList.toggle(BW_MODE_CLASS, bwMode);
     }, [bwMode]);

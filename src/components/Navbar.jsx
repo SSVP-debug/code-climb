@@ -157,7 +157,7 @@ function Navbar() {
   const navReady = isBackendReady;
 
   return (
-    <nav className="bg-zinc-900 text-white border-b border-zinc-800 relative z-50">
+    <nav className="bg-[var(--surface)] text-[var(--foreground)] border-b border-[var(--border)] relative z-50">
       <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
 
         {/* Brand */}
@@ -166,7 +166,7 @@ function Navbar() {
           {role === "admin" ? (
             <WorkspaceSwitcher currentId={currentWorkspaceId} />
           ) : isStudentThemed ? (
-            <span className="flex items-center gap-1.5 text-[10px] text-zinc-500 uppercase tracking-widest">
+            <span className="flex items-center gap-1.5 text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">
               <span
                 aria-hidden="true"
                 className="w-1.5 h-1.5 rounded-full bg-[var(--theme-primary,#2dd4bf)]"
@@ -174,7 +174,7 @@ function Navbar() {
               {theme.name}
             </span>
           ) : PLAIN_WORKSPACE_LABEL[role] ? (
-            <span className="text-[10px] text-zinc-500 uppercase tracking-widest">
+            <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">
               {PLAIN_WORKSPACE_LABEL[role]}
             </span>
           ) : null}
@@ -190,7 +190,7 @@ function Navbar() {
                   key={link.to}
                   aria-disabled="true"
                   title="Preparing your workspace…"
-                  className="relative pb-1 text-sm text-zinc-600 cursor-not-allowed select-none"
+                  className="relative pb-1 text-sm text-[var(--muted-foreground)] cursor-not-allowed select-none opacity-60"
                 >
                   {link.label}
                 </span>
@@ -203,8 +203,8 @@ function Navbar() {
                 aria-current={active ? "page" : undefined}
                 className={`relative pb-1 text-sm transition ${
                   active
-                    ? "text-white font-medium"
-                    : "text-zinc-400 hover:text-zinc-200"
+                    ? "text-[var(--foreground)] font-medium"
+                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 }`}
               >
                 {link.label}
@@ -212,7 +212,7 @@ function Navbar() {
                   <span
                     aria-hidden="true"
                     className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full ${
-                      isStudentThemed ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-white"
+                      isStudentThemed ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--foreground)]"
                     }`}
                   />
                 )}
@@ -220,7 +220,7 @@ function Navbar() {
             );
           })}
           {nav.secondary.length > 0 && (
-            <div className="flex items-center gap-4 border-l border-zinc-800 pl-4 ml-2">
+            <div className="flex items-center gap-4 border-l border-[var(--border)] pl-4 ml-2">
               {nav.secondary.map((link) => {
                 const active = isActive(link.to);
                 if (!navReady) {
@@ -229,7 +229,7 @@ function Navbar() {
                       key={link.to}
                       aria-disabled="true"
                       title="Preparing your workspace…"
-                      className="text-sm text-zinc-600 cursor-not-allowed select-none"
+                      className="text-sm text-[var(--muted-foreground)] cursor-not-allowed select-none opacity-60"
                     >
                       {link.label}
                     </span>
@@ -241,7 +241,7 @@ function Navbar() {
                     to={link.to}
                     aria-current={active ? "page" : undefined}
                     className={`text-sm transition ${
-                      active ? "text-white font-medium" : "text-zinc-400 hover:text-white"
+                      active ? "text-[var(--foreground)] font-medium" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                     }`}
                   >
                     {link.label}
@@ -258,7 +258,7 @@ function Navbar() {
               onClick={() => setPaletteOpen(true)}
               disabled={!navReady}
               title={navReady ? undefined : "Preparing your workspace…"}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-zinc-400"
+              className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[var(--muted-foreground)]"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4" />
@@ -292,7 +292,7 @@ function Navbar() {
               onClick={() => setPaletteOpen(true)}
               disabled={!navReady}
               title={navReady ? undefined : "Preparing your workspace…"}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-zinc-400"
+              className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[var(--muted-foreground)]"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4" />
@@ -317,15 +317,15 @@ function Navbar() {
           <button
             onClick={() => setMenuOpen((o) => !o)}
             aria-label="Toggle menu"
-            className="p-2 rounded-lg hover:bg-zinc-800 transition"
+            className="p-2 rounded-lg text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
           >
             {menuOpen ? (
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M4 4L16 16M16 4L4 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             ) : (
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 5h14M3 10h14M3 15h14" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             )}
           </button>
@@ -334,7 +334,7 @@ function Navbar() {
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col gap-1">
+        <div className="lg:hidden border-t border-[var(--border)] bg-[var(--surface)] px-4 py-3 flex flex-col gap-1">
           {[...nav.primary, ...nav.secondary].map((link) => {
             const active = isActive(link.to);
             if (!navReady) {
@@ -343,7 +343,7 @@ function Navbar() {
                   key={link.to}
                   aria-disabled="true"
                   title="Preparing your workspace…"
-                  className="py-2.5 px-3 rounded-xl text-sm border-l-2 border-transparent text-zinc-600 cursor-not-allowed select-none"
+                  className="py-2.5 px-3 rounded-xl text-sm border-l-2 border-transparent text-[var(--muted-foreground)] cursor-not-allowed select-none opacity-60"
                 >
                   {link.label}
                 </span>
@@ -357,14 +357,14 @@ function Navbar() {
                 aria-current={active ? "page" : undefined}
                 className={`py-2.5 px-3 rounded-xl transition text-sm border-l-2 ${
                   active
-                    ? "bg-zinc-800 text-white font-medium"
-                    : "border-transparent hover:bg-zinc-800 text-zinc-300"
+                    ? "bg-[var(--surface-elevated)] text-[var(--foreground)] font-medium"
+                    : "border-transparent hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
                 }`}
                 style={{
                   borderLeftColor: active
                     ? isStudentThemed
                       ? "var(--theme-primary, #2dd4bf)"
-                      : "#ffffff"
+                      : "var(--foreground)"
                     : "transparent",
                 }}
               >
@@ -372,29 +372,29 @@ function Navbar() {
               </Link>
             );
           })}
-          <div className="border-t border-zinc-800 mt-2 pt-3">
+          <div className="border-t border-[var(--border)] mt-2 pt-3">
             <BWModeToggle showLabel />
           </div>
-          <div className="border-t border-zinc-800 mt-3 pt-3 flex items-center justify-between">
+          <div className="border-t border-[var(--border)] mt-3 pt-3 flex items-center justify-between">
             <div>
               <p className="font-semibold text-sm">
                 {isGuest ? "Guest Session" : user?.displayName}
               </p>
-              <p className="text-zinc-400 text-xs">
+              <p className="text-[var(--muted-foreground)] text-xs">
                 {isGuest ? "Sign in to save your progress." : user?.email}
               </p>
             </div>
             {isGuest ? (
               <Link
                 to={buildLoginRedirect(location.pathname + location.search)}
-                className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
+                className="bg-[var(--foreground)] text-[var(--background)] px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition text-sm"
               >
                 Sign In
               </Link>
             ) : (
               <button
                 onClick={handleLogout}
-                className="bg-white text-black px-4 py-2 rounded-xl font-semibold hover:bg-zinc-200 transition text-sm"
+                className="bg-[var(--foreground)] text-[var(--background)] px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition text-sm"
               >
                 Logout
               </button>

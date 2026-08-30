@@ -84,7 +84,7 @@ const PAGE_TITLES = {
 function NavGroup({ group }) {
   return (
     <div className="mb-5 last:mb-0">
-      <p className="px-3 mb-1.5 text-[10px] uppercase tracking-widest text-zinc-600 font-semibold lg:block hidden">
+      <p className="px-3 mb-1.5 text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold lg:block hidden">
         {group.label}
       </p>
       <div className="flex lg:flex-col gap-1">
@@ -96,8 +96,8 @@ function NavGroup({ group }) {
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${
                 isActive
-                  ? "bg-zinc-800 text-white shadow-[inset_0_0_0_1px_rgba(45,212,191,0.15)]"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                  ? "bg-[var(--surface-elevated)] text-[var(--foreground)] shadow-[inset_0_0_0_1px_rgba(45,212,191,0.15)]"
+                  : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface)]"
               }`
             }
           >
@@ -178,17 +178,17 @@ function AdminLayout() {
 
   return (
     <ThemeSkin>
-      <div className="min-h-screen bg-ink-950 text-white font-display">
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-display">
         <Navbar />
 
         {/* Command bar — page context + global search/palette trigger + live
             system status. Sits below the shared Navbar rather than replacing
             it, so account/logout stays exactly where it already works. */}
-        <div className="sticky top-0 z-30 border-b border-zinc-800 bg-ink-950/90 backdrop-blur-xl">
+        <div className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-xl">
           <div className="px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 min-w-0">
               <span className="h-1.5 w-1.5 rounded-full bg-verdict-accept shrink-0" aria-hidden="true" />
-              <span className="text-xs font-mono-ui uppercase tracking-widest text-zinc-500 truncate">
+              <span className="text-xs font-mono-ui uppercase tracking-widest text-[var(--muted-foreground)] truncate">
                 Command Center / {pageTitle}
               </span>
             </div>
@@ -197,18 +197,18 @@ function AdminLayout() {
               <button
                 type="button"
                 onClick={() => setPaletteOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900/60 text-zinc-500 hover:text-white hover:border-zinc-700 transition text-xs"
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)]/60 text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--border-strong)] transition text-xs"
               >
                 <Search size={13} />
                 Search
-                <span className="flex items-center gap-0.5 ml-1 text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
+                <span className="flex items-center gap-0.5 ml-1 text-[10px] text-[var(--muted-foreground)] border border-[var(--border-strong)] rounded px-1">
                   <Command size={9} />K
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => setPaletteOpen(true)}
-                className="sm:hidden p-2 rounded-full border border-zinc-800 text-zinc-400"
+                className="sm:hidden p-2 rounded-full border border-[var(--border)] text-[var(--muted-foreground)]"
                 aria-label="Open search"
               >
                 <Search size={15} />
@@ -221,7 +221,7 @@ function AdminLayout() {
         </div>
 
         <div className="flex flex-col lg:flex-row">
-          <aside className="lg:w-56 shrink-0 border-b lg:border-b-0 lg:border-r border-zinc-800 bg-zinc-950/60">
+          <aside className="lg:w-56 shrink-0 border-b lg:border-b-0 lg:border-r border-[var(--border)] bg-[var(--surface)]/60">
             <nav className="p-3 lg:p-4 overflow-x-auto lg:overflow-visible">
               {NAV_GROUPS.map((group) => (
                 <NavGroup key={group.label} group={group} />

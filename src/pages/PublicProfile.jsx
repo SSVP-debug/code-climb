@@ -46,7 +46,7 @@ function RecruiterActionBar({ profile }) {
         <div className="max-w-4xl mx-auto px-8 pt-6">
             <div className="flex items-center gap-3 bg-[var(--theme-primary,#2dd4bf)]/5 border border-[var(--theme-primary,#2dd4bf)]/20 rounded-2xl px-5 py-3 flex-wrap">
                 <Briefcase size={16} strokeWidth={2} className="text-[var(--theme-primary,#2dd4bf)] flex-shrink-0" aria-hidden="true" />
-                <span className="text-sm text-zinc-300 flex-1 min-w-[160px]">Viewing as recruiter</span>
+                <span className="text-sm text-[var(--foreground)] flex-1 min-w-[160px]">Viewing as recruiter</span>
                 <div className="flex gap-2">
                     <Button size="sm" variant="secondary" onClick={() => setShowInterest(true)}>
                         Express Interest
@@ -115,7 +115,7 @@ function PublicProfile() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
@@ -123,14 +123,14 @@ function PublicProfile() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center p-10">
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-10">
                 <p className="text-red-500">{error}</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
         <PageMeta
             title={`${profile.displayName || profile.username} · Code Club Profile`}
             description={`Level ${profile.level} · ${profile.solvedCount} problems solved · ${profile.currentStreak} day streak on Code Club.`}
@@ -139,7 +139,7 @@ function PublicProfile() {
         <RecruiterActionBar profile={profile} />
         <div className="max-w-4xl mx-auto p-8">
 
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
 
                 {/* Header */}
 
@@ -157,7 +157,7 @@ function PublicProfile() {
                             )}
                         </div>
 
-                        <p className="text-zinc-400 mt-2">
+                        <p className="text-[var(--muted-foreground)] mt-2">
                             @{profile.username}
                         </p>
 
@@ -170,7 +170,7 @@ function PublicProfile() {
                                         href={profile.developerProfile.githubUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                        className="flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
                                     >
                                         <GithubMark size={15} />
                                         GitHub
@@ -181,7 +181,7 @@ function PublicProfile() {
                                         href={profile.developerProfile.linkedinUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                        className="flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
                                     >
                                         <LinkedinMark size={15} />
                                         LinkedIn
@@ -192,7 +192,7 @@ function PublicProfile() {
                                         href={profile.developerProfile.resumeUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition"
+                                        className="flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
                                     >
                                         <FileText size={15} strokeWidth={2} aria-hidden="true" />
                                         Resume
@@ -203,7 +203,7 @@ function PublicProfile() {
                         )}
 
                         {(profile.recruiterSnapshot?.preferredRole || profile.recruiterSnapshot?.expectedGraduation) && (
-                            <p className="text-zinc-500 text-sm mt-1">
+                            <p className="text-[var(--muted-foreground)] text-sm mt-1">
                                 {[
                                     profile.recruiterSnapshot?.preferredRole,
                                     profile.recruiterSnapshot?.expectedGraduation && `Graduating ${profile.recruiterSnapshot.expectedGraduation}`,
@@ -231,14 +231,14 @@ function PublicProfile() {
                         return (
                             <>
                                 <div className="flex items-baseline justify-between mb-1.5">
-                                    <span className="text-lg font-semibold text-white">
+                                    <span className="text-lg font-semibold text-[var(--foreground)]">
                                         Level {profile.level} · {rank}
                                     </span>
-                                    <span className="text-xs text-zinc-500">
+                                    <span className="text-xs text-[var(--muted-foreground)]">
                                         {current.toLocaleString()} / {needed.toLocaleString()} XP to next level
                                     </span>
                                 </div>
-                                <div className="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                                <div className="h-2.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                                     <div
                                         className="h-full rounded-full transition-all"
                                         style={{
@@ -253,29 +253,29 @@ function PublicProfile() {
 
                     <div className="grid grid-cols-3 gap-4 mt-6">
 
-                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4 text-center">
                             <p className="text-2xl font-bold">
                                 {profile.totalXP}
                             </p>
-                            <p className="text-zinc-400 text-xs mt-0.5">
+                            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
                                 Total XP
                             </p>
                         </div>
 
-                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4 text-center">
                             <p className="text-2xl font-bold">
                                 {profile.solvedCount}
                             </p>
-                            <p className="text-zinc-400 text-xs mt-0.5">
+                            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
                                 Solved
                             </p>
                         </div>
 
-                        <div className="bg-zinc-800 rounded-xl p-4 text-center">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4 text-center">
                             <p className="text-2xl font-bold">
                                 {profile.currentStreak}
                             </p>
-                            <p className="text-zinc-400 text-xs mt-0.5">
+                            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
                                 Current Streak
                             </p>
                         </div>
@@ -288,7 +288,7 @@ function PublicProfile() {
 
                 <div className="mt-8">
 
-                    <p className="text-zinc-400">
+                    <p className="text-[var(--muted-foreground)]">
                         Longest Streak
                     </p>
 
@@ -296,7 +296,7 @@ function PublicProfile() {
                         {profile.longestStreak}
                     </p>
 
-                    <p className="text-zinc-400 mt-4">
+                    <p className="text-[var(--muted-foreground)] mt-4">
                         Joined
                     </p>
 
@@ -324,8 +324,8 @@ function PublicProfile() {
 
                     <div className="grid grid-cols-3 gap-4">
 
-                        <div className="bg-zinc-800 rounded-xl p-4">
-                            <p className="text-zinc-400">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+                            <p className="text-[var(--muted-foreground)]">
                                 Easy
                             </p>
 
@@ -334,8 +334,8 @@ function PublicProfile() {
                             </p>
                         </div>
 
-                        <div className="bg-zinc-800 rounded-xl p-4">
-                            <p className="text-zinc-400">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+                            <p className="text-[var(--muted-foreground)]">
                                 Medium
                             </p>
 
@@ -344,8 +344,8 @@ function PublicProfile() {
                             </p>
                         </div>
 
-                        <div className="bg-zinc-800 rounded-xl p-4">
-                            <p className="text-zinc-400">
+                        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+                            <p className="text-[var(--muted-foreground)]">
                                 Hard
                             </p>
 
@@ -381,8 +381,8 @@ function PublicProfile() {
 
                     {/* ── Language Breakdown ────────────────────────────────────── */}
                     {profile.languageBreakdown && profile.languageBreakdown.length > 0 && (
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+                        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+                            <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">
                                 Languages
                             </h3>
                             <div className="space-y-3">
@@ -392,11 +392,11 @@ function PublicProfile() {
                                     const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", cpp: "C++" };
                                     return (
                                         <div key={item.language}>
-                                            <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                                                <span className="font-medium text-white">{LANG_LABELS[item.language] ?? item.language}</span>
+                                            <div className="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
+                                                <span className="font-medium text-[var(--foreground)]">{LANG_LABELS[item.language] ?? item.language}</span>
                                                 <span>{item.solved} solved</span>
                                             </div>
-                                            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                                            <div className="h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                                                 <div
                                                     className="h-full bg-teal-500 rounded-full transition-all"
                                                     style={{ width: `${pct}%` }}
@@ -416,18 +416,18 @@ function PublicProfile() {
                                 href={profile.developerProfile.featuredProjects[0].url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group flex items-center justify-between gap-4 bg-zinc-800 rounded-xl px-5 py-4 hover:bg-zinc-800/80 transition"
+                                className="group flex items-center justify-between gap-4 bg-[var(--surface-elevated)] rounded-xl px-5 py-4 hover:opacity-80 transition"
                             >
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-white truncate">
+                                    <p className="font-semibold text-[var(--foreground)] truncate">
                                         {profile.developerProfile.featuredProjects[0].repo}
                                     </p>
-                                    <p className="text-zinc-500 text-sm mt-0.5">
+                                    <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
                                         {profile.developerProfile.featuredProjects[0].owner}/
                                         {profile.developerProfile.featuredProjects[0].repo}
                                     </p>
                                 </div>
-                                <span className="flex items-center gap-1 text-sm text-zinc-400 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">
+                                <span className="flex items-center gap-1 text-sm text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">
                                     View Repository
                                     <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
                                 </span>
@@ -440,8 +440,8 @@ function PublicProfile() {
                         <SectionCard title="Pinned Problems" icon={<Pin size={18} strokeWidth={2} />} accented className="mb-6">
                             <div className="space-y-2">
                                 {profile.pinnedProblems.map((p) => (
-                                    <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
-                                        <span className="text-sm text-zinc-300">{p.title}</span>
+                                    <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-[var(--border)] last:border-0">
+                                        <span className="text-sm text-[var(--foreground)]">{p.title}</span>
                                         <DifficultyBadge difficulty={p.difficulty} />
                                     </div>
                                 ))}
@@ -451,14 +451,14 @@ function PublicProfile() {
 
                     {/* ── Recent Solves ─────────────────────────────────────────── */}
                     {profile.recentSolves && profile.recentSolves.length > 0 && (
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+                        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+                            <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">
                                 Recent Solves
                             </h3>
                             <div className="space-y-2">
                                 {profile.recentSolves.map((solve, i) => (
-                                    <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
-                                        <span className="text-sm text-zinc-300">{solve.title}</span>
+                                    <div key={i} className="flex items-center justify-between py-1.5 border-b border-[var(--border)] last:border-0">
+                                        <span className="text-sm text-[var(--foreground)]">{solve.title}</span>
                                         <DifficultyBadge difficulty={solve.difficulty} />
                                     </div>
                                 ))}
@@ -475,11 +475,11 @@ function PublicProfile() {
                             LeetCode
                         </h2>
 
-                        <div className="bg-zinc-800 rounded-2xl p-6 space-y-5">
+                        <div className="bg-[var(--surface-elevated)] rounded-2xl p-6 space-y-5">
 
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-zinc-400 text-sm">
+                                    <p className="text-[var(--muted-foreground)] text-sm">
                                         Username
                                     </p>
 
@@ -503,7 +503,7 @@ function PublicProfile() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
                                 <div>
-                                    <p className="text-zinc-400 text-sm">
+                                    <p className="text-[var(--muted-foreground)] text-sm">
                                         Total
                                     </p>
 
@@ -545,7 +545,7 @@ function PublicProfile() {
                             </div>
 
                             {profile.leetcode.lastSyncedAt && (
-                                <p className="text-xs text-zinc-500">
+                                <p className="text-xs text-[var(--muted-foreground)]">
                                     Last synced{" "}
                                     {new Date(
                                         profile.leetcode.lastSyncedAt

@@ -33,24 +33,24 @@ function TrackCard({ track, onClaim }) {
   }
 
   return (
-    <div className={`bg-zinc-900 border rounded-2xl p-5 transition ${
-      track.certified ? "border-green-500/40" : track.complete ? "border-yellow-500/30" : "border-zinc-800"
+    <div className={`bg-[var(--surface)] border rounded-2xl p-5 transition ${
+      track.certified ? "border-green-500/40" : track.complete ? "border-yellow-500/30" : "border-[var(--border)]"
     }`}>
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-bold text-white">{track.name}</h3>
-          <p className="text-zinc-500 text-xs mt-0.5">{track.topic} · {track.minSolve} problems required</p>
+          <h3 className="font-bold text-[var(--foreground)]">{track.name}</h3>
+          <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{track.topic} · {track.minSolve} problems required</p>
         </div>
         {track.certified && <span className="text-xs bg-verdict-accept/10 border border-verdict-accept/30 text-verdict-accept px-2.5 py-1 rounded-full font-semibold inline-flex items-center gap-1"><CheckCircle2 size={12} strokeWidth={2.5} aria-hidden="true" /> Certified</span>}
       </div>
 
       <div className="mb-3">
-        <div className="flex justify-between text-xs text-zinc-500 mb-1">
+        <div className="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
           <span>{track.solved} / {track.minSolve} solved</span>
           <span>{track.progress}%</span>
         </div>
-        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-          <div className={`h-full rounded-full transition-all ${track.certified ? "bg-green-500" : track.complete ? "bg-yellow-500" : "bg-zinc-600"}`}
+        <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
+          <div className={`h-full rounded-full transition-all ${track.certified ? "bg-green-500" : track.complete ? "bg-yellow-500" : "bg-[var(--border-strong)]"}`}
             style={{ width: `${track.progress}%` }} />
         </div>
       </div>
@@ -66,7 +66,7 @@ function TrackCard({ track, onClaim }) {
           {claiming ? "Claiming…" : <><Trophy size={15} strokeWidth={2.5} aria-hidden="true" /> Claim Certificate</>}
         </button>
       ) : (
-        <p className="text-center text-zinc-600 text-xs py-1">
+        <p className="text-center text-[var(--muted-foreground)] text-xs py-1">
           {track.minSolve - track.solved} more {track.topic} problems to unlock
         </p>
       )}
@@ -86,7 +86,7 @@ export default function CertificationsPage() {
   useEffect(() => { fetchTracks(); }, []);
 
   if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
     </div>
   );
@@ -95,11 +95,11 @@ export default function CertificationsPage() {
   const complete  = tracks.filter(t => t.complete && !t.certified).length;
 
   return (
-    <div className="min-h-screen bg-black px-4 py-8">
+    <div className="min-h-screen bg-[var(--background)] px-4 py-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white mb-1">Certifications</h1>
-          <p className="text-zinc-500 text-sm">
+          <h1 className="text-2xl font-black text-[var(--foreground)] mb-1">Certifications</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">
             {certified} earned · {complete} ready to claim · {tracks.length - certified - complete} in progress
           </p>
         </div>

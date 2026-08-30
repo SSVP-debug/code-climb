@@ -23,7 +23,7 @@ export default function ThemeConfirmationPage() {
   const Icon = THEME_ICONS[themeId];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6 relative">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center px-6 relative">
       <div className="absolute top-6 left-6 sm:top-8 sm:left-8 animate-[fadeIn_.4s_ease-out]">
         <ThemeFlowProgress step={2} />
       </div>
@@ -55,7 +55,7 @@ export default function ThemeConfirmationPage() {
           {theme.onboardingTitle}
         </h2>
 
-        <p className="text-zinc-400 text-lg mb-10">
+        <p className="text-[var(--muted-foreground)] text-lg mb-10">
           {theme.onboardingMessage}
         </p>
 

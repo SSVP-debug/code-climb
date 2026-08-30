@@ -29,8 +29,8 @@ function SectionCard({
 
   return (
     <div
-      className={`relative overflow-hidden bg-zinc-900 rounded-2xl p-4 sm:p-6 border ${
-        accented ? "border-[var(--theme-border,#27272a)]" : "border-zinc-800"
+      className={`relative overflow-hidden bg-[var(--surface)] rounded-2xl p-4 sm:p-6 border ${
+        accented ? "border-[var(--theme-border,#27272a)]" : "border-[var(--border)]"
       } ${className}`}
     >
       {/* Top accent stripe — only when this card opts into the theme */}
@@ -45,7 +45,7 @@ function SectionCard({
       {hasHeader && (
         <div
           className={`flex items-start justify-between gap-3 mb-4 ${
-            collapsible ? "cursor-pointer select-none -m-1 p-1 rounded-lg hover:bg-white/[0.03] transition" : ""
+            collapsible ? "cursor-pointer select-none -m-1 p-1 rounded-lg hover:bg-[var(--foreground)]/[0.03] transition" : ""
           }`}
           onClick={collapsible ? toggle : undefined}
           role={collapsible ? "button" : undefined}
@@ -75,12 +75,12 @@ function SectionCard({
             )}
             <div className="min-w-0">
               {title && (
-                <h2 className="text-xl font-semibold text-white leading-tight">
+                <h2 className="text-xl font-semibold text-[var(--foreground)] leading-tight">
                   {title}
                 </h2>
               )}
               {subtitle && (
-                <p className="text-zinc-500 text-sm mt-1">{subtitle}</p>
+                <p className="text-[var(--muted-foreground)] text-sm mt-1">{subtitle}</p>
               )}
             </div>
           </div>
@@ -94,7 +94,7 @@ function SectionCard({
               <ChevronDown
                 size={18}
                 strokeWidth={2}
-                className={`text-zinc-500 transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
+                className={`text-[var(--muted-foreground)] transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
                 aria-hidden="true"
               />
             )}

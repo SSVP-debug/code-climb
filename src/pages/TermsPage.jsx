@@ -7,8 +7,8 @@ const LAST_UPDATED = "11 July 2026";
 function Section({ title, children }) {
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-bold text-white mb-3">{title}</h2>
-      <div className="text-sm text-zinc-400 leading-relaxed space-y-3">
+      <h2 className="text-lg font-bold text-[var(--foreground)] mb-3">{title}</h2>
+      <div className="text-sm text-[var(--muted-foreground)] leading-relaxed space-y-3">
         {children}
       </div>
     </section>
@@ -17,7 +17,7 @@ function Section({ title, children }) {
 
 function TermsPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <PageMeta
         title="Terms of Service · Code Club"
         description="The terms that govern your use of Code Club."
@@ -25,12 +25,12 @@ function TermsPage() {
       />
 
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link to="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition">
+        <Link to="/" className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
           ← Back to Code Club
         </Link>
 
         <h1 className="text-3xl font-black mt-6 mb-2">Terms of Service</h1>
-        <p className="text-xs text-zinc-600 mb-2">Last updated: {LAST_UPDATED}</p>
+        <p className="text-xs text-[var(--muted-foreground)] mb-2">Last updated: {LAST_UPDATED}</p>
 
         <div className="text-xs text-amber-400 bg-amber-500/5 border border-amber-500/20 rounded-xl px-4 py-3 mb-10">
           Draft — these terms describe Code Club's current product behavior

@@ -48,7 +48,7 @@ export default function OpportunityRadarPage() {
   }, [type, closingSoon]);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <PageMeta
         title="Opportunity Radar · Code Club"
         description="Verified internships, hackathons, fellowships, and student programs — discovered, verified, and curated by Code Club."
@@ -60,7 +60,7 @@ export default function OpportunityRadarPage() {
           <Radar size={22} strokeWidth={2} className="text-[var(--theme-primary,#2dd4bf)]" />
           <h1 className="text-2xl sm:text-3xl font-black">Opportunity Radar</h1>
         </div>
-        <p className="text-zinc-500 text-sm max-w-xl mb-8">
+        <p className="text-[var(--muted-foreground)] text-sm max-w-xl mb-8">
           Internships, hackathons, fellowships, and student programs — verified by Code Club before they're shared.
         </p>
 
@@ -69,7 +69,7 @@ export default function OpportunityRadarPage() {
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 text-sm text-zinc-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+            className="bg-[var(--surface)] border border-[var(--border)] text-sm text-[var(--foreground)] rounded-lg px-3 py-2 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
           >
             {TYPE_FILTERS.map((f) => (
               <option key={f.value} value={f.value}>
@@ -82,7 +82,7 @@ export default function OpportunityRadarPage() {
             className={`text-sm font-medium px-3 py-2 rounded-lg border transition ${
               closingSoon
                 ? "bg-[var(--theme-primary,#2dd4bf)]/10 border-[var(--theme-primary,#2dd4bf)]/40 text-[var(--theme-primary,#2dd4bf)]"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                : "bg-[var(--surface)] border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             Closing soon

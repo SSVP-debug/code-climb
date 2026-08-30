@@ -34,34 +34,34 @@ export default function TpoSignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
       <PageMeta title="College Admin Signup · Code Club" path="/tpo/signup" />
       <div className="max-w-md w-full">
-        <Link to="/dashboard" className="text-xs text-zinc-500 hover:text-zinc-300 transition mb-6 inline-block">
+        <Link to="/dashboard" className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-6 inline-block">
           ← Back to dashboard
         </Link>
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-black text-white mb-2">College Admin Access</h1>
-          <p className="text-zinc-400 text-sm">
+          <h1 className="text-2xl font-black text-[var(--foreground)] mb-2">College Admin Access</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">
             For Training & Placement Officers. Track your students' DSA progress,
             assign problems, and get placement readiness reports.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 space-y-4">
           <div>
-            <label className="block text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-2">
+            <label className="block text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-2">
               College Name
             </label>
             <input
               value={collegeName}
               onChange={e => setCollegeName(e.target.value)}
               placeholder="e.g. Marwadi University"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+              className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
             />
           </div>
 
-          <p className="text-xs text-zinc-600">
+          <p className="text-xs text-[var(--muted-foreground)]">
             We'll use your sign-in email's domain (e.g. @marwadiuniversity.ac.in) to
             automatically link your students. Please sign in with your institutional
             email, not a personal Gmail account.

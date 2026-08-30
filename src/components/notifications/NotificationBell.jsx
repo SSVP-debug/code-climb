@@ -150,16 +150,16 @@ function NotificationBell() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         aria-label="Notifications"
-        className="relative p-2 rounded-lg hover:bg-zinc-800 transition focus:outline-none"
+        className="relative p-2 rounded-lg text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition focus:outline-none"
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path
             d="M4 15h12l-1.4-1.4A2 2 0 0 1 14 12.2V9a4 4 0 0 0-3-3.87V4a1 1 0 1 0-2 0v1.13A4 4 0 0 0 6 9v3.2a2 2 0 0 1-.6 1.4L4 15Z"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="1.3"
             strokeLinejoin="round"
           />
-          <path d="M8 17a2 2 0 0 0 4 0" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+          <path d="M8 17a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         </svg>
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-[var(--theme-primary,#2dd4bf)] text-black text-[10px] font-bold flex items-center justify-center">
@@ -169,8 +169,8 @@ function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-80 max-w-[90vw] rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden z-50">
-          <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+        <div className="absolute right-0 mt-3 w-80 max-w-[90vw] rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl overflow-hidden z-50">
+          <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between">
             <p className="font-semibold text-sm">Notifications</p>
             {unreadCount > 0 && (
               <button
@@ -184,9 +184,9 @@ function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto" ref={listRef} onKeyDown={handleListKeyDown}>
             {loading && notifications.length === 0 ? (
-              <p className="text-center text-zinc-500 text-sm py-8">Loading…</p>
+              <p className="text-center text-[var(--muted-foreground)] text-sm py-8">Loading…</p>
             ) : notifications.length === 0 ? (
-              <p className="text-center text-zinc-500 text-sm py-8">No notifications yet</p>
+              <p className="text-center text-[var(--muted-foreground)] text-sm py-8">No notifications yet</p>
             ) : (
               notifications.map((n) => {
                 const { title, message } = displayFor(n);
@@ -194,7 +194,7 @@ function NotificationBell() {
                   <button
                     key={n._id}
                     onClick={() => handleItemClick(n)}
-                    className={`w-full text-left px-4 py-3 border-b border-zinc-800/60 last:border-0 hover:bg-zinc-800 transition ${
+                    className={`w-full text-left px-4 py-3 border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-elevated)] transition ${
                       n.read ? "opacity-60" : ""
                     }`}
                   >
@@ -203,9 +203,9 @@ function NotificationBell() {
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{title}</p>
                         {message && (
-                          <p className="text-xs text-zinc-400 mt-0.5 line-clamp-2">{message}</p>
+                          <p className="text-xs text-[var(--muted-foreground)] mt-0.5 line-clamp-2">{message}</p>
                         )}
-                        <p className="text-[10px] text-zinc-600 mt-1">{timeAgo(n.createdAt)}</p>
+                        <p className="text-[10px] text-[var(--muted-foreground)] mt-1">{timeAgo(n.createdAt)}</p>
                       </div>
                     </div>
                   </button>

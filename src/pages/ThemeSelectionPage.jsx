@@ -9,6 +9,17 @@ import { THEME_ICONS, withAlpha } from "../themes/themeIcons";
 import ThemeFlowProgress from "../components/onboarding/ThemeFlowProgress";
 
 export default function ThemeSelectionPage() {
+    // Theme note: only this page's own chrome (root background, edge-fade
+    // gradients, arrow-nav buttons, "Continue without theme") is migrated
+    // to the Black/White Mode tokens below. Each universe card's interior
+    // (bg-[var(--tbg)], the lock icon, "Accepted →"/"Runtime Error →"
+    // labels, the locked-state button) intentionally stays on that
+    // theme's own colors.secondary/primary — those come from the separate
+    // gamified skin system (useTheme, not useBWMode) and are tuned for
+    // readability against each other, not against the page's light/dark
+    // state. Migrating only some of a card's internal text while leaving
+    // its background on the theme's own fixed dark tone would break that
+    // internal contrast relationship instead of fixing it.
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { setTheme, themeId: currentThemeId } = useTheme();
@@ -73,13 +84,13 @@ export default function ThemeSelectionPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center px-6 py-12">
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col items-center px-6 py-12">
             <div className="w-full max-w-6xl flex items-center justify-between mb-6 animate-[fadeIn_.4s_ease-out]">
                 <ThemeFlowProgress step={1} />
 
                 <button
                     onClick={handleContinueWithoutTheme}
-                    className="text-xs text-zinc-500 hover:text-zinc-300 underline underline-offset-4 transition whitespace-nowrap"
+                    className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-4 transition whitespace-nowrap"
                 >
                     Continue without theme
                 </button>
@@ -90,7 +101,7 @@ export default function ThemeSelectionPage() {
                     Choose Your Code Club Universe
                 </h1>
 
-                <p className="text-zinc-400">
+                <p className="text-[var(--muted-foreground)]">
                     Your coding journey should feel like an adventure.
                     Select the world where you'll begin.
                 </p>
@@ -100,14 +111,14 @@ export default function ThemeSelectionPage() {
                 {/* Left edge fade — only visible once the row has been scrolled */}
                 <div
                     aria-hidden="true"
-                    className={`pointer-events-none absolute left-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-r from-zinc-950 to-transparent transition-opacity duration-300 ${
+                    className={`pointer-events-none absolute left-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-r from-[var(--background)] to-transparent transition-opacity duration-300 ${
                         canScrollLeft ? "opacity-100" : "opacity-0"
                     }`}
                 />
                 {/* Right edge fade — signals there are more universes to scroll to */}
                 <div
                     aria-hidden="true"
-                    className={`pointer-events-none absolute right-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-l from-zinc-950 to-transparent transition-opacity duration-300 ${
+                    className={`pointer-events-none absolute right-0 top-0 bottom-6 w-16 z-10 bg-gradient-to-l from-[var(--background)] to-transparent transition-opacity duration-300 ${
                         canScrollRight ? "opacity-100" : "opacity-0"
                     }`}
                 />
@@ -117,7 +128,7 @@ export default function ThemeSelectionPage() {
                     <button
                         onClick={() => scrollByCard(-1)}
                         aria-label="Scroll to previous universe"
-                        className="hidden sm:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-teal-500 hover:bg-zinc-800 transition"
+                        className="hidden sm:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[var(--surface)]/90 border border-[var(--border-strong)] hover:border-teal-500 hover:bg-[var(--surface-elevated)] transition"
                     >
                         ←
                     </button>
@@ -126,7 +137,7 @@ export default function ThemeSelectionPage() {
                     <button
                         onClick={() => scrollByCard(1)}
                         aria-label="Scroll to next universe"
-                        className="hidden sm:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/90 border border-zinc-700 hover:border-teal-500 hover:bg-zinc-800 transition"
+                        className="hidden sm:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-[var(--surface)]/90 border border-[var(--border-strong)] hover:border-teal-500 hover:bg-[var(--surface-elevated)] transition"
                     >
                         →
                     </button>

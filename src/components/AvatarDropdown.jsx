@@ -74,25 +74,25 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
         {isGuest ? (
           <div
             className={mobile
-              ? "w-8 h-8 rounded-full bg-zinc-800 border border-dashed border-zinc-600 flex items-center justify-center"
-              : "w-9 h-9 rounded-full bg-zinc-800 border border-dashed border-zinc-600 flex items-center justify-center"}
+              ? "w-8 h-8 rounded-full bg-[var(--surface-elevated)] border border-dashed border-[var(--border-strong)] flex items-center justify-center"
+              : "w-9 h-9 rounded-full bg-[var(--surface-elevated)] border border-dashed border-[var(--border-strong)] flex items-center justify-center"}
             title="Guest session"
           >
-            <UserIcon size={mobile ? 14 : 16} className="text-zinc-500" aria-hidden="true" />
+            <UserIcon size={mobile ? 14 : 16} className="text-[var(--muted-foreground)]" aria-hidden="true" />
           </div>
         ) : user?.photoURL ? (
           <img
             src={user.photoURL}
             alt={user.displayName ?? "User"}
             className={mobile
-              ? "w-8 h-8 rounded-full border border-zinc-700"
-              : "w-9 h-9 rounded-full border border-zinc-700"}
+              ? "w-8 h-8 rounded-full border border-[var(--border-strong)]"
+              : "w-9 h-9 rounded-full border border-[var(--border-strong)]"}
           />
         ) : (
           <div
             className={mobile
-              ? "w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center font-bold text-sm"
-              : "w-9 h-9 rounded-full bg-zinc-700 flex items-center justify-center font-bold text-sm"}
+              ? "w-8 h-8 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center font-bold text-sm"
+              : "w-9 h-9 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center font-bold text-sm"}
           >
             {user?.displayName?.charAt(0)}
           </div>
@@ -100,7 +100,7 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden">
+        <div className="absolute right-0 mt-3 w-72 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl overflow-hidden">
           {isGuest ? (
             // Guest Mode: a much shorter menu — none of Quick Stats/Quick
             // Actions/View Profile/Settings/Pricing apply to a session
@@ -108,9 +108,9 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
             // as broken rather than simplified. Just the one action that
             // matters: sign in.
             <>
-              <div className="px-4 py-4 border-b border-zinc-800">
+              <div className="px-4 py-4 border-b border-[var(--border)]">
                 <p className="font-semibold">Guest Session</p>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[var(--muted-foreground)]">
                   Sign in to save your progress and unlock the rest of Code Club.
                 </p>
               </div>
@@ -118,7 +118,7 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
                 <Link
                   to={buildLoginRedirect(location.pathname + location.search)}
                   onClick={() => setOpen(false)}
-                  className="block w-full text-center rounded-lg bg-white text-black py-2 font-semibold hover:bg-zinc-200"
+                  className="block w-full text-center rounded-lg bg-[var(--foreground)] text-[var(--background)] py-2 font-semibold hover:opacity-90"
                 >
                   Sign In
                 </Link>
@@ -126,7 +126,7 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
             </>
           ) : (
           <>
-          <div className="px-4 py-4 border-b border-zinc-800">
+          <div className="px-4 py-4 border-b border-[var(--border)]">
             <div className="flex items-center justify-between gap-2">
               <p className="font-semibold">{user?.displayName}</p>
               {/* Audit fix: this was the first place besides PricingPage
@@ -139,34 +139,34 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
                   className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     isPremium
                       ? "bg-[var(--theme-primary,#2dd4bf)]/15 text-[var(--theme-primary,#2dd4bf)]"
-                      : "bg-zinc-800 text-zinc-400"
+                      : "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
                   }`}
                 >
                   {isPremium ? "Pro" : "Free"}
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-400">{user?.email}</p>
+            <p className="text-xs text-[var(--muted-foreground)]">{user?.email}</p>
           </div>
 
           {/* Quick Stats — recruiter/TPO/admin accounts don't have XP,
               streaks, or solved counts in any meaningful sense. */}
           {isStudent && (
-          <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-zinc-800">
+          <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-[var(--border)]">
             <div className="flex flex-col items-center gap-1">
               <Zap size={14} className="text-yellow-400" />
               <span className="text-sm font-semibold">{totalXP ?? 0}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">XP</span>
+              <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">XP</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <Flame size={14} className="text-orange-400" />
               <span className="text-sm font-semibold">{currentStreak ?? 0}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Streak</span>
+              <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Streak</span>
             </div>
             <div className="flex flex-col items-center gap-1">
               <CheckCircle2 size={14} className="text-green-400" />
               <span className="text-sm font-semibold">{solvedProblems?.length ?? 0}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Solved</span>
+              <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Solved</span>
             </div>
           </div>
           )}
@@ -174,8 +174,8 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
           {/* Quick Actions — same reasoning: these all point at student
               problem-solving flows. */}
           {isStudent && (
-          <div className="py-2 border-b border-zinc-800">
-            <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+          <div className="py-2 border-b border-[var(--border)]">
+            <p className="px-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
               Quick Actions
             </p>
 
@@ -183,18 +183,18 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
               <Link
                 to={`/problems/${lastVisitedSlug}`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
+                className="flex items-center gap-2.5 px-4 py-2 hover:bg-[var(--surface-elevated)] text-sm"
               >
-                <RotateCcw size={14} className="text-zinc-500" />
+                <RotateCcw size={14} className="text-[var(--muted-foreground)]" />
                 Resume Problem
               </Link>
             )}
 
             <button
               onClick={goToRandomProblem}
-              className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-[var(--surface-elevated)] text-sm text-left"
             >
-              <Shuffle size={14} className="text-zinc-500" />
+              <Shuffle size={14} className="text-[var(--muted-foreground)]" />
               Random Problem
             </button>
 
@@ -202,9 +202,9 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
               <Link
                 to={`/problems/${dailyChallengeSlug}`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2 hover:bg-zinc-800 text-sm"
+                className="flex items-center gap-2.5 px-4 py-2 hover:bg-[var(--surface-elevated)] text-sm"
               >
-                <CalendarCheck size={14} className="text-zinc-500" />
+                <CalendarCheck size={14} className="text-[var(--muted-foreground)]" />
                 Daily Challenge
               </Link>
             )}
@@ -231,7 +231,7 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
               <Link
                 to="/profile"
                 onClick={() => setOpen(false)}
-                className="block px-4 py-2 hover:bg-zinc-800"
+                className="block px-4 py-2 hover:bg-[var(--surface-elevated)]"
               >
                 View Profile
               </Link>
@@ -240,7 +240,7 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
             <Link
               to="/settings"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 hover:bg-zinc-800"
+              className="block px-4 py-2 hover:bg-[var(--surface-elevated)]"
             >
               Settings
             </Link>
@@ -249,17 +249,17 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
               <Link
                 to="/pricing"
                 onClick={() => setOpen(false)}
-                className="block px-4 py-2 hover:bg-zinc-800"
+                className="block px-4 py-2 hover:bg-[var(--surface-elevated)]"
               >
                 Pricing
               </Link>
             )}
           </div>
 
-          <div className="border-t border-zinc-800 p-2">
+          <div className="border-t border-[var(--border)] p-2">
             <button
               onClick={onLogout}
-              className="w-full rounded-lg bg-white text-black py-2 font-semibold hover:bg-zinc-200"
+              className="w-full rounded-lg bg-[var(--foreground)] text-[var(--background)] py-2 font-semibold hover:opacity-90"
             >
               Logout
             </button>
