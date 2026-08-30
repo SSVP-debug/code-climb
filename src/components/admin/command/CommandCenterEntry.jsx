@@ -57,7 +57,7 @@ export default function CommandCenterEntry() {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-ink-950 animate-fadeIn cursor-pointer"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[var(--background)] animate-fadeIn cursor-pointer"
       style={{ animationDuration: "0.15s" }}
       onClick={dismiss}
       role="status"
@@ -67,7 +67,7 @@ export default function CommandCenterEntry() {
         <p className="text-[11px] font-mono-ui uppercase tracking-[0.3em] text-verdict-accept mb-3 animate-fadeIn">
           System access granted
         </p>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-[var(--foreground)] tracking-tight">
           Code Club Command Center
         </h1>
       </div>

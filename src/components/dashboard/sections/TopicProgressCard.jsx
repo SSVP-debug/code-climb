@@ -74,8 +74,8 @@ function TopicProgressCard() {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, color: "#fff" }}
-                labelStyle={{ color: "#a1a1aa" }}
+                contentStyle={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", borderRadius: 8, color: "var(--foreground)" }}
+                labelStyle={{ color: "var(--muted-foreground)" }}
                 formatter={(value, name) => [`${value} solved`, name]}
               />
             </PieChart>
@@ -83,21 +83,21 @@ function TopicProgressCard() {
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-lg font-bold">{total}</span>
-            <span className="text-[10px] text-zinc-500">solved</span>
+            <span className="text-[10px] text-[var(--muted-foreground)]">solved</span>
           </div>
         </div>
 
         <div className="flex-1 min-w-0 space-y-1.5">
           {slices.map((slice, index) => (
             <div key={slice.name} className="flex items-center justify-between gap-2 text-xs">
-              <span className="flex items-center gap-1.5 min-w-0 text-zinc-400 truncate">
+              <span className="flex items-center gap-1.5 min-w-0 text-[var(--muted-foreground)] truncate">
                 <span
                   className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: SLICE_COLORS[index % SLICE_COLORS.length] }}
                 />
                 <span className="truncate">{slice.name}</span>
               </span>
-              <span className="text-zinc-500 flex-shrink-0">
+              <span className="text-[var(--muted-foreground)] flex-shrink-0">
                 {Math.round((slice.value / total) * 100)}%
               </span>
             </div>

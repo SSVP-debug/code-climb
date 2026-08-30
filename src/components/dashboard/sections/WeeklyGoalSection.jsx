@@ -28,7 +28,7 @@ function WeeklyGoalSection() {
       <div className="space-y-5">
         <div>
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-zinc-400">
+            <span className="text-[var(--muted-foreground)]">
               {weeklySolved} / {weeklyGoal} Problems
             </span>
 
@@ -40,7 +40,7 @@ function WeeklyGoalSection() {
             </span>
           </div>
 
-          <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
@@ -52,7 +52,7 @@ function WeeklyGoalSection() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-zinc-400 flex items-center gap-1.5">
+          <p className="text-sm text-[var(--muted-foreground)] flex items-center gap-1.5">
             {remaining === 0 ? (
               <>
                 <PartyPopper size={14} aria-hidden="true" />

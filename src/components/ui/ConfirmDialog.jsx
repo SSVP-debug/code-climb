@@ -121,16 +121,16 @@ export default function ConfirmDialog({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.97 }}
           transition={{ duration: reducedMotion ? 0 : 0.15, ease: "easeOut" }}
-          className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+          className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
           onClick={(e) => e.stopPropagation()}
           role="alertdialog"
           aria-modal="true"
           aria-labelledby="confirm-dialog-title"
         >
-          <h2 id="confirm-dialog-title" className="text-white font-bold text-base mb-1.5">
+          <h2 id="confirm-dialog-title" className="text-[var(--foreground)] font-bold text-base mb-1.5">
             {title}
           </h2>
-          {description && <p className="text-zinc-400 text-sm mb-5">{description}</p>}
+          {description && <p className="text-[var(--muted-foreground)] text-sm mb-5">{description}</p>}
           <div className="flex items-center justify-end gap-2">
             <Button size="sm" variant="secondary" onClick={onCancel} disabled={loading}>
               {cancelLabel}

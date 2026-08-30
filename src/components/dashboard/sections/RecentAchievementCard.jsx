@@ -55,9 +55,9 @@ function RecentAchievementCard() {
         </Link>
       }
     >
-      <div className="rounded-xl bg-zinc-800 p-5">
+      <div className="rounded-xl bg-[var(--surface-elevated)] p-5">
         <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-zinc-900 shrink-0">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--surface)] shrink-0">
             <Icon size={24} strokeWidth={1.75} aria-hidden="true" />
           </div>
 
@@ -66,7 +66,7 @@ function RecentAchievementCard() {
               {achievement.title}
             </h3>
 
-            <p className="text-zinc-400 mt-1">
+            <p className="text-[var(--muted-foreground)] mt-1">
               {achievement.description}
             </p>
           </div>

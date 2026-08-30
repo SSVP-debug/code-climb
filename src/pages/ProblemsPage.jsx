@@ -428,7 +428,7 @@ function ProblemsPage() {
 
   return (
     <ThemeSkin>
-    <div className="h-screen flex flex-col bg-black text-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] overflow-hidden">
 
       {/* Slim topbar — replaces global Navbar */}
       <ProblemsTopbar
@@ -445,7 +445,7 @@ function ProblemsPage() {
 
       {/* ── Mobile/tablet workspace nav — horizontal pill strip, replaces
              the left sidebar below `lg`. Sits right under the topbar. ── */}
-      <div className="lg:hidden border-b border-zinc-800 bg-zinc-950">
+      <div className="lg:hidden border-b border-[var(--border)] bg-[var(--background)]">
         <ProblemsNavigation
           activeView={activeView}
           setActiveView={setActiveView}
@@ -458,7 +458,7 @@ function ProblemsPage() {
 
         {/* ── LEFT: workspace nav — desktop only, `lg` swaps in the strip above ── */}
         <aside
-          className={`hidden lg:flex flex-col flex-shrink-0 border-r border-zinc-800 bg-zinc-950 overflow-y-auto transition-all duration-200 ${
+          className={`hidden lg:flex flex-col flex-shrink-0 border-r border-[var(--border)] bg-[var(--background)] overflow-y-auto transition-all duration-200 ${
             sidebarCollapsed ? "w-16" : "w-56"
           }`}
           style={{ scrollbarWidth: "none" }}
@@ -466,14 +466,14 @@ function ProblemsPage() {
           <div className={`p-3 pt-4 flex-1 ${sidebarCollapsed ? "flex flex-col items-center" : ""}`}>
             <div className={`flex items-center mb-3 ${sidebarCollapsed ? "justify-center" : "justify-between px-3"}`}>
               {!sidebarCollapsed && (
-                <p className="text-[10px] uppercase tracking-widest text-zinc-600">
+                <p className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)]">
                   Workspace
                 </p>
               )}
               <button
                 onClick={() => setSidebarCollapsed((c) => !c)}
                 aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                className="p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition flex-shrink-0"
+                className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)] transition flex-shrink-0"
               >
                 {sidebarCollapsed ? <ChevronsRight size={14} /> : <ChevronsLeft size={14} />}
               </button>
@@ -488,8 +488,8 @@ function ProblemsPage() {
 
         {/* ── CENTER: only this column scrolls ── */}
         <main
-          className="flex-1 min-w-0 bg-black overflow-y-auto"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "#3f3f46 transparent" }}
+          className="flex-1 min-w-0 bg-[var(--background)] overflow-y-auto"
+          style={{ scrollbarWidth: "thin", scrollbarColor: "var(--border-strong) transparent" }}
         >
           <div className={`px-4 sm:px-7 py-4 sm:py-6 transition-[max-width] duration-200 ${contentMaxWidthClass}`}>
 
@@ -499,16 +499,16 @@ function ProblemsPage() {
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                   {theme.words.problems}
                 </h1>
-                <p className="text-zinc-500 mt-0.5 text-sm">{theme.description}</p>
+                <p className="text-[var(--muted-foreground)] mt-0.5 text-sm">{theme.description}</p>
                 {viewSummary && (
-                  <p className="text-xs text-zinc-600 mt-2">{viewSummary}</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-2">{viewSummary}</p>
                 )}
               </div>
 
               {/* Learning hub toggle — only needed where the right rail is hidden */}
               <button
                 onClick={() => setLearningHubOpen(true)}
-                className="xl:hidden flex-shrink-0 flex items-center gap-1.5 rounded-full bg-zinc-900 border border-zinc-700 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition"
+                className="xl:hidden flex-shrink-0 flex items-center gap-1.5 rounded-full bg-[var(--surface)] border border-[var(--border-strong)] px-3.5 py-2 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)] transition"
               >
                 Learning Hub
               </button>
@@ -521,12 +521,12 @@ function ProblemsPage() {
 
         {/* ── RIGHT: learning hub — desktop (xl+) inline sidebar ── */}
         {rightRailCollapsed ? (
-          <aside className="hidden xl:flex flex-col items-center flex-shrink-0 w-12 border-l border-zinc-800 bg-zinc-950 pt-4">
+          <aside className="hidden xl:flex flex-col items-center flex-shrink-0 w-12 border-l border-[var(--border)] bg-[var(--background)] pt-4">
             <HoverTooltip label="Open Learning Hub" side="left">
               <button
                 onClick={() => setRightRailCollapsed(false)}
                 aria-label="Open Learning Hub"
-                className="p-2 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
+                className="p-2 rounded-lg text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)] transition"
               >
                 <ChevronsLeft size={16} />
               </button>
@@ -534,17 +534,17 @@ function ProblemsPage() {
           </aside>
         ) : (
           <aside
-            className="hidden xl:block w-80 flex-shrink-0 border-l border-zinc-800 bg-zinc-950 overflow-y-auto"
+            className="hidden xl:block w-80 flex-shrink-0 border-l border-[var(--border)] bg-[var(--background)] overflow-y-auto"
             style={{ scrollbarWidth: "none" }}
           >
             <div className="flex items-center justify-between px-4 pt-4">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-600">
+              <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)]">
                 Learning Hub
               </span>
               <button
                 onClick={() => setRightRailCollapsed(true)}
                 aria-label="Collapse Learning Hub"
-                className="p-1.5 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-white transition"
+                className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)] transition"
               >
                 <ChevronsRight size={14} />
               </button>
@@ -570,12 +570,12 @@ function ProblemsPage() {
               className="xl:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
               onClick={() => setLearningHubOpen(false)}
             />
-            <aside className="xl:hidden fixed top-0 right-0 h-full w-full sm:w-96 z-50 bg-zinc-950 border-l border-zinc-800 overflow-y-auto shadow-2xl">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 sticky top-0 bg-zinc-950">
-                <span className="text-sm font-bold text-white">Learning Hub</span>
+            <aside className="xl:hidden fixed top-0 right-0 h-full w-full sm:w-96 z-50 bg-[var(--background)] border-l border-[var(--border)] overflow-y-auto shadow-2xl">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] sticky top-0 bg-[var(--background)]">
+                <span className="text-sm font-bold text-[var(--foreground)]">Learning Hub</span>
                 <button
                   onClick={() => setLearningHubOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-zinc-800 transition text-zinc-400"
+                  className="p-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition text-[var(--muted-foreground)]"
                   aria-label="Close learning hub"
                 >
                   <X size={16} />

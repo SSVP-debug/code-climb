@@ -66,8 +66,8 @@ function AchievementGallery({
               <div
                 key={achievement.key}
                 className={`rounded-xl p-4 ${isUnlocked
-                  ? "bg-zinc-800"
-                  : "bg-zinc-900 opacity-50"
+                  ? "bg-[var(--surface-elevated)]"
+                  : "bg-[var(--surface)] opacity-50"
                   }`}
               >
                 <h3 className="text-lg font-bold flex items-center gap-2">
@@ -75,7 +75,7 @@ function AchievementGallery({
                   {achievement.title}
                 </h3>
 
-                <p className="text-zinc-400 text-sm mt-2">
+                <p className="text-[var(--muted-foreground)] text-sm mt-2">
                   {achievement.description}
                 </p>
 
@@ -88,7 +88,7 @@ function AchievementGallery({
                       </>
                     ) : (
                       <>
-                        <Lock size={12} strokeWidth={2.5} className="text-zinc-500" aria-hidden="true" />
+                        <Lock size={12} strokeWidth={2.5} className="text-[var(--muted-foreground)]" aria-hidden="true" />
                         Locked
                       </>
                     )}

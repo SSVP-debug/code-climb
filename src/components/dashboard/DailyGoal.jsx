@@ -1,7 +1,7 @@
 function DailyGoal({ dailySolved }) {
 
   return (
-    <div className="mt-10 bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+    <div className="mt-10 bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
 
       <div className="flex items-center justify-between mb-4">
 
@@ -15,7 +15,7 @@ function DailyGoal({ dailySolved }) {
 
       </div>
 
-      <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
+      <div className="w-full bg-[var(--surface-elevated)] rounded-full h-4 overflow-hidden">
 
         <div
           className="bg-[var(--theme-primary,#2dd4bf)] h-full transition-all"
@@ -29,7 +29,7 @@ function DailyGoal({ dailySolved }) {
 
       </div>
 
-      <p className="text-zinc-400 mt-4">
+      <p className="text-[var(--muted-foreground)] mt-4">
         Complete 5 problems today to maintain momentum.
       </p>
 

@@ -86,10 +86,10 @@ function RecruiterSnapshot() {
       storageKey="profile-collapse-recruiter-snapshot"
     >
       <div className="space-y-5">
-        <div className="flex items-center justify-between bg-zinc-800 rounded-xl p-4">
+        <div className="flex items-center justify-between bg-[var(--surface-elevated)] rounded-xl p-4">
           <div>
             <p className="font-medium text-sm">Available for opportunities</p>
-            <p className="text-zinc-500 text-xs mt-0.5">
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
               Shows a green "Open to work" badge on your public profile.
             </p>
           </div>
@@ -112,11 +112,11 @@ function RecruiterSnapshot() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-zinc-400 text-xs">Preferred Role</label>
+            <label className="text-[var(--muted-foreground)] text-xs">Preferred Role</label>
             <select
               value={preferredRole}
               onChange={(e) => markDirty(setPreferredRole)(e.target.value)}
-              className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm"
+              className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2.5 text-sm"
             >
               <option value="">Not set</option>
               {PREFERRED_ROLES.map((role) => (
@@ -126,11 +126,11 @@ function RecruiterSnapshot() {
           </div>
 
           <div>
-            <label className="text-zinc-400 text-xs">Expected Graduation</label>
+            <label className="text-[var(--muted-foreground)] text-xs">Expected Graduation</label>
             <select
               value={expectedGraduation}
               onChange={(e) => markDirty(setExpectedGraduation)(e.target.value)}
-              className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm"
+              className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2.5 text-sm"
             >
               <option value="">Not set</option>
               {GRADUATION_YEARS.map((year) => (

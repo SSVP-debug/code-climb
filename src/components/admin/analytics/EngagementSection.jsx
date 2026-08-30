@@ -2,10 +2,10 @@ import AnalyticsSection from "./AnalyticsSection";
 
 function StatBlock({ label, value, sublabel }) {
   return (
-    <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3.5">
-      <p className="text-zinc-500 text-xs uppercase tracking-wide mb-1.5">{label}</p>
-      <p className="text-white text-2xl font-black">{value}</p>
-      {sublabel && <p className="text-zinc-600 text-xs mt-1">{sublabel}</p>}
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3.5">
+      <p className="text-[var(--muted-foreground)] text-xs uppercase tracking-wide mb-1.5">{label}</p>
+      <p className="text-[var(--foreground)] text-2xl font-black">{value}</p>
+      {sublabel && <p className="text-[var(--muted-foreground)] text-xs mt-1">{sublabel}</p>}
     </div>
   );
 }

@@ -3,7 +3,7 @@ function RecentActivitySection({
 }) {
 
   return (
-    <div className="mt-10 bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+    <div className="mt-10 bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
 
       <h2 className="text-2xl font-semibold mb-6">
         Recent Activity
@@ -13,7 +13,7 @@ function RecentActivitySection({
 
         {recentActivity.length === 0 ? (
 
-          <p className="text-zinc-400">
+          <p className="text-[var(--muted-foreground)]">
             No recent activity yet.
           </p>
 
@@ -24,14 +24,14 @@ function RecentActivitySection({
 
               <div
                 key={index}
-                className="bg-zinc-800 p-4 rounded-xl"
+                className="bg-[var(--surface-elevated)] p-4 rounded-xl"
               >
 
                 <p className="font-semibold">
                   Solved "{activity.title}"
                 </p>
 
-                <p className="text-zinc-400 text-sm mt-1">
+                <p className="text-[var(--muted-foreground)] text-sm mt-1">
                   {activity.time}
                 </p>
 

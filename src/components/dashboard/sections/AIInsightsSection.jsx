@@ -12,21 +12,21 @@ function InsightCard({ label, value, accent = false }) {
   const { theme } = useTheme();
   return (
     <div
-      className="rounded-xl p-4 bg-zinc-800"
+      className="rounded-xl p-4 bg-[var(--surface-elevated)]"
       style={accent ? { backgroundColor: `${theme.colors.primary}14` } : undefined}
     >
-      <p className="text-zinc-400 text-xs uppercase tracking-wider mb-2">{label}</p>
-      <p className="text-sm leading-relaxed text-zinc-100">{value}</p>
+      <p className="text-[var(--muted-foreground)] text-xs uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-sm leading-relaxed text-[var(--foreground)]">{value}</p>
     </div>
   );
 }
 
 function SkeletonCard() {
   return (
-    <div className="bg-zinc-800 rounded-xl p-4 animate-pulse">
-      <div className="h-3 w-24 bg-zinc-700 rounded mb-3" />
-      <div className="h-4 w-full bg-zinc-700 rounded mb-2" />
-      <div className="h-4 w-3/4 bg-zinc-700 rounded" />
+    <div className="bg-[var(--surface-elevated)] rounded-xl p-4 animate-pulse">
+      <div className="h-3 w-24 bg-[var(--border-strong)] rounded mb-3" />
+      <div className="h-4 w-full bg-[var(--border-strong)] rounded mb-2" />
+      <div className="h-4 w-3/4 bg-[var(--border-strong)] rounded" />
     </div>
   );
 }
@@ -108,7 +108,7 @@ function AIInsightsSection() {
           <button
             onClick={fetchInsights}
             disabled={!canRefresh || status === "loading"}
-            className="text-xs text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
+            className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
             title={!canRefresh ? `Available in ${secondsLeft}s` : "Refresh insights"}
           >
             <svg
@@ -154,11 +154,11 @@ function AIInsightsSection() {
 
       {/* Error state */}
       {status === "error" && (
-        <div className="bg-zinc-800 border border-red-900/40 rounded-xl p-4">
+        <div className="bg-[var(--surface-elevated)] border border-red-900/40 rounded-xl p-4">
           <p className="text-red-400 text-sm mb-3">{errorMsg}</p>
           <button
             onClick={fetchInsights}
-            className="text-xs bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-3 py-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+            className="text-xs bg-[var(--border-strong)] hover:opacity-80 text-[var(--foreground)] px-3 py-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
           >
             Try again
           </button>
@@ -190,7 +190,7 @@ function AIInsightsSection() {
 
       {/* AI attribution */}
       {status === "success" && (
-        <p className="text-zinc-600 text-xs mt-4 text-right">
+        <p className="text-[var(--muted-foreground)] text-xs mt-4 text-right">
           Powered by Claude
         </p>
       )}

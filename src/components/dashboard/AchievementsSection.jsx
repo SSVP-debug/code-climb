@@ -2,7 +2,7 @@ import { share } from "../../utils/share";
 function AchievementsSection({ badges }) {
 
   return (
-    <div className="mt-10 bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+    <div className="mt-10 bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
 
       <h2 className="text-2xl font-semibold mb-6">
         Achievements
@@ -12,7 +12,7 @@ function AchievementsSection({ badges }) {
 
         {badges.length === 0 ? (
 
-          <p className="text-zinc-400">
+          <p className="text-[var(--muted-foreground)]">
             No badges earned yet.
           </p>
 
@@ -22,7 +22,7 @@ function AchievementsSection({ badges }) {
 
             <div
               key={index}
-              className="bg-zinc-800 px-5 py-3 rounded-xl"
+              className="bg-[var(--surface-elevated)] px-5 py-3 rounded-xl"
             >
               <p className="font-semibold">
                 {badge}
@@ -36,7 +36,7 @@ function AchievementsSection({ badges }) {
                     url: `${window.location.origin}/u/me`,
                   })
                 }
-                className="mt-3 text-xs px-3 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition"
+                className="mt-3 text-xs px-3 py-2 rounded-lg bg-[var(--border-strong)] hover:opacity-80 transition"
               >
                 Share
               </button>

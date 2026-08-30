@@ -50,10 +50,10 @@ function EmptyState({
       </span>
 
       {/* Title */}
-      <p className="text-white font-semibold text-base">{title}</p>
+      <p className="text-[var(--foreground)] font-semibold text-base">{title}</p>
 
       {/* Description */}
-      <p className="text-zinc-500 text-sm mt-1 max-w-xs">{description}</p>
+      <p className="text-[var(--muted-foreground)] text-sm mt-1 max-w-xs">{description}</p>
 
       {/* CTA */}
       {hasAction && (

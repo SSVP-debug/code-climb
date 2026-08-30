@@ -52,7 +52,7 @@ export default function AttentionCenter({ className = "" }) {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={items.length > 0 ? `Attention: ${items.length} item${items.length === 1 ? "" : "s"}` : "Attention: all clear"}
-        className="relative p-2 rounded-full border border-zinc-800 bg-ink-900/80 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
+        className="relative p-2 rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--border-strong)] transition"
       >
         <Bell size={15} />
         {items.length > 0 && (
@@ -63,18 +63,18 @@ export default function AttentionCenter({ className = "" }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 z-50 rounded-xl border border-zinc-800 bg-ink-900/95 backdrop-blur-xl shadow-2xl shadow-black/50 p-3 animate-fadeIn">
-          <p className="px-1 pb-2 text-[10px] uppercase tracking-widest text-zinc-500 font-semibold border-b border-zinc-800 mb-2">
+        <div className="absolute right-0 mt-2 w-80 z-50 rounded-xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-xl shadow-2xl shadow-black/50 p-3 animate-fadeIn">
+          <p className="px-1 pb-2 text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold border-b border-[var(--border)] mb-2">
             Attention
           </p>
 
           {loading && items.length === 0 ? (
-            <p className="px-1 py-4 text-center text-xs text-zinc-600">Checking…</p>
+            <p className="px-1 py-4 text-center text-xs text-[var(--muted-foreground)]">Checking…</p>
           ) : items.length === 0 ? (
-            <div className="flex items-center gap-2.5 px-1 py-3 text-sm text-zinc-400">
+            <div className="flex items-center gap-2.5 px-1 py-3 text-sm text-[var(--muted-foreground)]">
               <CheckCircle2 size={15} className="text-verdict-accept shrink-0" />
               <span>
-                <span className="block text-white text-xs font-semibold">All clear</span>
+                <span className="block text-[var(--foreground)] text-xs font-semibold">All clear</span>
                 Nothing requires your attention.
               </span>
             </div>
@@ -85,11 +85,11 @@ export default function AttentionCenter({ className = "" }) {
                   <Link
                     to={item.to}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-xs text-zinc-200 hover:bg-zinc-800/80 transition"
+                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-xs text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
                   >
-                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${TONE_DOT[item.tone] || "bg-zinc-500"}`} />
+                    <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${TONE_DOT[item.tone] || "bg-[var(--muted-foreground)]"}`} />
                     <span className="flex-1">{item.label}</span>
-                    <span className="text-zinc-500">{item.cta}</span>
+                    <span className="text-[var(--muted-foreground)]">{item.cta}</span>
                   </Link>
                 </li>
               ))}

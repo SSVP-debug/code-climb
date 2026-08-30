@@ -12,11 +12,11 @@ import { GraduationCap, Users, Flame } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-function StatCard({ label, value, accent = "text-white" }) {
+function StatCard({ label, value, accent = "text-[var(--foreground)]" }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
       <p className={`text-3xl font-black ${accent}`}>{value}</p>
-      <p className="text-xs text-zinc-500 uppercase tracking-widest mt-1">{label}</p>
+      <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest mt-1">{label}</p>
     </div>
   );
 }
@@ -31,10 +31,10 @@ function ReadinessGauge({ score }) {
   const label = score >= 70 ? "Placement Ready" : score >= 40 ? "Building Momentum" : "Needs Attention";
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex items-center gap-6">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 flex items-center gap-6">
       <div className="relative w-24 h-24 flex-shrink-0">
         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="#27272a" strokeWidth="10" />
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface-elevated)" strokeWidth="10" />
           <circle
             cx="50" cy="50" r="42" fill="none" stroke={color} strokeWidth="10"
             strokeDasharray={`${(score / 100) * 264} 264`}
@@ -42,15 +42,15 @@ function ReadinessGauge({ score }) {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-black text-white">{score}</span>
+          <span className="text-2xl font-black text-[var(--foreground)]">{score}</span>
         </div>
       </div>
       <div>
-        <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">
+        <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-1">
           Placement Readiness Score
         </p>
         <p className="text-lg font-bold" style={{ color }}>{label}</p>
-        <p className="text-xs text-zinc-600 mt-1">Based on solve volume, hard-problem coverage, and weekly engagement.</p>
+        <p className="text-xs text-[var(--muted-foreground)] mt-1">Based on solve volume, hard-problem coverage, and weekly engagement.</p>
       </div>
     </div>
   );
@@ -82,27 +82,27 @@ function CreateAssignmentModal({ onClose, onCreated }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4" onClick={onClose}>
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-bold text-white mb-4">New Assignment</h3>
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">New Assignment</h3>
         <div className="space-y-3">
           <input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Assignment title (e.g. Week 3 — Arrays)"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <textarea
             value={slugsText}
             onChange={e => setSlugsText(e.target.value)}
             placeholder="Problem slugs, comma-separated (e.g. two-sum, valid-parentheses)"
             rows={3}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <input
             type="date"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
         <div className="flex gap-2 mt-5">
@@ -270,22 +270,22 @@ export default function TpoDashboardPage() {
         <PageMeta title="Verification Pending · Code Club TPO" path="/tpo/dashboard" />
         <div className="flex items-center justify-center px-6 py-24">
           <div className="max-w-lg text-center">
-            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)] flex items-center justify-center mx-auto mb-4">
               <GraduationCap size={28} strokeWidth={2} aria-hidden="true" />
             </div>
-            <h1 className="text-3xl font-black text-white">
+            <h1 className="text-3xl font-black text-[var(--foreground)]">
               College Verification Pending
             </h1>
 
-            <p className="mt-4 text-zinc-400">
+            <p className="mt-4 text-[var(--muted-foreground)]">
               Your college registration request has been submitted successfully.
             </p>
 
-            <p className="text-zinc-500">
+            <p className="text-[var(--muted-foreground)]">
               Access will be enabled after an administrator verifies your institution.
             </p>
 
-            <p className="text-zinc-600 text-sm mt-6">
+            <p className="text-[var(--muted-foreground)] text-sm mt-6">
               Questions in the meantime? Reach out to {SUPPORT_EMAIL}.
             </p>
           </div>
@@ -333,8 +333,8 @@ export default function TpoDashboardPage() {
             <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-4">
               <GraduationCap size={30} strokeWidth={2} aria-hidden="true" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-3">College Dashboard Coming Soon</h1>
-            <p className="text-zinc-400 text-sm">
+            <h1 className="text-2xl font-bold text-[var(--foreground)] mb-3">College Dashboard Coming Soon</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">
               We're rolling out the College Admin dashboard gradually. Reach out to
               {" "}{SUPPORT_EMAIL} to get early access for your institution.
             </p>
@@ -350,11 +350,11 @@ export default function TpoDashboardPage() {
         <PageMeta title="College Dashboard · Code Club" path="/tpo/dashboard" />
         <div className="flex items-center justify-center px-4 py-24">
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-2xl bg-ink-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--surface-elevated)] text-[var(--muted-foreground)] flex items-center justify-center mx-auto mb-4">
               <Users size={30} strokeWidth={2} aria-hidden="true" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-3">No students yet</h1>
-            <p className="text-zinc-400 text-sm">
+            <h1 className="text-2xl font-bold text-[var(--foreground)] mb-3">No students yet</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">
               Once students from {dashboard?.domain || "your college"} sign up with their
               institutional email, you'll see their stats here.
             </p>
@@ -375,14 +375,14 @@ export default function TpoDashboardPage() {
               <GraduationCap size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl font-black text-white truncate">{dashboard.college}</h1>
-              <p className="text-zinc-500 text-sm">{dashboard.domain} · {dashboard.totalStudents} students</p>
+              <h1 className="text-2xl font-black text-[var(--foreground)] truncate">{dashboard.college}</h1>
+              <p className="text-[var(--muted-foreground)] text-sm">{dashboard.domain} · {dashboard.totalStudents} students</p>
             </div>
           </div>
           <button
             onClick={downloadReportPDF}
             disabled={downloadingReport}
-            className="self-start px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-300 hover:text-white rounded-xl text-sm font-medium transition flex-shrink-0"
+            className="self-start px-4 py-2 bg-[var(--surface)] border border-[var(--border-strong)] hover:border-[var(--muted-foreground)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--foreground)] hover:text-[var(--foreground)] rounded-xl text-sm font-medium transition flex-shrink-0"
           >
             {downloadingReport ? "Preparing…" : "⬇ Download Report"}
           </button>
@@ -398,7 +398,7 @@ export default function TpoDashboardPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition flex-shrink-0 ${tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition flex-shrink-0 ${tab === t ? "bg-[var(--theme-primary,#2dd4bf)] text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] border border-[var(--border)]"
                 }`}
             >
               {t}
@@ -415,22 +415,22 @@ export default function TpoDashboardPage() {
               <StatCard label="Total Solves" value={dashboard.totalSolved} />
               <StatCard label="Hard Problems Solved" value={dashboard.difficultyBreakdown.hard} accent="text-red-400" />
             </div>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-              <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">Topic Coverage</h3>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">Topic Coverage</h3>
               {dashboard.topicCoverage.length === 0 ? (
-                <p className="text-zinc-600 text-sm">No topic-tagged solves yet.</p>
+                <p className="text-[var(--muted-foreground)] text-sm">No topic-tagged solves yet.</p>
               ) : (
                 <div className="space-y-2">
                   {dashboard.topicCoverage.map(t => (
                     <div key={t.topic} className="flex items-center gap-3">
-                      <span className="text-sm text-zinc-300 w-24 sm:w-40 truncate">{t.topic}</span>
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                      <span className="text-sm text-[var(--foreground)] w-24 sm:w-40 truncate">{t.topic}</span>
+                      <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                         <div
                           className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full"
                           style={{ width: `${Math.min(100, (t.totalSolves / dashboard.topicCoverage[0].totalSolves) * 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-zinc-500 w-10 text-right">{t.totalSolves}</span>
+                      <span className="text-xs text-[var(--muted-foreground)] w-10 text-right">{t.totalSolves}</span>
                     </div>
                   ))}
                 </div>
@@ -440,18 +440,18 @@ export default function TpoDashboardPage() {
         )}
 
         {tab === "students" && (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-            <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-zinc-800">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
+            <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-[var(--border)]">
               <input
                 value={studentSearch}
                 onChange={e => setStudentSearch(e.target.value)}
                 placeholder="Search by name or email…"
-                className="flex-1 min-w-[200px] bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+                className="flex-1 min-w-[200px] bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
               />
               <select
                 value={studentSort}
                 onChange={e => setStudentSort(e.target.value)}
-                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+                className="bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
               >
                 <option value="xp">Sort: XP</option>
                 <option value="solved">Sort: Solved</option>
@@ -459,23 +459,23 @@ export default function TpoDashboardPage() {
                 <option value="name">Sort: Name</option>
               </select>
             </div>
-            <div className="hidden sm:flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+            <div className="hidden sm:flex items-center gap-3 px-4 py-2 border-b border-[var(--border)] text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">
               <span className="flex-1">Student</span>
               <span className="w-20 text-right">Solved</span>
               <span className="w-20 text-right">Streak</span>
               <span className="w-20 text-right">XP</span>
             </div>
-            <div className="divide-y divide-zinc-800/50 max-h-[600px] overflow-y-auto">
+            <div className="divide-y divide-[var(--border)] max-h-[600px] overflow-y-auto">
               {visibleStudents.length === 0 ? (
-                <p className="text-center text-zinc-600 py-12 text-sm">No students match "{studentSearch}".</p>
+                <p className="text-center text-[var(--muted-foreground)] py-12 text-sm">No students match "{studentSearch}".</p>
               ) : visibleStudents.map(s => (
                   // Flex-wraps into a compact stat row on mobile instead of
                   // squeezing three fixed 80px columns next to the name —
                   // that made the name unreadable below ~400px.
                   <div key={s.email} className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3 px-4 py-3">
-                    <span className="text-sm text-white truncate sm:flex-1">{s.name}</span>
+                    <span className="text-sm text-[var(--foreground)] truncate sm:flex-1">{s.name}</span>
                     <div className="flex items-center gap-4 sm:contents">
-                      <span className="text-xs text-zinc-500 sm:w-20 sm:text-right sm:text-sm sm:text-zinc-400">
+                      <span className="text-xs text-[var(--muted-foreground)] sm:w-20 sm:text-right sm:text-sm sm:text-[var(--muted-foreground)]">
                         <span className="sm:hidden">Solved </span>{s.solvedCount}
                       </span>
                       <span className="text-xs text-orange-400 sm:w-20 sm:text-right sm:text-sm">
@@ -487,7 +487,7 @@ export default function TpoDashboardPage() {
                         ) : "—"}
                       </span>
                       <span className="text-xs sm:w-20 sm:text-right sm:text-sm text-[var(--theme-primary,#2dd4bf)] font-semibold">
-                        <span className="text-zinc-500 sm:hidden">XP </span>{s.totalXP}
+                        <span className="text-[var(--muted-foreground)] sm:hidden">XP </span>{s.totalXP}
                       </span>
                     </div>
                   </div>
@@ -506,23 +506,23 @@ export default function TpoDashboardPage() {
             </Button>
             <div className="space-y-3">
               {assignments.length === 0 ? (
-                <p className="text-zinc-500 text-sm text-center py-12">No assignments yet. Create one above.</p>
+                <p className="text-[var(--muted-foreground)] text-sm text-center py-12">No assignments yet. Create one above.</p>
               ) : (
                 assignments.map(a => (
-                  <div key={a._id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                  <div key={a._id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-                      <h4 className="font-semibold text-white">{a.title}</h4>
-                      <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-zinc-800 text-zinc-400"
+                      <h4 className="font-semibold text-[var(--foreground)]">{a.title}</h4>
+                      <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${a.isOverdue ? "bg-red-500/10 text-red-400" : "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
                         }`}>
                         Due {new Date(a.dueDate).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-500 mb-3">{a.problemSlugs.length} problems</p>
+                    <p className="text-xs text-[var(--muted-foreground)] mb-3">{a.problemSlugs.length} problems</p>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex-1 min-w-[80px] h-2 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="flex-1 min-w-[80px] h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                         <div className="h-full bg-[var(--theme-primary,#2dd4bf)]" style={{ width: `${a.completionPercent}%` }} />
                       </div>
-                      <span className="text-xs text-zinc-500 flex-shrink-0">{a.completedCount}/{a.totalStudents} done</span>
+                      <span className="text-xs text-[var(--muted-foreground)] flex-shrink-0">{a.completedCount}/{a.totalStudents} done</span>
                       <Button
                         size="sm"
                         variant="secondary"

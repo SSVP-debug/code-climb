@@ -13,9 +13,9 @@ const DIFF_STYLES = {
 };
 
 const DIFF_INACTIVE = {
-  Easy:   "border-zinc-700 text-green-600 hover:border-green-600/50 hover:text-green-400",
-  Medium: "border-zinc-700 text-yellow-600 hover:border-yellow-600/50 hover:text-yellow-400",
-  Hard:   "border-zinc-700 text-red-600 hover:border-red-600/50 hover:text-red-400",
+  Easy:   "border-[var(--border-strong)] text-green-600 hover:border-green-600/50 hover:text-green-400",
+  Medium: "border-[var(--border-strong)] text-yellow-600 hover:border-yellow-600/50 hover:text-yellow-400",
+  Hard:   "border-[var(--border-strong)] text-red-600 hover:border-red-600/50 hover:text-red-400",
 };
 
 function BrowseToolbar({
@@ -37,7 +37,7 @@ function BrowseToolbar({
       {/* ── Search ─────────────────────────────────────────────────────── */}
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none"
           width="15" height="15" viewBox="0 0 15 15" fill="none"
         >
           <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.4" />
@@ -48,12 +48,12 @@ function BrowseToolbar({
           placeholder="Search problems…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] focus:bg-zinc-800/50 transition"
+          className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl pl-9 pr-4 py-2.5 text-sm text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] focus:bg-[var(--surface-elevated)]/50 transition"
         />
         {searchTerm && (
           <button
             onClick={() => setSearchTerm("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
             aria-label="Clear search"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -69,17 +69,17 @@ function BrowseToolbar({
           redundant. */}
       {searchSuggestions.length > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap -mt-1">
-          <span className="text-[10px] uppercase tracking-widest text-zinc-600 mr-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] mr-0.5">
             Matches
           </span>
           {searchSuggestions.map((s) => (
             <button
               key={`${s.type}:${s.value}`}
               onClick={() => setSearchTerm(s.value)}
-              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-[var(--theme-primary,#2dd4bf)] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+              className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--theme-primary,#2dd4bf)] hover:text-[var(--foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
             >
               {s.value}
-              <span className="text-zinc-600 ml-1">{s.count}</span>
+              <span className="text-[var(--muted-foreground)] ml-1">{s.count}</span>
             </button>
           ))}
         </div>
@@ -92,7 +92,7 @@ function BrowseToolbar({
         className={`flex items-center gap-2 w-fit px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
           hideSolved
             ? "bg-transparent"
-            : "bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
+            : "bg-transparent border-[var(--border-strong)] text-[var(--muted-foreground)] hover:border-[var(--muted-foreground)] hover:text-[var(--foreground)]"
         }`}
         style={
           hideSolved
@@ -111,7 +111,7 @@ function BrowseToolbar({
           style={
             hideSolved
               ? { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary }
-              : { borderColor: "#52525b" }
+              : { borderColor: "var(--border-strong)" }
           }
         >
           {hideSolved && (
@@ -125,7 +125,7 @@ function BrowseToolbar({
 
       {/* ── Topics ─────────────────────────────────────────────────────── */}
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Topics</p>
+        <p className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] mb-2">Topics</p>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {topics.map((topic) => (
             <button
@@ -134,7 +134,7 @@ function BrowseToolbar({
               className={`flex-shrink-0 px-3 py-1 rounded-lg text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
                 selectedTopic === topic
                   ? ""
-                  : "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                  : "bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]"
               }`}
               style={
                 selectedTopic === topic
@@ -150,7 +150,7 @@ function BrowseToolbar({
 
       {/* ── Difficulty ─────────────────────────────────────────────────── */}
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-2">Difficulty</p>
+        <p className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] mb-2">Difficulty</p>
         <div className="flex gap-1.5">
           {DIFFICULTIES.map((diff) => {
             if (diff === "All") {
@@ -162,7 +162,7 @@ function BrowseToolbar({
                   className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] ${
                     active
                       ? ""
-                      : "bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
+                      : "bg-transparent border-[var(--border-strong)] text-[var(--muted-foreground)] hover:border-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                   }`}
                   style={
                     active

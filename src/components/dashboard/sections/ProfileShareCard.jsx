@@ -32,10 +32,10 @@ function ProfileShareCard() {
     <SectionCard>
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white">
+          <p className="text-sm font-semibold text-[var(--foreground)]">
             Your public profile is ready to share
           </p>
-          <p className="text-zinc-400 text-sm mt-1">
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">
             Level {level} · shareable with recruiters and on LinkedIn
           </p>
         </div>
@@ -43,7 +43,7 @@ function ProfileShareCard() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             to="/profile"
-            className="px-4 py-2 text-sm rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white transition-colors"
+            className="px-4 py-2 text-sm rounded-xl bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] text-[var(--foreground)] transition-colors"
           >
             View my profile
           </Link>

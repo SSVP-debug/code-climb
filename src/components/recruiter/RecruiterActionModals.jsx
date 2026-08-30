@@ -23,7 +23,7 @@ function useEscapeToClose(onClose) {
 }
 
 const INPUT_CLASSES =
-  "w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]";
+  "w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]";
 
 export function SendTestModal({ candidate, onClose, onSent }) {
   const [slugs, setSlugs] = useState("");
@@ -56,9 +56,9 @@ export function SendTestModal({ candidate, onClose, onSent }) {
       aria-modal="true"
       aria-label={`Send skills test to ${candidate.displayName}`}
     >
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-bold text-white mb-1">Send Skills Test</h3>
-        <p className="text-zinc-500 text-sm mb-4">To: {candidate.displayName} ({candidate.username})</p>
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-[var(--foreground)] mb-1">Send Skills Test</h3>
+        <p className="text-[var(--muted-foreground)] text-sm mb-4">To: {candidate.displayName} ({candidate.username})</p>
         <div className="space-y-3">
           <textarea value={slugs} onChange={e => setSlugs(e.target.value)} rows={2} autoFocus
             placeholder="Problem slugs, comma-separated (e.g. two-sum, valid-parentheses)"
@@ -110,9 +110,9 @@ export function ExpressInterestModal({ candidate, onClose, onSent }) {
       aria-modal="true"
       aria-label={`Express interest in ${candidate.displayName}`}
     >
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
-        <h3 className="text-lg font-bold text-white mb-1">Express Interest</h3>
-        <p className="text-zinc-500 text-sm mb-4">To: {candidate.displayName} ({candidate.username})</p>
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-[var(--foreground)] mb-1">Express Interest</h3>
+        <p className="text-[var(--muted-foreground)] text-sm mb-4">To: {candidate.displayName} ({candidate.username})</p>
         <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} maxLength={500} autoFocus
           placeholder="A short note — what caught your eye, what role you have in mind…"
           aria-label="Note to candidate"

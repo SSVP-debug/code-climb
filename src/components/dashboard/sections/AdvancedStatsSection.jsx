@@ -84,7 +84,7 @@ function AdvancedStatsSection() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
       <SectionCard accented>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           {theme.words.acceptanceRate}
         </p>
 
@@ -94,7 +94,7 @@ function AdvancedStatsSection() {
       </SectionCard>
 
       <SectionCard accented>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           {theme.words.averageRuntime}
         </p>
 
@@ -104,7 +104,7 @@ function AdvancedStatsSection() {
       </SectionCard>
 
       <SectionCard accented>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           {theme.words.favoriteLanguage}
         </p>
 
@@ -114,7 +114,7 @@ function AdvancedStatsSection() {
       </SectionCard>
 
       <SectionCard accented>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           {theme.words.totalSubmissions}
         </p>
 

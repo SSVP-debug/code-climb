@@ -104,16 +104,16 @@ function buildPayload(values) {
 function Field({ label, children, error, hint }) {
   return (
     <label className="block mb-4">
-      <span className="block text-xs font-semibold text-zinc-400 mb-1">{label}</span>
+      <span className="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">{label}</span>
       {children}
-      {hint && <span className="block text-[11px] text-zinc-600 mt-1">{hint}</span>}
+      {hint && <span className="block text-[11px] text-[var(--muted-foreground)] mt-1">{hint}</span>}
       {error && <span className="block text-[11px] text-red-400 mt-1">{error}</span>}
     </label>
   );
 }
 
 const inputClass =
-  "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed";
+  "w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)] disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, saving, serverIssues }) {
   const [values, setValues] = useState(() => problemToFormValues(initialProblem));
@@ -300,7 +300,7 @@ export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {LANGUAGES.map((lang) => (
               <div key={lang}>
-                <span className="block text-[11px] text-zinc-500 mb-1 capitalize font-mono">{lang}</span>
+                <span className="block text-[11px] text-[var(--muted-foreground)] mb-1 capitalize font-mono">{lang}</span>
                 <textarea
                   className={`${inputClass} min-h-[80px] font-mono text-xs`}
                   value={values.starterCode[lang]}
@@ -331,7 +331,7 @@ export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, 
         </Field>
       </DrawerSection>
 
-      <div className="flex items-center justify-end gap-2 mt-2 pt-4 border-t border-zinc-900">
+      <div className="flex items-center justify-end gap-2 mt-2 pt-4 border-t border-[var(--border)]">
         <Button type="button" size="sm" variant="secondary" onClick={onCancel} disabled={saving}>
           Cancel
         </Button>

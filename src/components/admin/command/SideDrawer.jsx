@@ -91,26 +91,26 @@ export default function SideDrawer({ open, onClose, title, eyebrow, size = "md",
             animate={{ x: 0 }}
             exit={{ x: reducedMotion ? 0 : "100%" }}
             transition={{ duration: reducedMotion ? 0 : 0.2, ease: "easeOut" }}
-            className={`fixed top-0 right-0 bottom-0 w-full ${SIZE_CLASSES[size]} bg-ink-950 border-l border-zinc-800 z-50 overflow-y-auto`}
+            className={`fixed top-0 right-0 bottom-0 w-full ${SIZE_CLASSES[size]} bg-[var(--background)] border-l border-[var(--border)] z-50 overflow-y-auto`}
             role="dialog"
             aria-modal="true"
             aria-label={title}
           >
-            <div className="sticky top-0 bg-ink-950/95 backdrop-blur border-b border-zinc-800 px-5 py-4 flex items-start justify-between gap-3 z-10">
+            <div className="sticky top-0 bg-[var(--background)]/95 backdrop-blur border-b border-[var(--border)] px-5 py-4 flex items-start justify-between gap-3 z-10">
               <div className="min-w-0">
                 {eyebrow && (
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold mb-1">
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-1">
                     {eyebrow}
                   </p>
                 )}
-                <h2 className="text-white font-bold text-lg truncate">{title}</h2>
+                <h2 className="text-[var(--foreground)] font-bold text-lg truncate">{title}</h2>
               </div>
               <button
                 ref={closeBtnRef}
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition shrink-0"
+                className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition shrink-0"
               >
                 <X size={18} />
               </button>
@@ -126,7 +126,7 @@ export default function SideDrawer({ open, onClose, title, eyebrow, size = "md",
 export function DrawerSection({ label, children }) {
   return (
     <div className="mb-6">
-      <p className="text-[11px] uppercase tracking-widest text-zinc-600 font-semibold mb-2.5">{label}</p>
+      <p className="text-[11px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-2.5">{label}</p>
       {children}
     </div>
   );
@@ -148,16 +148,16 @@ export function DrawerField({ label, value, copyable = false }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 py-1.5 border-b border-zinc-900 last:border-0">
-      <span className="text-zinc-500 text-sm shrink-0">{label}</span>
+    <div className="flex items-center justify-between gap-3 py-1.5 border-b border-[var(--border)] last:border-0">
+      <span className="text-[var(--muted-foreground)] text-sm shrink-0">{label}</span>
       <span className="flex items-center gap-1.5 min-w-0">
-        <span className="text-zinc-200 text-sm text-right truncate">{value ?? "—"}</span>
+        <span className="text-[var(--foreground)] text-sm text-right truncate">{value ?? "—"}</span>
         {copyable && value && (
           <button
             type="button"
             onClick={handleCopy}
             aria-label={copied ? `${label} copied` : `Copy ${label}`}
-            className="p-1 rounded text-zinc-500 hover:text-white hover:bg-zinc-800 transition shrink-0"
+            className="p-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition shrink-0"
           >
             {copied ? <Check size={12} className="text-verdict-accept" /> : <Copy size={12} />}
           </button>

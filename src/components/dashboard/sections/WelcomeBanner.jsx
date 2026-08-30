@@ -36,7 +36,7 @@ function WelcomeBanner() {
           <h1 className="text-xl font-bold leading-tight truncate">
             {greeting}, {name}
           </h1>
-          <p className="text-zinc-400 text-sm truncate">
+          <p className="text-[var(--muted-foreground)] text-sm truncate">
             {theme.words.welcomeTagline}
           </p>
         </div>

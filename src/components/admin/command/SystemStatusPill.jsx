@@ -25,10 +25,10 @@ const HEADLINE_STYLES = {
     pillBorder: "border-verdict-reject/20",
   },
   unknown: {
-    dot: "bg-zinc-500",
-    ring: "bg-zinc-500/20",
-    text: "text-zinc-400",
-    pillBorder: "border-zinc-700",
+    dot: "bg-[var(--muted-foreground)]",
+    ring: "bg-[var(--muted-foreground)]/20",
+    text: "text-[var(--muted-foreground)]",
+    pillBorder: "border-[var(--border-strong)]",
   },
 };
 
@@ -36,8 +36,8 @@ const SERVICE_DOT = {
   up: "bg-verdict-accept",
   degraded: "bg-verdict-pending",
   down: "bg-verdict-reject",
-  unknown: "bg-zinc-500",
-  unavailable: "bg-zinc-500",
+  unknown: "bg-[var(--muted-foreground)]",
+  unavailable: "bg-[var(--muted-foreground)]",
 };
 
 export default function SystemStatusPill({ className = "" }) {
@@ -52,7 +52,7 @@ export default function SystemStatusPill({ className = "" }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border bg-ink-900/80 ${styles.pillBorder} hover:brightness-110 transition`}
+        className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border bg-[var(--surface)] ${styles.pillBorder} hover:brightness-110 transition`}
         aria-haspopup="true"
         aria-expanded={open}
       >
@@ -70,16 +70,16 @@ export default function SystemStatusPill({ className = "" }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-72 z-50 rounded-xl border border-zinc-800 bg-ink-900/95 backdrop-blur-xl shadow-2xl shadow-black/50 p-3 animate-fadeIn">
+          <div className="absolute right-0 mt-2 w-72 z-50 rounded-xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-xl shadow-2xl shadow-black/50 p-3 animate-fadeIn">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-semibold">
+              <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">
                 Live system status
               </span>
               <button
                 type="button"
                 onClick={refresh}
                 disabled={loading}
-                className="text-zinc-500 hover:text-white transition"
+                className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
                 aria-label="Refresh system status"
               >
                 <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
@@ -88,17 +88,17 @@ export default function SystemStatusPill({ className = "" }) {
             <ul className="space-y-1.5">
               {(summary?.services || []).map((s) => (
                 <li key={s.key} className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-zinc-300">
+                  <span className="flex items-center gap-2 text-[var(--foreground)]">
                     <span className={`h-1.5 w-1.5 rounded-full ${SERVICE_DOT[s.status] || SERVICE_DOT.unknown}`} />
                     {s.label}
                   </span>
-                  <span className="text-zinc-500 uppercase tracking-wide text-[10px]">{s.status}</span>
+                  <span className="text-[var(--muted-foreground)] uppercase tracking-wide text-[10px]">{s.status}</span>
                 </li>
               ))}
-              {!summary && <li className="text-zinc-600 text-xs">No data yet.</li>}
+              {!summary && <li className="text-[var(--muted-foreground)] text-xs">No data yet.</li>}
             </ul>
             {lastFetchedAt && (
-              <p className="mt-2 pt-2 border-t border-zinc-800 text-[10px] text-zinc-600">
+              <p className="mt-2 pt-2 border-t border-[var(--border)] text-[10px] text-[var(--muted-foreground)]">
                 Checked {lastFetchedAt.toLocaleTimeString()} · full breakdown on System Health
               </p>
             )}

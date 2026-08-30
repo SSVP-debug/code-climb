@@ -77,8 +77,8 @@ function ProblemCard({ problem }) {
         transition-all
         duration-200
         ${solved
-          ? "bg-zinc-900/60 border-zinc-800 opacity-75"
-          : "bg-zinc-900 border-zinc-800 hover:border-[var(--theme-primary,#2dd4bf)] hover:bg-zinc-800/70"
+          ? "bg-[var(--surface)] border-[var(--border)] opacity-75"
+          : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--theme-primary,#2dd4bf)] hover:bg-[var(--surface-elevated)]"
         }
       `}
     >
@@ -88,22 +88,22 @@ function ProblemCard({ problem }) {
         {/* Solved indicator — kept semantic green (same "success" meaning
             as an Accepted verdict), not tied to the theme color */}
         <div
-          className={`w-3 h-3 rounded-full flex-shrink-0 ${solved ? "bg-green-500" : "bg-zinc-600"
+          className={`w-3 h-3 rounded-full flex-shrink-0 ${solved ? "bg-green-500" : "bg-[var(--border-strong)]"
             }`}
         />
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
 
-            <h2 className="text-[15px] font-semibold text-white">
+            <h2 className="text-[15px] font-semibold text-[var(--foreground)]">
               {title}
             </h2>
 
             {(pattern || topic) && (
               <>
-                <span className="text-zinc-600">•</span>
+                <span className="text-[var(--muted-foreground)]">•</span>
 
-                <span className="text-sm text-zinc-400">
+                <span className="text-sm text-[var(--muted-foreground)]">
                   {pattern || topic}
                 </span>
               </>
@@ -118,7 +118,7 @@ function ProblemCard({ problem }) {
           )}
 
           {companies?.length > 0 && (
-            <p className="text-xs text-zinc-500 mt-1 truncate">
+            <p className="text-[var(--muted-foreground)] text-xs mt-1 truncate">
               {companies.slice(0, 2).join(" · ")}
               {companies.length > 2 && ` +${companies.length - 2} more`}
             </p>
@@ -131,7 +131,7 @@ function ProblemCard({ problem }) {
       <div className="flex items-center gap-3 flex-wrap justify-end flex-shrink-0">
 
         {typeof acceptanceRate === "number" && (
-          <span className="hidden sm:inline text-xs text-zinc-500 whitespace-nowrap">
+          <span className="hidden sm:inline text-xs text-[var(--muted-foreground)] whitespace-nowrap">
             {acceptanceRate}% solved
           </span>
         )}
@@ -143,7 +143,7 @@ function ProblemCard({ problem }) {
         )}
 
         {estimatedTime && (
-          <span className="text-xs text-zinc-400 whitespace-nowrap inline-flex items-center gap-1">
+          <span className="text-xs text-[var(--muted-foreground)] whitespace-nowrap inline-flex items-center gap-1">
             <Clock size={12} strokeWidth={2} aria-hidden="true" />
             {estimatedTime}
           </span>
@@ -151,7 +151,7 @@ function ProblemCard({ problem }) {
 
         {!hideDifficulty && (
           <span
-            className={`px-3 py-1 rounded-full border text-xs font-semibold ${difficultyColors[difficulty] ?? "bg-zinc-700 text-zinc-300 border-zinc-600"
+            className={`px-3 py-1 rounded-full border text-xs font-semibold ${difficultyColors[difficulty] ?? "bg-[var(--surface-elevated)] text-[var(--foreground)] border-[var(--border-strong)]"
               }`}
           >
             {difficulty
@@ -165,7 +165,7 @@ function ProblemCard({ problem }) {
           disabled={saving}
           className={`transition disabled:opacity-50 ${saved
             ? "text-[var(--theme-primary,#2dd4bf)]"
-            : "text-zinc-500 hover:text-[var(--theme-primary,#2dd4bf)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--theme-primary,#2dd4bf)]"
             }`}
           title={saved ? "Remove from saved" : "Save problem"}
           aria-pressed={saved}

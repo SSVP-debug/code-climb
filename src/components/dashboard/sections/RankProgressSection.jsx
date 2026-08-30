@@ -59,7 +59,7 @@ function RankProgressSection() {
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
 
         <div className="min-w-0">
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.rank}
           </p>
 
@@ -69,7 +69,7 @@ function RankProgressSection() {
         </div>
 
         <div className="text-right flex-shrink-0">
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.level}
           </p>
 
@@ -77,7 +77,7 @@ function RankProgressSection() {
             {level}
           </h2>
 
-          <p className="text-zinc-400 text-sm mt-1" data-testid="dashboard-xp">
+          <p className="text-[var(--muted-foreground)] text-sm mt-1" data-testid="dashboard-xp">
             {totalXP} XP
           </p>
           <p className="text-xs text-[var(--theme-primary,#2dd4bf)] mt-1">
@@ -87,7 +87,7 @@ function RankProgressSection() {
 
       </div>
 
-      <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
+      <div className="w-full bg-[var(--surface-elevated)] rounded-full h-4 overflow-hidden">
         <div
           className="bg-[var(--theme-primary,#2dd4bf)] h-full rounded-full transition-all duration-700"
           style={{
@@ -96,13 +96,13 @@ function RankProgressSection() {
         />
       </div>
 
-      <p className="text-xs text-zinc-500 mt-2">
+      <p className="text-xs text-[var(--muted-foreground)] mt-2">
         Keep solving problems to reach the next level.
       </p>
 
       <div className="flex justify-between flex-wrap gap-2 mt-3 text-sm">
 
-        <p className="text-zinc-400">
+        <p className="text-[var(--muted-foreground)]">
           {xpRemaining} XP to Level {level + 1}
         </p>
 

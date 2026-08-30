@@ -17,12 +17,12 @@ export default function AttentionRequiredSection() {
 
   return (
     <section className="mb-10">
-      <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+      <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
         Attention required
       </h2>
 
       {items.length === 0 ? (
-        <div className="flex items-center gap-2.5 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3.5 text-sm text-zinc-400">
+        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 text-sm text-[var(--muted-foreground)]">
           <CheckCircle2 size={16} className="text-verdict-accept shrink-0" />
           All systems clear. Nothing requires your attention right now.
         </div>
@@ -35,14 +35,14 @@ export default function AttentionRequiredSection() {
                 ? "border-verdict-reject/25 bg-verdict-reject/5"
                 : item.tone === "degraded"
                 ? "border-verdict-pending/25 bg-verdict-pending/5"
-                : "border-verdict-pending/20 bg-zinc-900/60";
+                : "border-verdict-pending/20 bg-[var(--surface)]";
             return (
               <Link
                 key={item.id}
                 to={item.to}
                 className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 transition hover:brightness-110 ${toneCls}`}
               >
-                <span className="flex items-center gap-2.5 text-sm text-zinc-200">
+                <span className="flex items-center gap-2.5 text-sm text-[var(--foreground)]">
                   <Icon
                     size={16}
                     className={
@@ -55,7 +55,7 @@ export default function AttentionRequiredSection() {
                   />
                   {item.label}
                 </span>
-                <span className="flex items-center gap-1 text-xs font-medium text-zinc-400">
+                <span className="flex items-center gap-1 text-xs font-medium text-[var(--muted-foreground)]">
                   {item.cta}
                   <ArrowRight size={12} />
                 </span>

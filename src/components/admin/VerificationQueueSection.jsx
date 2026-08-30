@@ -13,11 +13,11 @@ function QueueRow({ title, subtitle, meta, onApprove, onReject, busy }) {
   const [confirmingReject, setConfirmingReject] = useState(false);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="min-w-0">
-        <p className="text-white font-semibold text-sm truncate">{title}</p>
-        <p className="text-zinc-500 text-xs truncate">{subtitle}</p>
-        {meta && <p className="text-zinc-600 text-[11px] mt-0.5">{meta}</p>}
+        <p className="text-[var(--foreground)] font-semibold text-sm truncate">{title}</p>
+        <p className="text-[var(--muted-foreground)] text-xs truncate">{subtitle}</p>
+        {meta && <p className="text-[var(--muted-foreground)] text-[11px] mt-0.5">{meta}</p>}
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <Button
@@ -63,13 +63,13 @@ function QueueRow({ title, subtitle, meta, onApprove, onReject, busy }) {
 function VerificationQueueSection({ heading, loading, emptyLabel, items, busyIds, getRow, onApprove, onReject }) {
   return (
     <section className="mb-10">
-      <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+      <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
         {heading} {items.length > 0 && `(${items.length})`}
       </h2>
       {loading ? (
-        <p className="text-zinc-600 text-sm">Loading…</p>
+        <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
       ) : items.length === 0 ? (
-        <p className="text-zinc-600 text-sm">{emptyLabel}</p>
+        <p className="text-[var(--muted-foreground)] text-sm">{emptyLabel}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {items.map((item) => {

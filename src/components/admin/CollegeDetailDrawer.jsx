@@ -67,7 +67,7 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
                 if (e.key === "Enter") handleSaveName();
                 if (e.key === "Escape") setEditing(false);
               }}
-              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-zinc-500"
+              className="flex-1 bg-[var(--surface)] border border-[var(--border-strong)] rounded-lg px-3 py-1.5 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--muted-foreground)]"
             />
             <button
               type="button"
@@ -82,18 +82,18 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
               type="button"
               onClick={() => setEditing(false)}
               aria-label="Cancel"
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+              className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
             >
               <XIcon size={14} />
             </button>
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
-            <p className="text-white text-sm font-medium">{college.name}</p>
+            <p className="text-[var(--foreground)] text-sm font-medium">{college.name}</p>
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="flex items-center gap-1 text-xs text-zinc-500 hover:text-white transition"
+              className="flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
             >
               <Pencil size={12} />
               Rename
@@ -112,7 +112,7 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
       <DrawerSection label="Status">
         <span
           className={`text-xs px-2 py-1 rounded-full uppercase tracking-wide font-semibold ${
-            STATUS_STYLES[college.status] || "bg-zinc-500/10 text-zinc-400"
+            STATUS_STYLES[college.status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
           }`}
         >
           {college.status}
@@ -122,16 +122,16 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
       <DrawerSection label="Reach">
         <div className="grid grid-cols-3 gap-2 text-center mb-3">
           <div>
-            <p className="text-white text-2xl font-black">{college.studentCount}</p>
-            <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Students</p>
+            <p className="text-[var(--foreground)] text-2xl font-black">{college.studentCount}</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">Students</p>
           </div>
           <div>
-            <p className="text-white text-2xl font-black">{college.activeStudentCount}</p>
-            <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Active</p>
+            <p className="text-[var(--foreground)] text-2xl font-black">{college.activeStudentCount}</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">Active</p>
           </div>
           <div>
-            <p className="text-white text-2xl font-black">{college.tpoCount}</p>
-            <p className="text-zinc-500 text-[10px] uppercase tracking-wide">TPOs</p>
+            <p className="text-[var(--foreground)] text-2xl font-black">{college.tpoCount}</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">TPOs</p>
           </div>
         </div>
         <DrawerField label="Domains" value={college.domains?.join(", ")} copyable />
@@ -142,8 +142,8 @@ export default function CollegeDetailDrawer({ college, open, onClose, onViewStud
       </DrawerSection>
 
       <DrawerSection label="Notes">
-        <p className="text-zinc-500 text-xs leading-relaxed mb-2">{college.studentCountCaveat}</p>
-        <p className="text-zinc-500 text-xs leading-relaxed">{college.recruiterCountNote}</p>
+        <p className="text-[var(--muted-foreground)] text-xs leading-relaxed mb-2">{college.studentCountCaveat}</p>
+        <p className="text-[var(--muted-foreground)] text-xs leading-relaxed">{college.recruiterCountNote}</p>
       </DrawerSection>
 
       <DrawerSection label="Actions">

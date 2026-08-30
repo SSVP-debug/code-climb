@@ -9,7 +9,7 @@ const ACTIVITY_LIMIT = 6;
 const TONE_DOT = {
   destructive: "bg-verdict-reject",
   positive: "bg-verdict-accept",
-  neutral: "bg-zinc-600",
+  neutral: "bg-[var(--muted-foreground)]",
 };
 
 function formatTime(d) {
@@ -52,10 +52,10 @@ export default function PlatformActivitySection() {
   return (
     <section className="mb-10">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Platform activity</h2>
+        <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">Platform activity</h2>
         <Link
           to="/admin/audit-logs"
-          className="flex items-center gap-1 text-xs text-zinc-500 hover:text-white transition"
+          className="flex items-center gap-1 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
         >
           View full audit trail
           <ArrowRight size={11} />
@@ -65,19 +65,19 @@ export default function PlatformActivitySection() {
       {loading && !logs ? (
         <div className="flex flex-col gap-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-11 rounded-lg bg-zinc-900/60 border border-zinc-800 animate-pulse" />
+            <div key={i} className="h-11 rounded-lg bg-[var(--surface)] border border-[var(--border)] animate-pulse" />
           ))}
         </div>
       ) : failed ? (
-        <p className="text-zinc-600 text-sm">Couldn't load recent activity.</p>
+        <p className="text-[var(--muted-foreground)] text-sm">Couldn't load recent activity.</p>
       ) : !logs || logs.length === 0 ? (
-        <div className="flex items-center gap-2.5 rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3.5 text-sm text-zinc-500">
-          <Activity size={15} className="text-zinc-600 shrink-0" />
+        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3.5 text-sm text-[var(--muted-foreground)]">
+          <Activity size={15} className="text-[var(--muted-foreground)] shrink-0" />
           No admin actions recorded yet.
         </div>
       ) : (
         <div className="relative pl-4">
-          <div className="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-zinc-800" aria-hidden="true" />
+          <div className="absolute left-[3px] top-1.5 bottom-1.5 w-px bg-[var(--border)]" aria-hidden="true" />
           <div className="flex flex-col gap-3.5">
             {logs.map((log) => (
               <div key={log._id} className="relative">
@@ -85,10 +85,10 @@ export default function PlatformActivitySection() {
                   className={`absolute -left-4 top-1 h-1.5 w-1.5 rounded-full ${TONE_DOT[getAuditActionTone(log.action)]}`}
                   aria-hidden="true"
                 />
-                <p className="text-sm text-zinc-200">
-                  <span className="text-zinc-500">{log.adminEmail}</span> · {formatAuditAction(log.action)}
+                <p className="text-sm text-[var(--foreground)]">
+                  <span className="text-[var(--muted-foreground)]">{log.adminEmail}</span> · {formatAuditAction(log.action)}
                 </p>
-                <p className="text-zinc-600 text-xs">{formatTime(log.createdAt)}</p>
+                <p className="text-[var(--muted-foreground)] text-xs">{formatTime(log.createdAt)}</p>
               </div>
             ))}
           </div>

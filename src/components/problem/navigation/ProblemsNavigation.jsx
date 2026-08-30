@@ -74,7 +74,7 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
               key={item.id}
               onClick={() => setActiveView(item.id)}
               className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all whitespace-nowrap ${
-                active ? "" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                active ? "" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)]"
               }`}
               style={
                 active
@@ -108,7 +108,7 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
                 onClick={() => setActiveView(item.id)}
                 aria-label={item.label}
                 className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
-                  active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                  active ? "" : "text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)]"
                 }`}
                 style={
                   active
@@ -140,7 +140,7 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
             key={item.id}
             onClick={() => setActiveView(item.id)}
             className={`w-full text-left rounded-xl px-3 py-2.5 transition-all group ${
-              active ? "" : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              active ? "" : "text-[var(--muted-foreground)] hover:bg-[var(--surface-elevated)] hover:text-[var(--foreground)]"
             }`}
             style={
               active
@@ -154,18 +154,18 @@ function ProblemsNavigation({ activeView, setActiveView, orientation = "vertical
           >
             <div className="flex items-center gap-3">
               <div className={`flex-shrink-0 p-1 rounded-lg ${
-                active ? "bg-black/15" : "bg-zinc-800 group-hover:bg-zinc-700"
+                active ? "bg-black/15" : "bg-[var(--surface-elevated)] group-hover:bg-[var(--border-strong)]"
               }`}>
                 <Icon size={14} />
               </div>
               <div className="min-w-0">
                 <p className={`font-semibold text-sm leading-tight ${
-                  active ? "text-black" : "text-zinc-200"
+                  active ? "text-black" : "text-[var(--foreground)]"
                 }`}>
                   {item.label}
                 </p>
                 <p className={`text-xs leading-tight mt-0.5 ${
-                  active ? "text-black/60" : "text-zinc-500"
+                  active ? "text-black/60" : "text-[var(--muted-foreground)]"
                 }`}>
                   {item.description}
                 </p>

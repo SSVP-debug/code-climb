@@ -77,7 +77,7 @@ function ActivityHeatmapCard() {
                   title={day.date}
                   className="w-3 h-3 rounded-sm"
                   style={{
-                    backgroundColor: day.active ? theme.colors.primary : "#27272a",
+                    backgroundColor: day.active ? theme.colors.primary : "var(--surface-elevated)",
                   }}
                 />
               ) : (
@@ -88,9 +88,9 @@ function ActivityHeatmapCard() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 mt-4 text-xs text-zinc-500">
+      <div className="flex items-center gap-2 mt-4 text-xs text-[var(--muted-foreground)]">
         <span>Less</span>
-        <div className="w-3 h-3 rounded-sm bg-zinc-800" />
+        <div className="w-3 h-3 rounded-sm bg-[var(--surface-elevated)]" />
         <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: theme.colors.primary }} />
         <span>More</span>
       </div>

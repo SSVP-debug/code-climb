@@ -63,10 +63,10 @@ function UsersLoginAsSection({ adminUsers }) {
   return (
     <section className="mb-10">
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-lg px-3 py-2">
-          <UsersIcon size={14} className="text-zinc-500" />
-          <span className="text-white text-sm font-bold">{usersTotal}</span>
-          <span className="text-zinc-500 text-xs">total users</span>
+        <div className="flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2">
+          <UsersIcon size={14} className="text-[var(--muted-foreground)]" />
+          <span className="text-[var(--foreground)] text-sm font-bold">{usersTotal}</span>
+          <span className="text-[var(--muted-foreground)] text-xs">total users</span>
         </div>
         {pendingVerification > 0 && (
           <div className="flex items-center gap-2 bg-verdict-pending/5 border border-verdict-pending/25 rounded-lg px-3 py-2">
@@ -79,12 +79,12 @@ function UsersLoginAsSection({ adminUsers }) {
 
       {collegeFilter && (
         <div className="flex items-center gap-2 mb-3">
-          <span className="inline-flex items-center gap-1.5 text-xs bg-zinc-800 text-zinc-200 rounded-full pl-3 pr-1.5 py-1">
+          <span className="inline-flex items-center gap-1.5 text-xs bg-[var(--surface-elevated)] text-[var(--foreground)] rounded-full pl-3 pr-1.5 py-1">
             Filtered to: {collegeName || "selected college"}
             <button
               onClick={clearCollegeFilter}
               aria-label="Clear college filter"
-              className="p-0.5 rounded-full hover:bg-zinc-700 transition"
+              className="p-0.5 rounded-full hover:bg-[var(--border-strong)] transition"
             >
               <X size={12} />
             </button>
@@ -104,14 +104,14 @@ function UsersLoginAsSection({ adminUsers }) {
             placeholder="Search name, email, or username…"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-3 pr-8 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg pl-3 pr-8 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           />
           {searchInput && (
             <button
               type="button"
               onClick={() => setSearchInput("")}
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
             >
               <X size={13} />
             </button>
@@ -120,7 +120,7 @@ function UsersLoginAsSection({ adminUsers }) {
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+          className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
         >
           {ROLE_FILTERS.map((r) => (
             <option key={r.id} value={r.id}>
@@ -131,9 +131,9 @@ function UsersLoginAsSection({ adminUsers }) {
       </div>
 
       {usersLoading ? (
-        <p className="text-zinc-600 text-sm">Loading…</p>
+        <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
       ) : users.length === 0 ? (
-        <p className="text-zinc-600 text-sm">No users match that search.</p>
+        <p className="text-[var(--muted-foreground)] text-sm">No users match that search.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {users.map((u) => (
@@ -143,12 +143,12 @@ function UsersLoginAsSection({ adminUsers }) {
               tabIndex={0}
               onClick={() => setSelectedUserId(u.id)}
               onKeyDown={(e) => e.key === "Enter" && setSelectedUserId(u.id)}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 cursor-pointer transition hover:border-zinc-700"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 cursor-pointer transition hover:border-[var(--border-strong)]"
             >
               <div className="min-w-0">
-                <p className="text-white font-semibold text-sm truncate">
+                <p className="text-[var(--foreground)] font-semibold text-sm truncate">
                   {u.displayName || u.email}
-                  <span className="ml-2 text-[10px] uppercase tracking-wide text-zinc-500 font-normal align-middle">
+                  <span className="ml-2 text-[10px] uppercase tracking-wide text-[var(--muted-foreground)] font-normal align-middle">
                     {u.role}
                   </span>
                   {(u.role === "recruiter" || u.role === "tpo") && (
@@ -168,7 +168,7 @@ function UsersLoginAsSection({ adminUsers }) {
                     </span>
                   )}
                 </p>
-                <p className="text-zinc-500 text-xs truncate">
+                <p className="text-[var(--muted-foreground)] text-xs truncate">
                   {u.email}
                   {u.label && ` · ${u.label}`}
                   {u.joinedAt && ` · joined ${formatDate(u.joinedAt)}`}
@@ -192,11 +192,11 @@ function UsersLoginAsSection({ adminUsers }) {
       )}
 
       {usersTotal > USERS_PAGE_SIZE && (
-        <div className="flex items-center justify-between mt-3 text-xs text-zinc-500">
+        <div className="flex items-center justify-between mt-3 text-xs text-[var(--muted-foreground)]">
           <button
             disabled={usersPage <= 1}
             onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
-            className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+            className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
           >
             ← Prev
           </button>
@@ -206,7 +206,7 @@ function UsersLoginAsSection({ adminUsers }) {
           <button
             disabled={usersPage >= Math.ceil(usersTotal / USERS_PAGE_SIZE)}
             onClick={() => setUsersPage((p) => p + 1)}
-            className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+            className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
           >
             Next →
           </button>

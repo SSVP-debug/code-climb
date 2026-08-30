@@ -39,7 +39,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
         aria-label="User actions"
         disabled={Boolean(busy)}
         onClick={() => setOpen((o) => !o)}
-        className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-40"
+        className="p-1.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] disabled:opacity-40"
       >
         <MoreVertical size={16} />
       </button>
@@ -47,7 +47,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={closeAll} role="presentation" />
-          <div className="absolute right-0 mt-1 w-48 bg-zinc-950 border border-zinc-800 rounded-xl shadow-xl z-20 py-1 text-sm">
+          <div className="absolute right-0 mt-1 w-48 bg-[var(--background)] border border-[var(--border)] rounded-xl shadow-xl z-20 py-1 text-sm">
             {user.status === "suspended" ? (
               <button
                 type="button"
@@ -55,7 +55,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                   closeAll();
                   onActivate(user.id);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-zinc-200 hover:bg-zinc-900"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-[var(--foreground)] hover:bg-[var(--surface)]"
               >
                 <CheckCircle2 size={14} /> Activate
               </button>
@@ -66,7 +66,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                   closeAll();
                   setConfirming("suspend");
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-zinc-200 hover:bg-zinc-900"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-[var(--foreground)] hover:bg-[var(--surface)]"
               >
                 <Ban size={14} /> Suspend
               </button>
@@ -76,7 +76,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
               <button
                 type="button"
                 onClick={() => setRoleMenuOpen((r) => !r)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-zinc-200 hover:bg-zinc-900"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-[var(--foreground)] hover:bg-[var(--surface)]"
               >
                 <UserCog size={14} /> Change role
               </button>
@@ -90,7 +90,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                         closeAll();
                         setConfirming({ role: r });
                       }}
-                      className="w-full text-left px-2 py-1.5 text-xs text-zinc-400 hover:text-white rounded"
+                      className="w-full text-left px-2 py-1.5 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] rounded"
                     >
                       → {r}
                     </button>
@@ -103,7 +103,7 @@ function UserActionsMenu({ user, busy, onSuspend, onActivate, onDelete, onResetP
                 color-coded group (JARVIS spec §11: "dangerous actions must
                 look dangerous") rather than sitting flush with the
                 reversible ones above. */}
-            <div className="my-1 border-t border-zinc-800" role="separator" />
+            <div className="my-1 border-t border-[var(--border)]" role="separator" />
 
             <button
               type="button"

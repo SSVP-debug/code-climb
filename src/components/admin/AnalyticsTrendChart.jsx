@@ -26,27 +26,27 @@ function AnalyticsTrendChart({ title, description, metric }) {
     <section className="mb-10">
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">{title}</h2>
-          <p className="text-zinc-600 text-xs mt-0.5">{description}</p>
+          <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">{title}</h2>
+          <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{description}</p>
         </div>
         <div className="flex items-center gap-2">
           {error && (
             <button
               type="button"
               onClick={retry}
-              className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-full px-3 py-1 transition"
+              className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border-strong)] rounded-full px-3 py-1 transition"
             >
               <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
               Retry
             </button>
           )}
-          <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-lg p-1">
+          <div className="flex gap-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg p-1">
             {BUCKET_OPTIONS.map((opt) => (
               <button
                 key={opt.id}
                 onClick={() => setBucket(opt.id)}
                 className={`text-xs px-2.5 py-1 rounded-md transition ${
-                  bucket === opt.id ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                  bucket === opt.id ? "bg-[var(--border-strong)] text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 }`}
               >
                 {opt.label}
@@ -56,35 +56,35 @@ function AnalyticsTrendChart({ title, description, metric }) {
         </div>
       </div>
 
-      <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
         {error ? (
           <p className="flex items-center justify-center gap-2 text-verdict-reject text-sm py-8 text-center">
             <AlertTriangle size={14} />
             Couldn't load this trend.
           </p>
         ) : loading ? (
-          <p className="text-zinc-600 text-sm py-8 text-center">Loading…</p>
+          <p className="text-[var(--muted-foreground)] text-sm py-8 text-center">Loading…</p>
         ) : trend.every((b) => b.count === 0) ? (
-          <p className="text-zinc-600 text-sm py-8 text-center">No data in this window yet.</p>
+          <p className="text-[var(--muted-foreground)] text-sm py-8 text-center">No data in this window yet.</p>
         ) : (
           <>
-            <p className="text-white text-lg font-black mb-2">
-              {total} <span className="text-zinc-500 text-xs font-normal uppercase tracking-wide">total</span>
+            <p className="text-[var(--foreground)] text-lg font-black mb-2">
+              {total} <span className="text-[var(--muted-foreground)] text-xs font-normal uppercase tracking-wide">total</span>
             </p>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={trend} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "#71717a", fontSize: 10 }}
+                  tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   interval="preserveStartEnd"
                 />
-                <YAxis tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip
-                  contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, color: "#fff" }}
-                  labelStyle={{ color: "#a1a1aa" }}
-                  cursor={{ stroke: "#3f3f46" }}
+                  contentStyle={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", borderRadius: 8, color: "var(--foreground)" }}
+                  labelStyle={{ color: "var(--muted-foreground)" }}
+                  cursor={{ stroke: "var(--border-strong)" }}
                 />
                 <Line type="monotone" dataKey="count" stroke="#2dd4bf" strokeWidth={2} dot={false} />
               </LineChart>

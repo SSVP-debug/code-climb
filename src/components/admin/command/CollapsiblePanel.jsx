@@ -14,25 +14,25 @@ export default function CollapsiblePanel({ title, count, defaultOpen = false, ch
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section className="mb-6 rounded-xl border border-zinc-800 bg-zinc-950/40 overflow-hidden">
+    <section className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-zinc-200">
+        <span className="text-sm font-semibold text-[var(--foreground)]">
           {title}
           {typeof count === "number" && (
-            <span className="ml-2 text-xs font-normal text-zinc-500">({count})</span>
+            <span className="ml-2 text-xs font-normal text-[var(--muted-foreground)]">({count})</span>
           )}
         </span>
         <ChevronDown
           size={16}
-          className={`text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-[var(--muted-foreground)] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
-      {open && <div className="px-4 pb-4 border-t border-zinc-800 pt-4">{children}</div>}
+      {open && <div className="px-4 pb-4 border-t border-[var(--border)] pt-4">{children}</div>}
     </section>
   );
 }

@@ -23,7 +23,7 @@ function ContinueLearningSection() {
         icon={<PlayCircle size={18} strokeWidth={2} />}
         accented
       >
-        <p className="text-zinc-400 mb-6">
+        <p className="text-[var(--muted-foreground)] mb-6">
           You haven't solved any problems yet.
           Begin with your first challenge.
         </p>
@@ -52,7 +52,7 @@ function ContinueLearningSection() {
             {latestSubmission.problemTitle}
           </h3>
 
-          <p className="text-zinc-400 mt-2">
+          <p className="text-[var(--muted-foreground)] mt-2">
             Last attempt:
             <span
               className={`ml-2 font-medium ${latestSubmission.status === "Accepted"

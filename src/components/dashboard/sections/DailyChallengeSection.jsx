@@ -30,7 +30,7 @@ function DailyChallengeSection() {
   if (!challenge) {
     return (
       <SectionCard accented>
-        <div className="text-zinc-500 text-sm">Loading today's challenge…</div>
+        <div className="text-[var(--muted-foreground)] text-sm">Loading today's challenge…</div>
       </SectionCard>
     );
   }
@@ -54,7 +54,7 @@ function DailyChallengeSection() {
 
         <div className="min-w-0">
 
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
 
             {theme.words.dailyChallenge}
 
@@ -72,7 +72,7 @@ function DailyChallengeSection() {
 
           {!hideDifficulty && (
             <>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-[var(--muted-foreground)] text-sm">
 
                 {theme.words.difficulty}
 
@@ -90,7 +90,7 @@ function DailyChallengeSection() {
 
       </div>
 
-      <p className="text-zinc-400 leading-7 mb-6">
+      <p className="text-[var(--muted-foreground)] leading-7 mb-6">
 
         {challenge.description}
 

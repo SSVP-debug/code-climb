@@ -73,18 +73,18 @@ function ContestCountdownCard() {
     >
       {status === "loading" && (
         <div className="animate-pulse space-y-2">
-          <div className="h-4 w-2/3 bg-zinc-800 rounded" />
-          <div className="h-6 w-1/2 bg-zinc-800 rounded" />
+          <div className="h-4 w-2/3 bg-[var(--surface-elevated)] rounded" />
+          <div className="h-6 w-1/2 bg-[var(--surface-elevated)] rounded" />
         </div>
       )}
 
       {status === "error" && (
-        <p className="text-zinc-500 text-sm">Couldn't load contests right now.</p>
+        <p className="text-[var(--muted-foreground)] text-sm">Couldn't load contests right now.</p>
       )}
 
       {status === "empty" && (
         <div className="text-center py-2">
-          <p className="text-zinc-400 text-sm">No contests scheduled right now.</p>
+          <p className="text-[var(--muted-foreground)] text-sm">No contests scheduled right now.</p>
           <Link
             to="/club"
             className="text-sm mt-1 inline-block hover:brightness-110 transition"
@@ -103,17 +103,17 @@ function ContestCountdownCard() {
             <div className="flex items-baseline gap-2 mt-3 font-mono">
               <div className="text-center">
                 <span className="text-2xl font-bold">{countdown.days}</span>
-                <p className="text-[10px] text-zinc-500">days</p>
+                <p className="text-[10px] text-[var(--muted-foreground)]">days</p>
               </div>
-              <span className="text-zinc-600">:</span>
+              <span className="text-[var(--muted-foreground)]">:</span>
               <div className="text-center">
                 <span className="text-2xl font-bold">{countdown.hours}</span>
-                <p className="text-[10px] text-zinc-500">hrs</p>
+                <p className="text-[10px] text-[var(--muted-foreground)]">hrs</p>
               </div>
-              <span className="text-zinc-600">:</span>
+              <span className="text-[var(--muted-foreground)]">:</span>
               <div className="text-center">
                 <span className="text-2xl font-bold">{countdown.minutes}</span>
-                <p className="text-[10px] text-zinc-500">mins</p>
+                <p className="text-[10px] text-[var(--muted-foreground)]">mins</p>
               </div>
             </div>
           ) : (

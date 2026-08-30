@@ -59,8 +59,8 @@ function readValue(metrics, group, key) {
 }
 
 function CardShell({ anchor, tone, children, className = "" }) {
-  const toneRing = tone === "error" ? "hover:border-verdict-reject/40" : "hover:border-zinc-700";
-  const cls = `bg-zinc-900/60 border border-zinc-800 rounded-xl transition h-full ${toneRing} ${className}`;
+  const toneRing = tone === "error" ? "hover:border-verdict-reject/40" : "hover:border-[var(--border-strong)]";
+  const cls = `bg-[var(--surface)] border border-[var(--border)] rounded-xl transition h-full ${toneRing} ${className}`;
   return anchor ? (
     <a href={anchor} className={`block ${cls}`}>
       {children}
@@ -74,17 +74,17 @@ function HeroStat({ label, icon: Icon, value, suffix, loading, failed }) {
   return (
     <CardShell tone={failed ? "error" : "ok"} className="px-5 py-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-zinc-500 text-xs uppercase tracking-wide font-mono-ui">{label}</span>
-        <Icon size={16} className={failed ? "text-verdict-reject" : "text-zinc-600"} />
+        <span className="text-[var(--muted-foreground)] text-xs uppercase tracking-wide font-mono-ui">{label}</span>
+        <Icon size={16} className={failed ? "text-verdict-reject" : "text-[var(--muted-foreground)]"} />
       </div>
       {loading ? (
-        <div className="h-9 w-20 rounded-md bg-zinc-800/80 animate-pulse" aria-hidden="true" />
+        <div className="h-9 w-20 rounded-md bg-[var(--surface-elevated)] animate-pulse" aria-hidden="true" />
       ) : failed ? (
         <p className="flex items-center gap-2 text-verdict-reject text-3xl font-black">
           <AlertTriangle size={20} className="opacity-80" />—
         </p>
       ) : (
-        <p className="text-white text-3xl font-black tracking-tight">
+        <p className="text-[var(--foreground)] text-3xl font-black tracking-tight">
           {value}
           {suffix || ""}
         </p>
@@ -97,15 +97,15 @@ function SecondaryStat({ label, icon: Icon, value, suffix, loading, failed }) {
   return (
     <CardShell tone={failed ? "error" : "ok"} className="px-4 py-3">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-zinc-500 text-[11px] uppercase tracking-wide">{label}</span>
-        <Icon size={13} className={failed ? "text-verdict-reject" : "text-zinc-600"} />
+        <span className="text-[var(--muted-foreground)] text-[11px] uppercase tracking-wide">{label}</span>
+        <Icon size={13} className={failed ? "text-verdict-reject" : "text-[var(--muted-foreground)]"} />
       </div>
       {loading ? (
-        <div className="h-6 w-12 rounded bg-zinc-800/80 animate-pulse" aria-hidden="true" />
+        <div className="h-6 w-12 rounded bg-[var(--surface-elevated)] animate-pulse" aria-hidden="true" />
       ) : failed ? (
         <p className="text-verdict-reject text-lg font-bold">—</p>
       ) : (
-        <p className="text-white text-lg font-bold">
+        <p className="text-[var(--foreground)] text-lg font-bold">
           {value}
           {suffix || ""}
         </p>
@@ -135,7 +135,7 @@ function DashboardMetricsSection() {
           <button
             type="button"
             onClick={retry}
-            className="flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white border border-zinc-700 rounded-full px-3 py-1 transition"
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] border border-[var(--border-strong)] rounded-full px-3 py-1 transition"
           >
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
             Retry
@@ -143,7 +143,7 @@ function DashboardMetricsSection() {
         </div>
       )}
 
-      <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+      <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
         Platform at a glance
       </h2>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -176,11 +176,11 @@ function DashboardMetricsSection() {
 
       {!failed && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] uppercase tracking-widest text-zinc-600 font-semibold mr-1">
+          <span className="text-[11px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mr-1">
             Approvals
           </span>
           {loading && !metrics ? (
-            <div className="h-6 w-40 rounded-full bg-zinc-800/80 animate-pulse" aria-hidden="true" />
+            <div className="h-6 w-40 rounded-full bg-[var(--surface-elevated)] animate-pulse" aria-hidden="true" />
           ) : hasPending ? (
             approvalChips
               .filter((c) => (c.value || 0) > 0)
@@ -195,7 +195,7 @@ function DashboardMetricsSection() {
                 </a>
               ))
           ) : (
-            <span className="text-xs text-zinc-600 border border-zinc-800 rounded-full px-3 py-1.5">
+            <span className="text-xs text-[var(--muted-foreground)] border border-[var(--border)] rounded-full px-3 py-1.5">
               Nothing pending review.
             </span>
           )}

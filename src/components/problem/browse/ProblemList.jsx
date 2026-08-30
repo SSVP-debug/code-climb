@@ -26,7 +26,7 @@ function ProblemList({
   if (filtered.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-zinc-500 text-lg">
+        <p className="text-[var(--muted-foreground)] text-lg">
           {theme.words.noProblemsFound}
         </p>
         <button

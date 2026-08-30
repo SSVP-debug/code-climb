@@ -6,7 +6,7 @@
  * for the row breakdown) so there's no layout jump/reflow the moment real
  * data swaps in — same grid classes, same row count, just placeholder
  * blocks instead of real cards. Follows the same
- * `bg-zinc-900 border border-zinc-800 rounded-2xl animate-pulse` pattern
+ * `bg-[var(--surface)] border border-[var(--border)] rounded-2xl animate-pulse` pattern
  * already used by ProblemCardSkeleton / ProblemDetailsSkeleton.
  *
  * This is the defense-in-depth layer: under normal flow, DailyQuizGate
@@ -22,7 +22,7 @@
 function Block({ className = "" }) {
   return (
     <div
-      className={`bg-zinc-900 border border-zinc-800 rounded-2xl animate-pulse ${className}`}
+      className={`bg-[var(--surface)] border border-[var(--border)] rounded-2xl animate-pulse ${className}`}
     />
   );
 }

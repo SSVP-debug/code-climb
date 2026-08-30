@@ -35,25 +35,25 @@ const VIEW_AS = [
 function ViewAsSection() {
   return (
     <section className="mb-10">
-      <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+      <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
         View as
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {VIEW_AS.map((v) => (
           <div
             key={v.id}
-            className={`bg-zinc-900/60 border rounded-xl px-4 py-3 transition ${v.accent}`}
+            className={`bg-[var(--surface)] border rounded-xl px-4 py-3 transition ${v.accent}`}
           >
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl" aria-hidden="true"><v.icon size={22} strokeWidth={1.75} /></span>
-              <p className="text-white text-sm font-semibold">{v.label} portal</p>
+              <p className="text-[var(--foreground)] text-sm font-semibold">{v.label} portal</p>
             </div>
             <div className="flex flex-col gap-1.5">
               {v.pages.map((p) => (
                 <Link
                   key={p.path}
                   to={p.path}
-                  className="text-xs font-mono text-zinc-400 hover:text-white bg-black/30 hover:bg-black/50 rounded-lg px-2.5 py-1.5 transition"
+                  className="text-xs font-mono text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-[var(--surface-elevated)]/60 hover:bg-[var(--surface-elevated)] rounded-lg px-2.5 py-1.5 transition"
                 >
                   {p.label} →
                 </Link>
@@ -62,7 +62,7 @@ function ViewAsSection() {
           </div>
         ))}
       </div>
-      <p className="text-zinc-600 text-xs mt-2">
+      <p className="text-[var(--muted-foreground)] text-xs mt-2">
         These are your real live dashboards — an admin badge follows you so you can jump back here anytime.
       </p>
     </section>

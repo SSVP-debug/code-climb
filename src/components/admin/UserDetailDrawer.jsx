@@ -77,8 +77,8 @@ export default function UserDetailDrawer({ user, open, onClose, actions }) {
             className="w-full justify-center"
             label={`Login as ${user.displayName || "user"}`}
           />
-          <div className="flex items-center justify-between rounded-lg border border-zinc-800 px-3 py-2">
-            <span className="text-zinc-400 text-xs">More actions</span>
+          <div className="flex items-center justify-between rounded-lg border border-[var(--border)] px-3 py-2">
+            <span className="text-[var(--muted-foreground)] text-xs">More actions</span>
             <UserActionsMenu
               user={user}
               busy={busyIds[user.id]}

@@ -40,7 +40,7 @@ function BrowseView({
 
       {/* Result count */}
       {!loading && (
-        <p className="text-xs text-zinc-500 mb-3">
+        <p className="text-xs text-[var(--muted-foreground)] mb-3">
           {filtered.length} problem{filtered.length !== 1 ? "s" : ""} found
         </p>
       )}

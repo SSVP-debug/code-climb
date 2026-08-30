@@ -1,8 +1,8 @@
 function StatCard({ title, value, color }) {
   return (
-    <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+    <div className="bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
       
-      <h2 className="text-zinc-400 text-sm mb-2">
+      <h2 className="text-[var(--muted-foreground)] text-sm mb-2">
         {title}
       </h2>
 
