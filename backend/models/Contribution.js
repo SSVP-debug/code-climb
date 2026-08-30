@@ -15,28 +15,19 @@ import mongoose from "mongoose";
  * contributorId and an _id that can transition to "approved" and call
  * that already-built reward hook.
  *
- * ── SCOPING NOTE — flagged, not silently decided ──────────────────────────
- * docs/roadmap.md is currently empty and no prior session left a spec for
- * what a "Contribution" concretely IS on this platform (a new problem
- * submission? a testcase improvement? editorial content? a bug report?).
- * config/rewardPolicy.js's own comment gestures at two examples —
- * "new_problem" vs "testcase_improvement" possibly warranting different
- * reward amounts — but that's an illustrative aside, not a decision.
- * Rather than invent a specific content type and its type-specific
- * validation (a real product decision that belongs to Bunny, and that
- * Phase 7 "Problem/Content Scaling" — still ⛔ Not started per
- * PROGRESS.md — will likely need to weigh in on too), this model stays
- * deliberately generic:
- *   - `kind` is an open, trimmed string, NOT a closed enum. Any specific
- *     contribution type can be introduced later without a schema/migration
- *     change — just start writing a new kind value. Once a first concrete
- *     kind is actually decided, PROGRESS.md should note it and this field
- *     can be tightened to an enum at that point (noted there, not here,
- *     per this file's own "don't invent decisions" stance).
- *   - `payload` is a freeform Mixed object, shaped however the specific
- *     kind needs (e.g. a problem draft vs. a testcase diff have nothing in
- *     common structurally). No validation is applied here on its shape —
- *     that's the future kind-specific controller's job, not this model's.
+ * ── SCOPING NOTE, UPDATED — kind taxonomy decided this session ────────────
+ * docs/roadmap.md was empty and no prior session had a spec for what a
+ * "Contribution" concretely is on this platform. Through batches 1–3
+ * this model stayed deliberately generic (`kind` an open string,
+ * `payload` unvalidated) rather than guess. Bunny has since decided the
+ * first two supported kinds explicitly: "new_problem" (a full problem
+ * submission) and "testcase_improvement" (additional/better testcases
+ * for an existing problem). `kind` is now a closed enum (below) and
+ * `payload`'s shape is validated per-kind at the API boundary by
+ * schemas/contributionSchema.js's discriminated union — see that file
+ * for the actual field-level shapes. A third kind can be added later by
+ * extending both that enum and that union together; this model does not
+ * need to change beyond the enum list itself.
  * What IS decided here (because it's inferable directly from what
  * already exists and already depends on it, not guessed): the review
  * lifecycle shape and the reward-linkage shape, both of which mirror
@@ -68,18 +59,30 @@ const contributionSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Open string, deliberately not a closed enum — see the scoping note
-    // above. Whatever creates a Contribution is responsible for choosing
-    // a stable, meaningful value here (e.g. "new_problem",
-    // "testcase_improvement") — this model does not police it.
+    // Closed enum as of this session — see PROGRESS.md's Phase 2F "kind
+    // taxonomy decision" entry for the full history. Was an open string
+    // through batches 1–3 while no product decision existed; Bunny
+    // decided the first two supported kinds explicitly. Adding a third
+    // kind later requires a one-line change here (and a corresponding
+    // branch in schemas/contributionSchema.js's discriminated union) —
+    // a small, deliberate cost in exchange for the DB actually rejecting
+    // a malformed/typo'd kind value instead of silently accepting it.
     kind: {
       type: String,
       required: true,
       trim: true,
+      enum: ["new_problem", "testcase_improvement"],
     },
 
-    // Freeform, kind-shaped content. No schema-level validation — see the
-    // scoping note above for why that's intentional here, not an oversight.
+    // Freeform, kind-shaped content at the Mongoose layer — still
+    // Mixed, NOT split into per-kind Mongoose sub-schemas, because the
+    // two kinds' shapes have nothing in common structurally (a full
+    // problem draft vs. a testcase diff against an existing slug) and a
+    // Mongoose-level discriminator would just duplicate what
+    // schemas/contributionSchema.js's Zod discriminated union
+    // (NewProblemPayloadSchema / TestcaseImprovementPayloadSchema)
+    // already validates at the API boundary, before a document is ever
+    // created — see that file for the actual shape enforcement.
     payload: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
