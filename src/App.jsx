@@ -53,6 +53,7 @@ const BattleRoomDetailPage = lazy(() => import("./pages/BattleRoomDetailPage"));
 const CollegeVerifyConfirmPage = lazy(() => import("./pages/CollegeVerifyConfirmPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
 const ContributionsPage = lazy(() => import("./pages/ContributionsPage"));
+const CreditsPage = lazy(() => import("./pages/CreditsPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
 const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
@@ -280,6 +281,9 @@ function App() {
 
         {/* ── Phase 2F: Contribution Infrastructure ────────────────────── */}
         <Route path="/contribute" element={<ProtectedRoute><ThemeGate><ContributionsPage /></ThemeGate></ProtectedRoute>} />
+
+        {/* ── Phase 3: Token Economy — Credits balance + history ───────── */}
+        <Route path="/credits" element={<ProtectedRoute><ThemeGate><CreditsPage /></ThemeGate></ProtectedRoute>} />
 
         {/* ── Phase 9: Pricing Page ───────────────────────────────────── */}
         <Route
