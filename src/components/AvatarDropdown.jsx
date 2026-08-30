@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Zap, Flame, CheckCircle2, RotateCcw, Shuffle, CalendarCheck, User as UserIcon } from "lucide-react";
+import { Zap, Flame, CheckCircle2, Coins, RotateCcw, Shuffle, CalendarCheck, User as UserIcon } from "lucide-react";
 import { useAppContext } from "../hooks/useAppContext";
 import { usePremium } from "../hooks/usePremium";
 import { getDailyChallenge } from "../utils/dailyChallenge";
 import { getLastVisitedProblem } from "../utils/recentProblem";
 import { buildLoginRedirect } from "../utils/authRedirect";
+import { fetchMyBalance } from "../services/rewardsApi";
 
 function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
   const [open, setOpen] = useState(false);
   const [dailyChallengeSlug, setDailyChallengeSlug] = useState(null);
+  const [creditsBalance, setCreditsBalance] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,6 +44,30 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
     });
     return () => { cancelled = true; };
   }, [open, dailyChallengeSlug]);
+
+  // Same deferred-fetch pattern for the Credits balance (Phase 3: Token
+  // Economy) — only resolve it once the dropdown is opened, not on every
+  // page load. Skipped for guest sessions: fetchMyBalance() hits an
+  // auth-required endpoint (see rewardsApi.js), and a guest has no
+  // Firebase token to send, so this would only ever reject. Skipped for
+  // non-student roles too, matching the "recruiter/TPO/admin accounts
+  // don't have XP, streaks, or solved counts in any meaningful sense"
+  // reasoning the Quick Stats block below already documents — Credits
+  // rewards (contribution/referral) are currently student-facing flows
+  // only. A failed fetch (network error, etc.) falls back to 0 rather
+  // than leaving the stat blank or throwing.
+  useEffect(() => {
+    if (!open || isGuest || !isStudent || creditsBalance !== null) return;
+    let cancelled = false;
+    fetchMyBalance()
+      .then((bal) => {
+        if (!cancelled) setCreditsBalance(bal);
+      })
+      .catch(() => {
+        if (!cancelled) setCreditsBalance(0);
+      });
+    return () => { cancelled = true; };
+  }, [open, isGuest, isStudent, creditsBalance]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -150,9 +176,9 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
           </div>
 
           {/* Quick Stats — recruiter/TPO/admin accounts don't have XP,
-              streaks, or solved counts in any meaningful sense. */}
+              streaks, solved counts, or Credits in any meaningful sense. */}
           {isStudent && (
-          <div className="grid grid-cols-3 gap-2 px-4 py-3 border-b border-[var(--border)]">
+          <div className="grid grid-cols-4 gap-2 px-4 py-3 border-b border-[var(--border)]">
             <div className="flex flex-col items-center gap-1">
               <Zap size={14} className="text-yellow-400" />
               <span className="text-sm font-semibold">{totalXP ?? 0}</span>
@@ -168,6 +194,19 @@ function AvatarDropdown({ user, isGuest = false, onLogout, mobile = false }) {
               <span className="text-sm font-semibold">{solvedProblems?.length ?? 0}</span>
               <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Solved</span>
             </div>
+            {/* Phase 3: Token Economy. Only stat in this row that's also a
+                link — matches the "tap to see more" affordance the
+                dedicated CreditsPage.jsx exists for; XP/Streak/Solved
+                have no equivalent single destination page to link to. */}
+            <Link
+              to="/credits"
+              onClick={() => setOpen(false)}
+              className="flex flex-col items-center gap-1 rounded-lg hover:bg-[var(--surface-elevated)] transition py-0.5"
+            >
+              <Coins size={14} style={{ color: "var(--theme-primary, #2dd4bf)" }} />
+              <span className="text-sm font-semibold">{creditsBalance ?? 0}</span>
+              <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider">Credits</span>
+            </Link>
           </div>
           )}
 
