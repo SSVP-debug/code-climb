@@ -52,6 +52,7 @@ const BattleRoomsPage = lazy(() => import("./pages/BattleRoomsPage"));
 const BattleRoomDetailPage = lazy(() => import("./pages/BattleRoomDetailPage"));
 const CollegeVerifyConfirmPage = lazy(() => import("./pages/CollegeVerifyConfirmPage"));
 const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
+const ContributionsPage = lazy(() => import("./pages/ContributionsPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
 const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
@@ -68,6 +69,7 @@ const AdminSettingsPage = lazy(() => import("./pages/admin/AdminSettingsPage"));
 const OpportunityRadarPage = lazy(() => import("./pages/OpportunityRadarPage"));
 const OpportunityDetailPage = lazy(() => import("./pages/OpportunityDetailPage"));
 const AdminOpportunitiesPage = lazy(() => import("./pages/admin/AdminOpportunitiesPage"));
+const AdminContributionsPage = lazy(() => import("./pages/admin/AdminContributionsPage"));
 const AdminOpportunityFormPage = lazy(() => import("./pages/admin/AdminOpportunityFormPage"));
 const AdminOpportunityImportPage = lazy(() => import("./pages/admin/AdminOpportunityImportPage"));
 const AdminGenerateShareCardPage = lazy(() => import("./pages/admin/AdminGenerateShareCardPage"));
@@ -276,6 +278,9 @@ function App() {
         {/* ── Phase 8: Campus Ambassador Portal ──────────────────────── */}
         <Route path="/ambassador" element={<ProtectedRoute><ThemeGate><AmbassadorPage /></ThemeGate></ProtectedRoute>} />
 
+        {/* ── Phase 2F: Contribution Infrastructure ────────────────────── */}
+        <Route path="/contribute" element={<ProtectedRoute><ThemeGate><ContributionsPage /></ThemeGate></ProtectedRoute>} />
+
         {/* ── Phase 9: Pricing Page ───────────────────────────────────── */}
         <Route
           path="/pricing"
@@ -328,6 +333,7 @@ function App() {
           <Route path="colleges" element={<AdminCollegesPage />} />
           <Route path="problems" element={<AdminProblemsPage />} />
           <Route path="opportunities" element={<AdminOpportunitiesPage />} />
+          <Route path="contributions" element={<AdminContributionsPage />} />
           <Route path="opportunities/import" element={<AdminOpportunityImportPage />} />
           <Route path="opportunities/new" element={<AdminOpportunityFormPage />} />
           <Route path="opportunities/:id/edit" element={<AdminOpportunityFormPage />} />
