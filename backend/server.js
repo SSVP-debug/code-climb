@@ -73,6 +73,7 @@ import adminRoutes from "./routes/admin.js";
 import opportunityRoutes from "./routes/opportunities.js";
 import contributionRoutes from "./routes/contributions.js";
 import rewardStoreRoutes from "./routes/rewardStore.js";
+import featureRequestRoutes from "./routes/featureRequests.js";
 import { SITE_URL } from "./config/site.js";
 
 if (process.env.NODE_ENV !== "production") {
@@ -218,6 +219,7 @@ app.use("/api/referral", requireAuth, apiLimiter, referralRoutes);
 app.use("/api/rewards", requireAuth, apiLimiter, rewardRoutes);
 app.use("/api/contributions", requireAuth, apiLimiter, contributionRoutes);
 app.use("/api/reward-store", requireAuth, apiLimiter, rewardStoreRoutes);
+app.use("/api/feature-requests", requireAuth, apiLimiter, featureRequestRoutes);
 app.use("/api/ambassador", requireAuth, apiLimiter, ambassadorRoutes);
 app.use("/api/leetcode", requireAuth, apiLimiter, leetcodeRoutes);
 app.use("/api/insights", requireAuth, aiLimiter, insightsRoutes);

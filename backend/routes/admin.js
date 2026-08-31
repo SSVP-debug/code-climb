@@ -88,6 +88,15 @@ import {
   fulfillRedemptionAdmin,
   rejectRedemptionAdmin,
 } from "../controllers/adminRewardStoreController.js";
+import {
+  FeatureRequestStatusUpdateSchema,
+  FeatureRequestRetrySchema,
+} from "../schemas/featureRequestSchema.js";
+import {
+  listFeatureRequestsAdmin,
+  updateFeatureRequestStatusAdmin,
+  retryFeatureRequestRewardsAdmin,
+} from "../controllers/adminFeatureRequestController.js";
 
 const router = Router();
 
@@ -241,6 +250,29 @@ router.post(
   requireAdmin,
   validateBody(RedemptionRejectSchema),
   rejectRedemptionAdmin
+);
+
+// ── Feature Requests (Phase 5) — status management + reward retry ──────────
+// Same shape as the Contribution routes above: status transitions are
+// atomic (services/featureRequests.js's updateFeatureRequestStatus(),
+// guarded so a terminal request can never be re-transitioned), and
+// retry-rewards is an idempotent reconciliation pass — RewardLedger's
+// own idempotency index is what actually prevents a double-issue,
+// unmodified by any of these routes. "open" and "withdrawn" are
+// deliberately not reachable through this endpoint — see
+// schemas/featureRequestSchema.js's own comment on why.
+router.get("/feature-requests", requireAdmin, listFeatureRequestsAdmin);
+router.post(
+  "/feature-requests/:id/status",
+  requireAdmin,
+  validateBody(FeatureRequestStatusUpdateSchema),
+  updateFeatureRequestStatusAdmin
+);
+router.post(
+  "/feature-requests/retry-rewards",
+  requireAdmin,
+  validateBody(FeatureRequestRetrySchema),
+  retryFeatureRequestRewardsAdmin
 );
 
 // ── System health ────────────────────────────────────────────────────────────
