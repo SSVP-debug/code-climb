@@ -10,10 +10,10 @@ import { useAdminSettings } from "../../hooks/useAdminSettings";
 // a second toggle style for the admin console.
 function ToggleRow({ label, description, checked, disabled, onToggle }) {
   return (
-    <div className="flex items-center justify-between bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="flex items-center justify-between bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="pr-4">
-        <p className="text-white text-sm font-semibold">{label}</p>
-        <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
+        <p className="text-[var(--foreground)] text-sm font-semibold">{label}</p>
+        <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{description}</p>
       </div>
       <button
         type="button"
@@ -22,7 +22,7 @@ function ToggleRow({ label, description, checked, disabled, onToggle }) {
         disabled={disabled}
         onClick={onToggle}
         className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${
-          checked ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-zinc-700"
+          checked ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--border-strong)]"
         }`}
       >
         <span
@@ -44,18 +44,18 @@ function ConsolePanel({ label, note, readOnly, children }) {
   return (
     <section
       className={`mb-6 rounded-2xl border p-5 ${
-        readOnly ? "border-dashed border-zinc-800/70 bg-transparent" : "border-zinc-800 bg-zinc-900/30"
+        readOnly ? "border-dashed border-[var(--border)] bg-transparent" : "border-[var(--border)] bg-[var(--surface)]/60"
       }`}
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold">{label}</h2>
+        <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">{label}</h2>
         {readOnly && (
-          <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-mono-ui border border-zinc-800 rounded px-1.5 py-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-mono-ui border border-[var(--border)] rounded px-1.5 py-0.5">
             Read-only
           </span>
         )}
       </div>
-      {note && <p className="text-zinc-600 text-xs mb-3">{note}</p>}
+      {note && <p className="text-[var(--muted-foreground)] text-xs mb-3">{note}</p>}
       {children}
     </section>
   );
@@ -105,16 +105,16 @@ export default function AdminSettingsPage() {
       />
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Control Configuration</h1>
-          <p className="text-zinc-500 text-sm">
+          <h1 className="text-2xl font-black text-[var(--foreground)]">Control Configuration</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">
             Changes take effect within a few seconds, no redeploy needed.
           </p>
         </div>
 
         {loading && !settings ? (
-          <p className="text-zinc-600 text-sm">Loading…</p>
+          <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
         ) : !settings ? (
-          <p className="text-zinc-600 text-sm">Couldn't load settings.</p>
+          <p className="text-[var(--muted-foreground)] text-sm">Couldn't load settings.</p>
         ) : (
           <>
             {settings.maintenanceMode && (
@@ -165,7 +165,7 @@ export default function AdminSettingsPage() {
 
             <ConsolePanel label="Notifications">
               <div className="flex flex-col gap-3">
-                <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-2">
+                <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 flex flex-col gap-2">
                   <textarea
                     value={displayedAnnouncementText}
                     onChange={(e) =>
@@ -174,10 +174,10 @@ export default function AdminSettingsPage() {
                     placeholder="Shown as a banner to every visitor, logged in or not."
                     rows={3}
                     maxLength={500}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 resize-none"
+                    className="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)] resize-none"
                   />
                   <div className="flex items-center justify-between">
-                    <span className="text-zinc-600 text-xs">
+                    <span className="text-[var(--muted-foreground)] text-xs">
                       {displayedAnnouncementText.length}/500
                     </span>
                     <Button
@@ -215,22 +215,22 @@ export default function AdminSettingsPage() {
               }
             >
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between bg-zinc-900/40 border border-zinc-800/60 rounded-xl px-4 py-3">
-                  <span className="text-zinc-300 text-sm">Monetization</span>
+                <div className="flex items-center justify-between bg-[var(--surface)]/60 border border-[var(--border)] rounded-xl px-4 py-3">
+                  <span className="text-[var(--foreground)] text-sm">Monetization</span>
                   <span
-                    className={`text-xs font-semibold ${settings.envFlags?.monetizationEnabled ? "text-green-400" : "text-zinc-500"}`}
+                    className={`text-xs font-semibold ${settings.envFlags?.monetizationEnabled ? "text-green-400" : "text-[var(--muted-foreground)]"}`}
                   >
                     {settings.envFlags?.monetizationEnabled
                       ? "Enabled"
                       : "Disabled"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between bg-zinc-900/40 border border-zinc-800/60 rounded-xl px-4 py-3">
-                  <span className="text-zinc-300 text-sm">
+                <div className="flex items-center justify-between bg-[var(--surface)]/60 border border-[var(--border)] rounded-xl px-4 py-3">
+                  <span className="text-[var(--foreground)] text-sm">
                     B2B (college dashboard)
                   </span>
                   <span
-                    className={`text-xs font-semibold ${settings.envFlags?.b2bEnabled ? "text-green-400" : "text-zinc-500"}`}
+                    className={`text-xs font-semibold ${settings.envFlags?.b2bEnabled ? "text-green-400" : "text-[var(--muted-foreground)]"}`}
                   >
                     {settings.envFlags?.b2bEnabled ? "Enabled" : "Disabled"}
                   </span>

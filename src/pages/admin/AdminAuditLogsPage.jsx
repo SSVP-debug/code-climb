@@ -10,13 +10,13 @@ const LOGS_PAGE_SIZE = 20;
 const TONE_DOT = {
   destructive: "bg-verdict-reject",
   positive: "bg-verdict-accept",
-  neutral: "bg-zinc-600",
+  neutral: "bg-[var(--muted-foreground)]",
 };
 
 const TONE_TEXT = {
   destructive: "text-verdict-reject",
   positive: "text-verdict-accept",
-  neutral: "text-white",
+  neutral: "text-[var(--foreground)]",
 };
 
 function formatTimestamp(d) {
@@ -62,33 +62,33 @@ function AuditLogEntry({ log }) {
   return (
     <div className="relative pl-5">
       <span
-        className={`absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-ink-950 ${TONE_DOT[tone]}`}
+        className={`absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--background)] ${TONE_DOT[tone]}`}
         aria-hidden="true"
       />
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <p className="text-[11px] font-mono-ui text-zinc-500 truncate">{log.adminEmail}</p>
+            <p className="text-[11px] font-mono-ui text-[var(--muted-foreground)] truncate">{log.adminEmail}</p>
             <p className={`text-sm font-semibold mt-0.5 ${TONE_TEXT[tone]}`}>{formatAuditAction(log.action)}</p>
-            {target && <p className="text-zinc-500 text-xs font-mono-ui mt-0.5">{target}</p>}
+            {target && <p className="text-[var(--muted-foreground)] text-xs font-mono-ui mt-0.5">{target}</p>}
           </div>
-          <span className="text-zinc-600 text-xs whitespace-nowrap shrink-0 font-mono-ui">
+          <span className="text-[var(--muted-foreground)] text-xs whitespace-nowrap shrink-0 font-mono-ui">
             {formatTimestamp(log.createdAt)}
           </span>
         </div>
 
         {hasDetails && (
-          <div className="mt-2 pt-2 border-t border-zinc-800/80">
+          <div className="mt-2 pt-2 border-t border-[var(--border)]">
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300 transition"
+              className="flex items-center gap-1 text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
             >
               <ChevronDown size={11} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
               {expanded ? "Hide metadata" : "Show metadata"}
             </button>
             {expanded && (
-              <pre className="mt-2 text-[11px] text-zinc-400 bg-black/30 rounded-lg px-3 py-2 overflow-x-auto">
+              <pre className="mt-2 text-[11px] text-[var(--muted-foreground)] bg-[var(--surface-elevated)]/60 rounded-lg px-3 py-2 overflow-x-auto">
                 {JSON.stringify(log.details, null, 2)}
               </pre>
             )}
@@ -172,12 +172,12 @@ export default function AdminAuditLogsPage() {
       <PageMeta title="Audit Logs — Admin Console — Code Club" description="Operational audit trail of admin actions." />
       <div className="max-w-4xl mx-auto">
         <div className="flex items-start gap-3 mb-8">
-          <div className="mt-0.5 flex items-center justify-center h-9 w-9 rounded-lg bg-zinc-900 border border-zinc-800 shrink-0">
-            <Shield size={16} className="text-zinc-500" />
+          <div className="mt-0.5 flex items-center justify-center h-9 w-9 rounded-lg bg-[var(--surface)] border border-[var(--border)] shrink-0">
+            <Shield size={16} className="text-[var(--muted-foreground)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white">Operational Audit Trail</h1>
-            <p className="text-zinc-500 text-sm">
+            <h1 className="text-2xl font-black text-[var(--foreground)]">Operational Audit Trail</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">
               {total > 0 ? `${total} recorded action${total === 1 ? "" : "s"}` : "No admin actions recorded yet."}
             </p>
           </div>
@@ -189,41 +189,41 @@ export default function AdminAuditLogsPage() {
             placeholder="Filter by action, e.g. recruiter.approve…"
             value={actionFilter}
             onChange={(e) => updateActionFilter(e.target.value)}
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+            className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           />
           <input
             type="date"
             aria-label="Start date"
             value={startDate}
             onChange={(e) => updateStartDate(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           />
           <input
             type="date"
             aria-label="End date"
             value={endDate}
             onChange={(e) => updateEndDate(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           />
         </div>
 
         {loading ? (
           <div className="flex flex-col gap-2">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="h-16 rounded-xl bg-zinc-900/60 border border-zinc-800 animate-pulse" />
+              <div key={i} className="h-16 rounded-xl bg-[var(--surface)] border border-[var(--border)] animate-pulse" />
             ))}
           </div>
         ) : logs.length === 0 ? (
-          <p className="text-zinc-600 text-sm">No matching audit log entries.</p>
+          <p className="text-[var(--muted-foreground)] text-sm">No matching audit log entries.</p>
         ) : (
           <div className="flex flex-col gap-6">
             {dayGroups.map((group) => (
               <div key={group.key}>
-                <p className="text-[11px] uppercase tracking-widest text-zinc-600 font-semibold mb-3">
+                <p className="text-[11px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
                   {group.label}
                 </p>
                 <div className="relative pl-1">
-                  <div className="absolute left-[4px] top-2 bottom-2 w-px bg-zinc-800" aria-hidden="true" />
+                  <div className="absolute left-[4px] top-2 bottom-2 w-px bg-[var(--border)]" aria-hidden="true" />
                   <div className="flex flex-col gap-3">
                     {group.logs.map((log) => (
                       <AuditLogEntry key={log._id} log={log} />
@@ -236,11 +236,11 @@ export default function AdminAuditLogsPage() {
         )}
 
         {total > LOGS_PAGE_SIZE && (
-          <div className="flex items-center justify-between mt-6 text-xs text-zinc-500">
+          <div className="flex items-center justify-between mt-6 text-xs text-[var(--muted-foreground)]">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               ← Prev
             </button>
@@ -250,7 +250,7 @@ export default function AdminAuditLogsPage() {
             <button
               disabled={page >= Math.ceil(total / LOGS_PAGE_SIZE)}
               onClick={() => setPage((p) => p + 1)}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               Next →
             </button>
