@@ -142,16 +142,16 @@ export default function AdminOpportunityImportPage() {
 
       <button
         onClick={() => navigate("/admin/opportunities")}
-        className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition mb-4"
+        className="inline-flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
       >
         <ArrowLeft size={12} strokeWidth={2} /> Opportunities
       </button>
 
       <div className="flex items-center gap-2 mb-1">
         <Sparkles size={20} strokeWidth={2} className="text-[var(--theme-primary,#2dd4bf)]" />
-        <h1 className="text-xl font-bold text-white">Import Opportunities</h1>
+        <h1 className="text-xl font-bold text-[var(--foreground)]">Import Opportunities</h1>
       </div>
-      <p className="text-zinc-500 text-sm mb-6">
+      <p className="text-[var(--muted-foreground)] text-sm mb-6">
         Paste a research result — from Claude or elsewhere — and Code Club will extract candidate opportunities for
         you to review. Nothing is published automatically; everything lands as Pending Review.
       </p>
@@ -163,7 +163,7 @@ export default function AdminOpportunityImportPage() {
             onChange={(e) => setResearchText(e.target.value)}
             placeholder="Paste research text here — e.g. a list of internships, hackathons, or fellowships with their details..."
             rows={14}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
           />
           {extractError && (
             <div className="mt-3 flex items-start gap-2 text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
@@ -181,8 +181,8 @@ export default function AdminOpportunityImportPage() {
 
       {step === "review" && (
         <>
-          <p className="text-sm text-zinc-400 mb-4">
-            Found <strong className="text-white">{candidates.length}</strong> opportunit
+          <p className="text-sm text-[var(--muted-foreground)] mb-4">
+            Found <strong className="text-[var(--foreground)]">{candidates.length}</strong> opportunit
             {candidates.length === 1 ? "y" : "ies"}. Review and select which to import — you can edit any details
             afterward in the normal opportunity form.
           </p>
@@ -221,7 +221,7 @@ export default function AdminOpportunityImportPage() {
                   Imported {result.imported.length} opportunit{result.imported.length === 1 ? "y" : "ies"} as Pending
                   Review.
                 </p>
-                <ul className="mt-1 text-xs text-zinc-400 space-y-0.5">
+                <ul className="mt-1 text-xs text-[var(--muted-foreground)] space-y-0.5">
                   {result.imported.map((o) => (
                     <li key={o._id}>
                       {o.ccId} — {o.title}
@@ -242,8 +242,8 @@ export default function AdminOpportunityImportPage() {
                 <ul className="mt-1 text-xs space-y-1">
                   {result.failed.map((f, i) => (
                     <li key={i}>
-                      <span className="text-zinc-300">{f.title}:</span>{" "}
-                      <span className="text-zinc-500">{f.errors.join("; ")}</span>
+                      <span className="text-[var(--foreground)]">{f.title}:</span>{" "}
+                      <span className="text-[var(--muted-foreground)]">{f.errors.join("; ")}</span>
                     </li>
                   ))}
                 </ul>
@@ -263,8 +263,8 @@ function CandidateRow({ candidate: c, checked, onToggle }) {
 
   return (
     <label
-      className={`flex items-start gap-3 bg-zinc-900 border rounded-xl px-4 py-3 cursor-pointer transition ${
-        checked ? "border-[var(--theme-primary,#2dd4bf)]/40" : "border-zinc-800"
+      className={`flex items-start gap-3 bg-[var(--surface)] border rounded-xl px-4 py-3 cursor-pointer transition ${
+        checked ? "border-[var(--theme-primary,#2dd4bf)]/40" : "border-[var(--border)]"
       }`}
     >
       <input
@@ -275,8 +275,8 @@ function CandidateRow({ candidate: c, checked, onToggle }) {
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-white font-semibold text-sm">{c.title || "(untitled)"}</p>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+          <p className="text-[var(--foreground)] font-semibold text-sm">{c.title || "(untitled)"}</p>
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--surface-elevated)] text-[var(--muted-foreground)]">
             {TYPE_LABELS[c.type] || c.type}
           </span>
           {hasMissingFlag && (
@@ -285,7 +285,7 @@ function CandidateRow({ candidate: c, checked, onToggle }) {
             </span>
           )}
         </div>
-        <p className="text-zinc-500 text-xs mt-0.5">
+        <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
           {c.organization || "(no organization)"}
           {c.applicationDeadline && ` · Deadline ${formatVerificationDate(c.applicationDeadline)}`}
         </p>

@@ -139,24 +139,24 @@ function buildPayload(values) {
 function Field({ label, children, error, hint, required }) {
   return (
     <label className="block mb-4">
-      <span className="block text-xs font-semibold text-zinc-400 mb-1">
+      <span className="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">
         {label}
         {required && <span className="text-red-400 ml-0.5">*</span>}
       </span>
       {children}
-      {hint && <span className="block text-[11px] text-zinc-600 mt-1">{hint}</span>}
+      {hint && <span className="block text-[11px] text-[var(--muted-foreground)] mt-1">{hint}</span>}
       {error && <span className="block text-[11px] text-red-400 mt-1">{error}</span>}
     </label>
   );
 }
 
 const inputClass =
-  "w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] disabled:opacity-50";
+  "w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] disabled:opacity-50";
 
 function Section({ title, children }) {
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-bold text-white mb-4 pb-2 border-b border-zinc-800">{title}</h2>
+      <h2 className="text-sm font-bold text-[var(--foreground)] mb-4 pb-2 border-b border-[var(--border)]">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">{children}</div>
     </div>
   );
@@ -220,10 +220,10 @@ export default function AdminOpportunityFormPage() {
       <PageMeta title={`${isEdit ? "Edit" : "New"} Opportunity · Admin · Code Club`} path="/admin/opportunities" />
 
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-white">
+        <h1 className="text-xl font-bold text-[var(--foreground)]">
           {isEdit ? `Edit ${ccId || "Opportunity"}` : "New Opportunity"}
         </h1>
-        <p className="text-zinc-500 text-sm mt-0.5">
+        <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
           {isEdit
             ? "Changes save as a draft edit — status transitions happen from the opportunities list."
             : "A CC/0xx ID is allocated automatically once you save this as a draft."}

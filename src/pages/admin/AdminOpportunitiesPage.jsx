@@ -28,13 +28,13 @@ const STATUS_TABS = [
 ];
 
 const STATUS_STYLES = {
-  draft: "bg-zinc-800 text-zinc-400",
+  draft: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
   pending_review: "bg-amber-500/10 text-amber-400",
   approved: "bg-sky-500/10 text-sky-400",
   published: "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]",
   rejected: "bg-red-500/10 text-red-400",
-  expired: "bg-zinc-700 text-zinc-400",
-  archived: "bg-zinc-800 text-zinc-500",
+  expired: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
+  archived: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
 };
 
 export default function AdminOpportunitiesPage() {
@@ -98,8 +98,8 @@ export default function AdminOpportunitiesPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Opportunities</h1>
-          <p className="text-zinc-500 text-sm mt-0.5">Discover, verify, and publish opportunities for students.</p>
+          <h1 className="text-xl font-bold text-[var(--foreground)]">Opportunities</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-0.5">Discover, verify, and publish opportunities for students.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button to="/admin/opportunities/import" size="sm" variant="secondary">
@@ -129,7 +129,7 @@ export default function AdminOpportunitiesPage() {
             key={t.value}
             onClick={() => setStatus(t.value)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              status === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+              status === t.value ? "bg-[var(--foreground)] text-[var(--background)]" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {t.label}
@@ -142,7 +142,7 @@ export default function AdminOpportunitiesPage() {
         placeholder="Search by title, organization, or CC ID..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white mb-5 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+        className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] mb-5 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
       />
 
       {loading ? (
@@ -155,7 +155,7 @@ export default function AdminOpportunitiesPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-zinc-500 text-xs uppercase tracking-wide border-b border-zinc-800">
+              <tr className="text-left text-[var(--muted-foreground)] text-xs uppercase tracking-wide border-b border-[var(--border)]">
                 <th className="py-2 pr-4">CC ID</th>
                 <th className="py-2 pr-4">Title</th>
                 <th className="py-2 pr-4">Organization</th>
@@ -166,30 +166,30 @@ export default function AdminOpportunitiesPage() {
             </thead>
             <tbody>
               {opportunities.map((o) => (
-                <tr key={o._id} className="border-b border-zinc-900">
-                  <td className="py-3 pr-4 font-mono text-xs text-zinc-500">{o.ccId}</td>
-                  <td className="py-3 pr-4 text-white font-medium max-w-xs truncate">{o.title}</td>
-                  <td className="py-3 pr-4 text-zinc-400">{o.organization}</td>
+                <tr key={o._id} className="border-b border-[var(--border)]/50">
+                  <td className="py-3 pr-4 font-mono text-xs text-[var(--muted-foreground)]">{o.ccId}</td>
+                  <td className="py-3 pr-4 text-[var(--foreground)] font-medium max-w-xs truncate">{o.title}</td>
+                  <td className="py-3 pr-4 text-[var(--muted-foreground)]">{o.organization}</td>
                   <td className="py-3 pr-4">
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[o.status] || "bg-zinc-800 text-zinc-400"}`}>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[o.status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"}`}>
                       {o.status.replace("_", " ")}
                     </span>
                   </td>
-                  <td className="py-3 pr-4 text-zinc-500 text-xs">
+                  <td className="py-3 pr-4 text-[var(--muted-foreground)] text-xs">
                     {o.applicationDeadline ? formatVerificationDate(o.applicationDeadline) : "No deadline"}
                   </td>
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <Link to={`/admin/opportunities/${o._id}/edit`} className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white" title="Edit">
+                      <Link to={`/admin/opportunities/${o._id}/edit`} className="p-1.5 rounded-md hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]" title="Edit">
                         <Pencil size={14} strokeWidth={2} />
                       </Link>
-                      <Link to={`/admin/opportunities/${o._id}/analytics`} className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white" title="Analytics">
+                      <Link to={`/admin/opportunities/${o._id}/analytics`} className="p-1.5 rounded-md hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]" title="Analytics">
                         <BarChart3 size={14} strokeWidth={2} />
                       </Link>
                       {o.status === "published" && (
                         <Link
                           to={`/admin/opportunities/${o._id}/share`}
-                          className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                          className="p-1.5 rounded-md hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                           title="Generate Share Card"
                         >
                           <Share2 size={14} strokeWidth={2} />
@@ -198,7 +198,7 @@ export default function AdminOpportunitiesPage() {
                       <button
                         onClick={() => runAction(o._id, duplicateOpportunityAdmin, "Duplicated as a new draft.")}
                         disabled={busyId === o._id}
-                        className="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                        className="p-1.5 rounded-md hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                         title="Duplicate"
                       >
                         <Copy size={14} strokeWidth={2} />
@@ -278,30 +278,30 @@ export default function AdminOpportunitiesPage() {
           role="presentation"
         >
           <div
-            className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
             onClick={(e) => e.stopPropagation()}
             role="alertdialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <h2 className="text-white font-bold text-base">Reject opportunity</h2>
+              <h2 className="text-[var(--foreground)] font-bold text-base">Reject opportunity</h2>
               <button
                 onClick={() => {
                   setRejectTarget(null);
                   setRejectReason("");
                 }}
-                className="text-zinc-500 hover:text-white"
+                className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               >
                 <X size={16} strokeWidth={2} />
               </button>
             </div>
-            <p className="text-zinc-400 text-sm mb-3">Give a reason — this is stored for the admin record.</p>
+            <p className="text-[var(--muted-foreground)] text-sm mb-3">Give a reason — this is stored for the admin record.</p>
             <textarea
               autoFocus
               placeholder="Reason for rejection..."
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-[var(--surface-elevated)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-red-500"
               rows={3}
             />
             <div className="flex items-center justify-end gap-2 mt-4">
@@ -330,7 +330,7 @@ function ActionButton({ label, onClick, busy, variant = "primary" }) {
   const styles = {
     primary: "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)] hover:bg-[var(--theme-primary,#2dd4bf)]/20",
     danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20",
-    secondary: "bg-zinc-800 text-zinc-400 hover:bg-zinc-700",
+    secondary: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:bg-[var(--border-strong)]",
   };
   return (
     <button

@@ -89,24 +89,24 @@ export default function AdminGenerateShareCardPage() {
 
       <button
         onClick={() => navigate("/admin/opportunities")}
-        className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition mb-4"
+        className="inline-flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
       >
         <ArrowLeft size={12} strokeWidth={2} /> Opportunities
       </button>
 
-      <h1 className="text-xl font-bold text-white mb-1">
+      <h1 className="text-xl font-bold text-[var(--foreground)] mb-1">
         Generate Share Card — {opportunity.ccId}
       </h1>
-      <p className="text-zinc-500 text-sm mb-6">{opportunity.title}</p>
+      <p className="text-[var(--muted-foreground)] text-sm mb-6">{opportunity.title}</p>
 
       {!isPublished ? (
-        <div className="flex items-start gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 max-w-md">
-          <Lock size={18} strokeWidth={2} className="text-zinc-500 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-4 max-w-md">
+          <Lock size={18} strokeWidth={2} className="text-[var(--muted-foreground)] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-white font-semibold text-sm">Publish this opportunity first</p>
-            <p className="text-zinc-500 text-xs mt-1">
+            <p className="text-[var(--foreground)] font-semibold text-sm">Publish this opportunity first</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-1">
               Share cards can only be generated for published opportunities — this one is currently{" "}
-              <span className="text-zinc-300">{opportunity.status.replace("_", " ")}</span>. Its public page doesn't
+              <span className="text-[var(--foreground)]">{opportunity.status.replace("_", " ")}</span>. Its public page doesn't
               exist yet, so a QR code would have nowhere real to point.
             </p>
             <Link
@@ -121,7 +121,7 @@ export default function AdminGenerateShareCardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* Controls */}
           <div>
-            <p className="text-xs font-semibold text-zinc-400 mb-2">Choose format</p>
+            <p className="text-xs font-semibold text-[var(--muted-foreground)] mb-2">Choose format</p>
             <div className="space-y-2 mb-5">
               {FORMATS.map((f) => (
                 <button
@@ -130,20 +130,20 @@ export default function AdminGenerateShareCardPage() {
                   className={`w-full text-left px-3 py-2.5 rounded-lg border transition ${
                     format === f.value
                       ? "border-[var(--theme-primary,#2dd4bf)]/50 bg-[var(--theme-primary,#2dd4bf)]/10"
-                      : "border-zinc-800 bg-zinc-900 hover:border-zinc-700"
+                      : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-strong)]"
                   }`}
                 >
-                  <p className={`text-sm font-semibold ${format === f.value ? "text-[var(--theme-primary,#2dd4bf)]" : "text-white"}`}>
+                  <p className={`text-sm font-semibold ${format === f.value ? "text-[var(--theme-primary,#2dd4bf)]" : "text-[var(--foreground)]"}`}>
                     {f.label}
                   </p>
-                  <p className="text-zinc-500 text-[11px] mt-0.5">{f.hint}</p>
+                  <p className="text-[var(--muted-foreground)] text-[11px] mt-0.5">{f.hint}</p>
                 </button>
               ))}
             </div>
 
             {format === "mobile" && (
               <div className="mb-5">
-                <p className="text-xs font-semibold text-zinc-400 mb-2">Tag traffic source</p>
+                <p className="text-xs font-semibold text-[var(--muted-foreground)] mb-2">Tag traffic source</p>
                 <div className="flex gap-2">
                   {MOBILE_SOURCE_TAGS.map((s) => (
                     <button
@@ -152,14 +152,14 @@ export default function AdminGenerateShareCardPage() {
                       className={`flex-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition ${
                         sourceTag === s.value
                           ? "border-[var(--theme-primary,#2dd4bf)]/50 bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]"
-                          : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
+                          : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                       }`}
                     >
                       {s.label}
                     </button>
                   ))}
                 </div>
-                <p className="text-zinc-600 text-[11px] mt-2">
+                <p className="text-[var(--muted-foreground)] text-[11px] mt-2">
                   Same visual card either way — this only tags the QR/link so admin analytics can tell WhatsApp
                   clicks from Discord clicks.
                 </p>
@@ -177,7 +177,7 @@ export default function AdminGenerateShareCardPage() {
           {/* Preview */}
           <div className="flex justify-center">
             <div>
-              <p className="text-xs font-semibold text-zinc-400 mb-2 text-center">Preview</p>
+              <p className="text-xs font-semibold text-[var(--muted-foreground)] mb-2 text-center">Preview</p>
               <ShareCardCanvas
                 ref={cardRef}
                 opportunity={opportunity}
