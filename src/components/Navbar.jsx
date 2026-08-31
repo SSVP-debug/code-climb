@@ -201,19 +201,17 @@ function Navbar() {
                 key={link.to}
                 to={link.to}
                 aria-current={active ? "page" : undefined}
-                className={`relative pb-1 text-sm transition ${
-                  active
+                className={`relative pb-1 text-sm transition ${active
                     ? "text-[var(--foreground)] font-medium"
                     : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                }`}
+                  }`}
               >
                 {link.label}
                 {active && (
                   <span
                     aria-hidden="true"
-                    className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full ${
-                      isStudentThemed ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--foreground)]"
-                    }`}
+                    className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full ${isStudentThemed ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--foreground)]"
+                      }`}
                   />
                 )}
               </Link>
@@ -240,9 +238,8 @@ function Navbar() {
                     key={link.to}
                     to={link.to}
                     aria-current={active ? "page" : undefined}
-                    className={`text-sm transition ${
-                      active ? "text-[var(--foreground)] font-medium" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-                    }`}
+                    className={`text-sm transition ${active ? "text-[var(--foreground)] font-medium" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -355,11 +352,10 @@ function Navbar() {
                 to={link.to}
                 onClick={() => setMenuOpen(false)}
                 aria-current={active ? "page" : undefined}
-                className={`py-2.5 px-3 rounded-xl transition text-sm border-l-2 ${
-                  active
+                className={`py-2.5 px-3 rounded-xl transition text-sm border-l-2 ${active
                     ? "bg-[var(--surface-elevated)] text-[var(--foreground)] font-medium"
                     : "border-transparent hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
-                }`}
+                  }`}
                 style={{
                   borderLeftColor: active
                     ? isStudentThemed
@@ -405,7 +401,7 @@ function Navbar() {
 
       {paletteOpen && (
         <CommandPalette
-          destinations={paletteDestinations}
+          commands={paletteDestinations}
           onClose={() => setPaletteOpen(false)}
         />
       )}

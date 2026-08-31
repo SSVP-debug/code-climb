@@ -20,6 +20,7 @@ import {
   Command,
   Radar,
   Puzzle,
+  Gift,
 } from "lucide-react";
 
 // Plan 001: dedicated admin layout — own sidebar/nav, distinct from the
@@ -55,6 +56,7 @@ const NAV_GROUPS = [
       { to: "/admin/problems", label: "Problems", icon: ListChecks },
       { to: "/admin/opportunities", label: "Opportunities", icon: Radar },
       { to: "/admin/contributions", label: "Contributions", icon: Puzzle },
+      { to: "/admin/reward-store", label: "Rewards Store", icon: Gift },
       { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     ],
   },
@@ -76,6 +78,7 @@ const PAGE_TITLES = {
   "/admin/problems": "Problems",
   "/admin/opportunities": "Opportunities",
   "/admin/contributions": "Contributions",
+  "/admin/reward-store": "Rewards Store",
   "/admin/opportunities/new": "New Opportunity",
   "/admin/opportunities/import": "Import Opportunities",
   "/admin/analytics": "Analytics",

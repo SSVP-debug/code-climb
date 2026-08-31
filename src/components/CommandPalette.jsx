@@ -22,6 +22,8 @@ import { Search, ArrowRight, CornerDownLeft } from "lucide-react";
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+const EMPTY_COMMANDS = [];
+
 export default function CommandPalette({ onClose, commands }) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -29,6 +31,7 @@ export default function CommandPalette({ onClose, commands }) {
   const panelRef = useRef(null);
   const triggerRef = useRef(null);
   const navigate = useNavigate();
+  const commandList = Array.isArray(commands) ? commands : EMPTY_COMMANDS;
 
   // JARVIS pass, spec §21: trap focus inside the palette while open and
   // restore it to whatever opened the palette (search button / ⌘K target)
@@ -58,14 +61,16 @@ export default function CommandPalette({ onClose, commands }) {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return commands;
-    return commands.filter(
+
+    if (!q) return commandList;
+
+    return commandList.filter(
       (c) =>
         c.label.toLowerCase().includes(q) ||
         c.group.toLowerCase().includes(q) ||
         (c.keywords || "").toLowerCase().includes(q)
     );
-  }, [query, commands]);
+  }, [query, commandList]);
 
   // Pure side effect (imperative focus call) on mount, no setState involved.
   useEffect(() => {
@@ -162,9 +167,8 @@ export default function CommandPalette({ onClose, commands }) {
                     type="button"
                     onMouseEnter={() => setActiveIndex(flatIndex)}
                     onClick={() => run(cmd)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition ${
-                      isActive ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--foreground)] hover:bg-[var(--surface)]"
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition ${isActive ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--foreground)] hover:bg-[var(--surface)]"
+                      }`}
                   >
                     {Icon && <Icon size={14} className="text-[var(--muted-foreground)] shrink-0" />}
                     <span className="flex-1 truncate">{cmd.label}</span>

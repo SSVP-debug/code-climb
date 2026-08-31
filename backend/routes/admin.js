@@ -74,6 +74,20 @@ import {
   rejectContributionAdmin,
   retryContributionRewardsAdmin,
 } from "../controllers/adminContributionController.js";
+import {
+  CatalogItemCreateSchema,
+  CatalogItemUpdateSchema,
+  RedemptionRejectSchema,
+  RedemptionFulfillSchema,
+} from "../schemas/rewardStoreSchema.js";
+import {
+  listCatalogItemsAdmin,
+  createCatalogItemAdmin,
+  updateCatalogItemAdmin,
+  listRedemptionsAdmin,
+  fulfillRedemptionAdmin,
+  rejectRedemptionAdmin,
+} from "../controllers/adminRewardStoreController.js";
 
 const router = Router();
 
@@ -192,6 +206,41 @@ router.post(
   requireAdmin,
   validateBody(ContributionRetrySchema),
   retryContributionRewardsAdmin
+);
+
+// ── Rewards Store (Phase 4) — catalog management + fulfillment queue ───────
+// Catalog CRUD goes straight to the RewardCatalogItem model
+// (adminRewardStoreController.js) — no service-layer indirection needed
+// for a plain create/edit, unlike the redemption lifecycle below, which
+// routes through services/rewardStore.js for its atomic balance-guard
+// and reversal mechanics. fulfill/reject never touch RewardLedger
+// directly from this router — same "controller stays thin, the real
+// logic lives in the service" shape as the Contribution routes above.
+router.get("/reward-store/items", requireAdmin, listCatalogItemsAdmin);
+router.post(
+  "/reward-store/items",
+  requireAdmin,
+  validateBody(CatalogItemCreateSchema),
+  createCatalogItemAdmin
+);
+router.patch(
+  "/reward-store/items/:id",
+  requireAdmin,
+  validateBody(CatalogItemUpdateSchema),
+  updateCatalogItemAdmin
+);
+router.get("/reward-store/redemptions", requireAdmin, listRedemptionsAdmin);
+router.post(
+  "/reward-store/redemptions/:id/fulfill",
+  requireAdmin,
+  validateBody(RedemptionFulfillSchema),
+  fulfillRedemptionAdmin
+);
+router.post(
+  "/reward-store/redemptions/:id/reject",
+  requireAdmin,
+  validateBody(RedemptionRejectSchema),
+  rejectRedemptionAdmin
 );
 
 // ── System health ────────────────────────────────────────────────────────────
