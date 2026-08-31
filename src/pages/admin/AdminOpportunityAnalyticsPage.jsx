@@ -15,10 +15,10 @@ const SOURCE_LABELS = {
 
 function StatCard({ label, value, sublabel }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
-      <p className="text-zinc-500 text-[11px] uppercase tracking-wide">{label}</p>
-      <p className="text-white text-2xl font-black mt-1">{value}</p>
-      {sublabel && <p className="text-zinc-600 text-[11px] mt-0.5">{sublabel}</p>}
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
+      <p className="text-[var(--muted-foreground)] text-[11px] uppercase tracking-wide">{label}</p>
+      <p className="text-[var(--foreground)] text-2xl font-black mt-1">{value}</p>
+      {sublabel && <p className="text-[var(--muted-foreground)] text-[11px] mt-0.5">{sublabel}</p>}
     </div>
   );
 }
@@ -55,7 +55,7 @@ export default function AdminOpportunityAnalyticsPage() {
     <div>
       <PageMeta title="Opportunity Analytics · Admin · Code Club" path="/admin/opportunities" />
 
-      <Link to="/admin/opportunities" className="text-xs text-zinc-500 hover:text-zinc-300 transition">
+      <Link to="/admin/opportunities" className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
         ← Opportunities
       </Link>
 
@@ -66,10 +66,10 @@ export default function AdminOpportunityAnalyticsPage() {
       ) : error ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
           <AlertTriangle size={24} className="text-amber-400" />
-          <p className="text-zinc-400 text-sm">{error}</p>
+          <p className="text-[var(--muted-foreground)] text-sm">{error}</p>
           <button
             onClick={load}
-            className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-full px-3 py-1 transition"
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border-strong)] rounded-full px-3 py-1 transition"
           >
             <RefreshCw size={11} /> Retry
           </button>
@@ -77,8 +77,8 @@ export default function AdminOpportunityAnalyticsPage() {
       ) : (
         <>
           <div className="mt-3 mb-6">
-            <h1 className="text-xl font-bold text-white">{data.ccId}</h1>
-            <p className="text-zinc-500 text-sm">{data.title}</p>
+            <h1 className="text-xl font-bold text-[var(--foreground)]">{data.ccId}</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">{data.title}</p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
@@ -92,21 +92,21 @@ export default function AdminOpportunityAnalyticsPage() {
           </div>
 
           <div>
-            <h2 className="text-xs uppercase tracking-widest text-zinc-500 font-semibold mb-3">
+            <h2 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] font-semibold mb-3">
               Traffic by source
             </h2>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
               {sourceData.every((s) => s.count === 0) ? (
-                <p className="text-zinc-600 text-sm py-8 text-center">No apply clicks recorded yet.</p>
+                <p className="text-[var(--muted-foreground)] text-sm py-8 text-center">No apply clicks recorded yet.</p>
               ) : (
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={sourceData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                    <XAxis dataKey="source" stroke="#71717a" fontSize={12} />
-                    <YAxis stroke="#71717a" fontSize={12} allowDecimals={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-strong)" vertical={false} />
+                    <XAxis dataKey="source" stroke="var(--muted-foreground)" fontSize={12} />
+                    <YAxis stroke="var(--muted-foreground)" fontSize={12} allowDecimals={false} />
                     <Tooltip
-                      contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8 }}
-                      labelStyle={{ color: "#e4e4e7" }}
+                      contentStyle={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", borderRadius: 8 }}
+                      labelStyle={{ color: "var(--foreground)" }}
                     />
                     <Bar dataKey="count" fill="#2dd4bf" radius={[4, 4, 0, 0]} />
                   </BarChart>

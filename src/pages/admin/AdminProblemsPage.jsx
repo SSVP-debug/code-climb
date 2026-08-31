@@ -17,7 +17,7 @@ const DIFFICULTY_BADGE = {
 
 const SOURCE_BADGE = {
   admin: "bg-teal-500/10 text-teal-300",
-  catalog: "bg-zinc-800 text-zinc-400",
+  catalog: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
 };
 
 // Verbatim from backend/package.json — plan 006 scope decision: running
@@ -141,8 +141,8 @@ export default function AdminProblemsPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-black text-white">Problems</h1>
-            <p className="text-zinc-500 text-sm">
+            <h1 className="text-2xl font-black text-[var(--foreground)]">Problems</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">
               {problemsTotal > 0 ? `${problemsTotal} problem${problemsTotal === 1 ? "" : "s"}` : "No problems yet."}
             </p>
           </div>
@@ -172,13 +172,13 @@ export default function AdminProblemsPage() {
           temporary — they'll be overwritten by the next <code className="bg-black/20 px-1 rounded">npm run seed</code>.
         </div>
 
-        <div className="mb-4 px-3 py-2.5 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-400">
-          <span className="font-semibold text-zinc-300">Import / Export</span> happens via the existing CLI scripts,
+        <div className="mb-4 px-3 py-2.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          <span className="font-semibold text-[var(--foreground)]">Import / Export</span> happens via the existing CLI scripts,
           not from this page:
           <ul className="mt-1.5 space-y-1">
             {CLI_COMMANDS.map((c) => (
               <li key={c.command}>
-                <code className="bg-black/30 px-1.5 py-0.5 rounded text-zinc-300">{c.command}</code> — {c.label}
+                <code className="bg-[var(--surface-elevated)]/60 px-1.5 py-0.5 rounded text-[var(--foreground)]">{c.command}</code> — {c.label}
               </li>
             ))}
           </ul>
@@ -190,12 +190,12 @@ export default function AdminProblemsPage() {
             placeholder="Search by title or slug…"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+            className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           />
           <select
             value={difficultyFilter}
             onChange={(e) => setDifficultyFilter(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           >
             <option value="">All difficulties</option>
             <option value="Easy">Easy</option>
@@ -205,7 +205,7 @@ export default function AdminProblemsPage() {
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           >
             <option value="">All sources</option>
             <option value="admin">Admin-created</option>
@@ -214,14 +214,14 @@ export default function AdminProblemsPage() {
         </div>
 
         {problemsLoading ? (
-          <p className="text-zinc-600 text-sm">Loading…</p>
+          <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
         ) : problems.length === 0 ? (
-          <p className="text-zinc-600 text-sm">No matching problems.</p>
+          <p className="text-[var(--muted-foreground)] text-sm">No matching problems.</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-zinc-800">
+          <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-zinc-900/60 text-left text-zinc-500 text-xs uppercase tracking-widest">
+                <tr className="bg-[var(--surface)] text-left text-[var(--muted-foreground)] text-xs uppercase tracking-widest">
                   <th className="px-4 py-2 font-semibold">Title</th>
                   <th className="px-4 py-2 font-semibold">Difficulty</th>
                   <th className="px-4 py-2 font-semibold">Topic</th>
@@ -234,11 +234,11 @@ export default function AdminProblemsPage() {
                   <tr
                     key={p.slug}
                     onClick={() => openEdit(p.slug)}
-                    className="border-t border-zinc-800 cursor-pointer hover:bg-zinc-900/40 transition"
+                    className="border-t border-[var(--border)] cursor-pointer hover:bg-[var(--surface)] transition"
                   >
                     <td className="px-4 py-2">
-                      <p className="text-white font-medium">{p.title}</p>
-                      <p className="text-zinc-600 text-[11px] font-mono">{p.slug}</p>
+                      <p className="text-[var(--foreground)] font-medium">{p.title}</p>
+                      <p className="text-[var(--muted-foreground)] text-[11px] font-mono">{p.slug}</p>
                     </td>
                     <td className="px-4 py-2">
                       <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded ${DIFFICULTY_BADGE[p.difficulty] || ""}`}>
@@ -246,7 +246,7 @@ export default function AdminProblemsPage() {
                         {p.difficulty}
                       </span>
                     </td>
-                    <td className="px-4 py-2 text-zinc-400 text-xs">{p.topic}</td>
+                    <td className="px-4 py-2 text-[var(--muted-foreground)] text-xs">{p.topic}</td>
                     <td className="px-4 py-2">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded ${SOURCE_BADGE[p.adminSource] || ""}`}>
                         {p.adminSource}
@@ -258,7 +258,7 @@ export default function AdminProblemsPage() {
                           type="button"
                           onClick={() => openEdit(p.slug)}
                           disabled={rowLoading === p.slug}
-                          className="p-1.5 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 disabled:opacity-40"
+                          className="p-1.5 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] disabled:opacity-40"
                           aria-label={`Edit ${p.title}`}
                         >
                           <Pencil size={14} />
@@ -283,11 +283,11 @@ export default function AdminProblemsPage() {
         )}
 
         {problemsTotal > PROBLEMS_PAGE_SIZE && (
-          <div className="flex items-center justify-between mt-3 text-xs text-zinc-500">
+          <div className="flex items-center justify-between mt-3 text-xs text-[var(--muted-foreground)]">
             <button
               disabled={problemsPage <= 1}
               onClick={() => setProblemsPage((p) => Math.max(1, p - 1))}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               ← Prev
             </button>
@@ -297,7 +297,7 @@ export default function AdminProblemsPage() {
             <button
               disabled={problemsPage >= totalPages}
               onClick={() => setProblemsPage((p) => p + 1)}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               Next →
             </button>
@@ -314,12 +314,12 @@ export default function AdminProblemsPage() {
           title={panelMode === "create" ? "Create problem" : editingProblem?.title || "Edit problem"}
         >
           {panelMode === "edit" && (
-            <div className="flex items-center gap-1 mb-4 bg-zinc-900 rounded-lg p-1 w-fit">
+            <div className="flex items-center gap-1 mb-4 bg-[var(--surface)] rounded-lg p-1 w-fit">
               <button
                 type="button"
                 onClick={() => setActiveTab("edit")}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 ${
-                  activeTab === "edit" ? "bg-zinc-800 text-white" : "text-zinc-500"
+                  activeTab === "edit" ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--muted-foreground)]"
                 }`}
               >
                 <Pencil size={12} /> Edit
@@ -328,7 +328,7 @@ export default function AdminProblemsPage() {
                 type="button"
                 onClick={() => setActiveTab("preview")}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 ${
-                  activeTab === "preview" ? "bg-zinc-800 text-white" : "text-zinc-500"
+                  activeTab === "preview" ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--muted-foreground)]"
                 }`}
               >
                 <Eye size={12} /> Preview

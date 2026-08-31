@@ -25,7 +25,7 @@ function StatusBadge({ status }) {
   return (
     <span
       className={`text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wide font-semibold ${
-        STATUS_STYLES[status] || "bg-zinc-500/10 text-zinc-400"
+        STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
       }`}
     >
       {status}
@@ -71,8 +71,8 @@ export default function AdminCollegesPage() {
       <PageMeta title="Colleges — Admin Console — Code Club" description="Every college, with per-college aggregate stats." />
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Colleges</h1>
-          <p className="text-zinc-500 text-sm">
+          <h1 className="text-2xl font-black text-[var(--foreground)]">Colleges</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">
             {collegesTotal > 0 ? `${collegesTotal} college${collegesTotal === 1 ? "" : "s"}` : "No colleges yet."}
           </p>
         </div>
@@ -82,20 +82,20 @@ export default function AdminCollegesPage() {
             interaction across both searchable admin lists. */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
             <input
               type="text"
               placeholder="Search name or domain…"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
+              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg pl-8 pr-8 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)]"
             />
             {searchInput && (
               <button
                 type="button"
                 onClick={() => setSearchInput("")}
                 aria-label="Clear search"
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
               >
                 <X size={13} />
               </button>
@@ -104,7 +104,7 @@ export default function AdminCollegesPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-600"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--border-strong)]"
           >
             {STATUS_FILTERS.map((s) => (
               <option key={s.id} value={s.id}>
@@ -115,9 +115,9 @@ export default function AdminCollegesPage() {
         </div>
 
         {collegesLoading ? (
-          <p className="text-zinc-600 text-sm">Loading…</p>
+          <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
         ) : colleges.length === 0 ? (
-          <p className="text-zinc-600 text-sm">No colleges match that search.</p>
+          <p className="text-[var(--muted-foreground)] text-sm">No colleges match that search.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {colleges.map((college) => (
@@ -127,12 +127,12 @@ export default function AdminCollegesPage() {
                 tabIndex={0}
                 onClick={() => setSelectedCollegeId(college.id)}
                 onKeyDown={(e) => e.key === "Enter" && setSelectedCollegeId(college.id)}
-                className="bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 flex flex-col gap-3 cursor-pointer transition hover:border-zinc-700"
+                className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 flex flex-col gap-3 cursor-pointer transition hover:border-[var(--border-strong)]"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-sm truncate">{college.name}</p>
-                    <p className="text-zinc-500 text-xs truncate">{college.domains?.join(", ")}</p>
+                    <p className="text-[var(--foreground)] font-semibold text-sm truncate">{college.name}</p>
+                    <p className="text-[var(--muted-foreground)] text-xs truncate">{college.domains?.join(", ")}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <StatusBadge status={college.status} />
@@ -147,22 +147,22 @@ export default function AdminCollegesPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center bg-black/20 rounded-lg py-2.5">
+                <div className="grid grid-cols-3 gap-2 text-center bg-[var(--surface-elevated)]/60 rounded-lg py-2.5">
                   <div>
-                    <p className="text-white text-xl font-black">{college.studentCount}</p>
-                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Students</p>
+                    <p className="text-[var(--foreground)] text-xl font-black">{college.studentCount}</p>
+                    <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">Students</p>
                   </div>
                   <div>
-                    <p className="text-white text-xl font-black">{college.activeStudentCount}</p>
-                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">Active</p>
+                    <p className="text-[var(--foreground)] text-xl font-black">{college.activeStudentCount}</p>
+                    <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">Active</p>
                   </div>
                   <div>
-                    <p className="text-white text-xl font-black">{college.tpoCount}</p>
-                    <p className="text-zinc-500 text-[10px] uppercase tracking-wide">TPOs</p>
+                    <p className="text-[var(--foreground)] text-xl font-black">{college.tpoCount}</p>
+                    <p className="text-[var(--muted-foreground)] text-[10px] uppercase tracking-wide">TPOs</p>
                   </div>
                 </div>
 
-                <p className="text-zinc-500 text-xs flex items-center gap-1">
+                <p className="text-[var(--muted-foreground)] text-xs flex items-center gap-1">
                   <GraduationCap size={12} />
                   {college.totalSolvedProblems} problems solved by this college's students
                 </p>
@@ -172,7 +172,7 @@ export default function AdminCollegesPage() {
                     e.stopPropagation();
                     viewStudents(college);
                   }}
-                  className="mt-1 self-start flex items-center gap-1 text-xs text-zinc-300 hover:text-white transition"
+                  className="mt-1 self-start flex items-center gap-1 text-xs text-[var(--foreground)] hover:text-[var(--foreground)] transition"
                 >
                   <Users2 size={13} />
                   View students
@@ -184,11 +184,11 @@ export default function AdminCollegesPage() {
         )}
 
         {collegesTotal > COLLEGES_PAGE_SIZE && (
-          <div className="flex items-center justify-between mt-4 text-xs text-zinc-500">
+          <div className="flex items-center justify-between mt-4 text-xs text-[var(--muted-foreground)]">
             <button
               disabled={collegesPage <= 1}
               onClick={() => setCollegesPage((p) => Math.max(1, p - 1))}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               ← Prev
             </button>
@@ -198,7 +198,7 @@ export default function AdminCollegesPage() {
             <button
               disabled={collegesPage >= Math.ceil(collegesTotal / COLLEGES_PAGE_SIZE)}
               onClick={() => setCollegesPage((p) => p + 1)}
-              className="px-2 py-1 rounded hover:bg-zinc-900 disabled:opacity-40"
+              className="px-2 py-1 rounded hover:bg-[var(--surface)] disabled:opacity-40"
             >
               Next →
             </button>

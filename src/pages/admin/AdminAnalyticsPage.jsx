@@ -23,8 +23,8 @@ export default function AdminAnalyticsPage() {
       <PageMeta title="Analytics — Admin Console — Code Club" description="Platform intelligence: growth, engagement, and coding activity." />
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Platform Intelligence</h1>
-          <p className="text-zinc-500 text-sm mt-1">Real usage data, organized around the questions that actually matter.</p>
+          <h1 className="text-2xl font-black text-[var(--foreground)]">Platform Intelligence</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1">Real usage data, organized around the questions that actually matter.</p>
         </div>
 
         <AnalyticsTrendChart

@@ -25,8 +25,8 @@ export default function AdminUsersPage() {
       <PageMeta title="Users — Admin Console — Code Club" description="Search users and log in as any account." />
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Users</h1>
-          <p className="text-zinc-500 text-sm">Search, filter, and log in as any account.</p>
+          <h1 className="text-2xl font-black text-[var(--foreground)]">Users</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">Search, filter, and log in as any account.</p>
         </div>
 
         <UsersLoginAsSection adminUsers={adminUsers} />
