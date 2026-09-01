@@ -55,6 +55,7 @@ const AmbassadorPage = lazy(() => import("./pages/AmbassadorPage"));
 const ContributionsPage = lazy(() => import("./pages/ContributionsPage"));
 const CreditsPage = lazy(() => import("./pages/CreditsPage"));
 const RewardsStorePage = lazy(() => import("./pages/RewardsStorePage"));
+const FeatureRequestsPage = lazy(() => import("./pages/FeatureRequestsPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const InterviewModePage = lazy(() => import("./pages/InterviewModePage"));
 const TpoSignupPage = lazy(() => import("./pages/TpoSignupPage"));
@@ -73,6 +74,7 @@ const OpportunityDetailPage = lazy(() => import("./pages/OpportunityDetailPage")
 const AdminOpportunitiesPage = lazy(() => import("./pages/admin/AdminOpportunitiesPage"));
 const AdminContributionsPage = lazy(() => import("./pages/admin/AdminContributionsPage"));
 const AdminRewardsStorePage = lazy(() => import("./pages/admin/AdminRewardsStorePage"));
+const AdminFeatureRequestsPage = lazy(() => import("./pages/admin/AdminFeatureRequestsPage"));
 const AdminOpportunityFormPage = lazy(() => import("./pages/admin/AdminOpportunityFormPage"));
 const AdminOpportunityImportPage = lazy(() => import("./pages/admin/AdminOpportunityImportPage"));
 const AdminGenerateShareCardPage = lazy(() => import("./pages/admin/AdminGenerateShareCardPage"));
@@ -290,6 +292,9 @@ function App() {
         {/* ── Phase 4: Rewards Store — browse + redeem + redemption history ── */}
         <Route path="/rewards-store" element={<ProtectedRoute><ThemeGate><RewardsStorePage /></ThemeGate></ProtectedRoute>} />
 
+        {/* ── Phase 5: Feature Requests — public board + submit + vote ──── */}
+        <Route path="/feature-requests" element={<ProtectedRoute><ThemeGate><FeatureRequestsPage /></ThemeGate></ProtectedRoute>} />
+
         {/* ── Phase 9: Pricing Page ───────────────────────────────────── */}
         <Route
           path="/pricing"
@@ -344,6 +349,7 @@ function App() {
           <Route path="opportunities" element={<AdminOpportunitiesPage />} />
           <Route path="contributions" element={<AdminContributionsPage />} />
           <Route path="reward-store" element={<AdminRewardsStorePage />} />
+          <Route path="feature-requests" element={<AdminFeatureRequestsPage />} />
           <Route path="opportunities/import" element={<AdminOpportunityImportPage />} />
           <Route path="opportunities/new" element={<AdminOpportunityFormPage />} />
           <Route path="opportunities/:id/edit" element={<AdminOpportunityFormPage />} />
