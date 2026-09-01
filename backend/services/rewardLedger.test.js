@@ -126,6 +126,23 @@ describe("issueReward", () => {
     expect(RewardLedger.create).not.toHaveBeenCalled();
   });
 
+  it("accepts FEATURE_REQUEST as a valid sourceType (Phase 5)", async () => {
+    RewardLedger.create.mockResolvedValueOnce({ _id: "entry1" });
+    User.updateOne.mockResolvedValueOnce({});
+
+    await issueReward({
+      recipientId: userId,
+      type: REWARD_TYPES.FEATURE_REQUEST_SHIPPED,
+      amount: 40,
+      sourceType: "FEATURE_REQUEST",
+      sourceId,
+    });
+
+    expect(RewardLedger.create).toHaveBeenCalledWith(
+      expect.objectContaining({ sourceType: "FEATURE_REQUEST" })
+    );
+  });
+
   it("rejects an unknown sourceType before ever touching the database", async () => {
     await expect(
       issueReward({

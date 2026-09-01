@@ -10,6 +10,7 @@ const ENV_KEYS = {
   CONTRIBUTION_APPROVED: "REWARD_AMOUNT_CONTRIBUTION_APPROVED",
   REFERRAL_QUALIFIED_REFERRER: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRER",
   REFERRAL_QUALIFIED_REFERRED: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRED",
+  FEATURE_REQUEST_SHIPPED: "REWARD_AMOUNT_FEATURE_REQUEST_SHIPPED",
 };
 
 function clearEnv() {
@@ -26,6 +27,7 @@ describe("REWARD_POLICY_KEYS", () => {
         "CONTRIBUTION_APPROVED",
         "REFERRAL_QUALIFIED_REFERRER",
         "REFERRAL_QUALIFIED_REFERRED",
+        "FEATURE_REQUEST_SHIPPED",
       ].sort()
     );
   });
@@ -62,6 +64,11 @@ describe("resolveRewardAmount", () => {
 
   it("throws a plain Error (not RewardPolicyNotConfiguredError) for an unknown policy key", () => {
     expect(() => resolveRewardAmount("NOT_A_REAL_KEY")).toThrow(/unknown reward policy key/i);
+  });
+
+  it("resolves FEATURE_REQUEST_SHIPPED (Phase 5) the same way as the pre-existing keys", () => {
+    process.env[ENV_KEYS.FEATURE_REQUEST_SHIPPED] = "40";
+    expect(resolveRewardAmount("FEATURE_REQUEST_SHIPPED")).toBe(40);
   });
 
   it("resolves each policy key independently — configuring one does not configure the others", () => {

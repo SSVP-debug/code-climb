@@ -65,6 +65,12 @@ describe("RewardLedger model", () => {
     expect(err.errors.amount).toBeDefined();
   });
 
+  it("accepts FEATURE_REQUEST as a valid sourceType (Phase 5)", () => {
+    const doc = baseDoc({ sourceType: "FEATURE_REQUEST", type: "FEATURE_REQUEST_SHIPPED" });
+    const err = doc.validateSync();
+    expect(err).toBeUndefined();
+  });
+
   it("rejects an invalid sourceType enum value", () => {
     const doc = baseDoc({ sourceType: "CONTEST" });
     const err = doc.validateSync();

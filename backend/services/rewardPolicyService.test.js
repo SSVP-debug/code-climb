@@ -12,12 +12,14 @@ import { logger } from "../config/logger.js";
 import {
   issueContributionApprovedReward,
   issueReferralQualifiedRewards,
+  issueFeatureRequestShippedReward,
 } from "./rewardPolicyService.js";
 
 const ENV_KEYS = {
   CONTRIBUTION_APPROVED: "REWARD_AMOUNT_CONTRIBUTION_APPROVED",
   REFERRAL_QUALIFIED_REFERRER: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRER",
   REFERRAL_QUALIFIED_REFERRED: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRED",
+  FEATURE_REQUEST_SHIPPED: "REWARD_AMOUNT_FEATURE_REQUEST_SHIPPED",
 };
 
 function clearEnv() {
@@ -70,6 +72,39 @@ describe("issueContributionApprovedReward", () => {
     await expect(
       issueContributionApprovedReward({ contributorId: "user1", contributionId: "contrib1" })
     ).rejects.toThrow("connection lost");
+  });
+});
+
+describe("issueFeatureRequestShippedReward", () => {
+  it("resolves the amount from policy and delegates to issueReward — same shape as issueContributionApprovedReward", async () => {
+    process.env[ENV_KEYS.FEATURE_REQUEST_SHIPPED] = "40";
+    issueReward.mockResolvedValueOnce({ entry: { _id: "e1" }, created: true });
+
+    const result = await issueFeatureRequestShippedReward({
+      submitterId: "user1",
+      featureRequestId: "fr1",
+    });
+
+    expect(issueReward).toHaveBeenCalledWith({
+      recipientId: "user1",
+      type: "FEATURE_REQUEST_SHIPPED",
+      amount: 40,
+      sourceType: "FEATURE_REQUEST",
+      sourceId: "fr1",
+      metadata: {},
+    });
+    expect(result).toEqual({ issued: true, created: true, entry: { _id: "e1" } });
+  });
+
+  it("does not throw and returns issued:false when the policy amount isn't configured", async () => {
+    const result = await issueFeatureRequestShippedReward({
+      submitterId: "user1",
+      featureRequestId: "fr1",
+    });
+
+    expect(result).toEqual({ issued: false, reason: "not_configured" });
+    expect(issueReward).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalled();
   });
 });
 

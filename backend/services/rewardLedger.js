@@ -25,6 +25,8 @@ export const REWARD_TYPES = Object.freeze({
   // Phase 4 (Rewards Store) — see services/rewardStore.js.
   REDEMPTION_DEBIT: "REDEMPTION_DEBIT",
   REDEMPTION_REVERSED: "REDEMPTION_REVERSED",
+  // Phase 5 (Feature Requests) — see services/featureRequests.js.
+  FEATURE_REQUEST_SHIPPED: "FEATURE_REQUEST_SHIPPED",
 });
 
 /**
@@ -74,7 +76,7 @@ export async function issueReward({
   if (!recipientId || !type || typeof amount !== "number" || amount < 0) {
     throw new Error("issueReward: recipientId, type, and a non-negative amount are required.");
   }
-  if (!["CONTRIBUTION", "REFERRAL"].includes(sourceType) || !sourceId) {
+  if (!["CONTRIBUTION", "REFERRAL", "FEATURE_REQUEST"].includes(sourceType) || !sourceId) {
     throw new Error("issueReward: a valid sourceType and sourceId are required.");
   }
 

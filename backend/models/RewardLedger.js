@@ -44,7 +44,9 @@ import mongoose from "mongoose";
  * ── sourceType ────────────────────────────────────────────────────────
  * CONTRIBUTION and REFERRAL from Phase 2. REDEMPTION added in Phase 4
  * (see plans/004-rewards-store-scoping.md) for the debit side of a
- * fulfilled RewardRedemption — purely additive per this file's own prior
+ * fulfilled RewardRedemption. FEATURE_REQUEST added in Phase 5 (see
+ * plans/005-feature-requests-scoping.md) for the credit issued when a
+ * submitter's request ships — purely additive per this file's own prior
  * note that extending this enum later is a one-line, non-breaking
  * change. FUTURE_CONTEST / FUTURE_EVENT / FUTURE_ACHIEVEMENT remain not
  * added, since those sources still aren't real yet.
@@ -102,7 +104,7 @@ const rewardLedgerSchema = new mongoose.Schema(
     sourceType: {
       type: String,
       required: true,
-      enum: ["CONTRIBUTION", "REFERRAL", "REDEMPTION"],
+      enum: ["CONTRIBUTION", "REFERRAL", "REDEMPTION", "FEATURE_REQUEST"],
     },
 
     // Polymorphic on purpose — refers to whichever collection sourceType

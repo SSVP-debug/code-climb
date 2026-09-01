@@ -45,6 +45,11 @@ const POLICY_ENV_KEYS = Object.freeze({
   CONTRIBUTION_APPROVED: "REWARD_AMOUNT_CONTRIBUTION_APPROVED",
   REFERRAL_QUALIFIED_REFERRER: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRER",
   REFERRAL_QUALIFIED_REFERRED: "REWARD_AMOUNT_REFERRAL_QUALIFIED_REFERRED",
+  // Phase 5 (Feature Requests) — purely additive, same shape as the three
+  // above. No amount defaulted in, same reasoning as everything else in
+  // this file: throws until someone deliberately configures
+  // REWARD_AMOUNT_FEATURE_REQUEST_SHIPPED.
+  FEATURE_REQUEST_SHIPPED: "REWARD_AMOUNT_FEATURE_REQUEST_SHIPPED",
 });
 
 export const REWARD_POLICY_KEYS = Object.freeze(

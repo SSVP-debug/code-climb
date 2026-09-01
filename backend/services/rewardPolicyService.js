@@ -90,6 +90,24 @@ export async function issueContributionApprovedReward({ contributorId, contribut
  * by both entries; disambiguated by userId + type per the ledger's
  * unique index, so this is safe).
  */
+/**
+ * issueFeatureRequestShippedReward — called by services/featureRequests.js
+ * once a FeatureRequest transitions to "shipped". Same tryIssue() shape
+ * as issueContributionApprovedReward() above — a not-yet-configured
+ * REWARD_AMOUNT_FEATURE_REQUEST_SHIPPED is non-fatal to the ship
+ * transition itself, same reasoning as every other reward here.
+ */
+export async function issueFeatureRequestShippedReward({ submitterId, featureRequestId, metadata = {} }) {
+  return tryIssue({
+    recipientId: submitterId,
+    policyKey: REWARD_POLICY_KEYS.FEATURE_REQUEST_SHIPPED,
+    ledgerType: "FEATURE_REQUEST_SHIPPED",
+    sourceType: "FEATURE_REQUEST",
+    sourceId: featureRequestId,
+    metadata,
+  });
+}
+
 export async function issueReferralQualifiedRewards({
   referrerId,
   referredUserId,
