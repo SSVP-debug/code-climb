@@ -88,19 +88,19 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
     >
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-        <div className="flex items-start justify-between gap-3 p-5 border-b border-zinc-800">
+      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div className="flex items-start justify-between gap-3 p-5 border-b border-[var(--border)]">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white truncate">{playlist.name}</h2>
+              <h2 className="text-lg font-bold text-[var(--foreground)] truncate">{playlist.name}</h2>
               {playlist.isOfficial && (
-                <span title="Official playlist"><Lock size={14} className="text-zinc-500 flex-shrink-0" /></span>
+                <span title="Official playlist"><Lock size={14} className="text-[var(--muted-foreground)] flex-shrink-0" /></span>
               )}
             </div>
             {playlist.description && (
-              <p className="text-xs text-zinc-500 mt-1">{playlist.description}</p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-1">{playlist.description}</p>
             )}
-            <p className="text-xs text-zinc-500 mt-1 tabular-nums">
+            <p className="text-xs text-[var(--muted-foreground)] mt-1 tabular-nums">
               {solvedCount}/{rows.length} solved
             </p>
           </div>
@@ -108,7 +108,7 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
             {canEdit && (
               <button
                 onClick={handleDeletePlaylist}
-                className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-red-400 transition"
+                className="p-1.5 hover:bg-[var(--surface-elevated)] rounded-lg text-[var(--muted-foreground)] hover:text-red-400 transition"
                 title="Delete playlist"
               >
                 <Trash2 size={16} aria-hidden="true" />
@@ -116,7 +116,7 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
             )}
             <button
               onClick={onClose}
-              className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition"
+              className="p-1.5 hover:bg-[var(--surface-elevated)] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
             >
               <X size={18} aria-hidden="true" />
             </button>
@@ -125,27 +125,27 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
 
         <div className="overflow-y-auto custom-scrollbar flex-grow">
           {rows.length === 0 ? (
-            <p className="text-sm text-zinc-500 text-center py-10">
+            <p className="text-sm text-[var(--muted-foreground)] text-center py-10">
               {canEdit ? "No problems yet — edit this playlist to add some." : "This playlist is empty."}
             </p>
           ) : (
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-[var(--border)]">
               {rows.map((p, i) => (
                 <div key={p.slug} className="flex items-center gap-3 px-5 py-3">
                   <div
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      solvedProblems.includes(p.slug) ? "bg-green-500" : "bg-zinc-600"
+                      solvedProblems.includes(p.slug) ? "bg-green-500" : "bg-[var(--border-strong)]"
                     }`}
                     aria-hidden="true"
                   />
-                  <span className="text-xs text-zinc-600 w-4 flex-shrink-0 tabular-nums">{i + 1}</span>
+                  <span className="text-xs text-[var(--muted-foreground)] w-4 flex-shrink-0 tabular-nums">{i + 1}</span>
                   <Link
                     to={`/problems/${p.slug}`}
                     className="flex-grow min-w-0 text-sm truncate hover:text-[var(--theme-primary,#2dd4bf)] transition"
                   >
                     {p.title}
                   </Link>
-                  <span className={`text-[11px] font-medium flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-500"}`}>
+                  <span className={`text-[11px] font-medium flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-[var(--muted-foreground)]"}`}>
                     {p.difficulty}
                   </span>
                   {canEdit && (
@@ -153,7 +153,7 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
                       <button
                         onClick={() => move(i, -1)}
                         disabled={i === 0 || saving}
-                        className="p-1 text-zinc-500 hover:text-white disabled:opacity-30 transition"
+                        className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-30 transition"
                         title="Move up"
                       >
                         <ArrowUp size={13} aria-hidden="true" />
@@ -161,7 +161,7 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
                       <button
                         onClick={() => move(i, 1)}
                         disabled={i === rows.length - 1 || saving}
-                        className="p-1 text-zinc-500 hover:text-white disabled:opacity-30 transition"
+                        className="p-1 text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-30 transition"
                         title="Move down"
                       >
                         <ArrowDown size={13} aria-hidden="true" />
@@ -169,7 +169,7 @@ function PlaylistDetailModal({ playlist, onClose, onUpdate, onDelete }) {
                       <button
                         onClick={() => remove(p.slug)}
                         disabled={saving}
-                        className="p-1 text-zinc-500 hover:text-red-400 disabled:opacity-30 transition"
+                        className="p-1 text-[var(--muted-foreground)] hover:text-red-400 disabled:opacity-30 transition"
                         title="Remove from playlist"
                       >
                         <X size={13} aria-hidden="true" />

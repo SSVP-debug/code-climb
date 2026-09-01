@@ -91,7 +91,7 @@ function SavedView() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-zinc-800 border border-zinc-700 rounded-lg text-xs px-2 py-1.5 text-zinc-300"
+            className="bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg text-xs px-2 py-1.5 text-[var(--foreground)]"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -103,7 +103,7 @@ function SavedView() {
       }
     >
       {loading ? (
-        <p className="text-zinc-500 text-sm py-4">Loading your saved problems…</p>
+        <p className="text-[var(--muted-foreground)] text-sm py-4">Loading your saved problems…</p>
       ) : rows.length === 0 ? (
         <EmptyState
           icon={<Bookmark size={28} strokeWidth={1.75} />}
@@ -116,12 +116,12 @@ function SavedView() {
           {rows.map((p) => (
             <div
               key={p.slug}
-              className="flex items-center justify-between gap-3 bg-zinc-800 rounded-xl px-4 py-3"
+              className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)] rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                    solvedProblems.includes(p.slug) ? "bg-green-500" : "bg-zinc-600"
+                    solvedProblems.includes(p.slug) ? "bg-green-500" : "bg-[var(--border-strong)]"
                   }`}
                   aria-hidden="true"
                   title={solvedProblems.includes(p.slug) ? "Solved" : "Not solved yet"}
@@ -129,7 +129,7 @@ function SavedView() {
                 {!hideDifficulty && (
                   <span
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${
-                      DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700 bg-zinc-800"
+                      DIFFICULTY_COLOR[p.difficulty] || "text-[var(--muted-foreground)] border-[var(--border-strong)] bg-[var(--surface-elevated)]"
                     }`}
                   >
                     {theme.words[p.difficulty?.toLowerCase()] ?? p.difficulty}
@@ -143,7 +143,7 @@ function SavedView() {
                     {p.title}
                   </Link>
                   {p.topic && (
-                    <p className="text-xs text-zinc-500 truncate">{p.topic}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] truncate">{p.topic}</p>
                   )}
                 </div>
               </div>
@@ -158,7 +158,7 @@ function SavedView() {
                 <button
                   onClick={() => handleUnsave(p.slug)}
                   disabled={busySlug === p.slug}
-                  className="text-zinc-500 hover:text-red-400 text-xs transition disabled:opacity-50"
+                  className="text-[var(--muted-foreground)] hover:text-red-400 text-xs transition disabled:opacity-50"
                 >
                   Remove
                 </button>

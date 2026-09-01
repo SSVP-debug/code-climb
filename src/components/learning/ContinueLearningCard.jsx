@@ -47,10 +47,10 @@ function ContinueLearningCard() {
   const alreadySolved = activeProblem && solvedProblems.includes(activeProblem.slug);
 
   return (
-    <div className="bg-ink-900 border border-ink-700 rounded-xl p-4">
+    <div className="bg-[var(--surface)] border border-[var(--border-strong)] rounded-xl p-4">
 
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
           Continue Learning
         </p>
         <Link
@@ -66,32 +66,32 @@ function ContinueLearningCard() {
           to={`/problems/${activeProblem.slug}`}
           className="flex items-center gap-3 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-ink-800 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-[var(--surface-elevated)] flex items-center justify-center flex-shrink-0">
             {alreadySolved ? (
               <CheckCircle2 size={18} strokeWidth={2} className="text-verdict-accept" aria-hidden="true" />
             ) : (
-              <Hexagon size={18} strokeWidth={2} className="text-zinc-500" aria-hidden="true" />
+              <Hexagon size={18} strokeWidth={2} className="text-[var(--muted-foreground)]" aria-hidden="true" />
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-zinc-300 group-hover:text-white truncate transition-colors">
+            <p className="text-sm font-semibold text-[var(--muted-foreground)] group-hover:text-[var(--foreground)] truncate transition-colors">
               {activeProblem.title}
             </p>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
               {alreadySolved ? "Already solved · revisit" : `Resume · ${activeProblem.topic}`}
             </p>
           </div>
         </Link>
       ) : (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-ink-800 flex items-center justify-center flex-shrink-0">
-            <Hexagon size={18} strokeWidth={2} className="text-zinc-500" aria-hidden="true" />
+          <div className="w-9 h-9 rounded-lg bg-[var(--surface-elevated)] flex items-center justify-center flex-shrink-0">
+            <Hexagon size={18} strokeWidth={2} className="text-[var(--muted-foreground)]" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-zinc-300 truncate">
+            <p className="text-sm font-semibold text-[var(--muted-foreground)] truncate">
               No problem in progress
             </p>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
               Start one from Browse
             </p>
           </div>

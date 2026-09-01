@@ -27,10 +27,10 @@ function LearningProgressCard({
   const dashOffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
           Learning Progress
         </p>
         <Link
@@ -57,7 +57,7 @@ function LearningProgressCard({
               cy="40"
               r={normalised}
               fill="none"
-              stroke="#27272a"
+              stroke="var(--surface-elevated)"
               strokeWidth={stroke}
             />
             {/* Progress arc */}
@@ -75,10 +75,10 @@ function LearningProgressCard({
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <p className="text-base font-bold leading-none">{progress}%</p>
-            <p className="text-[9px] text-zinc-500 mt-0.5 leading-none">Overall</p>
+            <p className="text-base font-bold leading-none text-[var(--foreground)]">{progress}%</p>
+            <p className="text-[9px] text-[var(--muted-foreground)] mt-0.5 leading-none">Overall</p>
             {total > 0 && (
-              <p className="text-[8px] text-zinc-600 mt-1 leading-none">
+              <p className="text-[8px] text-[var(--muted-foreground)] mt-1 leading-none">
                 {solvedCount}/{total}
               </p>
             )}
@@ -91,9 +91,9 @@ function LearningProgressCard({
             <div key={item.label} className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${item.color}`} />
-                <p className="text-xs text-zinc-400">{item.label}</p>
+                <p className="text-xs text-[var(--muted-foreground)]">{item.label}</p>
               </div>
-              <p className="text-xs font-semibold text-zinc-300">{item.count}</p>
+              <p className="text-xs font-semibold text-[var(--foreground)]">{item.count}</p>
             </div>
           ))}
         </div>

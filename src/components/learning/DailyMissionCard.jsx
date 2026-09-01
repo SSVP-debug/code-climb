@@ -46,13 +46,13 @@ function DailyMissionCard({ submissions = [], currentStreak = 0 }) {
   const completedCount = missions.filter((m) => m.done).length;
 
   return (
-    <div className="bg-ink-900 border border-ink-700 rounded-xl p-4">
+    <div className="bg-[var(--surface)] border border-[var(--border-strong)] rounded-xl p-4">
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
           Today's Mission
         </p>
-        <p className="text-[10px] text-zinc-500">Resets in 24h</p>
+        <p className="text-[10px] text-[var(--muted-foreground)]">Resets in 24h</p>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -64,16 +64,16 @@ function DailyMissionCard({ submissions = [], currentStreak = 0 }) {
                   className={`w-3.5 h-3.5 rounded-full border flex-shrink-0 ${
                     mission.done
                       ? "bg-verdict-accept border-verdict-accept"
-                      : "border-zinc-600"
+                      : "border-[var(--border-strong)]"
                   }`}
                 />
-                <p className="text-xs text-zinc-300">{mission.label}</p>
+                <p className="text-xs text-[var(--foreground)]">{mission.label}</p>
               </div>
-              <span className="text-[10px] text-zinc-500 font-medium tabular-nums">
+              <span className="text-[10px] text-[var(--muted-foreground)] font-medium tabular-nums">
                 {Math.min(mission.progress, mission.total)}/{mission.total}
               </span>
             </div>
-            <div className="h-1 bg-ink-800 rounded-full overflow-hidden ml-5">
+            <div className="h-1 bg-[var(--surface-elevated)] rounded-full overflow-hidden ml-5">
               <div
                 className="h-full bg-verdict-accept rounded-full transition-all"
                 style={{
@@ -89,8 +89,8 @@ function DailyMissionCard({ submissions = [], currentStreak = 0 }) {
         ))}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-ink-700 flex items-center justify-between">
-        <p className="text-xs text-zinc-500">Today's Progress</p>
+      <div className="mt-4 pt-3 border-t border-[var(--border-strong)] flex items-center justify-between">
+        <p className="text-xs text-[var(--muted-foreground)]">Today's Progress</p>
         <p className="text-sm font-bold text-verdict-accept">
           {completedCount}/{missions.length} complete
         </p>

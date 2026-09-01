@@ -18,9 +18,9 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
 
   if (topicRows.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
-        <h2 className="text-2xl font-bold">Learn by Pattern</h2>
-        <p className="text-zinc-400 mt-2 text-sm">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">Learn by Pattern</h2>
+        <p className="text-[var(--muted-foreground)] mt-2 text-sm">
           Problems are still loading — check back in a moment.
         </p>
       </div>
@@ -34,8 +34,8 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-2xl font-bold">Learn by Pattern</h2>
-        <p className="text-zinc-400 mt-1 text-sm">
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">Learn by Pattern</h2>
+        <p className="text-[var(--muted-foreground)] mt-1 text-sm">
           Master one topic at a time ranked by where you have the most room to grow.
         </p>
       </div>
@@ -54,15 +54,15 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
               <button
                 key={row.topic}
                 onClick={() => goToTopic(row.topic)}
-                className="flex items-center justify-between gap-3 w-full text-left rounded-xl px-3 py-2.5 bg-zinc-950/40 hover:bg-zinc-900 transition"
+                className="flex items-center justify-between gap-3 w-full text-left rounded-xl px-3 py-2.5 bg-[var(--background)]/40 hover:bg-[var(--surface)] transition"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">{row.topic}</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-sm font-semibold text-[var(--foreground)]">{row.topic}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">
                     {row.solved}/{row.total} solved · {row.pct}%
                   </p>
                 </div>
-                <ChevronRight size={16} className="text-zinc-600 flex-shrink-0" />
+                <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" />
               </button>
             ))}
           </div>
@@ -70,7 +70,7 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
       )}
 
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-3">
+        <p className="text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
           All Topics
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -78,17 +78,17 @@ function PatternView({ problems, topicStats, setSelectedTopic, setActiveView }) 
             <button
               key={row.topic}
               onClick={() => goToTopic(row.topic)}
-              className="text-left rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 hover:border-[var(--theme-primary,#2dd4bf)] transition group"
+              className="text-left rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 hover:border-[var(--theme-primary,#2dd4bf)] transition group"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-sm font-semibold text-white group-hover:text-[var(--theme-primary,#2dd4bf)] transition">
+                <p className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition">
                   {row.topic}
                 </p>
-                <span className="text-xs text-zinc-500 whitespace-nowrap">
+                <span className="text-xs text-[var(--muted-foreground)] whitespace-nowrap">
                   {row.solved}/{row.total}
                 </span>
               </div>
-              <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
                   style={{

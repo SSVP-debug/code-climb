@@ -59,7 +59,7 @@ function PlaylistView() {
       }
     >
       {loading ? (
-        <p className="text-zinc-500 text-sm py-4">Loading playlists…</p>
+        <p className="text-[var(--muted-foreground)] text-sm py-4">Loading playlists…</p>
       ) : playlists.length === 0 ? (
         <EmptyState
           icon={<ListChecks size={28} strokeWidth={1.75} />}

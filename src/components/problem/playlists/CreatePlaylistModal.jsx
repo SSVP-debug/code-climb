@@ -75,12 +75,12 @@ function CreatePlaylistModal({ onClose, onCreate }) {
     >
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800">
-          <h2 className="text-lg font-bold text-white">New Playlist</h2>
+      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+          <h2 className="text-lg font-bold text-[var(--foreground)]">New Playlist</h2>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition"
+            className="p-1.5 hover:bg-[var(--surface-elevated)] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           >
             <X size={18} aria-hidden="true" />
           </button>
@@ -88,21 +88,21 @@ function CreatePlaylistModal({ onClose, onCreate }) {
 
         <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Name</label>
+            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Interview Prep — Week 1"
               maxLength={80}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+              className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-              Description <span className="text-zinc-600">(optional)</span>
+            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">
+              Description <span className="text-[var(--muted-foreground)]">(optional)</span>
             </label>
             <textarea
               value={description}
@@ -110,28 +110,28 @@ function CreatePlaylistModal({ onClose, onCreate }) {
               placeholder="What's this collection for?"
               maxLength={300}
               rows={2}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] resize-none"
+              className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)] resize-none"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-medium text-zinc-400">Add problems</label>
-              <span className="text-xs text-zinc-500">{selected.length} selected</span>
+              <label className="block text-xs font-medium text-[var(--muted-foreground)]">Add problems</label>
+              <span className="text-xs text-[var(--muted-foreground)]">{selected.length} selected</span>
             </div>
             <div className="relative mb-2">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by title or topic…"
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg pl-9 pr-3 py-2 text-sm text-[var(--foreground)] placeholder-[var(--muted-foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
             </div>
-            <div className="border border-zinc-800 rounded-lg max-h-56 overflow-y-auto custom-scrollbar divide-y divide-zinc-800">
+            <div className="border border-[var(--border)] rounded-lg max-h-56 overflow-y-auto custom-scrollbar divide-y divide-[var(--border)]">
               {filtered.length === 0 ? (
-                <p className="text-xs text-zinc-500 text-center py-6">No problems match your search.</p>
+                <p className="text-xs text-[var(--muted-foreground)] text-center py-6">No problems match your search.</p>
               ) : (
                 filtered.map((p) => {
                   const isSelected = selected.includes(p.slug);
@@ -141,12 +141,12 @@ function CreatePlaylistModal({ onClose, onCreate }) {
                       type="button"
                       onClick={() => toggle(p.slug)}
                       className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm transition ${
-                        isSelected ? "bg-[var(--theme-primary,#2dd4bf)]/10" : "hover:bg-zinc-800"
+                        isSelected ? "bg-[var(--theme-primary,#2dd4bf)]/10" : "hover:bg-[var(--surface-elevated)]"
                       }`}
                     >
                       <span className="truncate">{p.title}</span>
                       <span className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`text-[11px] font-medium ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-500"}`}>
+                        <span className={`text-[11px] font-medium ${DIFFICULTY_COLOR[p.difficulty] || "text-[var(--muted-foreground)]"}`}>
                           {p.difficulty}
                         </span>
                         {isSelected && (
@@ -161,10 +161,10 @@ function CreatePlaylistModal({ onClose, onCreate }) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 p-4 border-t border-zinc-800">
+        <div className="flex items-center justify-end gap-2 p-4 border-t border-[var(--border)]">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition"
+            className="px-4 py-2 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           >
             Cancel
           </button>

@@ -52,19 +52,19 @@ function PatternCard({ pattern, solved, total, onClick }) {
         )}
       </div>
 
-      <h3 className="mt-3 font-semibold text-white group-hover:underline">
+      <h3 className="mt-3 font-semibold text-[var(--foreground)] group-hover:underline">
         {pattern.name}
       </h3>
-      <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+      <p className="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">
         {pattern.description}
       </p>
 
       <div className="mt-4">
-        <div className="flex items-center justify-between text-[11px] text-zinc-500 mb-1.5">
+        <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] mb-1.5">
           <span>{solved}/{total} solved</span>
           <span>~{pattern.estimatedHours}h</span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-[var(--surface-elevated)] overflow-hidden">
           <div
             className={`h-full rounded-full ${colors.bar} transition-all`}
             style={{ width: `${percent}%` }}

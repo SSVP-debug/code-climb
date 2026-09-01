@@ -20,30 +20,30 @@ function LearningWorkspace({
 
       {/* Panel header */}
       <div className="flex items-center gap-2 pt-1">
-        <h2 className="text-sm font-bold text-white">Where am I</h2>
+        <h2 className="text-sm font-bold text-[var(--foreground)]">Where am I</h2>
         <span className="text-[9px] font-bold bg-[var(--theme-primary,#2dd4bf)] text-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">
           NEW
         </span>
       </div>
-      <p className="text-zinc-500 text-xs -mt-3">
+      <p className="text-[var(--muted-foreground)] text-xs -mt-3">
         Your learning hub. Track, reflect and improve.
       </p>
 
       {/* Stats row — 3 cards with clear borders */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: "Solved",   value: solvedCount,        color: "text-white"      },
+          { label: "Solved",   value: solvedCount,        color: "text-[var(--foreground)]"      },
           { label: "Progress", value: `${progress}%`,     color: "text-[var(--theme-primary,#2dd4bf)]"  },
-          { label: "Vaults",   value: problems.length,    color: "text-white"      },
+          { label: "Vaults",   value: problems.length,    color: "text-[var(--foreground)]"      },
         ].map(({ label, value, color }) => (
           <div
             key={label}
-            className="bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-center"
+            className="bg-[var(--surface)] border border-[var(--border-strong)] rounded-xl p-3 text-center"
           >
             <p className={`text-lg font-bold leading-none tabular-nums ${color}`}>
               {value}
             </p>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wide mt-1">
+            <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wide mt-1">
               {label}
             </p>
           </div>

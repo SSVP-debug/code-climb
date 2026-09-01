@@ -17,18 +17,18 @@ function AICoachCard({ problems, topicStats, onPracticeTopic }) {
       title="AI Coach"
       icon={<Sparkles size={16} className="text-[var(--theme-primary,#2dd4bf)]" />}
     >
-      <p className="text-zinc-500 text-xs mb-3">You could use more reps in:</p>
+      <p className="text-[var(--muted-foreground)] text-xs mb-3">You could use more reps in:</p>
 
       <div className="flex flex-col gap-2">
         {weakTopics.map((row) => (
           <button
             key={row.topic}
             onClick={() => onPracticeTopic(row.topic)}
-            className="flex items-center justify-between gap-3 w-full text-left rounded-xl border border-zinc-800 px-3 py-2.5 hover:border-[var(--theme-primary,#2dd4bf)]/40 hover:bg-[var(--theme-primary,#2dd4bf)]/5 transition"
+            className="flex items-center justify-between gap-3 w-full text-left rounded-xl border border-[var(--border)] px-3 py-2.5 hover:border-[var(--theme-primary,#2dd4bf)]/40 hover:bg-[var(--theme-primary,#2dd4bf)]/5 transition"
           >
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white">{row.topic}</p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm font-semibold text-[var(--foreground)]">{row.topic}</p>
+              <p className="text-xs text-[var(--muted-foreground)]">
                 {row.solved}/{row.total} solved
               </p>
             </div>
