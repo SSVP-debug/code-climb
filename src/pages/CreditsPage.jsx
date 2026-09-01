@@ -82,15 +82,15 @@ export default function CreditsPage() {
       <div className="max-w-3xl mx-auto">
         <Link
           to="/club"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
         >
           <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
           Back to Club
         </Link>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white">Credits</h1>
-          <p className="text-zinc-500 mt-1 text-sm">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Credits</h1>
+          <p className="text-[var(--muted-foreground)] mt-1 text-sm">
             Earn Credits by contributing to Code Club and referring students who qualify.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function CreditsPage() {
 
         {loading ? (
           <SectionCard>
-            <p className="text-zinc-500 text-sm">Loading…</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
           </SectionCard>
         ) : (
           <>
@@ -121,17 +121,17 @@ export default function CreditsPage() {
                   />
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-white leading-tight">
+                  <p className="text-3xl font-bold text-[var(--foreground)] leading-tight">
                     {balance ?? 0}
                   </p>
-                  <p className="text-zinc-500 text-sm mt-0.5">Credits balance</p>
+                  <p className="text-[var(--muted-foreground)] text-sm mt-0.5">Credits balance</p>
                 </div>
               </div>
             </SectionCard>
 
             <SectionCard title="History" subtitle="Every Credits award, newest first.">
               {entries.length === 0 ? (
-                <p className="text-zinc-500 text-sm">
+                <p className="text-[var(--muted-foreground)] text-sm">
                   No Credits yet. Submit a contribution or refer a friend to start earning.
                 </p>
               ) : (
@@ -154,21 +154,21 @@ export default function CreditsPage() {
                             <Icon
                               size={16}
                               strokeWidth={2}
-                              className="text-zinc-500 flex-shrink-0"
+                              className="text-[var(--muted-foreground)] flex-shrink-0"
                               aria-hidden="true"
                             />
                             <div className="min-w-0">
-                              <p className="text-sm text-white truncate">
+                              <p className="text-sm text-[var(--foreground)] truncate">
                                 {TYPE_LABELS[entry.type] ?? entry.type}
                                 {isReversed && (
-                                  <span className="ml-2 text-xs text-zinc-500 font-normal">Reversed</span>
+                                  <span className="ml-2 text-xs text-[var(--muted-foreground)] font-normal">Reversed</span>
                                 )}
                               </p>
-                              <p className="text-xs text-zinc-500">{formatDate(entry.createdAt)}</p>
+                              <p className="text-xs text-[var(--muted-foreground)]">{formatDate(entry.createdAt)}</p>
                             </div>
                           </div>
                           <span
-                            className={`text-sm font-semibold flex-shrink-0 ${isReversed ? "text-zinc-500 line-through" : "text-white"}`}
+                            className={`text-sm font-semibold flex-shrink-0 ${isReversed ? "text-[var(--muted-foreground)] line-through" : "text-[var(--foreground)]"}`}
                           >
                             +{entry.amount}
                           </span>

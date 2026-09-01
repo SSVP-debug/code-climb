@@ -75,7 +75,7 @@ export default function CollegeVerifyConfirmPage() {
             <h1 className="text-2xl font-bold mb-2">
               {collegeStatus === "pending" ? "Email Verified" : "College Verified"}
             </h1>
-            <p className="text-zinc-400 mb-8">
+            <p className="text-[var(--muted-foreground)] mb-8">
               {collegeStatus === "pending"
                 ? `We've confirmed you own this email. ${collegeName} is now under review — you'll get College Leaderboard access once it's approved.`
                 : `${collegeName} is now linked to your account. Your College Leaderboard is unlocked.`}
@@ -92,7 +92,7 @@ export default function CollegeVerifyConfirmPage() {
               <XCircle size={32} strokeWidth={2} aria-hidden="true" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Verification Failed</h1>
-            <p className="text-zinc-400 mb-8">{message}</p>
+            <p className="text-[var(--muted-foreground)] mb-8">{message}</p>
             <Link to="/profile" className="text-sm hover:brightness-110 transition" style={{ color: theme.colors.primary }}>
               Back to Profile — request a new link
             </Link>

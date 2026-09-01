@@ -130,8 +130,8 @@ export default function PricingPage() {
           <div className="w-16 h-16 rounded-2xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mx-auto mb-6">
             <Gift size={30} strokeWidth={2} aria-hidden="true" />
           </div>
-          <h1 className="text-3xl font-black text-white mb-3">Code Club is free for everyone right now</h1>
-          <p className="text-zinc-400 mb-8">
+          <h1 className="text-3xl font-black text-[var(--foreground)] mb-3">Code Club is free for everyone right now</h1>
+          <p className="text-[var(--muted-foreground)] mb-8">
             We're in early access. Every feature, AI hints, all themes, editorials,
             interview mode is unlocked for all users. Pricing launches once we've
             grown the platform. Enjoy it while it lasts!
@@ -159,8 +159,8 @@ export default function PricingPage() {
       <PageMeta title="Pricing · Code Club" path="/pricing" />
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-black text-white mb-3">Choose your plan</h1>
-          <p className="text-zinc-400">Unlock the full Code Club experience.</p>
+          <h1 className="text-4xl font-black text-[var(--foreground)] mb-3">Choose your plan</h1>
+          <p className="text-[var(--muted-foreground)]">Unlock the full Code Club experience.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -170,7 +170,7 @@ export default function PricingPage() {
               className={`relative rounded-2xl p-6 border ${
                 plan.highlight
                   ? "border-verdict-accept/50 bg-verdict-accept/5"
-                  : "border-ink-700 bg-ink-900"
+                  : "border-[var(--border)] bg-[var(--surface)]"
               }`}
             >
               {plan.badge && (
@@ -180,14 +180,14 @@ export default function PricingPage() {
                   {plan.badge}
                 </span>
               )}
-              <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-1">{plan.name}</h3>
               <p className="mb-4">
-                <span className="text-3xl font-black text-white">{plan.price}</span>
-                <span className="text-zinc-500 text-sm"> {plan.period}</span>
+                <span className="text-3xl font-black text-[var(--foreground)]">{plan.price}</span>
+                <span className="text-[var(--muted-foreground)] text-sm"> {plan.period}</span>
               </p>
               <ul className="space-y-2 mb-6">
                 {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-zinc-400">
+                  <li key={f} className="flex items-start gap-2 text-sm text-[var(--muted-foreground)]">
                     <Check size={16} strokeWidth={2.5} className="text-verdict-accept mt-0.5 flex-shrink-0" aria-hidden="true" />
                     {f}
                   </li>

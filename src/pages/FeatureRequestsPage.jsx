@@ -32,12 +32,12 @@ import {
  */
 
 const STATUS_STYLES = {
-  open: "bg-zinc-800 text-zinc-300",
+  open: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
   planned: "bg-blue-500/10 text-blue-400",
   in_progress: "bg-amber-500/10 text-amber-400",
   shipped: "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]",
   declined: "bg-red-500/10 text-red-400",
-  withdrawn: "bg-zinc-800 text-zinc-500",
+  withdrawn: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
 };
 
 const STATUS_LABELS = {
@@ -110,7 +110,7 @@ export default function FeatureRequestsPage() {
       <div className="max-w-3xl mx-auto">
         <Link
           to="/club"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
         >
           <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
           Back to Club
@@ -118,8 +118,8 @@ export default function FeatureRequestsPage() {
 
         <div className="flex items-center justify-between mb-6 gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-white">Feature Requests</h1>
-            <p className="text-zinc-500 mt-1 text-sm">
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">Feature Requests</h1>
+            <p className="text-[var(--muted-foreground)] mt-1 text-sm">
               Suggest something for Code Club, or vote on what's already been proposed.
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function FeatureRequestsPage() {
                 key={t.value}
                 onClick={() => setTab(t.value)}
                 className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-                  tab === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+                  tab === t.value ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 }`}
               >
                 {t.label}
@@ -165,7 +165,7 @@ export default function FeatureRequestsPage() {
                   key={s.value}
                   onClick={() => setSort(s.value)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-                    sort === s.value ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-white"
+                    sort === s.value ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                   }`}
                 >
                   {s.label}
@@ -238,7 +238,7 @@ function FeatureRequestRow({ entry, showVote, busy, onVote, onEdit, onWithdraw }
   const { title, description, status, voteCount, hasVoted, createdAt } = entry;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 flex items-start gap-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 flex items-start gap-3">
       {showVote && (
         <button
           onClick={onVote}
@@ -246,7 +246,7 @@ function FeatureRequestRow({ entry, showVote, busy, onVote, onEdit, onWithdraw }
           className={`flex-shrink-0 flex flex-col items-center justify-center gap-0.5 w-12 py-1.5 rounded-lg border transition ${
             hasVoted
               ? "bg-[var(--theme-primary,#2dd4bf)]/10 border-[var(--theme-primary,#2dd4bf)]/40 text-[var(--theme-primary,#2dd4bf)]"
-              : "bg-zinc-800/50 border-zinc-800 text-zinc-400 hover:text-white"
+              : "bg-[var(--surface-elevated)]/50 border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           } disabled:opacity-50`}
         >
           <ArrowBigUp size={18} strokeWidth={2} fill={hasVoted ? "currentColor" : "none"} />
@@ -258,20 +258,20 @@ function FeatureRequestRow({ entry, showVote, busy, onVote, onEdit, onWithdraw }
         <div className="flex items-center gap-2 flex-wrap">
           <span
             className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-              STATUS_STYLES[status] || "bg-zinc-800 text-zinc-400"
+              STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
             }`}
           >
             {STATUS_LABELS[status] || status}
           </span>
           {!showVote && (
-            <span className="text-[11px] text-zinc-500 inline-flex items-center gap-1">
+            <span className="text-[11px] text-[var(--muted-foreground)] inline-flex items-center gap-1">
               <ArrowBigUp size={13} strokeWidth={2} /> {voteCount ?? 0}
             </span>
           )}
         </div>
-        <p className="text-white font-medium text-sm mt-1">{title}</p>
-        <p className="text-zinc-500 text-sm mt-0.5 line-clamp-2">{description}</p>
-        <p className="text-zinc-600 text-xs mt-1.5">{formatVerificationDate(createdAt)}</p>
+        <p className="text-[var(--foreground)] font-medium text-sm mt-1">{title}</p>
+        <p className="text-[var(--muted-foreground)] text-sm mt-0.5 line-clamp-2">{description}</p>
+        <p className="text-[var(--muted-foreground)] text-xs mt-1.5">{formatVerificationDate(createdAt)}</p>
       </div>
 
       {!showVote && status === "open" && (
@@ -279,7 +279,7 @@ function FeatureRequestRow({ entry, showVote, busy, onVote, onEdit, onWithdraw }
           <button
             onClick={onEdit}
             disabled={busy}
-            className="p-2 rounded-lg bg-zinc-800/50 text-zinc-400 hover:text-white transition disabled:opacity-50"
+            className="p-2 rounded-lg bg-[var(--surface-elevated)]/50 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition disabled:opacity-50"
             aria-label="Edit"
           >
             <Pencil size={14} strokeWidth={2} />
@@ -287,7 +287,7 @@ function FeatureRequestRow({ entry, showVote, busy, onVote, onEdit, onWithdraw }
           <button
             onClick={onWithdraw}
             disabled={busy}
-            className="p-2 rounded-lg bg-zinc-800/50 text-zinc-400 hover:text-red-400 transition disabled:opacity-50"
+            className="p-2 rounded-lg bg-[var(--surface-elevated)]/50 text-[var(--muted-foreground)] hover:text-red-400 transition disabled:opacity-50"
             aria-label="Withdraw"
           >
             <Trash2 size={14} strokeWidth={2} />
@@ -331,18 +331,18 @@ function SubmitPanel({ onClose, onSubmitted }) {
       role="presentation"
     >
       <div
-        className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+        className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         <div className="flex items-center justify-between mb-1.5">
-          <h2 className="text-white font-bold text-base">New feature request</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+          <h2 className="text-[var(--foreground)] font-bold text-base">New feature request</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
             <X size={16} strokeWidth={2} />
           </button>
         </div>
-        <p className="text-zinc-400 text-sm mb-3">
+        <p className="text-[var(--muted-foreground)] text-sm mb-3">
           What would you like Code Club to add or change?
         </p>
         <form onSubmit={handleSubmit} className="space-y-2">
@@ -352,7 +352,7 @@ function SubmitPanel({ onClose, onSubmitted }) {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Short, specific title"
             maxLength={200}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <textarea
             value={description}
@@ -360,7 +360,7 @@ function SubmitPanel({ onClose, onSubmitted }) {
             placeholder="Describe what you'd like to see, and why it'd help."
             rows={4}
             maxLength={5000}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
           />
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg px-3 py-2">
@@ -418,32 +418,32 @@ function EditPanel({ entry, onClose, onSaved }) {
       role="presentation"
     >
       <div
-        className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+        className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         <div className="flex items-center justify-between mb-1.5">
-          <h2 className="text-white font-bold text-base">Edit request</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-white">
+          <h2 className="text-[var(--foreground)] font-bold text-base">Edit request</h2>
+          <button onClick={onClose} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
             <X size={16} strokeWidth={2} />
           </button>
         </div>
-        <p className="text-zinc-400 text-sm mb-3">Only possible while your request is still open.</p>
+        <p className="text-[var(--muted-foreground)] text-sm mb-3">Only possible while your request is still open.</p>
         <form onSubmit={handleSave} className="space-y-2">
           <input
             autoFocus
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={200}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
             maxLength={5000}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
+            className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
           />
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg px-3 py-2">

@@ -89,22 +89,22 @@ const DEFAULT_LEFT_PANEL = {
 
 const ACCENT_PANEL = {
   teal: {
-    bg: "bg-gradient-to-br from-teal-500/10 via-ink-950 to-ink-950",
+    bg: "bg-gradient-to-br from-teal-500/10 via-[var(--surface)] to-[var(--surface)]",
     ring: "border-teal-500/25 bg-teal-500/10 text-teal-400",
     text: "text-teal-300",
   },
   sky: {
-    bg: "bg-gradient-to-br from-sky-500/10 via-ink-950 to-ink-950",
+    bg: "bg-gradient-to-br from-sky-500/10 via-[var(--surface)] to-[var(--surface)]",
     ring: "border-sky-500/25 bg-sky-500/10 text-sky-400",
     text: "text-sky-300",
   },
   violet: {
-    bg: "bg-gradient-to-br from-violet-500/10 via-ink-950 to-ink-950",
+    bg: "bg-gradient-to-br from-violet-500/10 via-[var(--surface)] to-[var(--surface)]",
     ring: "border-violet-500/25 bg-violet-500/10 text-violet-400",
     text: "text-violet-300",
   },
   default: {
-    bg: "bg-gradient-to-br from-verdict-accept/10 via-ink-950 to-ink-950",
+    bg: "bg-gradient-to-br from-verdict-accept/10 via-[var(--surface)] to-[var(--surface)]",
     ring: "border-verdict-accept/25 bg-verdict-accept/10 text-verdict-accept",
     text: "text-verdict-accept",
   },
@@ -246,18 +246,18 @@ function LoginPage() {
   const busy = status !== "idle";
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2 bg-ink-950 text-white">
+    <div className="min-h-screen grid md:grid-cols-2 bg-[var(--background)] text-[var(--foreground)]">
       {/* Left — role-colored brand panel. Hidden below md: on a small
           screen the form is the job, not the illustration. The accent
           color and stat line are the same ones tapped on /portal and
           shown in the landing page's role-preview cards, so the color
           someone chose follows them all the way to sign-in. */}
       <div
-        className={`hidden md:flex flex-col justify-between p-12 border-r border-ink-700 ${panelAccent.bg}`}
+        className={`hidden md:flex flex-col justify-between p-12 border-r border-[var(--border)] ${panelAccent.bg}`}
       >
         <Link to="/" className="flex items-center gap-2 w-fit">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-verdict-accept" />
-          <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-zinc-500">
+          <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-[var(--muted-foreground)]">
             Code Club
           </span>
         </Link>
@@ -272,10 +272,10 @@ function LoginPage() {
           <h2 className="text-3xl font-bold tracking-tight mb-4 leading-tight">
             {leftPanel.heading}
           </h2>
-          <p className="text-zinc-400 leading-relaxed">{leftPanel.description}</p>
+          <p className="text-[var(--muted-foreground)] leading-relaxed">{leftPanel.description}</p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono-ui text-xs text-zinc-500">
+        <div className="flex items-center gap-2 font-mono-ui text-xs text-[var(--muted-foreground)]">
           <leftPanel.StatIcon size={14} className={panelAccent.text} strokeWidth={2.2} aria-hidden="true" />
           <span className={panelAccent.text}>{leftPanel.stat}</span>
         </div>
@@ -289,15 +289,15 @@ function LoginPage() {
               mobile, so this is the only brand mark on small screens. */}
           <div className="flex md:hidden items-center justify-center gap-1.5 mb-6">
             <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-verdict-accept" />
-            <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-zinc-500">
+            <span className="text-[11px] font-mono-ui uppercase tracking-[0.25em] text-[var(--muted-foreground)]">
               Code Club
             </span>
           </div>
 
-          <div className="bg-ink-800 border border-ink-700 p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
+          <div className="bg-[var(--surface)] border border-[var(--border)] p-10 rounded-2xl shadow-2xl shadow-black/40 text-center">
             <h1 className="text-3xl font-bold mb-3">{copy.heading}</h1>
 
-            <p className="text-zinc-400 mb-8">{copy.sub}</p>
+            <p className="text-[var(--muted-foreground)] mb-8">{copy.sub}</p>
 
             {/* Session expired banner — shown when api.js redirects here after 401 */}
             {sessionExpired && (
@@ -334,12 +334,12 @@ function LoginPage() {
             <button
               onClick={handleGoogleLogin}
               disabled={busy}
-              className="w-full flex items-center justify-center gap-2.5 bg-white text-black py-3 rounded-xl font-semibold hover:bg-zinc-200 transition disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2.5 bg-[var(--foreground)] text-[var(--background)] py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {busy && (
                 <span
                   aria-hidden="true"
-                  className="h-3.5 w-3.5 rounded-full border-2 border-black/30 border-t-black animate-spin"
+                  className="h-3.5 w-3.5 rounded-full border-2 border-[var(--background)]/30 border-t-[var(--background)] animate-spin"
                 />
               )}
               {busy ? STATUS_COPY[status] : "Continue with Google"}
@@ -351,7 +351,7 @@ function LoginPage() {
                 promise (Google popup, referral apply, /api/init). */}
             {busy && (
               <p
-                className="mt-3 text-[11px] font-mono-ui uppercase tracking-widest text-zinc-600"
+                className="mt-3 text-[11px] font-mono-ui uppercase tracking-widest text-[var(--muted-foreground)]"
                 role="status"
                 aria-live="polite"
               >
@@ -359,9 +359,9 @@ function LoginPage() {
               </p>
             )}
 
-            <p className="mt-6 text-xs text-zinc-600">
+            <p className="mt-6 text-xs text-[var(--muted-foreground)]">
               Not the right account type?{" "}
-              <a href="/portal" className="text-zinc-400 hover:text-white underline">
+              <a href="/portal" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline">
                 Choose your access
               </a>
             </p>

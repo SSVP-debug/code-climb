@@ -46,7 +46,7 @@ function Analytics() {
       <div className="space-y-8">
         <div>
           <h1 className="text-4xl font-bold">{theme.words.analytics}</h1>
-          <p className="text-zinc-400 mt-2">Your coding performance at a glance</p>
+          <p className="text-[var(--muted-foreground)] mt-2">Your coding performance at a glance</p>
         </div>
 
         {/* ── Identity: Rank, Level, XP progress ──────────────────────── */}

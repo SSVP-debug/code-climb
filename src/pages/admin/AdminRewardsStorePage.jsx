@@ -36,7 +36,7 @@ const STATUS_STYLES = {
   pending: "bg-amber-500/10 text-amber-400",
   fulfilled: "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]",
   rejected: "bg-red-500/10 text-red-400",
-  cancelled: "bg-zinc-800 text-zinc-400",
+  cancelled: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
 };
 
 const EMPTY_ITEM_FORM = {
@@ -57,8 +57,8 @@ export default function AdminRewardsStorePage() {
       <PageMeta title="Rewards Store · Admin · Code Club" path="/admin/reward-store" />
 
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-white">Rewards Store</h1>
-        <p className="text-zinc-500 text-sm mt-0.5">
+        <h1 className="text-xl font-bold text-[var(--foreground)]">Rewards Store</h1>
+        <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
           Manage what's redeemable and review pending redemptions.
         </p>
       </div>
@@ -72,7 +72,7 @@ export default function AdminRewardsStorePage() {
             key={t.value}
             onClick={() => setTopTab(t.value)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              topTab === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+              topTab === t.value ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {t.label}
@@ -157,7 +157,7 @@ function CatalogTab() {
               key={s}
               onClick={() => setStatus(s)}
               className={`text-xs font-semibold px-3 py-1.5 rounded-full transition capitalize ${
-                status === s ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+                status === s ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               }`}
             >
               {s}
@@ -193,24 +193,24 @@ function CatalogTab() {
           {items.map((item) => (
             <div
               key={item._id}
-              className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 flex items-center justify-between gap-3"
+              className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 flex items-center justify-between gap-3"
             >
               <div className="min-w-0 flex items-center gap-3">
                 {item.requiresShipping && (
-                  <Package size={14} strokeWidth={2} className="text-zinc-500 flex-shrink-0" aria-hidden="true" />
+                  <Package size={14} strokeWidth={2} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true" />
                 )}
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-white font-medium text-sm truncate">{item.name}</p>
+                    <p className="text-[var(--foreground)] font-medium text-sm truncate">{item.name}</p>
                     <span
                       className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                        item.active ? "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]" : "bg-zinc-800 text-zinc-400"
+                        item.active ? "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
                       }`}
                     >
                       {item.active ? "active" : "inactive"}
                     </span>
                   </div>
-                  <p className="text-zinc-500 text-xs mt-0.5">
+                  <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
                     {item.costCredits} Credits
                     {item.stock !== null ? ` · ${item.stock} in stock` : " · unlimited"}
                   </p>
@@ -237,14 +237,14 @@ function CatalogTab() {
           role="presentation"
         >
           <div
-            className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             role="alertdialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-white font-bold text-base">New catalog item</h2>
-              <button onClick={() => setFormOpen(false)} className="text-zinc-500 hover:text-white">
+              <h2 className="text-[var(--foreground)] font-bold text-base">New catalog item</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
                 <X size={16} strokeWidth={2} />
               </button>
             </div>
@@ -253,14 +253,14 @@ function CatalogTab() {
                 placeholder="Name"
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <textarea
                 placeholder="Description"
                 value={form.description}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
                 rows={3}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <input
                 type="number"
@@ -268,13 +268,13 @@ function CatalogTab() {
                 placeholder="Cost in Credits"
                 value={form.costCredits}
                 onChange={(e) => setForm((p) => ({ ...p, costCredits: e.target.value }))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <input
                 placeholder="Category (optional)"
                 value={form.category}
                 onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <input
                 type="number"
@@ -282,15 +282,15 @@ function CatalogTab() {
                 placeholder="Stock (blank = unlimited)"
                 value={form.stock}
                 onChange={(e) => setForm((p) => ({ ...p, stock: e.target.value }))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <input
                 placeholder="Image URL (optional)"
                 value={form.imageUrl}
                 onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
-              <label className="flex items-center gap-2 text-sm text-zinc-300 pt-1">
+              <label className="flex items-center gap-2 text-sm text-[var(--muted-foreground)] pt-1">
                 <input
                   type="checkbox"
                   checked={form.requiresShipping}
@@ -388,7 +388,7 @@ function RedemptionsTab() {
             key={t.value}
             onClick={() => setStatus(t.value)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              status === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+              status === t.value ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {t.label}
@@ -428,24 +428,24 @@ function RedemptionsTab() {
           role="presentation"
         >
           <div
-            className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
             onClick={(e) => e.stopPropagation()}
             role="alertdialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <h2 className="text-white font-bold text-base">Reject redemption</h2>
+              <h2 className="text-[var(--foreground)] font-bold text-base">Reject redemption</h2>
               <button
                 onClick={() => {
                   setRejectTarget(null);
                   setRejectReason("");
                 }}
-                className="text-zinc-500 hover:text-white"
+                className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               >
                 <X size={16} strokeWidth={2} />
               </button>
             </div>
-            <p className="text-zinc-400 text-sm mb-3">
+            <p className="text-[var(--muted-foreground)] text-sm mb-3">
               Credits are refunded to the student automatically. Reason is optional but shown to
               them.
             </p>
@@ -454,7 +454,7 @@ function RedemptionsTab() {
               placeholder="Reason for rejection (optional)..."
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-red-500"
               rows={3}
             />
             <div className="flex items-center justify-end gap-2 mt-4">
@@ -484,26 +484,26 @@ function RedemptionCard({ redemption, busy, expanded, onToggleExpand, onFulfill,
   const requesterLabel = userId?.displayName || userId?.email || "Unknown";
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <button onClick={onToggleExpand} className="flex items-center gap-3 min-w-0 flex-1 text-left">
           {expanded ? (
-            <ChevronUp size={14} strokeWidth={2} className="flex-shrink-0 text-zinc-500" />
+            <ChevronUp size={14} strokeWidth={2} className="flex-shrink-0 text-[var(--muted-foreground)]" />
           ) : (
-            <ChevronDown size={14} strokeWidth={2} className="flex-shrink-0 text-zinc-500" />
+            <ChevronDown size={14} strokeWidth={2} className="flex-shrink-0 text-[var(--muted-foreground)]" />
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span
                 className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                  STATUS_STYLES[status] || "bg-zinc-800 text-zinc-400"
+                  STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
                 }`}
               >
                 {status}
               </span>
             </div>
-            <p className="text-white font-medium text-sm mt-1 truncate">{itemSnapshot.name}</p>
-            <p className="text-zinc-500 text-xs mt-0.5">
+            <p className="text-[var(--foreground)] font-medium text-sm mt-1 truncate">{itemSnapshot.name}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
               {requesterLabel} · {itemSnapshot.costCredits} Credits · {formatVerificationDate(createdAt)}
             </p>
           </div>
@@ -522,12 +522,12 @@ function RedemptionCard({ redemption, busy, expanded, onToggleExpand, onFulfill,
       </div>
 
       {adminNotes && (
-        <p className="text-zinc-500 text-xs mt-2 border-t border-zinc-800 pt-2">Note: {adminNotes}</p>
+        <p className="text-[var(--muted-foreground)] text-xs mt-2 border-t border-[var(--border)] pt-2">Note: {adminNotes}</p>
       )}
 
       {expanded && shippingAddress && (
-        <div className="mt-3 border-t border-zinc-800 pt-3 text-xs text-zinc-400">
-          <p className="font-semibold text-zinc-300 mb-1">Shipping address</p>
+        <div className="mt-3 border-t border-[var(--border)] pt-3 text-xs text-[var(--muted-foreground)]">
+          <p className="font-semibold text-[var(--muted-foreground)] mb-1">Shipping address</p>
           <p>{shippingAddress.recipientName}</p>
           <p>{shippingAddress.line1}</p>
           {shippingAddress.line2 && <p>{shippingAddress.line2}</p>}

@@ -65,15 +65,15 @@ export default function AmbassadorPage() {
             pattern as ProblemsTopbar.jsx's "Back to Dashboard". */}
         <Link
           to="/club"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
         >
           <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
           Back to Club
         </Link>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white">Campus Ambassador Program</h1>
-          <p className="text-zinc-500 mt-1 text-sm">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Campus Ambassador Program</h1>
+          <p className="text-[var(--muted-foreground)] mt-1 text-sm">
             Bring Code Club to your college. Earn bonus Pro days for every student you refer.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function AmbassadorPage() {
 
         {loading ? (
           <SectionCard>
-            <p className="text-zinc-500 text-sm">Loading…</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
           </SectionCard>
         ) : status === "approved" && dashboard ? (
           <AmbassadorDashboard dashboard={dashboard} onClaim={claimMilestone} />
@@ -129,31 +129,31 @@ function ApplicationForm({ onSubmitted }) {
     <SectionCard title="Apply to become an ambassador">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">
+          <label className="block text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-1">
             College name
           </label>
           <input
             value={form.collegeName}
             onChange={(e) => setForm((f) => ({ ...f, collegeName: e.target.value }))}
             placeholder="e.g. Marwadi University"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
 
         <div>
-          <label className="block text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">
+          <label className="block text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-1">
             College email domain
           </label>
           <input
             value={form.collegeDomain}
             onChange={(e) => setForm((f) => ({ ...f, collegeDomain: e.target.value }))}
             placeholder="e.g. marwadiuniversity.ac.in"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
           />
         </div>
 
         <div>
-          <label className="block text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">
+          <label className="block text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-1">
             Why do you want to be an ambassador? (optional)
           </label>
           <textarea
@@ -161,7 +161,7 @@ function ApplicationForm({ onSubmitted }) {
             onChange={(e) => setForm((f) => ({ ...f, motivation: e.target.value }))}
             rows={3}
             placeholder="A couple of sentences is plenty."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50 resize-none"
           />
         </div>
 
@@ -189,8 +189,8 @@ function StatusCard({ status, rejectionReason }) {
   if (status === "pending") {
     return (
       <SectionCard>
-        <p className="text-white font-semibold mb-1">Application under review</p>
-        <p className="text-zinc-500 text-sm">
+        <p className="text-[var(--foreground)] font-semibold mb-1">Application under review</p>
+        <p className="text-[var(--muted-foreground)] text-sm">
           We'll notify you once it's reviewed. This usually doesn't take long.
         </p>
       </SectionCard>
@@ -199,8 +199,8 @@ function StatusCard({ status, rejectionReason }) {
 
   return (
     <SectionCard>
-      <p className="text-white font-semibold mb-1">Application not approved</p>
-      <p className="text-zinc-500 text-sm">
+      <p className="text-[var(--foreground)] font-semibold mb-1">Application not approved</p>
+      <p className="text-[var(--muted-foreground)] text-sm">
         {rejectionReason || "No reason was given."}
       </p>
     </SectionCard>
@@ -216,12 +216,12 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
       <SectionCard title={`Ambassador at ${collegeName}`}>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-zinc-500 text-sm">Your referral code</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Your referral code</p>
             <p className="text-2xl font-bold text-[var(--theme-primary,#2dd4bf)] mt-1">{referralCode}</p>
           </div>
           <div className="text-right">
-            <p className="text-zinc-500 text-sm">Referred so far</p>
-            <p className="text-2xl font-bold text-white mt-1">{referredCount}</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Referred so far</p>
+            <p className="text-2xl font-bold text-[var(--foreground)] mt-1">{referredCount}</p>
           </div>
         </div>
 
@@ -229,17 +229,17 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
           <input
             readOnly
             value={shareUrl}
-            className="flex-1 min-w-0 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-zinc-300 text-sm outline-none"
+            className="flex-1 min-w-0 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--muted-foreground)] text-sm outline-none"
           />
           <button
             onClick={() => navigator.clipboard.writeText(shareUrl)}
-            className="flex-shrink-0 bg-zinc-800 hover:bg-zinc-700 transition px-4 py-2.5 rounded-xl text-sm font-semibold text-white"
+            className="flex-shrink-0 bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] transition px-4 py-2.5 rounded-xl text-sm font-semibold text-[var(--foreground)]"
           >
             Copy
           </button>
         </div>
 
-        <p className="text-xs text-zinc-600 mt-3">
+        <p className="text-xs text-[var(--muted-foreground)] mt-3">
           {rewardDaysEarned} bonus Pro day{rewardDaysEarned === 1 ? "" : "s"} earned so far.
         </p>
       </SectionCard>
@@ -249,11 +249,11 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
           {milestones.map((m) => (
             <div
               key={m.id}
-              className="flex items-center justify-between gap-3 bg-zinc-800/50 rounded-xl px-4 py-3"
+              className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)]/50 rounded-xl px-4 py-3"
             >
               <div className="min-w-0">
-                <p className="text-white font-semibold text-sm">{m.label}</p>
-                <p className="text-zinc-500 text-xs mt-0.5">+{m.rewardDays} bonus days</p>
+                <p className="text-[var(--foreground)] font-semibold text-sm">{m.label}</p>
+                <p className="text-[var(--muted-foreground)] text-xs mt-0.5">+{m.rewardDays} bonus days</p>
               </div>
 
               {m.claimed ? (
@@ -263,7 +263,7 @@ function AmbassadorDashboard({ dashboard, onClaim }) {
                   Claim
                 </Button>
               ) : (
-                <span className="flex-shrink-0 text-xs text-zinc-500">Not yet reached</span>
+                <span className="flex-shrink-0 text-xs text-[var(--muted-foreground)]">Not yet reached</span>
               )}
             </div>
           ))}

@@ -55,12 +55,12 @@ function ContestCard({ contest, onJoin }) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 hover:border-[var(--theme-primary,#2dd4bf)] rounded-2xl p-5 transition">
+    <div className="bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--theme-primary,#2dd4bf)] rounded-2xl p-5 transition">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-white truncate">{contest.title}</h3>
+          <h3 className="font-bold text-[var(--foreground)] truncate">{contest.title}</h3>
           {contest.description && (
-            <p className="text-zinc-500 text-xs mt-1 line-clamp-2">{contest.description}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-1 line-clamp-2">{contest.description}</p>
           )}
         </div>
         <div className="ml-3 flex-shrink-0">
@@ -68,7 +68,7 @@ function ContestCard({ contest, onJoin }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-zinc-500 mb-4">
+      <div className="flex items-center gap-4 text-xs text-[var(--muted-foreground)] mb-4">
         <span className="flex items-center gap-1">
           <Puzzle size={12} aria-hidden="true" />{contest.problemCount} problems
         </span>
@@ -91,20 +91,20 @@ function ContestCard({ contest, onJoin }) {
             {joining ? "Joining…" : "Join & Compete"}
           </Button>
           <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
-            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+            className="px-4 py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] text-[var(--foreground)] rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]">
             Leaderboard
           </button>
         </div>
       )}
       {contest.status === "upcoming" && (
         <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
-          className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+          className="w-full py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] text-[var(--foreground)] rounded-xl text-sm transition flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]">
           Starts {new Date(contest.startsAt).toLocaleString()}
         </button>
       )}
       {contest.status === "ended" && (
         <button onClick={() => navigate(`/club/public-contests/${contest._id}`)}
-          className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+          className="w-full py-2 bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] text-[var(--foreground)] rounded-xl text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]">
           View Results
         </button>
       )}
@@ -145,8 +145,8 @@ export default function ContestsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <div>
-            <h1 className="text-2xl font-black text-white">Public Contests</h1>
-            <p className="text-zinc-500 text-sm">Compete, rank, win.</p>
+            <h1 className="text-2xl font-black text-[var(--foreground)]">Public Contests</h1>
+            <p className="text-[var(--muted-foreground)] text-sm">Compete, rank, win.</p>
           </div>
           <Button to="/club/private-contests" variant="secondary" size="sm">
             <Lock size={14} aria-hidden="true" /> Join Private Contest
@@ -162,8 +162,8 @@ export default function ContestsPage() {
             const active = tab === t.value;
             return (
               <button key={t.value} onClick={() => setTab(t.value)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
-                  active ? "text-white" : "bg-zinc-900 border border-zinc-800 text-zinc-400"
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
+                  active ? "text-[var(--foreground)]" : "bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)]"
                 }`}
                 style={active ? { backgroundColor: theme.colors.primary, color: "#09090b" } : undefined}
               >
@@ -182,7 +182,7 @@ export default function ContestsPage() {
             />
           </div>
         ) : contests.length === 0 ? (
-          <div className="text-center py-20 text-zinc-600">
+          <div className="text-center py-20 text-[var(--muted-foreground)]">
             <Trophy size={40} className="mx-auto mb-3 opacity-50" aria-hidden="true" />
             <p>No contests {tab.includes("ended") ? "past" : "live or upcoming"} right now.</p>
             <p className="text-sm mt-1">Check back soon or ask your TPO to create one.</p>

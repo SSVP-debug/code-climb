@@ -15,7 +15,7 @@ import { submitContribution, fetchMyContributions } from "../services/contributi
  * AmbassadorPage.jsx (the only other "apply -> pending -> admin reviews"
  * student-facing flow in this codebase): same layout shell, same
  * loading/error handling, same input/button styling tokens
- * (bg-zinc-800 + border-zinc-700 + theme-primary focus ring).
+ * (bg-[var(--surface-elevated)] + border-[var(--border-strong)] + theme-primary focus ring).
  *
  * Two supported kinds only, matching the closed enum decided this session
  * (backend/models/Contribution.js, backend/schemas/contributionSchema.js):
@@ -64,15 +64,15 @@ export default function ContributionsPage() {
       <div className="max-w-3xl mx-auto">
         <Link
           to="/club"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition mb-4"
         >
           <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
           Back to Club
         </Link>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white">Contribute to Code Club</h1>
-          <p className="text-zinc-500 mt-1 text-sm">
+          <h1 className="text-2xl font-bold text-[var(--foreground)]">Contribute to Code Club</h1>
+          <p className="text-[var(--muted-foreground)] mt-1 text-sm">
             Submit a new problem or improve testcases on an existing one. Approved
             contributions are rewarded once reviewed.
           </p>
@@ -81,7 +81,7 @@ export default function ContributionsPage() {
         <SubmissionForm onSubmitted={load} />
 
         <div className="mt-8">
-          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+          <h2 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-3">
             Your contributions
           </h2>
 
@@ -93,7 +93,7 @@ export default function ContributionsPage() {
 
           {loading ? (
             <SectionCard>
-              <p className="text-zinc-500 text-sm">Loading…</p>
+              <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
             </SectionCard>
           ) : contributions.length === 0 ? (
             <SectionCard>
@@ -122,25 +122,25 @@ function ContributionRow({ contribution }) {
   const title = kind === "new_problem" ? payload?.title : payload?.problemSlug;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wide">
+            <span className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">
               {KIND_LABELS[kind] || kind}
             </span>
-            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || "bg-zinc-800 text-zinc-400"}`}>
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"}`}>
               {status}
             </span>
           </div>
-          <p className="text-white font-medium text-sm mt-1 truncate">{title || "Untitled"}</p>
+          <p className="text-[var(--foreground)] font-medium text-sm mt-1 truncate">{title || "Untitled"}</p>
         </div>
-        <span className="flex-shrink-0 text-zinc-500 text-xs">
+        <span className="flex-shrink-0 text-[var(--muted-foreground)] text-xs">
           {formatVerificationDate(createdAt)}
         </span>
       </div>
       {status === "rejected" && rejectionReason && (
-        <p className="text-zinc-500 text-xs mt-2 border-t border-zinc-800 pt-2">
+        <p className="text-[var(--muted-foreground)] text-xs mt-2 border-t border-[var(--border)] pt-2">
           {rejectionReason}
         </p>
       )}
@@ -148,7 +148,7 @@ function ContributionRow({ contribution }) {
           reference a specific submission (e.g. in a support message)
           without needing admin access — this is a key, not a secret, so
           showing it is fine. */}
-      <p className="text-zinc-700 text-[10px] mt-1 font-mono">{_id}</p>
+      <p className="text-[var(--muted-foreground)] text-[10px] mt-1 font-mono">{_id}</p>
     </div>
   );
 }
@@ -199,7 +199,7 @@ function SubmissionForm({ onSubmitted }) {
               setSuccessMessage(null);
             }}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              kind === value ? "bg-white text-black" : "bg-zinc-800 text-zinc-400 hover:text-white"
+              kind === value ? "bg-white text-black" : "bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {label}
@@ -234,8 +234,8 @@ function SubmissionForm({ onSubmitted }) {
 }
 
 const inputClass =
-  "w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50";
-const labelClass = "block text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1";
+  "w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50";
+const labelClass = "block text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold mb-1";
 
 function Field({ label, children }) {
   return (
@@ -420,14 +420,14 @@ function RepeatableRows({ icon, label, rows, setRows, emptyRow, fields }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <label className="flex items-center gap-1.5 text-xs text-zinc-500 uppercase tracking-widest font-semibold">
+        <label className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold">
           {icon}
           {label}
         </label>
         <button
           type="button"
           onClick={addRow}
-          className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition"
+          className="flex items-center gap-1 text-xs font-semibold text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
         >
           <Plus size={13} strokeWidth={2} aria-hidden="true" />
           Add
@@ -444,7 +444,7 @@ function RepeatableRows({ icon, label, rows, setRows, emptyRow, fields }) {
                   value={row[f.key]}
                   onChange={(e) => updateRow(index, f.key, e.target.value)}
                   placeholder={f.placeholder}
-                  className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
+                  className="bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]/50"
                 />
               ))}
             </div>
@@ -452,7 +452,7 @@ function RepeatableRows({ icon, label, rows, setRows, emptyRow, fields }) {
               <button
                 type="button"
                 onClick={() => removeRow(index)}
-                className="flex-shrink-0 p-2 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition"
+                className="flex-shrink-0 p-2 rounded-lg text-[var(--muted-foreground)] hover:text-red-400 hover:bg-red-500/10 transition"
                 title="Remove"
               >
                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" />

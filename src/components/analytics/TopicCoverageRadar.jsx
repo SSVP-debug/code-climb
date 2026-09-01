@@ -12,8 +12,8 @@ function TopicCoverageRadar({ radarData }) {
     <SectionCard title="Topic Coverage" icon={<RadarIcon size={18} strokeWidth={2} />} accented>
       <ResponsiveContainer width="100%" height={260}>
         <RadarChart data={radarData}>
-          <PolarGrid stroke="#27272a" />
-          <PolarAngleAxis dataKey="topic" tick={{ fill: "#71717a", fontSize: 10 }} />
+          <PolarGrid stroke="var(--border)" />
+          <PolarAngleAxis dataKey="topic" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} />
           <Radar
             name="Solved"
             dataKey="count"

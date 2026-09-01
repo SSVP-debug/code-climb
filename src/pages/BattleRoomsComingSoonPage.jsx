@@ -32,7 +32,7 @@ export default function BattleRoomsComingSoonPage() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Battle Rooms</h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-[var(--muted-foreground)] mt-2">
             Team up, split the problem set, and race another team to the finish.
           </p>
         </div>
@@ -44,11 +44,11 @@ export default function BattleRoomsComingSoonPage() {
           accented
         >
           <div className="text-center py-8">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--surface-elevated)] text-[var(--muted-foreground)] flex items-center justify-center mx-auto mb-4">
               <Users size={26} strokeWidth={2} aria-hidden="true" />
             </div>
-            <p className="text-zinc-300 font-medium mb-1">Battle Rooms isn't open yet</p>
-            <p className="text-zinc-500 text-sm max-w-sm mx-auto">
+            <p className="text-[var(--foreground)] font-medium mb-1">Battle Rooms isn't open yet</p>
+            <p className="text-[var(--muted-foreground)] text-sm max-w-sm mx-auto">
               Team-vs-team matches are still being finished up behind the scenes.
               Check back soon — in the meantime, Private Contests and the
               Leaderboard are ready to go.

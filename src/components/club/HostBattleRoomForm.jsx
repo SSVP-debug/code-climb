@@ -92,16 +92,16 @@ export default function HostBattleRoomForm() {
     const shareLink = `${window.location.origin}/club/battle-rooms?code=${created.inviteCode}`;
     return (
       <div className="text-center py-4">
-        <p className="text-zinc-400 text-sm mb-1">Your room is ready</p>
+        <p className="text-[var(--muted-foreground)] text-sm mb-1">Your room is ready</p>
         <h3 className="text-xl font-bold mb-6">{created.title}</h3>
 
-        <div className="bg-zinc-800 rounded-2xl p-6 mb-4">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest mb-2">Invite Code</p>
+        <div className="bg-[var(--surface-elevated)] rounded-2xl p-6 mb-4">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest mb-2">Invite Code</p>
           <div className="flex items-center justify-center gap-3">
             <span className="text-3xl font-mono font-black tracking-widest">{created.inviteCode}</span>
             <button
               onClick={() => copy(created.inviteCode, "Code")}
-              className="p-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition"
+              className="p-2 rounded-lg bg-[var(--border-strong)] hover:brightness-110 transition"
               title="Copy code"
             >
               <Copy size={16} aria-hidden="true" />
@@ -109,7 +109,7 @@ export default function HostBattleRoomForm() {
           </div>
         </div>
 
-        <p className="text-zinc-500 text-xs mb-4">
+        <p className="text-[var(--muted-foreground)] text-xs mb-4">
           Share this code — once your teammates join, head into the room to assign teams and start the match.
         </p>
 
@@ -132,35 +132,35 @@ export default function HostBattleRoomForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="text-xs text-zinc-500 uppercase tracking-widest">Title</label>
+        <label className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">Title</label>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g. CS Club Showdown"
           maxLength={80}
-          className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+          className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
         />
       </div>
 
       <div>
-        <label className="text-xs text-zinc-500 uppercase tracking-widest">Description (optional)</label>
+        <label className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">Description (optional)</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="What's this match about?"
           maxLength={300}
           rows={2}
-          className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)] resize-none"
+          className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)] resize-none"
         />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs text-zinc-500 uppercase tracking-widest">Match duration</label>
+          <label className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">Match duration</label>
           <select
             value={durationMinutes}
             onChange={(e) => setDurationMinutes(Number(e.target.value))}
-            className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+            className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
           >
             {DURATION_OPTIONS.map((d) => (
               <option key={d.minutes} value={d.minutes}>{d.label}</option>
@@ -168,14 +168,14 @@ export default function HostBattleRoomForm() {
           </select>
         </div>
         <div>
-          <label className="text-xs text-zinc-500 uppercase tracking-widest">Max players per team (2–6)</label>
+          <label className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">Max players per team (2–6)</label>
           <input
             type="number"
             min={2}
             max={6}
             value={maxTeamSize}
             onChange={(e) => setMaxTeamSize(Math.min(6, Math.max(2, Number(e.target.value) || 2)))}
-            className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+            className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
           />
         </div>
       </div>
@@ -183,25 +183,25 @@ export default function HostBattleRoomForm() {
       {/* Problem picker — same pattern as HostContestForm */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs text-zinc-500 uppercase tracking-widest">
+          <label className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest">
             Problems ({selectedSlugs.length}/{MAX_PROBLEMS})
           </label>
         </div>
         <div className="relative mb-2">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" aria-hidden="true" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search problems…"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl pl-9 pr-4 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
           />
         </div>
 
-        <div className="max-h-56 overflow-y-auto border border-zinc-800 rounded-xl divide-y divide-zinc-800/60">
+        <div className="max-h-56 overflow-y-auto border border-[var(--border)] rounded-xl divide-y divide-[var(--border)]/60">
           {problemsLoading ? (
-            <p className="text-zinc-600 text-sm text-center py-6">Loading problems…</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-6">Loading problems…</p>
           ) : filteredProblems.length === 0 ? (
-            <p className="text-zinc-600 text-sm text-center py-6">No problems match "{search}".</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-6">No problems match "{search}".</p>
           ) : (
             filteredProblems.map((p) => {
               const checked = selectedSlugs.includes(p.slug);
@@ -210,20 +210,20 @@ export default function HostBattleRoomForm() {
                   type="button"
                   key={p.slug}
                   onClick={() => toggleSlug(p.slug)}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-zinc-800/60 transition"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-[var(--surface-elevated)]/60 transition"
                 >
                   <span
                     className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 border"
                     style={
                       checked
                         ? { backgroundColor: "var(--theme-primary,#2dd4bf)", borderColor: "var(--theme-primary,#2dd4bf)" }
-                        : { borderColor: "#3f3f46" }
+                        : { borderColor: "var(--border-strong)" }
                     }
                   >
                     {checked && <Check size={11} strokeWidth={3} className="text-black" aria-hidden="true" />}
                   </span>
-                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${DIFF_DOT[p.difficulty] ?? "bg-zinc-600"}`} aria-hidden="true" />
-                  <span className="text-sm text-zinc-200 truncate">{p.title}</span>
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${DIFF_DOT[p.difficulty] ?? "bg-[var(--muted-foreground)]"}`} aria-hidden="true" />
+                  <span className="text-sm text-[var(--foreground)] truncate">{p.title}</span>
                 </button>
               );
             })

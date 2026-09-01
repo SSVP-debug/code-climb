@@ -67,23 +67,23 @@ export default function CandidateTestsPage() {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-black text-white mb-2">Skills Tests</h1>
-        <p className="text-zinc-500 text-sm mb-8">Tests sent to you by recruiters. Complete before the deadline.</p>
+        <h1 className="text-2xl font-black text-[var(--foreground)] mb-2">Skills Tests</h1>
+        <p className="text-[var(--muted-foreground)] text-sm mb-8">Tests sent to you by recruiters. Complete before the deadline.</p>
 
         {tests.length === 0 ? (
-          <div className="text-center py-20 text-zinc-600">
+          <div className="text-center py-20 text-[var(--muted-foreground)]">
             <ClipboardList size={36} strokeWidth={1.75} className="mx-auto mb-3" aria-hidden="true" />
             <p>No tests yet. Keep your profile public to get noticed by recruiters.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {tests.map(t => (
-              <div key={t._id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+              <div key={t._id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="text-white font-semibold">{t.recruiterCompany || "Company"} Skills Test</p>
-                    <p className="text-zinc-500 text-xs mt-0.5">{t.problemSlugs.length} problems · {t.durationMs / 60000} minutes</p>
-                    {t.note && <p className="text-zinc-400 text-sm mt-1 italic">"{t.note}"</p>}
+                    <p className="text-[var(--foreground)] font-semibold">{t.recruiterCompany || "Company"} Skills Test</p>
+                    <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{t.problemSlugs.length} problems · {t.durationMs / 60000} minutes</p>
+                    {t.note && <p className="text-[var(--muted-foreground)] text-sm mt-1 italic">"{t.note}"</p>}
                   </div>
                   <span className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${STATUS_STYLES[t.status]}`}>
                     {t.status.replace("_", " ")}
@@ -92,7 +92,7 @@ export default function CandidateTestsPage() {
 
                 {t.status === "submitted" && (
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                       <div className="h-full bg-[var(--theme-primary,#2dd4bf)]" style={{ width: `${t.score}%` }} />
                     </div>
                     <span className="text-[var(--theme-primary,#2dd4bf)] text-sm font-bold">{t.score}%</span>

@@ -170,17 +170,17 @@ export default function ContestDetailPage() {
           <div>
             <Link
               to="/club/public-contests"
-              className="text-xs text-zinc-500 hover:text-zinc-300 mb-1 block"
+              className="text-xs text-[var(--muted-foreground)] hover:text-[var(--muted-foreground)] mb-1 block"
             >
               ← Contests
             </Link>
 
-            <h1 className="text-2xl font-black text-white">
+            <h1 className="text-2xl font-black text-[var(--foreground)]">
               {contest.title}
             </h1>
 
             {contest.description && (
-              <p className="text-zinc-500 text-sm mt-1">
+              <p className="text-[var(--muted-foreground)] text-sm mt-1">
                 {contest.description}
               </p>
             )}
@@ -188,7 +188,7 @@ export default function ContestDetailPage() {
 
           {contest.status === "active" && (
             <div className="text-right">
-              <p className="text-xs text-zinc-500 mb-1">
+              <p className="text-xs text-[var(--muted-foreground)] mb-1">
                 Time Remaining
               </p>
 
@@ -203,9 +203,9 @@ export default function ContestDetailPage() {
         {!isJoined &&
           contest.status !== "ended" &&
           (contest.type === "private" ? (
-            <div className="rounded-2xl p-5 mb-6 border border-zinc-800 bg-zinc-900 flex items-center justify-between flex-wrap gap-3">
+            <div className="rounded-2xl p-5 mb-6 border border-[var(--border)] bg-[var(--surface)] flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0 text-zinc-400">
+                <div className="w-10 h-10 rounded-xl bg-[var(--surface-elevated)] flex items-center justify-center flex-shrink-0 text-[var(--muted-foreground)]">
                   <Lock
                     size={18}
                     strokeWidth={2}
@@ -214,11 +214,11 @@ export default function ContestDetailPage() {
                 </div>
 
                 <div>
-                  <p className="font-semibold text-white">
+                  <p className="font-semibold text-[var(--foreground)]">
                     This is a private contest
                   </p>
 
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-[var(--muted-foreground)]">
                     Join with the invite code shared with you.
                   </p>
                 </div>
@@ -241,11 +241,11 @@ export default function ContestDetailPage() {
               }}
             >
               <div>
-                <p className="font-semibold text-white">
+                <p className="font-semibold text-[var(--foreground)]">
                   You haven't joined this contest yet
                 </p>
 
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-[var(--muted-foreground)]">
                   Join to start solving and appear on the leaderboard.
                 </p>
               </div>
@@ -287,7 +287,7 @@ export default function ContestDetailPage() {
                     />
                   </div>
                 ) : (
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center flex-shrink-0 text-zinc-400">
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--surface-elevated)] flex items-center justify-center flex-shrink-0 text-[var(--muted-foreground)]">
                     <Target
                       size={22}
                       strokeWidth={2}
@@ -302,7 +302,7 @@ export default function ContestDetailPage() {
                   </p>
 
                   {percentile !== null && (
-                    <p className="text-sm text-zinc-400">
+                    <p className="text-sm text-[var(--muted-foreground)]">
                       You beat {percentile}% of participants
                     </p>
                   )}
@@ -318,7 +318,7 @@ export default function ContestDetailPage() {
                     #{myRank}
                   </p>
 
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                  <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wide">
                     Rank
                   </p>
                 </div>
@@ -328,7 +328,7 @@ export default function ContestDetailPage() {
                     {myScore}
                   </p>
 
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                  <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wide">
                     Score
                   </p>
                 </div>
@@ -338,7 +338,7 @@ export default function ContestDetailPage() {
                     {mySolvedSlugs.length}/{problemSlugs.length}
                   </p>
 
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                  <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wide">
                     Solved
                   </p>
                 </div>
@@ -346,7 +346,7 @@ export default function ContestDetailPage() {
             </div>
 
             {!isMvp && mvp && (
-              <p className="text-xs text-zinc-500 mt-4 flex items-center gap-1.5">
+              <p className="text-xs text-[var(--muted-foreground)] mt-4 flex items-center gap-1.5">
                 <Users2
                   size={13}
                   aria-hidden="true"
@@ -354,7 +354,7 @@ export default function ContestDetailPage() {
 
                 MVP:
 
-                <span className="text-zinc-300 font-medium">
+                <span className="text-[var(--muted-foreground)] font-medium">
                   {mvp.displayName || mvp.username}
                 </span>
 
@@ -367,14 +367,14 @@ export default function ContestDetailPage() {
         <div className="grid md:grid-cols-3 gap-6">
           {/* Problems */}
           <div className="md:col-span-1">
-            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+            <h2 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-3">
               Problems
             </h2>
 
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
               {contest.status === "upcoming" &&
               problemSlugs.length === 0 ? (
-                <div className="px-4 py-6 text-sm text-zinc-500 text-center">
+                <div className="px-4 py-6 text-sm text-[var(--muted-foreground)] text-center">
                   {problemCount > 0
                     ? `${problemCount} problem${
                         problemCount === 1 ? "" : "s"
@@ -390,7 +390,7 @@ export default function ContestDetailPage() {
                     <Link
                       key={slug}
                       to={`/problems/${slug}?contest=${contest._id}`}
-                      className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/40 transition last:border-0"
+                      className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]/50 hover:bg-[var(--surface-elevated)]/40 transition last:border-0"
                     >
                       <span
                         className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
@@ -401,15 +401,15 @@ export default function ContestDetailPage() {
                                 color: "#000",
                               }
                             : {
-                                backgroundColor: "#27272a",
-                                color: "#71717a",
+                                backgroundColor: "var(--surface-elevated)",
+                                color: "var(--muted-foreground)",
                               }
                         }
                       >
                         {i + 1}
                       </span>
 
-                      <span className="text-sm text-zinc-300 font-mono truncate">
+                      <span className="text-sm text-[var(--muted-foreground)] font-mono truncate">
                         {slug}
                       </span>
 
@@ -428,8 +428,8 @@ export default function ContestDetailPage() {
 
             {/* Score */}
             {isJoined && (
-              <div className="mt-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 text-center">
-                <p className="text-xs text-zinc-500 mb-1">
+              <div className="mt-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 text-center">
+                <p className="text-xs text-[var(--muted-foreground)] mb-1">
                   Your Score
                 </p>
 
@@ -441,7 +441,7 @@ export default function ContestDetailPage() {
                 </p>
 
                 {myRank && (
-                  <p className="text-zinc-500 text-sm mt-1">
+                  <p className="text-[var(--muted-foreground)] text-sm mt-1">
                     Rank #{myRank}
                   </p>
                 )}
@@ -451,13 +451,13 @@ export default function ContestDetailPage() {
 
           {/* Leaderboard */}
           <div className="md:col-span-2">
-            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+            <h2 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-3">
               Leaderboard · {leaderboard.length} participants
             </h2>
 
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
               {/* Table Header */}
-              <div className="grid grid-cols-12 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+              <div className="grid grid-cols-12 px-4 py-2 border-b border-[var(--border)] text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">
                 <span className="col-span-1">#</span>
                 <span className="col-span-6">Participant</span>
                 <span className="col-span-2 text-center">
@@ -469,9 +469,9 @@ export default function ContestDetailPage() {
               </div>
 
               {/* Leaderboard Rows */}
-              <div className="max-h-[500px] overflow-y-auto divide-y divide-zinc-800/40">
+              <div className="max-h-[500px] overflow-y-auto divide-y divide-[var(--border)]/40">
                 {leaderboard.length === 0 ? (
-                  <p className="text-center text-zinc-600 py-10 text-sm">
+                  <p className="text-center text-[var(--muted-foreground)] py-10 text-sm">
                     No participants yet.
                   </p>
                 ) : (
@@ -482,10 +482,10 @@ export default function ContestDetailPage() {
                       i === 0
                         ? "text-yellow-400"
                         : i === 1
-                          ? "text-zinc-400"
+                          ? "text-[var(--muted-foreground)]"
                           : i === 2
                             ? "text-orange-700"
-                            : "text-zinc-600";
+                            : "text-[var(--muted-foreground)]";
 
                     return (
                       <div
@@ -521,13 +521,13 @@ export default function ContestDetailPage() {
                         </span>
 
                         {/* Participant */}
-                        <span className="col-span-6 text-sm text-white truncate">
+                        <span className="col-span-6 text-sm text-[var(--foreground)] truncate">
                           {participant.displayName ||
                             participant.username}
                         </span>
 
                         {/* Solved */}
-                        <span className="col-span-2 text-center text-sm text-zinc-400">
+                        <span className="col-span-2 text-center text-sm text-[var(--muted-foreground)]">
                           {participant.solvedSlugs?.length ?? 0}
                         </span>
 

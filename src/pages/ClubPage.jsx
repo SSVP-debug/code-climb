@@ -10,7 +10,7 @@ import { useTheme } from "../hooks/useTheme";
 import { withAlpha } from "../themes/themeIcons";
 import { Trophy, Swords, Lock, Users, ArrowRight, GraduationCap, Medal, MessageCircle, Puzzle, Coins, Gift, Lightbulb } from "lucide-react";
 
-const MEDAL_COLOR = { 1: "text-yellow-400", 2: "text-zinc-400", 3: "text-orange-700" };
+const MEDAL_COLOR = { 1: "text-yellow-400", 2: "text-[var(--muted-foreground)]", 3: "text-orange-700" };
 
 /**
  * ClubPage — the community hub (Phase 12A).
@@ -51,7 +51,7 @@ function ClubPage() {
       <div className="max-w-5xl space-y-8">
         <div>
           <h1 className="text-4xl font-bold">Club</h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-[var(--muted-foreground)] mt-2">
             Where the Code Club community competes, connects, and grows.
           </p>
         </div>
@@ -75,11 +75,11 @@ function ClubPage() {
           {leaderboardLoading ? (
             <div className="space-y-2">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="h-12 bg-zinc-800 rounded-xl animate-pulse" />
+                <div key={i} className="h-12 bg-[var(--surface-elevated)] rounded-xl animate-pulse" />
               ))}
             </div>
           ) : topThree.length === 0 ? (
-            <p className="text-zinc-500 text-sm py-2">
+            <p className="text-[var(--muted-foreground)] text-sm py-2">
               No rankings yet — be the first to solve a problem.
             </p>
           ) : (
@@ -88,15 +88,15 @@ function ClubPage() {
                 <Link
                   key={user.username}
                   to={`/u/${user.username}`}
-                  className="flex items-center gap-3 bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-2.5 transition"
+                  className="flex items-center gap-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/70 rounded-xl px-4 py-2.5 transition"
                 >
-                  <span className={`w-6 text-center flex-shrink-0 flex items-center justify-center ${MEDAL_COLOR[user.rank] || "text-zinc-600"}`}>
+                  <span className={`w-6 text-center flex-shrink-0 flex items-center justify-center ${MEDAL_COLOR[user.rank] || "text-[var(--muted-foreground)]"}`}>
                     <Medal size={16} strokeWidth={2} aria-hidden="true" />
                   </span>
                   <span className="font-medium text-sm truncate flex-1">
                     {user.displayName}
                   </span>
-                  <span className="text-xs text-zinc-400 flex-shrink-0">
+                  <span className="text-xs text-[var(--muted-foreground)] flex-shrink-0">
                     {user.totalXP.toLocaleString()} XP
                   </span>
                 </Link>
@@ -116,11 +116,11 @@ function ClubPage() {
             {contestsLoading ? (
               <div className="space-y-2">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="h-14 bg-zinc-800 rounded-xl animate-pulse" />
+                  <div key={i} className="h-14 bg-[var(--surface-elevated)] rounded-xl animate-pulse" />
                 ))}
               </div>
             ) : contests.length === 0 ? (
-              <p className="text-zinc-500 text-sm py-2">
+              <p className="text-[var(--muted-foreground)] text-sm py-2">
                 No contests live or upcoming right now.
               </p>
             ) : (
@@ -129,10 +129,10 @@ function ClubPage() {
                   <Link
                     key={c._id}
                     to={`/club/public-contests/${c._id}`}
-                    className="block bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-2.5 transition"
+                    className="block bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/70 rounded-xl px-4 py-2.5 transition"
                   >
                     <p className="text-sm font-medium truncate">{c.title}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">
+                    <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
                       {c.isActive ? "Live now" : `Starts ${new Date(c.startsAt).toLocaleDateString()}`}
                       {" · "}{c.problemCount} problems
                     </p>
@@ -152,7 +152,7 @@ function ClubPage() {
             icon={<Lock size={18} strokeWidth={2} />}
             accented
           >
-            <p className="text-zinc-500 text-sm mb-4">
+            <p className="text-[var(--muted-foreground)] text-sm mb-4">
               Have an invite code from a friend or your college? Join instantly
               or set up your own contest to run.
             </p>
@@ -174,7 +174,7 @@ function ClubPage() {
           icon={<Users size={18} strokeWidth={2} />}
           accented
         >
-          <p className="text-zinc-500 text-sm mb-4">
+          <p className="text-[var(--muted-foreground)] text-sm mb-4">
             Form a team, share an invite code, and race another team to
             solve the problem set first. Scores update as each teammate's
             submission is verified.
@@ -202,7 +202,7 @@ function ClubPage() {
         {/* ── Ambassador ───────────────────────────────────────────────── */}
         <Link
           to="/ambassador"
-          className="group flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -215,11 +215,11 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Ambassador Program</p>
-            <p className="text-zinc-500 text-sm">Bring Code Club to your campus and earn rewards for it.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Bring Code Club to your campus and earn rewards for it.</p>
           </div>
           <ArrowRight
             size={16}
-            className="text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
+            className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
             aria-hidden="true"
           />
         </Link>
@@ -227,7 +227,7 @@ function ClubPage() {
         {/* ── Credits (Phase 3: Token Economy) ──────────────────────────── */}
         <Link
           to="/credits"
-          className="group flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -240,11 +240,11 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Credits</p>
-            <p className="text-zinc-500 text-sm">Check your Credits balance and see where they came from.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Check your Credits balance and see where they came from.</p>
           </div>
           <ArrowRight
             size={16}
-            className="text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
+            className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
             aria-hidden="true"
           />
         </Link>
@@ -252,7 +252,7 @@ function ClubPage() {
         {/* ── Rewards Store (Phase 4) ────────────────────────────────────── */}
         <Link
           to="/rewards-store"
-          className="group flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -265,11 +265,11 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Rewards Store</p>
-            <p className="text-zinc-500 text-sm">Spend your Credits on perks and merchandise.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Spend your Credits on perks and merchandise.</p>
           </div>
           <ArrowRight
             size={16}
-            className="text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
+            className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
             aria-hidden="true"
           />
         </Link>
@@ -277,7 +277,7 @@ function ClubPage() {
         {/* ── Contribute (Phase 2F: Contribution Infrastructure) ───────── */}
         <Link
           to="/contribute"
-          className="group flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -290,11 +290,11 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Contribute</p>
-            <p className="text-zinc-500 text-sm">Submit a problem or improve testcases — approved contributions are rewarded.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Submit a problem or improve testcases — approved contributions are rewarded.</p>
           </div>
           <ArrowRight
             size={16}
-            className="text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
+            className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
             aria-hidden="true"
           />
         </Link>
@@ -302,7 +302,7 @@ function ClubPage() {
         {/* ── Feature Requests (Phase 5) ─────────────────────────────────── */}
         <Link
           to="/feature-requests"
-          className="group flex items-center gap-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--theme-primary,#2dd4bf)] transition"
         >
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -315,11 +315,11 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Feature Requests</p>
-            <p className="text-zinc-500 text-sm">Suggest something for Code Club, or vote on what's already proposed.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Suggest something for Code Club, or vote on what's already proposed.</p>
           </div>
           <ArrowRight
             size={16}
-            className="text-zinc-500 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
+            className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0"
             aria-hidden="true"
           />
         </Link>

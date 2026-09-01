@@ -31,7 +31,7 @@ const INTEGRATIONS = [
     status: "planned",
     icon: "CF",
     iconBg: "bg-blue-600",
-    iconColor: "text-white",
+    iconColor: "text-[var(--foreground)]",
   },
   {
     id: "gfg",
@@ -40,7 +40,7 @@ const INTEGRATIONS = [
     status: "planned",
     icon: "G",
     iconBg: "bg-green-600",
-    iconColor: "text-white",
+    iconColor: "text-[var(--foreground)]",
   },
 ];
 
@@ -55,13 +55,13 @@ function StatusBadge({ status }) {
   }
   if (status === "coming-soon") {
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-700 text-zinc-300 border border-zinc-600">
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border border-[var(--border-strong)]">
         Coming Soon
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-500 border border-zinc-700">
+    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border border-[var(--border-strong)]">
       Planned
     </span>
   );
@@ -70,7 +70,7 @@ function StatusBadge({ status }) {
 function IntegrationRow({ integration }) {
   const { name, description, status, icon, iconBg, iconColor } = integration;
   return (
-    <div className="flex items-center justify-between py-4 border-b border-zinc-800 last:border-0">
+    <div className="flex items-center justify-between py-4 border-b border-[var(--border)] last:border-0">
       <div className="flex items-center gap-4">
         <div
           className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center text-sm font-bold ${iconColor} flex-shrink-0`}
@@ -78,8 +78,8 @@ function IntegrationRow({ integration }) {
           {icon}
         </div>
         <div>
-          <p className="font-medium text-white text-sm">{name}</p>
-          <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
+          <p className="font-medium text-[var(--foreground)] text-sm">{name}</p>
+          <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{description}</p>
         </div>
       </div>
       <div className="flex-shrink-0 ml-4">
@@ -93,10 +93,10 @@ function IntegrationRow({ integration }) {
 // consistent across the app rather than inventing a second toggle style.
 function ToggleRow({ label, description, checked, saving, onToggle }) {
   return (
-    <div className="flex items-center justify-between bg-zinc-800 rounded-xl p-4">
+    <div className="flex items-center justify-between bg-[var(--surface-elevated)] rounded-xl p-4">
       <div className="pr-4">
         <p className="font-medium text-sm">{label}</p>
-        <p className="text-zinc-500 text-xs mt-0.5">{description}</p>
+        <p className="text-[var(--muted-foreground)] text-xs mt-0.5">{description}</p>
       </div>
       <button
         type="button"
@@ -105,7 +105,7 @@ function ToggleRow({ label, description, checked, saving, onToggle }) {
         disabled={saving}
         onClick={onToggle}
         className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${
-          checked ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-zinc-700"
+          checked ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--border-strong)]"
         }`}
       >
         <span
@@ -232,12 +232,12 @@ function SettingsPage() {
 
     return (
         <DashboardLayout>
-        <div className="max-w-4xl mx-auto text-white">
+        <div className="max-w-4xl mx-auto text-[var(--foreground)]">
             <div className="flex items-start justify-between gap-4 mb-8">
                 <h1 className="text-3xl font-bold">Settings</h1>
                 <Link
                     to="/profile"
-                    className="flex-shrink-0 text-sm text-zinc-400 hover:text-white transition whitespace-nowrap mt-1"
+                    className="flex-shrink-0 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition whitespace-nowrap mt-1"
                 >
                     ← Back to Profile
                 </Link>
@@ -246,9 +246,9 @@ function SettingsPage() {
             <div className="space-y-6">
 
                 {/* ── Account: username + public URL + export ────────────────── */}
-                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
                     <h2 className="text-xl font-semibold mb-2">Account</h2>
-                    <p className="text-zinc-400 text-sm mb-4">
+                    <p className="text-[var(--muted-foreground)] text-sm mb-4">
                         Your username determines your public Code Club profile URL.
                     </p>
 
@@ -258,7 +258,7 @@ function SettingsPage() {
                             value={username}
                             onChange={(e) => setUsernameDraft(e.target.value)}
                             placeholder="Choose a username"
-                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3"
+                            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-3"
                         />
 
                         <Button
@@ -269,8 +269,8 @@ function SettingsPage() {
                         </Button>
 
                         {currentUsername && (
-                            <div className="bg-zinc-800 rounded-xl p-4">
-                                <p className="text-sm text-zinc-400">Public URL</p>
+                            <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+                                <p className="text-sm text-[var(--muted-foreground)]">Public URL</p>
                                 <p className="font-mono mt-1 break-all">
                                     {window.location.origin}/u/{currentUsername}
                                 </p>
@@ -295,31 +295,31 @@ function SettingsPage() {
                 </section>
 
                 {/* ── Integrations ────────────────────────────────────────────── */}
-                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-2">
                         <h2 className="text-xl font-semibold">Integrations</h2>
-                        <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-1 rounded-lg">
+                        <span className="text-xs text-[var(--muted-foreground)] bg-[var(--surface-elevated)] px-2 py-1 rounded-lg">
                             More platforms coming
                         </span>
                     </div>
-                    <p className="text-zinc-400 text-sm mb-4">
+                    <p className="text-[var(--muted-foreground)] text-sm mb-4">
                         Connect your coding profiles to unlock unified analytics and cross-platform insights.
                     </p>
 
-                    <div className="pb-4 mb-4 border-b border-zinc-800">
+                    <div className="pb-4 mb-4 border-b border-[var(--border)]">
                         <ConnectLeetCodeSection initial={leetcodeInitial} />
                     </div>
-                    <div className="divide-y divide-zinc-800">
+                    <div className="divide-y divide-[var(--border)]">
                         {INTEGRATIONS.map((integration) => (
                             <IntegrationRow key={integration.id} integration={integration} />
                         ))}
                     </div>
                 </section>
 
-                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
                     <h2 className="text-xl font-semibold mb-2">Appearance</h2>
 
-                    <p className="text-zinc-400">
+                    <p className="text-[var(--muted-foreground)]">
                         Current Universe
                     </p>
 
@@ -330,23 +330,23 @@ function SettingsPage() {
                     <button
                         onClick={handleResetTheme}
                         disabled={isDefaultTheme}
-                        className="mt-4 px-4 py-2 rounded-xl bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-800"
+                        className="mt-4 px-4 py-2 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border-strong)] hover:bg-[var(--border-strong)] transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--surface-elevated)]"
                     >
                         Reset to Default
                     </button>
 
-                    <p className="mt-2 text-sm text-zinc-500">
+                    <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                         {isDefaultTheme
                             ? "You're on the default experience no universe theming applied."
                             : "Clears your universe selection and switches to a clean, unthemed experience with plain labels (Dashboard, Problems, Profile)."}
                     </p>
                 </section>
 
-                <section className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
                     <h2 className="text-xl font-semibold mb-2">
                         Editor
                     </h2>
-                    <p className="text-zinc-400 text-sm mb-4">
+                    <p className="text-[var(--muted-foreground)] text-sm mb-4">
                         Preferences for how problems and the code editor behave.
                     </p>
 
@@ -380,7 +380,7 @@ function SettingsPage() {
                         Reset Progress
                     </button>
 
-                    <p className="mt-3 text-sm text-zinc-500">
+                    <p className="mt-3 text-sm text-[var(--muted-foreground)]">
                         This action will permanently delete your progress, streaks, XP, and submissions.
                     </p>
                 </section>

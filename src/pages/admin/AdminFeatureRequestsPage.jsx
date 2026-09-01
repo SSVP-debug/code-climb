@@ -35,12 +35,12 @@ const STATUS_TABS = [
 ];
 
 const STATUS_STYLES = {
-  open: "bg-zinc-800 text-zinc-300",
+  open: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
   planned: "bg-blue-500/10 text-blue-400",
   in_progress: "bg-amber-500/10 text-amber-400",
   shipped: "bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)]",
   declined: "bg-red-500/10 text-red-400",
-  withdrawn: "bg-zinc-800 text-zinc-500",
+  withdrawn: "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]",
 };
 
 const STATUS_LABELS = {
@@ -138,8 +138,8 @@ export default function AdminFeatureRequestsPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Feature Requests</h1>
-          <p className="text-zinc-500 text-sm mt-0.5">
+          <h1 className="text-xl font-bold text-[var(--foreground)]">Feature Requests</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
             Move requests through the roadmap, or decline them.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function AdminFeatureRequestsPage() {
             key={t.value}
             onClick={() => setStatus(t.value)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              status === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+              status === t.value ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {t.label}
@@ -204,25 +204,25 @@ function FeatureRequestAdminRow({ entry, busy, busyStatus, onTransition }) {
   const actions = NEXT_ACTIONS[status] || [];
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-semibold text-zinc-500">{ccId}</span>
+            <span className="text-[11px] font-semibold text-[var(--muted-foreground)]">{ccId}</span>
             <span
               className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                STATUS_STYLES[status] || "bg-zinc-800 text-zinc-400"
+                STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
               }`}
             >
               {STATUS_LABELS[status] || status}
             </span>
-            <span className="text-[11px] text-zinc-500 inline-flex items-center gap-1">
+            <span className="text-[11px] text-[var(--muted-foreground)] inline-flex items-center gap-1">
               <ArrowBigUp size={13} strokeWidth={2} /> {voteCount ?? 0}
             </span>
           </div>
-          <p className="text-white font-medium text-sm mt-1">{title}</p>
-          <p className="text-zinc-500 text-sm mt-0.5">{description}</p>
-          <p className="text-zinc-600 text-xs mt-1.5">
+          <p className="text-[var(--foreground)] font-medium text-sm mt-1">{title}</p>
+          <p className="text-[var(--muted-foreground)] text-sm mt-0.5">{description}</p>
+          <p className="text-[var(--muted-foreground)] text-xs mt-1.5">
             {submitterLabel} · {formatVerificationDate(createdAt)}
           </p>
         </div>

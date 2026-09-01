@@ -135,8 +135,8 @@ export default function BattleRoomDetailPage() {
         <ClubSubNav />
 
         <div className="mb-6">
-          <h1 className="text-2xl font-black text-white">{title}</h1>
-          <p className="text-zinc-500 text-sm mt-1 capitalize">
+          <h1 className="text-2xl font-black text-[var(--foreground)]">{title}</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-1 capitalize">
             {status === "lobby" ? "Waiting to start" : status === "active" ? "Match in progress" : "Match ended"}
           </p>
         </div>
@@ -145,14 +145,14 @@ export default function BattleRoomDetailPage() {
         {status === "lobby" && (
           <div className="space-y-6">
             {isHost && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-between flex-wrap gap-3">
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 flex items-center justify-between flex-wrap gap-3">
                 <div>
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Invite Code</p>
+                  <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Invite Code</p>
                   <p className="text-2xl font-mono font-black tracking-widest">{inviteCode}</p>
                 </div>
                 <button
                   onClick={() => { navigator.clipboard.writeText(inviteCode); toast.success("Code copied"); }}
-                  className="p-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+                  className="p-2.5 rounded-lg bg-[var(--surface-elevated)] hover:bg-[var(--border-strong)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                 >
                   <Copy size={16} aria-hidden="true" />
                 </button>
@@ -160,34 +160,34 @@ export default function BattleRoomDetailPage() {
             )}
 
             {!isJoined && (
-              <p className="text-center text-zinc-500 text-sm py-2">
+              <p className="text-center text-[var(--muted-foreground)] text-sm py-2">
                 You're viewing this room but haven't joined it yet.
               </p>
             )}
 
             {/* Unassigned roster — host sees assign buttons */}
             {unassigned.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                <p className="text-sm font-semibold text-zinc-300 mb-3">
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+                <p className="text-sm font-semibold text-[var(--muted-foreground)] mb-3">
                   Waiting for a team ({unassigned.length})
                 </p>
                 <div className="space-y-2">
                   {unassigned.map((m) => (
-                    <div key={m.userId} className="flex items-center justify-between gap-3 bg-zinc-800 rounded-xl px-3 py-2">
+                    <div key={m.userId} className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)] rounded-xl px-3 py-2">
                       <span className="text-sm truncate">{m.displayName}</span>
                       {isHost && (
                         <div className="flex gap-1.5 flex-shrink-0">
                           <button
                             disabled={assigning}
                             onClick={() => assignTeam(m.userId, 0)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+                            className="text-xs px-2.5 py-1 rounded-lg bg-[var(--border-strong)] hover:brightness-110 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                           >
                             → {teams[0].name}
                           </button>
                           <button
                             disabled={assigning}
                             onClick={() => assignTeam(m.userId, 1)}
-                            className="text-xs px-2.5 py-1 rounded-lg bg-zinc-700 hover:bg-zinc-600 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
+                            className="text-xs px-2.5 py-1 rounded-lg bg-[var(--border-strong)] hover:brightness-110 transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)]"
                           >
                             → {teams[1].name}
                           </button>
@@ -200,7 +200,7 @@ export default function BattleRoomDetailPage() {
                   <button
                     onClick={randomize}
                     disabled={assigning}
-                    className="mt-3 text-xs flex items-center gap-1.5 text-zinc-400 hover:text-white transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
+                    className="mt-3 text-xs flex items-center gap-1.5 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
                   >
                     <Shuffle size={12} aria-hidden="true" /> Randomize everyone
                   </button>
@@ -211,18 +211,18 @@ export default function BattleRoomDetailPage() {
             {/* Two team columns */}
             <div className="grid sm:grid-cols-2 gap-4">
               {[0, 1].map((idx) => (
-                <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                  <p className="font-bold mb-3">{teams[idx].name} <span className="text-zinc-500 font-normal text-sm">({teamRoster[idx].length})</span></p>
+                <div key={idx} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+                  <p className="font-bold mb-3">{teams[idx].name} <span className="text-[var(--muted-foreground)] font-normal text-sm">({teamRoster[idx].length})</span></p>
                   <div className="space-y-1.5">
                     {teamRoster[idx].length === 0 ? (
-                      <p className="text-zinc-600 text-sm">No one yet</p>
+                      <p className="text-[var(--muted-foreground)] text-sm">No one yet</p>
                     ) : teamRoster[idx].map((m) => (
-                      <div key={m.userId} className="flex items-center justify-between text-sm bg-zinc-800/60 rounded-lg px-3 py-1.5">
+                      <div key={m.userId} className="flex items-center justify-between text-sm bg-[var(--surface-elevated)]/60 rounded-lg px-3 py-1.5">
                         <span className="truncate">{m.displayName}</span>
                         {isHost && (
                           <button
                             onClick={() => assignTeam(m.userId, null)}
-                            className="text-zinc-500 hover:text-red-400 text-xs flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
+                            className="text-[var(--muted-foreground)] hover:text-red-400 text-xs flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] rounded"
                           >
                             Remove
                           </button>
@@ -252,8 +252,8 @@ export default function BattleRoomDetailPage() {
         {status === "active" && (
           <div className="space-y-6">
             <div className="flex items-center justify-center">
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-3 text-center">
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Time Remaining</p>
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl px-6 py-3 text-center">
+                <p className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">Time Remaining</p>
                 <p className="text-2xl font-mono font-bold text-orange-400">{timer || formatCountdown(room.endsAt)}</p>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function BattleRoomDetailPage() {
                   style={
                     myTeamIndex === idx
                       ? { backgroundColor: withAlpha(theme.colors.primary, "0d"), borderColor: withAlpha(theme.colors.primary, "33") }
-                      : { backgroundColor: "#18181b", borderColor: "#27272a" }
+                      : { backgroundColor: "var(--surface)", borderColor: "var(--border)" }
                   }
                 >
                   <div className="flex items-center justify-between">
@@ -278,14 +278,14 @@ export default function BattleRoomDetailPage() {
                     )}
                   </div>
                   <p className="text-3xl font-black mt-2" style={{ color: theme.colors.primary }}>{teams[idx].score}</p>
-                  <p className="text-xs text-zinc-500 mt-1">{teams[idx].solvedSlugs.length}/{problemSlugs.length} solved</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-1">{teams[idx].solvedSlugs.length}/{problemSlugs.length} solved</p>
                 </div>
               ))}
             </div>
 
             {isJoined && myTeamIndex != null && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                <p className="px-4 py-2.5 border-b border-zinc-800 text-xs font-semibold text-zinc-400 uppercase tracking-widest">
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
+                <p className="px-4 py-2.5 border-b border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest">
                   Problems
                 </p>
                 {problemSlugs.map((slug, i) => {
@@ -295,22 +295,22 @@ export default function BattleRoomDetailPage() {
                     <Link
                       key={slug}
                       to={`/problems/${slug}?battleRoom=${room._id}`}
-                      className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/40 transition last:border-0"
+                      className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)]/50 hover:bg-[var(--surface-elevated)]/40 transition last:border-0"
                     >
                       <span
                         className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                         style={
                           solvedByTeam
                             ? { backgroundColor: theme.colors.primary, color: "#09090b" }
-                            : { backgroundColor: "#27272a", color: "#71717a" }
+                            : { backgroundColor: "var(--surface-elevated)", color: "var(--muted-foreground)" }
                         }
                       >
                         {i + 1}
                       </span>
-                      <span className="text-sm text-zinc-300 font-mono truncate flex-1">{slug}</span>
+                      <span className="text-sm text-[var(--muted-foreground)] font-mono truncate flex-1">{slug}</span>
                       {solvedByMe && <Check size={14} className="text-green-400 flex-shrink-0" aria-hidden="true" />}
                       {solvedByTeam && !solvedByMe && (
-                        <span className="text-[10px] text-zinc-500 flex-shrink-0">teammate solved</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)] flex-shrink-0">teammate solved</span>
                       )}
                     </Link>
                   );
@@ -318,7 +318,7 @@ export default function BattleRoomDetailPage() {
               </div>
             )}
             {(!isJoined || myTeamIndex == null) && (
-              <p className="text-center text-zinc-500 text-sm py-4">
+              <p className="text-center text-[var(--muted-foreground)] text-sm py-4">
                 You're not on a team in this match — spectating only.
               </p>
             )}
@@ -331,7 +331,7 @@ export default function BattleRoomDetailPage() {
             <div className="text-center py-4">
               {winner === null ? (
                 <>
-                  <Users size={40} className="mx-auto mb-2 text-zinc-500" aria-hidden="true" />
+                  <Users size={40} className="mx-auto mb-2 text-[var(--muted-foreground)]" aria-hidden="true" />
                   <p className="text-xl font-bold">It's a tie!</p>
                 </>
               ) : (
@@ -350,18 +350,18 @@ export default function BattleRoomDetailPage() {
                   style={
                     winner === idx
                       ? { backgroundColor: withAlpha(theme.colors.primary, "0d"), borderColor: withAlpha(theme.colors.primary, "33") }
-                      : { backgroundColor: "#18181b", borderColor: "#27272a" }
+                      : { backgroundColor: "var(--surface)", borderColor: "var(--border)" }
                   }
                 >
                   <p className="font-bold mb-1">{teams[idx].name}</p>
                   <p className="text-3xl font-black" style={{ color: theme.colors.primary }}>{teams[idx].score}</p>
-                  <p className="text-xs text-zinc-500 mb-3">{teams[idx].solvedSlugs.length}/{problemSlugs.length} problems solved</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mb-3">{teams[idx].solvedSlugs.length}/{problemSlugs.length} problems solved</p>
 
                   <div className="space-y-1">
                     {teamRoster[idx].map((m) => (
-                      <div key={m.userId} className="flex items-center justify-between text-sm bg-zinc-800/60 rounded-lg px-3 py-1.5">
+                      <div key={m.userId} className="flex items-center justify-between text-sm bg-[var(--surface-elevated)]/60 rounded-lg px-3 py-1.5">
                         <span className="truncate">{m.displayName}</span>
-                        <span className="text-zinc-500 text-xs flex-shrink-0">{m.solvedSlugs.length} solved</span>
+                        <span className="text-[var(--muted-foreground)] text-xs flex-shrink-0">{m.solvedSlugs.length} solved</span>
                       </div>
                     ))}
                   </div>

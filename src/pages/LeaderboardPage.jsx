@@ -18,7 +18,7 @@ const DIFF_BADGE = "text-[10px] font-bold px-1.5 py-0.5 rounded-full";
 function RankRow({ user, highlight = false, theme }) {
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-zinc-800/50"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors hover:bg-[var(--surface-elevated)]/50"
       style={
         highlight
           ? {
@@ -45,7 +45,7 @@ function RankRow({ user, highlight = false, theme }) {
       <div className="flex-1 min-w-0">
         <Link
           to={`/u/${user.username}`}
-          className="font-semibold text-sm text-white hover:text-[var(--theme-primary,#2dd4bf)] transition truncate block"
+          className="font-semibold text-sm text-[var(--foreground)] hover:text-[var(--theme-primary,#2dd4bf)] transition truncate block"
         >
           {user.displayName}
         </Link>
@@ -53,7 +53,7 @@ function RankRow({ user, highlight = false, theme }) {
 
       {/* Stats — difficulty badges stay semantic green/yellow/red regardless
           of theme, same rule as everywhere else in the app */}
-      <div className="flex items-center gap-3 text-xs text-zinc-400">
+      <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
         <span className={`${DIFF_BADGE} bg-green-500/10 text-green-400`}>{user.easy}E</span>
         <span className={`${DIFF_BADGE} bg-yellow-500/10 text-yellow-400`}>{user.medium}M</span>
         <span className={`${DIFF_BADGE} bg-red-500/10 text-red-400`}>{user.hard}H</span>
@@ -62,7 +62,7 @@ function RankRow({ user, highlight = false, theme }) {
             <Flame size={12} strokeWidth={2.5} aria-hidden="true" />{user.currentStreak}
           </span>
         )}
-        <span className="font-bold text-white w-16 text-right">{user.totalXP.toLocaleString()} XP</span>
+        <span className="font-bold text-[var(--foreground)] w-16 text-right">{user.totalXP.toLocaleString()} XP</span>
       </div>
     </div>
   );
@@ -153,8 +153,8 @@ export default function LeaderboardPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-white mb-1">Leaderboard</h1>
-          <p className="text-zinc-400 text-sm">
+          <h1 className="text-3xl font-black text-[var(--foreground)] mb-1">Leaderboard</h1>
+          <p className="text-[var(--muted-foreground)] text-sm">
             {tab === "college" && domain
               ? `${total} students at ${domain}`
               : total > 0 ? `${total} students ranked` : "Rankings loading…"}
@@ -172,8 +172,8 @@ export default function LeaderboardPage() {
               <button
                 key={id}
                 onClick={() => { setTab(id); setPage(1); }}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${
-                  active ? "text-white" : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] ${
+                  active ? "text-[var(--foreground)]" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border)]"
                 }`}
                 style={active ? { backgroundColor: theme.colors.primary, color: "#09090b" } : undefined}
               >
@@ -188,7 +188,7 @@ export default function LeaderboardPage() {
             verification shows a prompt" flow, as an inline card rather than
             an immediate popup so it isn't jarring on every tab click) */}
         {tab === "college" && collegeGateStatus === "pending_review" ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ backgroundColor: withAlpha(theme.colors.primary, "1f"), color: theme.colors.primary }}
@@ -196,13 +196,13 @@ export default function LeaderboardPage() {
               <Clock size={26} strokeWidth={2} aria-hidden="true" />
             </div>
             <h2 className="text-lg font-bold mb-2">College verification pending</h2>
-            <p className="text-zinc-400 text-sm max-w-sm mx-auto">
+            <p className="text-[var(--muted-foreground)] text-sm max-w-sm mx-auto">
               Your college email has been verified. We're reviewing your institution
               before adding it to official college rankings — check back soon.
             </p>
           </div>
         ) : tab === "college" && collegeGateStatus === "not_verified" ? (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ backgroundColor: withAlpha(theme.colors.primary, "1f"), color: theme.colors.primary }}
@@ -210,14 +210,14 @@ export default function LeaderboardPage() {
               <GraduationCap size={26} strokeWidth={2} aria-hidden="true" />
             </div>
             <h2 className="text-lg font-bold mb-2">Verify Your College Email</h2>
-            <p className="text-zinc-400 text-sm max-w-sm mx-auto mb-6">
+            <p className="text-[var(--muted-foreground)] text-sm max-w-sm mx-auto mb-6">
               Connect your official college email address to access your
               college leaderboard, participate in college-exclusive
               contests, and compete with your classmates.
             </p>
             <button
               onClick={() => setShowVerifyModal(true)}
-              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+              className="px-5 py-2.5 rounded-xl font-semibold text-sm transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
               style={{ backgroundColor: theme.colors.primary, color: "#09090b" }}
             >
               Verify College Email
@@ -226,8 +226,8 @@ export default function LeaderboardPage() {
         ) : (
           <>
             {/* List */}
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-2 border-b border-zinc-800 text-[10px] text-zinc-600 uppercase tracking-widest">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden">
+              <div className="flex items-center gap-3 px-4 py-2 border-b border-[var(--border)] text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest">
                 <span className="w-8">Rank</span>
                 <span className="w-8" />
                 <span className="flex-1">Student</span>
@@ -242,11 +242,11 @@ export default function LeaderboardPage() {
                   />
                 </div>
               ) : users.length === 0 ? (
-                <div className="text-center py-16 text-zinc-500">
+                <div className="text-center py-16 text-[var(--muted-foreground)]">
                   No students found yet. Be the first!
                 </div>
               ) : (
-                <div className="divide-y divide-zinc-800/50">
+                <div className="divide-y divide-[var(--border)]/50">
                   {users.map(u => (
                     <RankRow key={u.username} user={u} highlight={myRank === u.rank} theme={theme} />
                   ))}
@@ -260,15 +260,15 @@ export default function LeaderboardPage() {
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+                  className="px-4 py-2 text-sm rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
                 >
                   ← Prev
                 </button>
-                <span className="text-sm text-zinc-500">Page {page} of {totalPages}</span>
+                <span className="text-sm text-[var(--muted-foreground)]">Page {page} of {totalPages}</span>
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-4 py-2 text-sm rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+                  className="px-4 py-2 text-sm rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-40 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
                 >
                   Next →
                 </button>

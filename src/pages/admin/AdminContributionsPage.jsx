@@ -125,8 +125,8 @@ export default function AdminContributionsPage() {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Contributions</h1>
-          <p className="text-zinc-500 text-sm mt-0.5">
+          <h1 className="text-xl font-bold text-[var(--foreground)]">Contributions</h1>
+          <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
             Review student-submitted problems and testcase improvements.
           </p>
         </div>
@@ -152,7 +152,7 @@ export default function AdminContributionsPage() {
             key={t.value}
             onClick={() => setStatus(t.value)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-full transition ${
-              status === t.value ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:text-white"
+              status === t.value ? "bg-white text-black" : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             {t.label}
@@ -194,24 +194,24 @@ export default function AdminContributionsPage() {
           role="presentation"
         >
           <div
-            className="w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-2xl p-5"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5"
             onClick={(e) => e.stopPropagation()}
             role="alertdialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <h2 className="text-white font-bold text-base">Reject contribution</h2>
+              <h2 className="text-[var(--foreground)] font-bold text-base">Reject contribution</h2>
               <button
                 onClick={() => {
                   setRejectTarget(null);
                   setRejectReason("");
                 }}
-                className="text-zinc-500 hover:text-white"
+                className="text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               >
                 <X size={16} strokeWidth={2} />
               </button>
             </div>
-            <p className="text-zinc-400 text-sm mb-3">
+            <p className="text-[var(--muted-foreground)] text-sm mb-3">
               Reason is optional but shown to the student — worth explaining why.
             </p>
             <textarea
@@ -219,7 +219,7 @@ export default function AdminContributionsPage() {
               placeholder="Reason for rejection (optional)..."
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500"
+              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] focus:outline-none focus:border-red-500"
               rows={3}
             />
             <div className="flex items-center justify-end gap-2 mt-4">
@@ -250,33 +250,33 @@ function ContributionCard({ contribution, busy, expanded, onToggleExpand, onAppr
   const contributorLabel = contributorId?.displayName || contributorId?.email || "Unknown";
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <button
           onClick={onToggleExpand}
           className="flex items-center gap-3 min-w-0 flex-1 text-left"
         >
           {expanded ? (
-            <ChevronUp size={14} strokeWidth={2} className="flex-shrink-0 text-zinc-500" />
+            <ChevronUp size={14} strokeWidth={2} className="flex-shrink-0 text-[var(--muted-foreground)]" />
           ) : (
-            <ChevronDown size={14} strokeWidth={2} className="flex-shrink-0 text-zinc-500" />
+            <ChevronDown size={14} strokeWidth={2} className="flex-shrink-0 text-[var(--muted-foreground)]" />
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wide">
+              <span className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">
                 {KIND_LABELS[kind] || kind}
               </span>
-              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || "bg-zinc-800 text-zinc-400"}`}>
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"}`}>
                 {status}
               </span>
               {status === "approved" && rewardStatus && rewardStatus !== "issued" && (
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--surface-elevated)] text-[var(--muted-foreground)]">
                   reward: {rewardStatus.replace("_", " ")}
                 </span>
               )}
             </div>
-            <p className="text-white font-medium text-sm mt-1 truncate">{title || "Untitled"}</p>
-            <p className="text-zinc-500 text-xs mt-0.5">
+            <p className="text-[var(--foreground)] font-medium text-sm mt-1 truncate">{title || "Untitled"}</p>
+            <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
               {contributorLabel} · {formatVerificationDate(createdAt)}
             </p>
           </div>
@@ -295,13 +295,13 @@ function ContributionCard({ contribution, busy, expanded, onToggleExpand, onAppr
       </div>
 
       {status === "rejected" && rejectionReason && (
-        <p className="text-zinc-500 text-xs mt-2 border-t border-zinc-800 pt-2">
+        <p className="text-[var(--muted-foreground)] text-xs mt-2 border-t border-[var(--border)] pt-2">
           Rejected: {rejectionReason}
         </p>
       )}
 
       {expanded && (
-        <pre className="mt-3 border-t border-zinc-800 pt-3 text-xs text-zinc-400 overflow-x-auto whitespace-pre-wrap break-words">
+        <pre className="mt-3 border-t border-[var(--border)] pt-3 text-xs text-[var(--muted-foreground)] overflow-x-auto whitespace-pre-wrap break-words">
           {JSON.stringify(payload, null, 2)}
         </pre>
       )}

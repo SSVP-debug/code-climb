@@ -64,7 +64,7 @@ function PrivateContestsPage() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Private Contests</h1>
-          <p className="text-zinc-400 mt-2">
+          <p className="text-[var(--muted-foreground)] mt-2">
             Compete with friends, classmates, or your college using an invite code.
           </p>
         </div>
@@ -84,7 +84,7 @@ function PrivateContestsPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleJoin()}
                 placeholder="e.g. A3F9B2"
                 maxLength={6}
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white font-mono text-lg tracking-widest outline-none focus:border-[var(--theme-primary,#2dd4bf)] text-center sm:text-left"
+                className="flex-1 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-3 text-[var(--foreground)] font-mono text-lg tracking-widest outline-none focus:border-[var(--theme-primary,#2dd4bf)] text-center sm:text-left"
               />
               <Button
                 onClick={handleJoin}
