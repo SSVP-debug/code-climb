@@ -497,6 +497,7 @@ export async function submitHandler(req, res) {
           actualOutput: submissionExtra.actualOutput,
           contestId: persistedContestId,
           battleRoomId: persistedBattleRoomId,
+          problemVersion: problem.contentVersion,
         });
 
         responseExtras.submissionId = submissionDoc._id.toString();

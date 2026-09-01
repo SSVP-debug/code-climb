@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runCodeSchema } from "./compiler.js";
-import { SUPPORTED_LANGUAGE_IDS } from "../config/languages.js";
+import { ENABLED_LANGUAGE_IDS, SUPPORTED_LANGUAGE_IDS } from "../config/languages.js";
 
 /**
  * Judge0 Integration Hardening, items 1-2.
@@ -21,9 +21,24 @@ describe("routes/compiler.js — runCodeSchema language_id allow-list", () => {
     ...overrides,
   });
 
-  it.each(SUPPORTED_LANGUAGE_IDS)("accepts supported language_id %i", (id) => {
+  // Gated on ENABLED_LANGUAGE_IDS, not SUPPORTED_LANGUAGE_IDS — see
+  // compiler.js's own comment on this. Phase 6 (Language Expansion, plan
+  // 010) is the first time these two lists actually diverge (typescript
+  // is registered/supported but ships `enabled: false`), which is exactly
+  // why this test asserts against ENABLED_LANGUAGE_IDS specifically now
+  // rather than the (pre-Phase-6-equivalent) SUPPORTED_LANGUAGE_IDS.
+  it.each(ENABLED_LANGUAGE_IDS)("accepts enabled language_id %i", (id) => {
     const result = runCodeSchema.safeParse(validBody({ language_id: id }));
     expect(result.success).toBe(true);
+  });
+
+  it("rejects a supported-but-disabled language_id (typescript, 74) until enabled — plan 010", () => {
+    const disabledIds = SUPPORTED_LANGUAGE_IDS.filter((id) => !ENABLED_LANGUAGE_IDS.includes(id));
+    expect(disabledIds).toContain(74);
+
+    const result = runCodeSchema.safeParse(validBody({ language_id: 74 }));
+    expect(result.success).toBe(false);
+    expect(result.error.issues[0].message).toMatch(/supported languages/i);
   });
 
   it("rejects an unsupported (but structurally valid) Judge0 language_id, e.g. Bash (46)", () => {

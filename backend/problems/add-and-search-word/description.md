@@ -1,1 +1,0 @@
-Design a data structure that supports adding new words and finding if a string matches any previously added string. search(word) can contain dots '.' where dots can be matched with any letter.

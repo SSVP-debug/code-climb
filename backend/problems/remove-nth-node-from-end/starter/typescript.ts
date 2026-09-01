@@ -1,0 +1,3 @@
+function removeNthFromEnd(head, n) {
+
+}

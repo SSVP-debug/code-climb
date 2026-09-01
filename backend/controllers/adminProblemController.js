@@ -43,24 +43,40 @@ import { logger } from "../config/logger.js";
 // stay exactly as they were.
 const EnabledFieldSchema = z.boolean();
 
-const CATALOG_SAFELISTED_FIELDS = ["topic", "pattern", "sourceType", "enabled"];
+// ── Hidden-testcase-set toggle (audit follow-up) ───────────────────────────
+// Same reasoning/safety as EnabledFieldSchema above, extended to the
+// second real gap the Content & Execution Architecture cross-check found:
+// this was previously only reachable for "admin"-sourced problems (via
+// the full AdminProblemCreateSchema update branch below), not for any of
+// the 250 "catalog" problems — meaning the vast majority of the catalog
+// had no way to pause grading for a single problem without either
+// disabling the whole problem (`enabled: false`, too broad — Run mode
+// and the problem page both go dark too, not just Submit) or editing
+// src/data/problems.js and redeploying. Safe to add to the catalog
+// safelist because both writers of this field for catalog problems
+// (seedProblems.js, importProblems.js) already explicitly carry forward
+// `existing?.hiddenTestcaseSet?.enabled` rather than overwriting it on
+// every reseed — verified by reading both scripts, not assumed — so a
+// toggle made here survives future reseeds exactly the way `enabled`
+// already does.
+const HiddenTestcaseSetEnabledFieldSchema = z.boolean();
+
+const CATALOG_SAFELISTED_FIELDS = ["topic", "pattern", "sourceType", "enabled", "hiddenTestcaseSetEnabled"];
 // Reuses MetaSchema's own field-level rules for the three original
 // safelisted fields, rather than re-declaring "topic must be a non-empty
 // string" etc. a second time — same reuse rationale as
-// AdminProblemCreateSchema itself. `enabled` is appended via `.extend()`
-// since it isn't part of MetaSchema (see EnabledFieldSchema above) — for a
-// catalog problem this is actually SAFER than the other three safelisted
-// fields: seedProblems.js's `$set: problem` never includes `enabled`
-// (src/data/problems.js entries don't declare it), so toggling it here
-// survives every future seed run without the "will be reverted on next
-// seed" caveat that applies to topic/pattern/sourceType.
+// AdminProblemCreateSchema itself. `enabled` and `hiddenTestcaseSetEnabled`
+// are appended via `.extend()` since neither is part of MetaSchema.
 const CatalogSafelistSchema = MetaSchema.pick({
   topic: true,
   pattern: true,
   sourceType: true,
 })
   .partial()
-  .extend({ enabled: EnabledFieldSchema.optional() });
+  .extend({
+    enabled: EnabledFieldSchema.optional(),
+    hiddenTestcaseSetEnabled: HiddenTestcaseSetEnabledFieldSchema.optional(),
+  });
 
 // New admin-created problems get an id starting well clear of the catalog's
 // own sequential range (currently 1–250ish) so the two numbering spaces
@@ -108,7 +124,10 @@ export async function listProblemsForAdmin(req, res) {
     const limitNum = Math.min(50, parseInt(limit));
 
     const [problems, total] = await Promise.all([
-      Problem.find(filter, "id title slug difficulty topic pattern sourceType adminSource visibility enabled createdAt")
+      Problem.find(
+        filter,
+        "id title slug difficulty topic pattern sourceType adminSource visibility enabled hiddenTestcaseSet.enabled contentVersion createdAt"
+      )
         .sort({ id: 1 })
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum)
@@ -221,6 +240,17 @@ export async function updateProblem(req, res) {
 
       const changed = {};
       for (const key of Object.keys(parsed.data)) {
+        // Flat request-body key that maps onto a nested schema path — not
+        // a real top-level field on the Mongoose document (unlike the
+        // other three safelisted fields, which are), so it needs its own
+        // assignment rather than the generic `problem[key] = value` below.
+        if (key === "hiddenTestcaseSetEnabled") {
+          const before = problem.hiddenTestcaseSet?.enabled ?? true;
+          const after = parsed.data.hiddenTestcaseSetEnabled;
+          if (before !== after) changed.hiddenTestcaseSetEnabled = { from: before, to: after };
+          problem.hiddenTestcaseSet.enabled = after;
+          continue;
+        }
         if (problem[key] !== parsed.data[key]) changed[key] = { from: problem[key], to: parsed.data[key] };
         problem[key] = parsed.data[key];
       }

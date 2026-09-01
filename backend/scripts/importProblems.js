@@ -109,6 +109,20 @@ async function main() {
                 ),
                 "utf8"
             ),
+            // Phase 6 (Language Expansion, plan 010) — optional, unlike the
+            // four above: most problem folders won't have a
+            // starter/typescript.ts file until
+            // scripts/backfillTypescriptStarter.js has run against them
+            // (see ProblemFolderSchema's own comment on why this field is
+            // `.default("")` rather than required). Missing file → "",
+            // same posture the rest of this importer already has for any
+            // optional folder content (e.g. editorial.md below).
+            typescript: await fs
+                .readFile(
+                    path.join(folderPath, "starter", "typescript.ts"),
+                    "utf8"
+                )
+                .catch(() => ""),
         };
 
         const parsed =

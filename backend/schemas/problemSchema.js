@@ -67,6 +67,16 @@ export const ProblemFolderSchema =
             javascript: z.string(),
             java: z.string(),
             cpp: z.string(),
+            // Phase 6 (Language Expansion, plan 010) — optional, unlike
+            // the four above: languages.js's `typescript` entry starts
+            // `enabled: false` (see plans/010-language-expansion-scoping.md),
+            // and the folder-importer/exporter round-trip
+            // (scripts/importProblems.js, exportProblemsToFolders.js)
+            // shouldn't hard-require a starter/typescript.ts file to exist
+            // for every one of the 257 existing problem folders before
+            // the backfill script (scripts/backfillTypescriptStarter.js)
+            // has actually run against them.
+            typescript: z.string().default(""),
         }),
         editorial: z.string().default(""),
         hints: z.array(
@@ -120,6 +130,8 @@ export const AdminProblemCreateSchema = MetaSchema.extend({
         javascript: z.string(),
         java: z.string(),
         cpp: z.string(),
+        // Optional, same reasoning as ProblemFolderSchema above — plan 010.
+        typescript: z.string().default(""),
     }),
     editorial: z.string().default(""),
     hints: z.array(

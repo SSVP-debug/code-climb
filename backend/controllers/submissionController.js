@@ -71,6 +71,11 @@ export async function recordVerifiedSubmission({
   // so a Battle Room solve can be proven, after the fact, against a real
   // server-graded submission.
   battleRoomId = null,
+  // Minimum-viable versioning follow-up — see Submission.js's
+  // `problemVersion` field comment. Optional/nullable so any other
+  // future caller of this function doesn't need to plumb it through
+  // just to keep working.
+  problemVersion = null,
 }) {
   if (!SUBMISSION_STATUSES.includes(status)) {
     throw new Error(`recordVerifiedSubmission: invalid status "${status}"`);
@@ -123,6 +128,7 @@ export async function recordVerifiedSubmission({
     encouragementMessage,
     contestId: contestId || null,
     battleRoomId: battleRoomId || null,
+    problemVersion,
   });
 }
 

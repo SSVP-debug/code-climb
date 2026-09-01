@@ -302,6 +302,87 @@ describe("adminProblemController", () => {
             expect(doc.save).toHaveBeenCalledOnce();
             expect(invalidateProblemsCache).toHaveBeenCalledOnce();
         });
+
+        // ── Content & Execution Architecture cross-check follow-up ────────
+        // Previously only reachable for admin-sourced problems — see
+        // adminProblemController.js's own comment on why this is safe to
+        // extend to catalog problems now.
+        it("accepts `hiddenTestcaseSetEnabled` on a catalog problem via the safelist, mapped onto the nested field", async () => {
+            const doc = makeProblemDoc({
+                adminSource: "catalog",
+                hiddenTestcaseSet: { enabled: true, testcases: [{ input: "1", expectedOutput: "1" }] },
+            });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                {
+                    params: { slug: "two-sum" },
+                    body: { hiddenTestcaseSetEnabled: false },
+                    userDoc: makeAdmin(),
+                    actingAdminDoc: null,
+                },
+                res
+            );
+
+            expect(doc.hiddenTestcaseSet.enabled).toBe(false);
+            // Untouched — this must only ever flip the enabled flag, never
+            // the testcases array itself.
+            expect(doc.hiddenTestcaseSet.testcases).toEqual([{ input: "1", expectedOutput: "1" }]);
+            expect(doc.save).toHaveBeenCalledOnce();
+            expect(invalidateProblemsCache).toHaveBeenCalledOnce();
+            expect(recordAdminAction).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    action: "problem.update_safelisted",
+                    details: expect.objectContaining({
+                        changed: expect.objectContaining({
+                            hiddenTestcaseSetEnabled: { from: true, to: false },
+                        }),
+                    }),
+                })
+            );
+        });
+
+        it("rejects a non-boolean `hiddenTestcaseSetEnabled` value on a catalog problem", async () => {
+            const doc = makeProblemDoc({
+                adminSource: "catalog",
+                hiddenTestcaseSet: { enabled: true, testcases: [] },
+            });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                {
+                    params: { slug: "two-sum" },
+                    body: { hiddenTestcaseSetEnabled: "nope" },
+                    userDoc: makeAdmin(),
+                    actingAdminDoc: null,
+                },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(doc.save).not.toHaveBeenCalled();
+        });
+
+        it("still rejects a field outside the safelist on a catalog problem (unchanged behavior)", async () => {
+            const doc = makeProblemDoc({ adminSource: "catalog" });
+            Problem.findOne.mockResolvedValueOnce(doc);
+
+            await updateProblem(
+                {
+                    params: { slug: "two-sum" },
+                    body: { functionName: "hacked" },
+                    userDoc: makeAdmin(),
+                    actingAdminDoc: null,
+                },
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({ disallowedFields: ["functionName"] })
+            );
+            expect(doc.save).not.toHaveBeenCalled();
+        });
     });
 
     describe("deleteProblem", () => {

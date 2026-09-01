@@ -1,1 +1,0 @@
-Implement a trie with insert, search, and startsWith methods. insert(word) inserts word into the trie. search(word) returns true if word is in the trie. startsWith(prefix) returns true if any word in the trie starts with the given prefix.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateDriverCode } from "./generateDriverCode.js";
+import { generateDriverCode, formatJsArg } from "./generateDriverCode.js";
 import { validateProblems } from "../scripts/validateProblemContracts.js";
 
 describe("generateDriverCode — Java return type", () => {
@@ -92,6 +92,37 @@ describe("generateDriverCode — JavaScript", () => {
     // need a documented string-serialization contract, which does not
     // exist today — that's a separate, currently out-of-scope concern.
     expect(4999950000).toBeLessThan(Number.MAX_SAFE_INTEGER);
+  });
+});
+
+describe("generateDriverCode — TypeScript (plan 010)", () => {
+  it("reuses the same call-and-print shape as JavaScript", () => {
+    const code = `function twoSum(nums: number[], target: number) {\n  return [];\n}`;
+    const driver = generateDriverCode("typescript", code, { nums: [2, 7], target: 9 }, "twoSum");
+
+    expect(driver).toContain(code);
+    expect(driver).toContain("twoSum(");
+    expect(driver).toContain("console.log(JSON.stringify(_result));");
+  });
+
+  it("formats call arguments the same way formatJsArg does (reused, not duplicated)", () => {
+    const code = `function greet(name: string) {\n  return name;\n}`;
+    const driver = generateDriverCode("typescript", code, { name: "hi\"there" }, "greet");
+
+    expect(driver).toContain(formatJsArg("hi\"there"));
+  });
+
+  it("catch block reports RUNTIME_ERROR using the thrown error's message", () => {
+    const code = `function boom() {\n  throw new Error("bad input");\n}`;
+    const driver = generateDriverCode("typescript", code, {}, "boom");
+
+    expect(driver).toContain('console.log("RUNTIME_ERROR:" + (e instanceof Error ? e.message : String(e)));');
+  });
+
+  it("throws Unsupported language for anything not registered, same as before this phase", () => {
+    expect(() => generateDriverCode("rust", "fn solve() {}", {}, "solve")).toThrow(
+      "Unsupported language: rust"
+    );
   });
 });
 

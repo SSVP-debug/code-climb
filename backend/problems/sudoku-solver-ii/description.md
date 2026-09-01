@@ -1,1 +1,0 @@
-Write a program to solve a Sudoku puzzle by filling the empty cells (marked '.'). Each row, column, and 3x3 box must contain digits 1-9.

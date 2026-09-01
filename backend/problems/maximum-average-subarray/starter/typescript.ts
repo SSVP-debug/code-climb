@@ -1,0 +1,3 @@
+function findMaxAverage(nums, k) {
+
+}

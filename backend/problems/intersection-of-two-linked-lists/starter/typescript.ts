@@ -1,0 +1,3 @@
+function getIntersectionNode(headA, headB) {
+
+}

@@ -1,0 +1,3 @@
+function kthSmallest(root, k) {
+
+}

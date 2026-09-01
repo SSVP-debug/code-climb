@@ -56,6 +56,17 @@ export function buildProblemFiles(problem) {
     "starter/javascript.js": starters.javascript ?? "",
     "starter/java.java": starters.java ?? "",
     "starter/cpp.cpp": starters.cpp ?? "",
+    // Phase 6 (Language Expansion, plan 010) — only emitted when present,
+    // unlike the four required starters above: not every problem has a
+    // typescript starter yet if this runs before/without
+    // scripts/backfillTypescriptStarter.js having populated
+    // src/data/problems.js first. checkProblemsFolderDrift.js diffs
+    // against exactly this set of keys, so an absent key here (rather
+    // than an empty-string one) means "no file expected" instead of
+    // "expected empty file" — matches importProblems.js's own
+    // `.catch(() => "")` treatment of a missing starter/typescript.ts on
+    // the read side.
+    ...(starters.typescript ? { "starter/typescript.ts": starters.typescript } : {}),
     "editorial.md": problem.editorial?.content ?? "",
   };
 }

@@ -74,6 +74,42 @@ describe("recordVerifiedSubmission — internal, server-only writer", () => {
     );
   });
 
+  // ── Minimum-viable versioning follow-up ──────────────────────────────
+  it("passes problemVersion through to Submission.create when provided", async () => {
+    Submission.create.mockResolvedValue({ _id: "sub1" });
+
+    await recordVerifiedSubmission({
+      userId: "user1",
+      problemSlug: "two-sum",
+      problemTitle: "Two Sum",
+      language: "python",
+      code: "def twoSum(): pass",
+      status: "Accepted",
+      passed: 2,
+      total: 2,
+      problemVersion: 3,
+    });
+
+    expect(Submission.create).toHaveBeenCalledWith(expect.objectContaining({ problemVersion: 3 }));
+  });
+
+  it("defaults problemVersion to null when the caller doesn't pass one", async () => {
+    Submission.create.mockResolvedValue({ _id: "sub1" });
+
+    await recordVerifiedSubmission({
+      userId: "user1",
+      problemSlug: "two-sum",
+      problemTitle: "Two Sum",
+      language: "python",
+      code: "def twoSum(): pass",
+      status: "Accepted",
+      passed: 2,
+      total: 2,
+    });
+
+    expect(Submission.create).toHaveBeenCalledWith(expect.objectContaining({ problemVersion: null }));
+  });
+
   it("rejects a status outside the known enum rather than writing garbage to the DB", async () => {
     await expect(
       recordVerifiedSubmission({

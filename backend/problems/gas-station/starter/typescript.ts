@@ -1,0 +1,3 @@
+function canCompleteCircuit(gas, cost) {
+
+}

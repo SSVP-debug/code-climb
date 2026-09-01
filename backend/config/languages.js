@@ -100,6 +100,24 @@ export const LANGUAGES = {
     extension: "cpp",
     enabled: true,
   },
+  // Phase 6 (Language Expansion) — see plans/010-language-expansion-scoping.md
+  // for why TypeScript went first (structural superset of JS → driver-gen
+  // reuses formatJsArg/the JS call-and-print pattern almost entirely, and
+  // the 250-problem starter-code backfill is mechanical rather than
+  // hand-authored — see scripts/backfillTypescriptStarter.js). Starts
+  // disabled until that backfill + a real run against this deployment's
+  // Judge0 instance both happen — see the note on judge0Id below.
+  typescript: {
+    name: "TypeScript",
+    // Judge0 CE's well-known id for "TypeScript (3.7.4)". Not yet
+    // confirmed against this project's actual self-hosted Judge0
+    // instance/version — confirm before flipping `enabled: true` (see
+    // docs/judge0-setup.md's instance-specific language list, if one
+    // gets added there, or query the instance's /languages endpoint).
+    judge0Id: 74,
+    extension: "ts",
+    enabled: false,
+  },
 };
 
 // ── Derived exports — ALL registered languages (supported, regardless of

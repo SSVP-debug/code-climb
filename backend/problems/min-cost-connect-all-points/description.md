@@ -1,1 +1,0 @@
-Given an array of points in 2D space, connect all points using the minimum total Manhattan distance cost (Minimum Spanning Tree).

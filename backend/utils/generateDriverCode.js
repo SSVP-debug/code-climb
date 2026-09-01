@@ -173,6 +173,28 @@ try {
 `;
   }
 
+  if (language === "typescript") {
+    // Deliberately reuses formatJsArg (not a separate formatTsArg) and the
+    // same call-and-print shape JavaScript uses above — see
+    // plans/006-language-expansion-scoping.md: TS is a structural
+    // superset of JS, and unlike Java/C++ there is no separate
+    // declared-variable step here, so there is nothing meaningfully
+    // TS-specific about literal formatting to extract into its own
+    // languageTypes/typescript.js module the way java.js/cpp.js exist for
+    // their languages' declaration syntax.
+    const callArgs = args.map((a) => formatJsArg(a.value)).join(", ");
+    return `
+${userCode}
+
+try {
+  const _result = ${fn}(${callArgs});
+  console.log(JSON.stringify(_result));
+} catch (e) {
+  console.log("RUNTIME_ERROR:" + (e instanceof Error ? e.message : String(e)));
+}
+`;
+  }
+
   if (language === "java") {
     const declarations = args
       .map(({ key, value }) => javaDeclaration(key, value, paramTypes[key]))

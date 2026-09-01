@@ -65,6 +65,20 @@ const submissionSchema = new mongoose.Schema(
       min: 0,
     },
     problemTitle: String,
+    // Minimum-viable versioning follow-up (see Problem.js's
+    // `contentVersion` field comment for the full reasoning). Captured
+    // from `problem.contentVersion` at the moment this submission was
+    // judged (see controllers/judgeController.js's `finish()`) — a
+    // snapshot, not a live reference, so it never changes after the
+    // fact. `null`/absent for every submission recorded before this
+    // field existed; treat that the same as "unknown," not "version 0."
+    // Lets a later reader notice "this submission's verdict was computed
+    // under a grading contract that has since changed" without needing
+    // to store or reconstruct the actual old testcases/contract.
+    problemVersion: {
+      type: Number,
+      default: null,
+    },
     // Content & Execution Architecture, Phase 2: sourced from
     // SUPPORTED_LANGUAGE_KEYS (config/languages.js) — deliberately the
     // full REGISTERED set, not ENABLED_LANGUAGE_KEYS. A language being

@@ -17,6 +17,12 @@ const starterCodeSchema = new mongoose.Schema(
     javascript: { type: String, default: "" },
     java: { type: String, default: "" },
     cpp: { type: String, default: "" },
+    // Phase 6 (Language Expansion) — see
+    // plans/006-language-expansion-scoping.md. Named field, matching this
+    // schema's existing convention rather than switching to a map; worth
+    // revisiting if a second/third language makes the fixed-field list
+    // unwieldy.
+    typescript: { type: String, default: "" },
   },
   { _id: false }
 );
@@ -104,6 +110,35 @@ const problemSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+
+    // ── Content versioning (minimum-viable, Content & Execution
+    // Architecture follow-up — audit found no version field existed).
+    // Bumped only when a field that changes what "correct" means for
+    // this problem is written: `hiddenTestcaseSet`, `comparisonMode`,
+    // `operationSequence`, `returnType`, `paramTypes`. Deliberately NOT
+    // bumped for cosmetic/catalog fields (topic, pattern, title, etc.) —
+    // this is meant to answer "did the grading contract change since
+    // this Submission was judged," not "did anything about this problem
+    // change." See the two hooks below (`pre("save")` for
+    // adminProblemController.js's `.save()` path, `pre("findOneAndUpdate")`
+    // for seedProblems.js/importProblems.js's upsert path) — both are
+    // needed because catalog problems are written via `findOneAndUpdate`,
+    // which document middleware alone does not intercept.
+    //
+    // Deliberately NOT full immutable testcase snapshots or an execution-
+    // snapshot system: `Submission` already stores the judged *outcome*
+    // (status/passed counts), which historical submissions never lose
+    // regardless of later problem edits. `contentVersion` +
+    // `Submission.problemVersion` only add the ability to notice, after
+    // the fact, that a submission was graded under a since-changed
+    // contract — not to reconstruct or re-run against the old contract.
+    // That's the deliberate minimum-viable line; a full versioned-
+    // testcase-set system is future scope if this turns out to be
+    // insufficient.
+    contentVersion: {
+      type: Number,
+      default: 1,
     },
 
     // Learning pattern taught by this problem
@@ -378,6 +413,66 @@ problemSchema.statics.publicFields =
 // choice. Not performance-critical at today's problem count, but cheap to
 // add now and avoids a later migration once the catalog grows.
 problemSchema.index({ enabled: 1, visibility: 1 });
+
+// ── Content versioning hooks (see contentVersion field comment above) ──────
+const GRADING_CONTRACT_FIELDS = [
+  "hiddenTestcaseSet",
+  "comparisonMode",
+  "operationSequence",
+  "returnType",
+  "paramTypes",
+];
+
+// Covers adminProblemController.js's `problem.save()` path (both the
+// catalog-safelist branch and the full admin-sourced update branch —
+// neither currently touches these fields today, since the catalog
+// safelist is topic/pattern/sourceType/enabled and admin-sourced
+// problems don't yet expose a hidden-testcase-set toggle either, but this
+// is written to cover any future write path through `.save()`, not just
+// what exists right now).
+problemSchema.pre("save", function (next) {
+  if (this.isNew) return next(); // starts at the schema default (1)
+  if (GRADING_CONTRACT_FIELDS.some((f) => this.isModified(f))) {
+    this.contentVersion = (this.contentVersion || 1) + 1;
+  }
+  next();
+});
+
+// Covers seedProblems.js / importProblems.js / migrateHiddenTestcases.js's
+// upsert-via-`findOneAndUpdate` path — document middleware (`pre("save")`
+// above) does NOT run for this. Deliberately compares actual VALUES, not
+// just field presence: seedProblems.js's `$set` includes a freshly-built
+// `hiddenTestcaseSet` object on every single reseed (even when nothing
+// about it actually changed, because it's reconstructed from the flat
+// `hiddentestcases` array each run) — a presence-only check would bump
+// the version on every routine, no-op reseed, which defeats the purpose.
+problemSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate() || {};
+  // seedProblems.js/importProblems.js use `{ $set: {...} }`; editorial.js
+  // uses a flat (non-`$set`) update object — support both shapes rather
+  // than assuming one.
+  const setDoc = update.$set ?? update;
+
+  const touchedFields = GRADING_CONTRACT_FIELDS.filter((f) =>
+    Object.prototype.hasOwnProperty.call(setDoc, f)
+  );
+  if (touchedFields.length === 0) return next();
+
+  const current = await this.model.findOne(this.getQuery()).select(touchedFields.join(" ")).lean();
+  // No existing document — this is an upsert creating a brand-new
+  // problem, which correctly starts at the schema default (1); nothing
+  // to compare against.
+  if (!current) return next();
+
+  const changed = touchedFields.some(
+    (f) => JSON.stringify(current[f] ?? null) !== JSON.stringify(setDoc[f] ?? null)
+  );
+  if (changed) {
+    update.$inc = { ...(update.$inc || {}), contentVersion: 1 };
+    this.setUpdate(update);
+  }
+  next();
+});
 
 const Problem = mongoose.model("Problem", problemSchema);
 

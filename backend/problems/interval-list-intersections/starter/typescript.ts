@@ -1,0 +1,3 @@
+function intervalIntersection(firstList, secondList) {
+
+}

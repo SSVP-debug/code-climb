@@ -1,0 +1,3 @@
+function kClosest(points, k) {
+
+}
