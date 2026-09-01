@@ -40,6 +40,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def twoSum(self, nums, target):\n        pass`,
       javascript: `function twoSum(nums, target) {\n\n}`,
+      typescript: `function twoSum(nums, target) {\n\n}`,
       java: `class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        return {};\n    }\n};`,
     },
@@ -73,6 +74,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def containsDuplicate(self, nums):\n        pass`,
       javascript: `function containsDuplicate(nums) {\n\n}`,
+      typescript: `function containsDuplicate(nums) {\n\n}`,
       java: `class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool containsDuplicate(vector<int>& nums) {\n        return false;\n    }\n};`,
     },
@@ -106,6 +108,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxProfit(self, prices):\n        pass`,
       javascript: `function maxProfit(prices) {\n\n}`,
+      typescript: `function maxProfit(prices) {\n\n}`,
       java: `class Solution {\n    public int maxProfit(int[] prices) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n        return 0;\n    }\n};`,
     },
@@ -140,6 +143,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxSubArray(self, nums):\n        pass`,
       javascript: `function maxSubArray(nums) {\n\n}`,
+      typescript: `function maxSubArray(nums) {\n\n}`,
       java: `class Solution {\n    public int maxSubArray(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxSubArray(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -173,6 +177,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def majorityElement(self, nums):\n        pass`,
       javascript: `function majorityElement(nums) {\n\n}`,
+      typescript: `function majorityElement(nums) {\n\n}`,
       java: `class Solution {\n    public int majorityElement(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int majorityElement(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -206,6 +211,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def moveZeroes(self, nums):\n        pass`,
       javascript: `function moveZeroes(nums) {\n\n}`,
+      typescript: `function moveZeroes(nums) {\n\n}`,
       java: `class Solution {\n    public int[] moveZeroes(int[] nums) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> moveZeroes(vector<int>& nums) {\n        return {};\n    }\n};`,
     },
@@ -242,6 +248,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isValid(self, s):\n        pass`,
       javascript: `function isValid(s) {\n\n}`,
+      typescript: `function isValid(s) {\n\n}`,
       java: `class Solution {\n    public boolean isValid(String s) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isValid(string s) {\n        return false;\n    }\n};`,
     },
@@ -275,6 +282,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minStack(self, ops):\n        # ops: list of ["push", val], ["pop"], ["top"], ["getMin"]\n        # return list of results for "top" and "getMin" calls\n        pass`,
       javascript: `function minStack(ops) {\n  // ops: array of ["push", val], ["pop"], ["top"], ["getMin"]\n  // return array of results for "top" and "getMin" calls\n}`,
+      typescript: `function minStack(ops) {\n  // ops: array of ["push", val], ["pop"], ["top"], ["getMin"]\n  // return array of results for "top" and "getMin" calls\n}`,
       java: `class Solution {\n    public int[] minStack(String[][] ops) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> minStack(vector<vector<string>>& ops) {\n        return {};\n    }\n};`,
     },
@@ -307,6 +315,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def dailyTemperatures(self, temperatures):\n        pass`,
       javascript: `function dailyTemperatures(temperatures) {\n\n}`,
+      typescript: `function dailyTemperatures(temperatures) {\n\n}`,
       java: `class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> dailyTemperatures(vector<int>& temperatures) {\n        return {};\n    }\n};`,
     },
@@ -342,6 +351,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reverseList(self, head):\n        pass`,
       javascript: `function reverseList(head) {\n\n}`,
+      typescript: `function reverseList(head) {\n\n}`,
       java: `class Solution {\n    public int[] reverseList(int[] head) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> reverseList(vector<int>& head) {\n        return {};\n    }\n};`,
     },
@@ -376,6 +386,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def mergeTwoLists(self, list1, list2):\n        pass`,
       javascript: `function mergeTwoLists(list1, list2) {\n\n}`,
+      typescript: `function mergeTwoLists(list1, list2) {\n\n}`,
       java: `class Solution {\n    public int[] mergeTwoLists(int[] list1, int[] list2) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> mergeTwoLists(vector<int>& list1, vector<int>& list2) {\n        return {};\n    }\n};`,
     },
@@ -409,6 +420,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def middleNode(self, head):\n        pass`,
       javascript: `function middleNode(head) {\n\n}`,
+      typescript: `function middleNode(head) {\n\n}`,
       java: `class Solution {\n    public int middleNode(int[] head) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int middleNode(vector<int>& head) {\n        return 0;\n    }\n};`,
     },
@@ -443,6 +455,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def removeNthFromEnd(self, head, n):\n        pass`,
       javascript: `function removeNthFromEnd(head, n) {\n\n}`,
+      typescript: `function removeNthFromEnd(head, n) {\n\n}`,
       java: `class Solution {\n    public int[] removeNthFromEnd(int[] head, int n) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> removeNthFromEnd(vector<int>& head, int n) {\n        return {};\n    }\n};`,
     },
@@ -478,6 +491,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxArea(self, height):\n        pass`,
       javascript: `function maxArea(height) {\n\n}`,
+      typescript: `function maxArea(height) {\n\n}`,
       java: `class Solution {\n    public int maxArea(int[] height) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxArea(vector<int>& height) {\n        return 0;\n    }\n};`,
     },
@@ -511,6 +525,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def trap(self, height):\n        pass`,
       javascript: `function trap(height) {\n\n}`,
+      typescript: `function trap(height) {\n\n}`,
       java: `class Solution {\n    public int trap(int[] height) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int trap(vector<int>& height) {\n        return 0;\n    }\n};`,
     },
@@ -545,6 +560,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def twoSumSorted(self, numbers, target):\n        pass`,
       javascript: `function twoSumSorted(numbers, target) {\n\n}`,
+      typescript: `function twoSumSorted(numbers, target) {\n\n}`,
       java: `class Solution {\n    public int[] twoSumSorted(int[] numbers, int target) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> twoSumSorted(vector<int>& numbers, int target) {\n        return {};\n    }\n};`,
     },
@@ -579,6 +595,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def threeSum(self, nums):\n        # return the count of unique triplets summing to 0\n        pass`,
       javascript: `function threeSum(nums) {\n  // return the count of unique triplets summing to 0\n}`,
+      typescript: `function threeSum(nums) {\n  // return the count of unique triplets summing to 0\n}`,
       java: `class Solution {\n    public int threeSum(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int threeSum(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -615,6 +632,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def lengthOfLongestSubstring(self, s):\n        pass`,
       javascript: `function lengthOfLongestSubstring(s) {\n\n}`,
+      typescript: `function lengthOfLongestSubstring(s) {\n\n}`,
       java: `class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int lengthOfLongestSubstring(string s) {\n        return 0;\n    }\n};`,
     },
@@ -649,6 +667,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minSubArrayLen(self, target, nums):\n        pass`,
       javascript: `function minSubArrayLen(target, nums) {\n\n}`,
+      typescript: `function minSubArrayLen(target, nums) {\n\n}`,
       java: `class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minSubArrayLen(int target, vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -682,6 +701,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMaxAverage(self, nums, k):\n        pass`,
       javascript: `function findMaxAverage(nums, k) {\n\n}`,
+      typescript: `function findMaxAverage(nums, k) {\n\n}`,
       java: `class Solution {\n    public double findMaxAverage(int[] nums, int k) {\n        return 0.0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    double findMaxAverage(vector<int>& nums, int k) {\n        return 0.0;\n    }\n};`,
     },
@@ -717,6 +737,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def search(self, nums, target):\n        pass`,
       javascript: `function search(nums, target) {\n\n}`,
+      typescript: `function search(nums, target) {\n\n}`,
       java: `class Solution {\n    public int search(int[] nums, int target) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int search(vector<int>& nums, int target) {\n        return -1;\n    }\n};`,
     },
@@ -751,6 +772,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMin(self, nums):\n        pass`,
       javascript: `function findMin(nums) {\n\n}`,
+      typescript: `function findMin(nums) {\n\n}`,
       java: `class Solution {\n    public int findMin(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMin(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -785,6 +807,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def searchRotated(self, nums, target):\n        pass`,
       javascript: `function searchRotated(nums, target) {\n\n}`,
+      typescript: `function searchRotated(nums, target) {\n\n}`,
       java: `class Solution {\n    public int searchRotated(int[] nums, int target) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int searchRotated(vector<int>& nums, int target) {\n        return -1;\n    }\n};`,
     },
@@ -820,6 +843,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isAnagram(self, s, t):\n        pass`,
       javascript: `function isAnagram(s, t) {\n\n}`,
+      typescript: `function isAnagram(s, t) {\n\n}`,
       java: `class Solution {\n    public boolean isAnagram(String s, String t) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isAnagram(string s, string t) {\n        return false;\n    }\n};`,
     },
@@ -854,6 +878,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def groupAnagrams(self, strs):\n        # return the number of anagram groups\n        pass`,
       javascript: `function groupAnagrams(strs) {\n  // return the number of anagram groups\n}`,
+      typescript: `function groupAnagrams(strs) {\n  // return the number of anagram groups\n}`,
       java: `class Solution {\n    public int groupAnagrams(String[] strs) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int groupAnagrams(vector<string>& strs) {\n        return 0;\n    }\n};`,
     },
@@ -889,6 +914,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestConsecutive(self, nums):\n        pass`,
       javascript: `function longestConsecutive(nums) {\n\n}`,
+      typescript: `function longestConsecutive(nums) {\n\n}`,
       java: `class Solution {\n    public int longestConsecutive(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int longestConsecutive(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -932,6 +958,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def countPairs(self, nums, target):\n        pass`,
       javascript: `function countPairs(nums, target) {\n\n}`,
+      typescript: `function countPairs(nums, target) {\n\n}`,
       java: `class Solution {\n    public long countPairs(int[] nums, int target) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    long long countPairs(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
     },
@@ -970,6 +997,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestCommonPrefix(self, strs):\n        pass`,
       javascript: `function longestCommonPrefix(strs) {\n\n}`,
+      typescript: `function longestCommonPrefix(strs) {\n\n}`,
       java: `class Solution {\n    public String longestCommonPrefix(String[] strs) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string longestCommonPrefix(vector<string>& strs) {\n        return "";\n    }\n};`,
     },
@@ -1003,6 +1031,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reverseString(self, s):\n        pass`,
       javascript: `function reverseString(s) {\n\n}`,
+      typescript: `function reverseString(s) {\n\n}`,
       java: `class Solution {\n    public String reverseString(String s) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string reverseString(string s) {\n        return "";\n    }\n};`,
     },
@@ -1037,6 +1066,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isPalindrome(self, s):\n        pass`,
       javascript: `function isPalindrome(s) {\n\n}`,
+      typescript: `function isPalindrome(s) {\n\n}`,
       java: `class Solution {\n    public boolean isPalindrome(String s) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isPalindrome(string s) {\n        return false;\n    }\n};`,
     },
@@ -1072,6 +1102,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def climbStairs(self, n):\n        pass`,
       javascript: `function climbStairs(n) {\n\n}`,
+      typescript: `function climbStairs(n) {\n\n}`,
       java: `class Solution {\n    public int climbStairs(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int climbStairs(int n) {\n        return 0;\n    }\n};`,
     },
@@ -1106,6 +1137,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def fib(self, n):\n        pass`,
       javascript: `function fib(n) {\n\n}`,
+      typescript: `function fib(n) {\n\n}`,
       java: `class Solution {\n    public int fib(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int fib(int n) {\n        return 0;\n    }\n};`,
     },
@@ -1139,6 +1171,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def rob(self, nums):\n        pass`,
       javascript: `function rob(nums) {\n\n}`,
+      typescript: `function rob(nums) {\n\n}`,
       java: `class Solution {\n    public int rob(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int rob(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -1173,6 +1206,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def coinChange(self, coins, amount):\n        pass`,
       javascript: `function coinChange(coins, amount) {\n\n}`,
+      typescript: `function coinChange(coins, amount) {\n\n}`,
       java: `class Solution {\n    public int coinChange(int[] coins, int amount) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int coinChange(vector<int>& coins, int amount) {\n        return 0;\n    }\n};`,
     },
@@ -1207,6 +1241,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def wordBreak(self, s, wordDict):\n        pass`,
       javascript: `function wordBreak(s, wordDict) {\n\n}`,
+      typescript: `function wordBreak(s, wordDict) {\n\n}`,
       java: `class Solution {\n    public boolean wordBreak(String s, java.util.List<String> wordDict) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool wordBreak(string s, vector<string>& wordDict) {\n        return false;\n    }\n};`,
     },
@@ -1241,6 +1276,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def numDecodings(self, s):\n        pass`,
       javascript: `function numDecodings(s) {\n\n}`,
+      typescript: `function numDecodings(s) {\n\n}`,
       java: `class Solution {\n    public int numDecodings(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numDecodings(string s) {\n        return 0;\n    }\n};`,
     },
@@ -1276,6 +1312,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def jump(self, nums):\n        pass`,
       javascript: `function jump(nums) {\n\n}`,
+      typescript: `function jump(nums) {\n\n}`,
       java: `class Solution {\n    public int jump(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int jump(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -1311,6 +1348,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findKthLargest(self, nums, k):\n        pass`,
       javascript: `function findKthLargest(nums, k) {\n\n}`,
+      typescript: `function findKthLargest(nums, k) {\n\n}`,
       java: `class Solution {\n    public int findKthLargest(int[] nums, int k) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findKthLargest(vector<int>& nums, int k) {\n        return 0;\n    }\n};`,
     },
@@ -1344,6 +1382,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def lastStoneWeight(self, stones):\n        pass`,
       javascript: `function lastStoneWeight(stones) {\n\n}`,
+      typescript: `function lastStoneWeight(stones) {\n\n}`,
       java: `class Solution {\n    public int lastStoneWeight(int[] stones) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int lastStoneWeight(vector<int>& stones) {\n        return 0;\n    }\n};`,
     },
@@ -1379,6 +1418,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def subsets(self, nums):\n        # return the count of all subsets\n        pass`,
       javascript: `function subsets(nums) {\n  // return the count of all subsets\n}`,
+      typescript: `function subsets(nums) {\n  // return the count of all subsets\n}`,
       java: `class Solution {\n    public int subsets(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int subsets(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -1413,6 +1453,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def combinationSum(self, candidates, target):\n        # return the count of unique combinations\n        pass`,
       javascript: `function combinationSum(candidates, target) {\n  // return the count of unique combinations\n}`,
+      typescript: `function combinationSum(candidates, target) {\n  // return the count of unique combinations\n}`,
       java: `class Solution {\n    public int combinationSum(int[] candidates, int target) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int combinationSum(vector<int>& candidates, int target) {\n        return 0;\n    }\n};`,
     },
@@ -1447,6 +1488,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def letterCasePermutation(self, s):\n        # return the count of unique case permutations\n        pass`,
       javascript: `function letterCasePermutation(s) {\n  // return the count of unique case permutations\n}`,
+      typescript: `function letterCasePermutation(s) {\n  // return the count of unique case permutations\n}`,
       java: `class Solution {\n    public int letterCasePermutation(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int letterCasePermutation(string s) {\n        return 0;\n    }\n};`,
     },
@@ -1483,6 +1525,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxDepth(self, root):\n        # root is a level-order list, -1 = null node\n        pass`,
       javascript: `function maxDepth(root) {\n  // root is a level-order array, -1 = null node\n}`,
+      typescript: `function maxDepth(root) {\n  // root is a level-order array, -1 = null node\n}`,
       java: `class Solution {\n    public int maxDepth(int[] root) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxDepth(vector<int>& root) {\n        return 0;\n    }\n};`,
     },
@@ -1517,6 +1560,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def invertTree(self, root):\n        # root is a level-order list, -1 = null\n        # return the inverted level-order list\n        pass`,
       javascript: `function invertTree(root) {\n  // root is a level-order array, -1 = null\n  // return the inverted level-order array\n}`,
+      typescript: `function invertTree(root) {\n  // root is a level-order array, -1 = null\n  // return the inverted level-order array\n}`,
       java: `class Solution {\n    public int[] invertTree(int[] root) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> invertTree(vector<int>& root) {\n        return {};\n    }\n};`,
     },
@@ -1550,6 +1594,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def diameterOfBinaryTree(self, root):\n        # root is a level-order list, -1 = null\n        pass`,
       javascript: `function diameterOfBinaryTree(root) {\n  // root is a level-order array, -1 = null\n}`,
+      typescript: `function diameterOfBinaryTree(root) {\n  // root is a level-order array, -1 = null\n}`,
       java: `class Solution {\n    public int diameterOfBinaryTree(int[] root) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int diameterOfBinaryTree(vector<int>& root) {\n        return 0;\n    }\n};`,
     },
@@ -1583,6 +1628,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isValidBST(self, root):\n        # root is a level-order list, -1 = null\n        pass`,
       javascript: `function isValidBST(root) {\n  // root is a level-order array, -1 = null\n}`,
+      typescript: `function isValidBST(root) {\n  // root is a level-order array, -1 = null\n}`,
       java: `class Solution {\n    public boolean isValidBST(int[] root) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isValidBST(vector<int>& root) {\n        return false;\n    }\n};`,
     },
@@ -1617,6 +1663,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isSameTree(self, p, q):\n        # p and q are level-order lists, -1 = null\n        pass`,
       javascript: `function isSameTree(p, q) {\n  // p and q are level-order arrays, -1 = null\n}`,
+      typescript: `function isSameTree(p, q) {\n  // p and q are level-order arrays, -1 = null\n}`,
       java: `class Solution {\n    public boolean isSameTree(int[] p, int[] q) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isSameTree(vector<int>& p, vector<int>& q) {\n        return false;\n    }\n};`,
     },
@@ -1652,6 +1699,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def floodFill(self, image, numCols, sr, sc, color):\n        # image is a flat list; reconstruct grid with numCols\n        pass`,
       javascript: `function floodFill(image, numCols, sr, sc, color) {\n  // image is a flat array; reconstruct grid with numCols\n}`,
+      typescript: `function floodFill(image, numCols, sr, sc, color) {\n  // image is a flat array; reconstruct grid with numCols\n}`,
       java: `class Solution {\n    public int[] floodFill(int[] image, int numCols, int sr, int sc, int color) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> floodFill(vector<int>& image, int numCols, int sr, int sc, int color) {\n        return {};\n    }\n};`,
     },
@@ -1684,6 +1732,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def numIslands(self, grid, numCols):\n        # grid is a flat list of 0s and 1s\n        pass`,
       javascript: `function numIslands(grid, numCols) {\n  // grid is a flat array of 0s and 1s\n}`,
+      typescript: `function numIslands(grid, numCols) {\n  // grid is a flat array of 0s and 1s\n}`,
       java: `class Solution {\n    public int numIslands(int[] grid, int numCols) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numIslands(vector<int>& grid, int numCols) {\n        return 0;\n    }\n};`,
     },
@@ -1719,6 +1768,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def singleNumber(self, nums):\n        pass`,
       javascript: `function singleNumber(nums) {\n\n}`,
+      typescript: `function singleNumber(nums) {\n\n}`,
       java: `class Solution {\n    public int singleNumber(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int singleNumber(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -1754,6 +1804,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def productExceptSelf(self, nums):\n        pass`,
       javascript: `function productExceptSelf(nums) {\n\n}`,
+      typescript: `function productExceptSelf(nums) {\n\n}`,
       java: `class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> productExceptSelf(vector<int>& nums) {\n        return {};\n    }\n};`,
     },
@@ -1788,6 +1839,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findDuplicates(self, nums):\n        pass`,
       javascript: `function findDuplicates(nums) {\n\n}`,
+      typescript: `function findDuplicates(nums) {\n\n}`,
       java: `class Solution {\n    public List<Integer> findDuplicates(int[] nums) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findDuplicates(vector<int>& nums) {\n        return {};\n    }\n};`,
     },
@@ -1821,6 +1873,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def rotate(self, nums, k):\n        pass`,
       javascript: `function rotate(nums, k) {\n\n}`,
+      typescript: `function rotate(nums, k) {\n\n}`,
       java: `class Solution {\n    public void rotate(int[] nums, int k) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void rotate(vector<int>& nums, int k) {\n        \n    }\n};`,
     },
@@ -1854,6 +1907,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def sortColors(self, nums):\n        pass`,
       javascript: `function sortColors(nums) {\n\n}`,
+      typescript: `function sortColors(nums) {\n\n}`,
       java: `class Solution {\n    public void sortColors(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void sortColors(vector<int>& nums) {\n        \n    }\n};`,
     },
@@ -1888,6 +1942,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def nextPermutation(self, nums):\n        pass`,
       javascript: `function nextPermutation(nums) {\n\n}`,
+      typescript: `function nextPermutation(nums) {\n\n}`,
       java: `class Solution {\n    public void nextPermutation(int[] nums) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void nextPermutation(vector<int>& nums) {\n        \n    }\n};`,
     },
@@ -1923,6 +1978,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestPalindrome(self, s):\n        pass`,
       javascript: `function longestPalindrome(s) {\n\n}`,
+      typescript: `function longestPalindrome(s) {\n\n}`,
       java: `class Solution {\n    public String longestPalindrome(String s) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string longestPalindrome(string s) {\n        return "";\n    }\n};`,
     },
@@ -1958,6 +2014,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def myAtoi(self, s):\n        pass`,
       javascript: `function myAtoi(s) {\n\n}`,
+      typescript: `function myAtoi(s) {\n\n}`,
       java: `class Solution {\n    public int myAtoi(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int myAtoi(string s) {\n        return 0;\n    }\n};`,
     },
@@ -1992,6 +2049,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def countAndSay(self, n):\n        pass`,
       javascript: `function countAndSay(n) {\n\n}`,
+      typescript: `function countAndSay(n) {\n\n}`,
       java: `class Solution {\n    public String countAndSay(int n) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string countAndSay(int n) {\n        return "";\n    }\n};`,
     },
@@ -2026,6 +2084,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minWindow(self, s, t):\n        pass`,
       javascript: `function minWindow(s, t) {\n\n}`,
+      typescript: `function minWindow(s, t) {\n\n}`,
       java: `class Solution {\n    public String minWindow(String s, String t) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string minWindow(string s, string t) {\n        return "";\n    }\n};`,
     },
@@ -2059,6 +2118,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def encode(self, strs):\n        pass\n\n    def decode(self, s):\n        pass`,
       javascript: `function encode(strs) {\n\n}\n\nfunction decode(s) {\n\n}`,
+      typescript: `function encode(strs) {\n\n}\n\nfunction decode(s) {\n\n}`,
       java: `class Solution {\n    public String encode(List<String> strs) {\n        return "";\n    }\n    public List<String> decode(String s) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string encode(vector<string>& strs) {\n        return "";\n    }\n    vector<string> decode(string s) {\n        return {};\n    }\n};`,
     },
@@ -2095,6 +2155,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def hasCycle(self, head):\n        pass`,
       javascript: `function hasCycle(head) {\n\n}`,
+      typescript: `function hasCycle(head) {\n\n}`,
       java: `class Solution {\n    public boolean hasCycle(ListNode head) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool hasCycle(ListNode *head) {\n        return false;\n    }\n};`,
     },
@@ -2128,6 +2189,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reorderList(self, head):\n        pass`,
       javascript: `function reorderList(head) {\n\n}`,
+      typescript: `function reorderList(head) {\n\n}`,
       java: `class Solution {\n    public void reorderList(ListNode head) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void reorderList(ListNode* head) {\n        \n    }\n};`,
     },
@@ -2162,6 +2224,7 @@ const rawProblems = [
     starterCode: {
       python: `class LRUCache:\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        pass\n\n    def put(self, key, value):\n        pass`,
       javascript: `class LRUCache {\n  constructor(capacity) {\n\n  }\n  get(key) {\n\n  }\n  put(key, value) {\n\n  }\n}`,
+      typescript: `class LRUCache {\n  constructor(capacity) {\n\n  }\n  get(key) {\n\n  }\n  put(key, value) {\n\n  }\n}`,
       java: `class LRUCache {\n    public LRUCache(int capacity) {\n        \n    }\n    public int get(int key) {\n        return -1;\n    }\n    public void put(int key, int value) {\n        \n    }\n}`,
       cpp: `class LRUCache {\npublic:\n    LRUCache(int capacity) {\n        \n    }\n    int get(int key) {\n        return -1;\n    }\n    void put(int key, int value) {\n        \n    }\n};`,
     },
@@ -2192,6 +2255,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def getIntersectionNode(self, headA, headB):\n        pass`,
       javascript: `function getIntersectionNode(headA, headB) {\n\n}`,
+      typescript: `function getIntersectionNode(headA, headB) {\n\n}`,
       java: `class Solution {\n    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {\n        return nullptr;\n    }\n};`,
     },
@@ -2223,6 +2287,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isPalindrome(self, head):\n        pass`,
       javascript: `function isPalindrome(head) {\n\n}`,
+      typescript: `function isPalindrome(head) {\n\n}`,
       java: `class Solution {\n    public boolean isPalindrome(ListNode head) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isPalindrome(ListNode* head) {\n        return false;\n    }\n};`,
     },
@@ -2259,6 +2324,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def levelOrder(self, root):\n        pass`,
       javascript: `function levelOrder(root) {\n\n}`,
+      typescript: `function levelOrder(root) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> levelOrder(TreeNode* root) {\n        return {};\n    }\n};`,
     },
@@ -2292,6 +2358,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def lowestCommonAncestor(self, root, p, q):\n        pass`,
       javascript: `function lowestCommonAncestor(root, p, q) {\n\n}`,
+      typescript: `function lowestCommonAncestor(root, p, q) {\n\n}`,
       java: `class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {\n        return nullptr;\n    }\n};`,
     },
@@ -2325,6 +2392,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def buildTree(self, preorder, inorder):\n        pass`,
       javascript: `function buildTree(preorder, inorder) {\n\n}`,
+      typescript: `function buildTree(preorder, inorder) {\n\n}`,
       java: `class Solution {\n    public TreeNode buildTree(int[] preorder, int[] inorder) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {\n        return nullptr;\n    }\n};`,
     },
@@ -2357,6 +2425,7 @@ const rawProblems = [
     starterCode: {
       python: `class Codec:\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass`,
       javascript: `function serialize(root) {\n\n}\nfunction deserialize(data) {\n\n}`,
+      typescript: `function serialize(root) {\n\n}\nfunction deserialize(data) {\n\n}`,
       java: `public class Codec {\n    public String serialize(TreeNode root) {\n        return "";\n    }\n    public TreeNode deserialize(String data) {\n        return null;\n    }\n}`,
       cpp: `class Codec {\npublic:\n    string serialize(TreeNode* root) {\n        return "";\n    }\n    TreeNode* deserialize(string data) {\n        return nullptr;\n    }\n};`,
     },
@@ -2391,6 +2460,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def rightSideView(self, root):\n        pass`,
       javascript: `function rightSideView(root) {\n\n}`,
+      typescript: `function rightSideView(root) {\n\n}`,
       java: `class Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> rightSideView(TreeNode* root) {\n        return {};\n    }\n};`,
     },
@@ -2426,6 +2496,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def cloneGraph(self, node):\n        pass`,
       javascript: `function cloneGraph(node) {\n\n}`,
+      typescript: `function cloneGraph(node) {\n\n}`,
       java: `class Solution {\n    public Node cloneGraph(Node node) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    Node* cloneGraph(Node* node) {\n        return nullptr;\n    }\n};`,
     },
@@ -2458,6 +2529,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canFinish(self, numCourses, prerequisites):\n        pass`,
       javascript: `function canFinish(numCourses, prerequisites) {\n\n}`,
+      typescript: `function canFinish(numCourses, prerequisites) {\n\n}`,
       java: `class Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {\n        return false;\n    }\n};`,
     },
@@ -2491,6 +2563,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def pacificAtlantic(self, heights):\n        pass`,
       javascript: `function pacificAtlantic(heights) {\n\n}`,
+      typescript: `function pacificAtlantic(heights) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> pacificAtlantic(int[][] heights) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {\n        return {};\n    }\n};`,
     },
@@ -2523,6 +2596,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def orangesRotting(self, grid):\n        pass`,
       javascript: `function orangesRotting(grid) {\n\n}`,
+      typescript: `function orangesRotting(grid) {\n\n}`,
       java: `class Solution {\n    public int orangesRotting(int[][] grid) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int orangesRotting(vector<vector<int>>& grid) {\n        return 0;\n    }\n};`,
     },
@@ -2556,6 +2630,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def ladderLength(self, beginWord, endWord, wordList):\n        pass`,
       javascript: `function ladderLength(beginWord, endWord, wordList) {\n\n}`,
+      typescript: `function ladderLength(beginWord, endWord, wordList) {\n\n}`,
       java: `class Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {\n        return 0;\n    }\n};`,
     },
@@ -2589,6 +2664,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def uniquePaths(self, m, n):\n        pass`,
       javascript: `function uniquePaths(m, n) {\n\n}`,
+      typescript: `function uniquePaths(m, n) {\n\n}`,
       java: `class Solution {\n    public int uniquePaths(int m, int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int uniquePaths(int m, int n) {\n        return 0;\n    }\n};`,
     },
@@ -2623,6 +2699,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def lengthOfLIS(self, nums):\n        pass`,
       javascript: `function lengthOfLIS(nums) {\n\n}`,
+      typescript: `function lengthOfLIS(nums) {\n\n}`,
       java: `class Solution {\n    public int lengthOfLIS(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int lengthOfLIS(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -2656,6 +2733,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minDistance(self, word1, word2):\n        pass`,
       javascript: `function minDistance(word1, word2) {\n\n}`,
+      typescript: `function minDistance(word1, word2) {\n\n}`,
       java: `class Solution {\n    public int minDistance(String word1, String word2) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minDistance(string word1, string word2) {\n        return 0;\n    }\n};`,
     },
@@ -2689,6 +2767,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canPartition(self, nums):\n        pass`,
       javascript: `function canPartition(nums) {\n\n}`,
+      typescript: `function canPartition(nums) {\n\n}`,
       java: `class Solution {\n    public boolean canPartition(int[] nums) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canPartition(vector<int>& nums) {\n        return false;\n    }\n};`,
     },
@@ -2722,6 +2801,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxCoins(self, nums):\n        pass`,
       javascript: `function maxCoins(nums) {\n\n}`,
+      typescript: `function maxCoins(nums) {\n\n}`,
       java: `class Solution {\n    public int maxCoins(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxCoins(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -2758,6 +2838,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def topKFrequent(self, nums, k):\n        pass`,
       javascript: `function topKFrequent(nums, k) {\n\n}`,
+      typescript: `function topKFrequent(nums, k) {\n\n}`,
       java: `class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> topKFrequent(vector<int>& nums, int k) {\n        return {};\n    }\n};`,
     },
@@ -2792,6 +2873,7 @@ const rawProblems = [
     starterCode: {
       python: `class MedianFinder:\n    def __init__(self):\n        pass\n\n    def addNum(self, num):\n        pass\n\n    def findMedian(self):\n        pass`,
       javascript: `class MedianFinder {\n  constructor() {}\n  addNum(num) {}\n  findMedian() {}\n}`,
+      typescript: `class MedianFinder {\n  constructor() {}\n  addNum(num) {}\n  findMedian() {}\n}`,
       java: `class MedianFinder {\n    public MedianFinder() {}\n    public void addNum(int num) {}\n    public double findMedian() { return 0.0; }\n}`,
       cpp: `class MedianFinder {\npublic:\n    MedianFinder() {}\n    void addNum(int num) {}\n    double findMedian() { return 0.0; }\n};`,
     },
@@ -2825,6 +2907,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def kClosest(self, points, k):\n        pass`,
       javascript: `function kClosest(points, k) {\n\n}`,
+      typescript: `function kClosest(points, k) {\n\n}`,
       java: `class Solution {\n    public int[][] kClosest(int[][] points, int k) {\n        return new int[][]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {\n        return {};\n    }\n};`,
     },
@@ -2858,6 +2941,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def leastInterval(self, tasks, n):\n        pass`,
       javascript: `function leastInterval(tasks, n) {\n\n}`,
+      typescript: `function leastInterval(tasks, n) {\n\n}`,
       java: `class Solution {\n    public int leastInterval(char[] tasks, int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int leastInterval(vector<char>& tasks, int n) {\n        return 0;\n    }\n};`,
     },
@@ -2892,6 +2976,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def mergeKLists(self, lists):\n        pass`,
       javascript: `function mergeKLists(lists) {\n\n}`,
+      typescript: `function mergeKLists(lists) {\n\n}`,
       java: `class Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* mergeKLists(vector<ListNode*>& lists) {\n        return nullptr;\n    }\n};`,
     },
@@ -2927,6 +3012,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def searchMatrix(self, matrix, target):\n        pass`,
       javascript: `function searchMatrix(matrix, target) {\n\n}`,
+      typescript: `function searchMatrix(matrix, target) {\n\n}`,
       java: `class Solution {\n    public boolean searchMatrix(int[][] matrix, int target) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool searchMatrix(vector<vector<int>>& matrix, int target) {\n        return false;\n    }\n};`,
     },
@@ -2961,6 +3047,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minEatingSpeed(self, piles, h):\n        pass`,
       javascript: `function minEatingSpeed(piles, h) {\n\n}`,
+      typescript: `function minEatingSpeed(piles, h) {\n\n}`,
       java: `class Solution {\n    public int minEatingSpeed(int[] piles, int h) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minEatingSpeed(vector<int>& piles, int h) {\n        return 0;\n    }\n};`,
     },
@@ -2995,6 +3082,7 @@ const rawProblems = [
     starterCode: {
       python: `class TimeMap:\n    def __init__(self):\n        pass\n\n    def set(self, key, value, timestamp):\n        pass\n\n    def get(self, key, timestamp):\n        pass`,
       javascript: `class TimeMap {\n  constructor() {}\n  set(key, value, timestamp) {}\n  get(key, timestamp) { return ""; }\n}`,
+      typescript: `class TimeMap {\n  constructor() {}\n  set(key, value, timestamp) {}\n  get(key, timestamp) { return ""; }\n}`,
       java: `class TimeMap {\n    public TimeMap() {}\n    public void set(String key, String value, int timestamp) {}\n    public String get(String key, int timestamp) { return ""; }\n}`,
       cpp: `class TimeMap {\npublic:\n    TimeMap() {}\n    void set(string key, string value, int timestamp) {}\n    string get(string key, int timestamp) { return ""; }\n};`,
     },
@@ -3025,6 +3113,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMedianSortedArrays(self, nums1, nums2):\n        pass`,
       javascript: `function findMedianSortedArrays(nums1, nums2) {\n\n}`,
+      typescript: `function findMedianSortedArrays(nums1, nums2) {\n\n}`,
       java: `class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        return 0.0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {\n        return 0.0;\n    }\n};`,
     },
@@ -3058,6 +3147,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findPeakElement(self, nums):\n        pass`,
       javascript: `function findPeakElement(nums) {\n\n}`,
+      typescript: `function findPeakElement(nums) {\n\n}`,
       java: `class Solution {\n    public int findPeakElement(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findPeakElement(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -3096,6 +3186,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def permute(self, nums):\n        pass`,
       javascript: `function permute(nums) {\n\n}`,
+      typescript: `function permute(nums) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> permute(int[] nums) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> permute(vector<int>& nums) {\n        return {};\n    }\n};`,
     },
@@ -3127,6 +3218,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def solveSudoku(self, board):\n        pass`,
       javascript: `function solveSudoku(board) {\n\n}`,
+      typescript: `function solveSudoku(board) {\n\n}`,
       java: `class Solution {\n    public void solveSudoku(char[][] board) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void solveSudoku(vector<vector<char>>& board) {\n        \n    }\n};`,
     },
@@ -3155,6 +3247,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def generateParenthesis(self, n):\n        pass`,
       javascript: `function generateParenthesis(n) {\n\n}`,
+      typescript: `function generateParenthesis(n) {\n\n}`,
       java: `class Solution {\n    public List<String> generateParenthesis(int n) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<string> generateParenthesis(int n) {\n        return {};\n    }\n};`,
     },
@@ -3188,6 +3281,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def exist(self, board, word):\n        pass`,
       javascript: `function exist(board, word) {\n\n}`,
+      typescript: `function exist(board, word) {\n\n}`,
       java: `class Solution {\n    public boolean exist(char[][] board, String word) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool exist(vector<vector<char>>& board, string word) {\n        return false;\n    }\n};`,
     },
@@ -3221,6 +3315,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def solveNQueens(self, n):\n        pass`,
       javascript: `function solveNQueens(n) {\n\n}`,
+      typescript: `function solveNQueens(n) {\n\n}`,
       java: `class Solution {\n    public List<List<String>> solveNQueens(int n) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<string>> solveNQueens(int n) {\n        return {};\n    }\n};`,
     },
@@ -3256,6 +3351,7 @@ const rawProblems = [
     starterCode: {
       python: `class Trie:\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def search(self, word):\n        pass\n\n    def startsWith(self, prefix):\n        pass`,
       javascript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  search(word) { return false; }\n  startsWith(prefix) { return false; }\n}`,
+      typescript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  search(word) { return false; }\n  startsWith(prefix) { return false; }\n}`,
       java: `class Trie {\n    public Trie() {}\n    public void insert(String word) {}\n    public boolean search(String word) { return false; }\n    public boolean startsWith(String prefix) { return false; }\n}`,
       cpp: `class Trie {\npublic:\n    Trie() {}\n    void insert(string word) {}\n    bool search(string word) { return false; }\n    bool startsWith(string prefix) { return false; }\n};`,
     },
@@ -3285,6 +3381,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findWords(self, board, words):\n        pass`,
       javascript: `function findWords(board, words) {\n\n}`,
+      typescript: `function findWords(board, words) {\n\n}`,
       java: `class Solution {\n    public List<String> findWords(char[][] board, String[] words) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {\n        return {};\n    }\n};`,
     },
@@ -3317,6 +3414,7 @@ const rawProblems = [
     starterCode: {
       python: `class WordDictionary:\n    def __init__(self):\n        pass\n\n    def addWord(self, word):\n        pass\n\n    def search(self, word):\n        pass`,
       javascript: `class WordDictionary {\n  constructor() {}\n  addWord(word) {}\n  search(word) { return false; }\n}`,
+      typescript: `class WordDictionary {\n  constructor() {}\n  addWord(word) {}\n  search(word) { return false; }\n}`,
       java: `class WordDictionary {\n    public WordDictionary() {}\n    public void addWord(String word) {}\n    public boolean search(String word) { return false; }\n}`,
       cpp: `class WordDictionary {\npublic:\n    WordDictionary() {}\n    void addWord(string word) {}\n    bool search(string word) { return false; }\n};`,
     },
@@ -3347,6 +3445,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMaximumXOR(self, nums):\n        pass`,
       javascript: `function findMaximumXOR(nums) {\n\n}`,
+      typescript: `function findMaximumXOR(nums) {\n\n}`,
       java: `class Solution {\n    public int findMaximumXOR(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMaximumXOR(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -3379,6 +3478,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def replaceWords(self, dictionary, sentence):\n        pass`,
       javascript: `function replaceWords(dictionary, sentence) {\n\n}`,
+      typescript: `function replaceWords(dictionary, sentence) {\n\n}`,
       java: `class Solution {\n    public String replaceWords(List<String> dictionary, String sentence) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string replaceWords(vector<string>& dictionary, string sentence) {\n        return "";\n    }\n};`,
     },
@@ -3412,6 +3512,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def fourSum(self, nums, target):\n        pass`,
       javascript: `function fourSum(nums, target) {\n\n}`,
+      typescript: `function fourSum(nums, target) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> fourSum(int[] nums, int target) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> fourSum(vector<int>& nums, int target) {\n        return {};\n    }\n};`,
     },
@@ -3444,6 +3545,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def characterReplacement(self, s, k):\n        pass`,
       javascript: `function characterReplacement(s, k) {\n\n}`,
+      typescript: `function characterReplacement(s, k) {\n\n}`,
       java: `class Solution {\n    public int characterReplacement(String s, int k) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int characterReplacement(string s, int k) {\n        return 0;\n    }\n};`,
     },
@@ -3477,6 +3579,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def checkInclusion(self, s1, s2):\n        pass`,
       javascript: `function checkInclusion(s1, s2) {\n\n}`,
+      typescript: `function checkInclusion(s1, s2) {\n\n}`,
       java: `class Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool checkInclusion(string s1, string s2) {\n        return false;\n    }\n};`,
     },
@@ -3511,6 +3614,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def totalFruit(self, fruits):\n        pass`,
       javascript: `function totalFruit(fruits) {\n\n}`,
+      typescript: `function totalFruit(fruits) {\n\n}`,
       java: `class Solution {\n    public int totalFruit(int[] fruits) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int totalFruit(vector<int>& fruits) {\n        return 0;\n    }\n};`,
     },
@@ -3544,6 +3648,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def subarraySum(self, nums, k):\n        pass`,
       javascript: `function subarraySum(nums, k) {\n\n}`,
+      typescript: `function subarraySum(nums, k) {\n\n}`,
       java: `class Solution {\n    public int subarraySum(int[] nums, int k) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int subarraySum(vector<int>& nums, int k) {\n        return 0;\n    }\n};`,
     },
@@ -3579,6 +3684,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canJump(self, nums):\n        pass`,
       javascript: `function canJump(nums) {\n\n}`,
+      typescript: `function canJump(nums) {\n\n}`,
       java: `class Solution {\n    public boolean canJump(int[] nums) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canJump(vector<int>& nums) {\n        return false;\n    }\n};`,
     },
@@ -3612,6 +3718,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canCompleteCircuit(self, gas, cost):\n        pass`,
       javascript: `function canCompleteCircuit(gas, cost) {\n\n}`,
+      typescript: `function canCompleteCircuit(gas, cost) {\n\n}`,
       java: `class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {\n        return -1;\n    }\n};`,
     },
@@ -3645,6 +3752,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isNStraightHand(self, hand, groupSize):\n        pass`,
       javascript: `function isNStraightHand(hand, groupSize) {\n\n}`,
+      typescript: `function isNStraightHand(hand, groupSize) {\n\n}`,
       java: `class Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isNStraightHand(vector<int>& hand, int groupSize) {\n        return false;\n    }\n};`,
     },
@@ -3678,6 +3786,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def merge(self, intervals):\n        pass`,
       javascript: `function merge(intervals) {\n\n}`,
+      typescript: `function merge(intervals) {\n\n}`,
       java: `class Solution {\n    public int[][] merge(int[][] intervals) {\n        return new int[][]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> merge(vector<vector<int>>& intervals) {\n        return {};\n    }\n};`,
     },
@@ -3712,6 +3821,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def eraseOverlapIntervals(self, intervals):\n        pass`,
       javascript: `function eraseOverlapIntervals(intervals) {\n\n}`,
+      typescript: `function eraseOverlapIntervals(intervals) {\n\n}`,
       java: `class Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int eraseOverlapIntervals(vector<vector<int>>& intervals) {\n        return 0;\n    }\n};`,
     },
@@ -3746,6 +3856,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def countBits(self, n):\n        pass`,
       javascript: `function countBits(n) {\n\n}`,
+      typescript: `function countBits(n) {\n\n}`,
       java: `class Solution {\n    public int[] countBits(int n) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> countBits(int n) {\n        return {};\n    }\n};`,
     },
@@ -3779,6 +3890,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reverseBits(self, n):\n        pass`,
       javascript: `function reverseBits(n) {\n\n}`,
+      typescript: `function reverseBits(n) {\n\n}`,
       java: `class Solution {\n    public int reverseBits(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    uint32_t reverseBits(uint32_t n) {\n        return 0;\n    }\n};`,
     },
@@ -3812,6 +3924,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def missingNumber(self, nums):\n        pass`,
       javascript: `function missingNumber(nums) {\n\n}`,
+      typescript: `function missingNumber(nums) {\n\n}`,
       java: `class Solution {\n    public int missingNumber(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int missingNumber(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -3846,6 +3959,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def hammingWeight(self, n):\n        pass`,
       javascript: `function hammingWeight(n) {\n\n}`,
+      typescript: `function hammingWeight(n) {\n\n}`,
       java: `class Solution {\n    public int hammingWeight(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int hammingWeight(uint32_t n) {\n        return 0;\n    }\n};`,
     },
@@ -3879,6 +3993,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def getSum(self, a, b):\n        pass`,
       javascript: `function getSum(a, b) {\n\n}`,
+      typescript: `function getSum(a, b) {\n\n}`,
       java: `class Solution {\n    public int getSum(int a, int b) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int getSum(int a, int b) {\n        return 0;\n    }\n};`,
     },
@@ -3914,6 +4029,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxProduct(self, nums):\n        pass`,
       javascript: `function maxProduct(nums) {\n\n}`,
+      typescript: `function maxProduct(nums) {\n\n}`,
       java: `class Solution {\n    public int maxProduct(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxProduct(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -3948,6 +4064,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestCommonSubsequence(self, text1, text2):\n        pass`,
       javascript: `function longestCommonSubsequence(text1, text2) {\n\n}`,
+      typescript: `function longestCommonSubsequence(text1, text2) {\n\n}`,
       java: `class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int longestCommonSubsequence(string text1, string text2) {\n        return 0;\n    }\n};`,
     },
@@ -3981,6 +4098,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def partition(self, s):\n        pass`,
       javascript: `function partition(s) {\n\n}`,
+      typescript: `function partition(s) {\n\n}`,
       java: `class Solution {\n    public List<List<String>> partition(String s) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<string>> partition(string s) {\n        return {};\n    }\n};`,
     },
@@ -4014,6 +4132,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def rob(self, nums):\n        pass`,
       javascript: `function rob(nums) {\n\n}`,
+      typescript: `function rob(nums) {\n\n}`,
       java: `class Solution {\n    public int rob(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int rob(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -4048,6 +4167,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isMatch(self, s, p):\n        pass`,
       javascript: `function isMatch(s, p) {\n\n}`,
+      typescript: `function isMatch(s, p) {\n\n}`,
       java: `class Solution {\n    public boolean isMatch(String s, String p) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isMatch(string s, string p) {\n        return false;\n    }\n};`,
     },
@@ -4083,6 +4203,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def largestRectangleArea(self, heights):\n        pass`,
       javascript: `function largestRectangleArea(heights) {\n\n}`,
+      typescript: `function largestRectangleArea(heights) {\n\n}`,
       java: `class Solution {\n    public int largestRectangleArea(int[] heights) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int largestRectangleArea(vector<int>& heights) {\n        return 0;\n    }\n};`,
     },
@@ -4117,6 +4238,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def carFleet(self, target, position, speed):\n        pass`,
       javascript: `function carFleet(target, position, speed) {\n\n}`,
+      typescript: `function carFleet(target, position, speed) {\n\n}`,
       java: `class Solution {\n    public int carFleet(int target, int[] position, int[] speed) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int carFleet(int target, vector<int>& position, vector<int>& speed) {\n        return 0;\n    }\n};`,
     },
@@ -4150,6 +4272,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def evalRPN(self, tokens):\n        pass`,
       javascript: `function evalRPN(tokens) {\n\n}`,
+      typescript: `function evalRPN(tokens) {\n\n}`,
       java: `class Solution {\n    public int evalRPN(String[] tokens) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int evalRPN(vector<string>& tokens) {\n        return 0;\n    }\n};`,
     },
@@ -4184,6 +4307,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def calculate(self, s):\n        pass`,
       javascript: `function calculate(s) {\n\n}`,
+      typescript: `function calculate(s) {\n\n}`,
       java: `class Solution {\n    public int calculate(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int calculate(string s) {\n        return 0;\n    }\n};`,
     },
@@ -4218,6 +4342,7 @@ const rawProblems = [
     starterCode: {
       python: `class MyQueue:\n    def __init__(self):\n        pass\n\n    def push(self, x):\n        pass\n\n    def pop(self):\n        pass\n\n    def peek(self):\n        pass\n\n    def empty(self):\n        pass`,
       javascript: `class MyQueue {\n  constructor() {}\n  push(x) {}\n  pop() {}\n  peek() {}\n  empty() { return true; }\n}`,
+      typescript: `class MyQueue {\n  constructor() {}\n  push(x) {}\n  pop() {}\n  peek() {}\n  empty() { return true; }\n}`,
       java: `class MyQueue {\n    public MyQueue() {}\n    public void push(int x) {}\n    public int pop() { return 0; }\n    public int peek() { return 0; }\n    public boolean empty() { return true; }\n}`,
       cpp: `class MyQueue {\npublic:\n    MyQueue() {}\n    void push(int x) {}\n    int pop() { return 0; }\n    int peek() { return 0; }\n    bool empty() { return true; }\n};`,
     },
@@ -4251,6 +4376,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def networkDelayTime(self, times, n, k):\n        pass`,
       javascript: `function networkDelayTime(times, n, k) {\n\n}`,
+      typescript: `function networkDelayTime(times, n, k) {\n\n}`,
       java: `class Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int networkDelayTime(vector<vector<int>>& times, int n, int k) {\n        return -1;\n    }\n};`,
     },
@@ -4283,6 +4409,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findCheapestPrice(self, n, flights, src, dst, k):\n        pass`,
       javascript: `function findCheapestPrice(n, flights, src, dst, k) {\n\n}`,
+      typescript: `function findCheapestPrice(n, flights, src, dst, k) {\n\n}`,
       java: `class Solution {\n    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {\n        return -1;\n    }\n};`,
     },
@@ -4314,6 +4441,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minCostConnectPoints(self, points):\n        pass`,
       javascript: `function minCostConnectPoints(points) {\n\n}`,
+      typescript: `function minCostConnectPoints(points) {\n\n}`,
       java: `class Solution {\n    public int minCostConnectPoints(int[][] points) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minCostConnectPoints(vector<vector<int>>& points) {\n        return 0;\n    }\n};`,
     },
@@ -4346,6 +4474,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def countComponents(self, n, edges):\n        pass`,
       javascript: `function countComponents(n, edges) {\n\n}`,
+      typescript: `function countComponents(n, edges) {\n\n}`,
       java: `class Solution {\n    public int countComponents(int n, int[][] edges) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int countComponents(int n, vector<vector<int>>& edges) {\n        return 0;\n    }\n};`,
     },
@@ -4379,6 +4508,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findRedundantConnection(self, edges):\n        pass`,
       javascript: `function findRedundantConnection(edges) {\n\n}`,
+      typescript: `function findRedundantConnection(edges) {\n\n}`,
       java: `class Solution {\n    public int[] findRedundantConnection(int[][] edges) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findRedundantConnection(vector<vector<int>>& edges) {\n        return {};\n    }\n};`,
     },
@@ -4393,7 +4523,7 @@ const rawProblems = [
 
   // ── BATCH 039: Intervals + Matrix (IDs 131-140) ────────────────────────────
 
-  { id: 131, title: "Minimum Number of Meeting Rooms", slug: "minimum-meeting-rooms", functionName: "minMeetingRooms", difficulty: "Medium", topic: "Intervals", pattern: "min heap sweep", companies: ["Amazon","Facebook","Google"], description: "Given an array of meeting time intervals, return the minimum number of conference rooms required.", examples: [{ input: "intervals = [[0,30],[5,10],[15,20]]", output: "2" }], constraints: ["1 <= intervals.length <= 10^4", "0 <= start < end <= 10^6"], starterCode: { python: `class Solution:\n    def minMeetingRooms(self, intervals):\n        pass`, javascript: `function minMeetingRooms(intervals) {\n\n}`, java: `class Solution {\n    public int minMeetingRooms(int[][] intervals) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minMeetingRooms(vector<vector<int>>& intervals) { return 0; }\n};` }, testcases: [{ input: { intervals: [[0,30],[5,10],[15,20]] }, expectedOutput: 2 }, { input: { intervals: [[7,10],[2,4]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { intervals: [[1,5],[5,10],[10,14]] }, expectedOutput: 1 }, { input: { intervals: [[1,4],[2,5],[7,9]] }, expectedOutput: 2 }] },
+  { id: 131, title: "Minimum Number of Meeting Rooms", slug: "minimum-meeting-rooms", functionName: "minMeetingRooms", difficulty: "Medium", topic: "Intervals", pattern: "min heap sweep", companies: ["Amazon","Facebook","Google"], description: "Given an array of meeting time intervals, return the minimum number of conference rooms required.", examples: [{ input: "intervals = [[0,30],[5,10],[15,20]]", output: "2" }], constraints: ["1 <= intervals.length <= 10^4", "0 <= start < end <= 10^6"], starterCode: { python: `class Solution:\n    def minMeetingRooms(self, intervals):\n        pass`, javascript: `function minMeetingRooms(intervals) {\n\n}`, typescript: `function minMeetingRooms(intervals) {\n\n}`, java: `class Solution {\n    public int minMeetingRooms(int[][] intervals) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minMeetingRooms(vector<vector<int>>& intervals) { return 0; }\n};` }, testcases: [{ input: { intervals: [[0,30],[5,10],[15,20]] }, expectedOutput: 2 }, { input: { intervals: [[7,10],[2,4]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { intervals: [[1,5],[5,10],[10,14]] }, expectedOutput: 1 }, { input: { intervals: [[1,4],[2,5],[7,9]] }, expectedOutput: 2 }] },
 
   {
     id: 132,
@@ -4414,6 +4544,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def insert(self, intervals, newInterval):\n        pass`,
       javascript: `function insert(intervals, newInterval) {\n\n}`,
+      typescript: `function insert(intervals, newInterval) {\n\n}`,
       java: `class Solution {\n    public int[][] insert(int[][] intervals, int[] newInterval) {\n        return new int[][]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {\n        return {};\n    }\n};`,
     },
@@ -4428,7 +4559,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 133, title: "Interval List Intersections", slug: "interval-list-intersections", functionName: "intervalIntersection", difficulty: "Medium", topic: "Intervals", pattern: "two pointer merge", companies: ["Facebook","Amazon"], description: "Given two lists of closed intervals, each list of intervals is pairwise disjoint and in sorted order. Return the intersection of these two interval lists.", examples: [{ input: "firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]", output: "[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]" }], constraints: ["0 <= firstList.length, secondList.length <= 1000"], starterCode: { python: `class Solution:\n    def intervalIntersection(self, firstList, secondList):\n        pass`, javascript: `function intervalIntersection(firstList, secondList) {\n\n}`, java: `class Solution {\n    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) { return new int[][]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) { return {}; }\n};` }, testcases: [{ input: { firstList: [[0,2],[5,10],[13,23],[24,25]], secondList: [[1,5],[8,12],[15,24],[25,26]] }, expectedOutput: [[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]] }, { input: { firstList: [], secondList: [] }, expectedOutput: [] }], hiddentestcases: [{ input: { firstList: [[1,3],[5,9]], secondList: [] }, expectedOutput: [] }, { input: { firstList: [[1,7]], secondList: [[3,10]] }, expectedOutput: [[3,7]] }] },
+  { id: 133, title: "Interval List Intersections", slug: "interval-list-intersections", functionName: "intervalIntersection", difficulty: "Medium", topic: "Intervals", pattern: "two pointer merge", companies: ["Facebook","Amazon"], description: "Given two lists of closed intervals, each list of intervals is pairwise disjoint and in sorted order. Return the intersection of these two interval lists.", examples: [{ input: "firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]", output: "[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]" }], constraints: ["0 <= firstList.length, secondList.length <= 1000"], starterCode: { python: `class Solution:\n    def intervalIntersection(self, firstList, secondList):\n        pass`, javascript: `function intervalIntersection(firstList, secondList) {\n\n}`, typescript: `function intervalIntersection(firstList, secondList) {\n\n}`, java: `class Solution {\n    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) { return new int[][]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) { return {}; }\n};` }, testcases: [{ input: { firstList: [[0,2],[5,10],[13,23],[24,25]], secondList: [[1,5],[8,12],[15,24],[25,26]] }, expectedOutput: [[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]] }, { input: { firstList: [], secondList: [] }, expectedOutput: [] }], hiddentestcases: [{ input: { firstList: [[1,3],[5,9]], secondList: [] }, expectedOutput: [] }, { input: { firstList: [[1,7]], secondList: [[3,10]] }, expectedOutput: [[3,7]] }] },
 
   {
     id: 134,
@@ -4449,6 +4580,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canAttendMeetings(self, intervals):\n        pass`,
       javascript: `function canAttendMeetings(intervals) {\n\n}`,
+      typescript: `function canAttendMeetings(intervals) {\n\n}`,
       java: `class Solution {\n    public boolean canAttendMeetings(int[][] intervals) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canAttendMeetings(vector<vector<int>>& intervals) {\n        return false;\n    }\n};`,
     },
@@ -4483,6 +4615,7 @@ const rawProblems = [
     starterCode: {
       python: `class MyCalendarTwo:\n    def __init__(self):\n        pass\n\n    def book(self, start, end):\n        pass`,
       javascript: `class MyCalendarTwo {\n  constructor() {}\n  book(start, end) { return false; }\n}`,
+      typescript: `class MyCalendarTwo {\n  constructor() {}\n  book(start, end) { return false; }\n}`,
       java: `class MyCalendarTwo {\n    public MyCalendarTwo() {}\n    public boolean book(int start, int end) { return false; }\n}`,
       cpp: `class MyCalendarTwo {\npublic:\n    MyCalendarTwo() {}\n    bool book(int start, int end) { return false; }\n};`,
     },
@@ -4513,6 +4646,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def setZeroes(self, matrix):\n        pass`,
       javascript: `function setZeroes(matrix) {\n\n}`,
+      typescript: `function setZeroes(matrix) {\n\n}`,
       java: `class Solution {\n    public void setZeroes(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void setZeroes(vector<vector<int>>& matrix) {\n        \n    }\n};`,
     },
@@ -4545,6 +4679,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def spiralOrder(self, matrix):\n        pass`,
       javascript: `function spiralOrder(matrix) {\n\n}`,
+      typescript: `function spiralOrder(matrix) {\n\n}`,
       java: `class Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> spiralOrder(vector<vector<int>>& matrix) {\n        return {};\n    }\n};`,
     },
@@ -4578,6 +4713,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def rotate(self, matrix):\n        pass`,
       javascript: `function rotate(matrix) {\n\n}`,
+      typescript: `function rotate(matrix) {\n\n}`,
       java: `class Solution {\n    public void rotate(int[][] matrix) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void rotate(vector<vector<int>>& matrix) {\n        \n    }\n};`,
     },
@@ -4591,7 +4727,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 139, title: "Binary Search Tree Iterator", slug: "binary-search-tree-iterator", functionName: "BSTIterator", difficulty: "Medium", topic: "Trees", pattern: "controlled inorder traversal", companies: ["Facebook","Google","Amazon"], description: "Implement the BSTIterator class that represents an iterator over the in-order traversal of a BST. next() returns the next smallest number. hasNext() returns whether the next element exists. Both operations must be O(h) average where h is the height.", examples: [{ input: '[7,3,15,null,null,9,20] → next,next,hasNext,next,hasNext,next,hasNext,next,hasNext', output: '[3,9,true,15,true,20,false]' }], constraints: ["1 <= n <= 10^5", "-10^5 <= Node.val <= 10^5"], starterCode: { python: `class BSTIterator:\n    def __init__(self, root):\n        pass\n    def next(self):\n        pass\n    def hasNext(self):\n        pass`, javascript: `class BSTIterator {\n  constructor(root) {}\n  next() { return 0; }\n  hasNext() { return false; }\n}`, java: `class BSTIterator {\n    public BSTIterator(TreeNode root) {}\n    public int next() { return 0; }\n    public boolean hasNext() { return false; }\n}`, cpp: `class BSTIterator {\npublic:\n    BSTIterator(TreeNode* root) {}\n    int next() { return 0; }\n    bool hasNext() { return false; }\n};` }, testcases: [{ input: { root: [7,3,15,null,null,9,20], ops: ["next","next","hasNext","next","hasNext","next","hasNext","next","hasNext"], vals: [[],[],[],[],[],[],[],[],[]] }, expectedOutput: [3,9,true,15,true,20,false,null,false] }], hiddentestcases: [{ input: { root: [3,1,4,null,2], ops: ["next","next","hasNext","next"], vals: [[],[],[],[]] }, expectedOutput: [1,2,true,3] }] },
+  { id: 139, title: "Binary Search Tree Iterator", slug: "binary-search-tree-iterator", functionName: "BSTIterator", difficulty: "Medium", topic: "Trees", pattern: "controlled inorder traversal", companies: ["Facebook","Google","Amazon"], description: "Implement the BSTIterator class that represents an iterator over the in-order traversal of a BST. next() returns the next smallest number. hasNext() returns whether the next element exists. Both operations must be O(h) average where h is the height.", examples: [{ input: '[7,3,15,null,null,9,20] → next,next,hasNext,next,hasNext,next,hasNext,next,hasNext', output: '[3,9,true,15,true,20,false]' }], constraints: ["1 <= n <= 10^5", "-10^5 <= Node.val <= 10^5"], starterCode: { python: `class BSTIterator:\n    def __init__(self, root):\n        pass\n    def next(self):\n        pass\n    def hasNext(self):\n        pass`, javascript: `class BSTIterator {\n  constructor(root) {}\n  next() { return 0; }\n  hasNext() { return false; }\n}`, typescript: `class BSTIterator {\n  constructor(root) {}\n  next() { return 0; }\n  hasNext() { return false; }\n}`, java: `class BSTIterator {\n    public BSTIterator(TreeNode root) {}\n    public int next() { return 0; }\n    public boolean hasNext() { return false; }\n}`, cpp: `class BSTIterator {\npublic:\n    BSTIterator(TreeNode* root) {}\n    int next() { return 0; }\n    bool hasNext() { return false; }\n};` }, testcases: [{ input: { root: [7,3,15,null,null,9,20], ops: ["next","next","hasNext","next","hasNext","next","hasNext","next","hasNext"], vals: [[],[],[],[],[],[],[],[],[]] }, expectedOutput: [3,9,true,15,true,20,false,null,false] }], hiddentestcases: [{ input: { root: [3,1,4,null,2], ops: ["next","next","hasNext","next"], vals: [[],[],[],[]] }, expectedOutput: [1,2,true,3] }] },
 
   {
     id: 140,
@@ -4612,6 +4748,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def gameOfLife(self, board):\n        pass`,
       javascript: `function gameOfLife(board) {\n\n}`,
+      typescript: `function gameOfLife(board) {\n\n}`,
       java: `class Solution {\n    public void gameOfLife(int[][] board) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void gameOfLife(vector<vector<int>>& board) {\n        \n    }\n};`,
     },
@@ -4647,6 +4784,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reverse(self, x):\n        pass`,
       javascript: `function reverse(x) {\n\n}`,
+      typescript: `function reverse(x) {\n\n}`,
       java: `class Solution {\n    public int reverse(int x) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int reverse(int x) {\n        return 0;\n    }\n};`,
     },
@@ -4681,6 +4819,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isPalindrome(self, x):\n        pass`,
       javascript: `function isPalindrome(x) {\n\n}`,
+      typescript: `function isPalindrome(x) {\n\n}`,
       java: `class Solution {\n    public boolean isPalindrome(int x) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isPalindrome(int x) {\n        return false;\n    }\n};`,
     },
@@ -4714,6 +4853,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isHappy(self, n):\n        pass`,
       javascript: `function isHappy(n) {\n\n}`,
+      typescript: `function isHappy(n) {\n\n}`,
       java: `class Solution {\n    public boolean isHappy(int n) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isHappy(int n) {\n        return false;\n    }\n};`,
     },
@@ -4748,6 +4888,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isPowerOfTwo(self, n):\n        pass`,
       javascript: `function isPowerOfTwo(n) {\n\n}`,
+      typescript: `function isPowerOfTwo(n) {\n\n}`,
       java: `class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isPowerOfTwo(int n) {\n        return false;\n    }\n};`,
     },
@@ -4782,6 +4923,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def titleToNumber(self, columnTitle):\n        pass`,
       javascript: `function titleToNumber(columnTitle) {\n\n}`,
+      typescript: `function titleToNumber(columnTitle) {\n\n}`,
       java: `class Solution {\n    public int titleToNumber(String columnTitle) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int titleToNumber(string columnTitle) {\n        return 0;\n    }\n};`,
     },
@@ -4816,6 +4958,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def countPrimes(self, n):\n        pass`,
       javascript: `function countPrimes(n) {\n\n}`,
+      typescript: `function countPrimes(n) {\n\n}`,
       java: `class Solution {\n    public int countPrimes(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int countPrimes(int n) {\n        return 0;\n    }\n};`,
     },
@@ -4849,6 +4992,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def mySqrt(self, x):\n        pass`,
       javascript: `function mySqrt(x) {\n\n}`,
+      typescript: `function mySqrt(x) {\n\n}`,
       java: `class Solution {\n    public int mySqrt(int x) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int mySqrt(int x) {\n        return 0;\n    }\n};`,
     },
@@ -4883,6 +5027,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def romanToInt(self, s):\n        pass`,
       javascript: `function romanToInt(s) {\n\n}`,
+      typescript: `function romanToInt(s) {\n\n}`,
       java: `class Solution {\n    public int romanToInt(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int romanToInt(string s) {\n        return 0;\n    }\n};`,
     },
@@ -4917,6 +5062,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def addTwoNumbers(self, l1, l2):\n        pass`,
       javascript: `function addTwoNumbers(l1, l2) {\n\n}`,
+      typescript: `function addTwoNumbers(l1, l2) {\n\n}`,
       java: `class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {\n        return nullptr;\n    }\n};`,
     },
@@ -4951,6 +5097,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def myPow(self, x, n):\n        pass`,
       javascript: `function myPow(x, n) {\n\n}`,
+      typescript: `function myPow(x, n) {\n\n}`,
       java: `class Solution {\n    public double myPow(double x, int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    double myPow(double x, int n) {\n        return 0;\n    }\n};`,
     },
@@ -4987,6 +5134,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def threeSumSmaller(self, nums, target):\n        pass`,
       javascript: `function threeSumSmaller(nums, target) {\n\n}`,
+      typescript: `function threeSumSmaller(nums, target) {\n\n}`,
       java: `class Solution {\n    public int threeSumSmaller(int[] nums, int target) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int threeSumSmaller(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
     },
@@ -5020,6 +5168,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def removeDuplicates(self, nums):\n        pass`,
       javascript: `function removeDuplicates(nums) {\n\n}`,
+      typescript: `function removeDuplicates(nums) {\n\n}`,
       java: `class Solution {\n    public int removeDuplicates(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int removeDuplicates(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -5053,6 +5202,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def triangleNumber(self, nums):\n        pass`,
       javascript: `function triangleNumber(nums) {\n\n}`,
+      typescript: `function triangleNumber(nums) {\n\n}`,
       java: `class Solution {\n    public int triangleNumber(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int triangleNumber(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -5087,6 +5237,7 @@ const rawProblems = [
     starterCode: {
       python: `class MyStack:\n    def __init__(self):\n        pass\n    def push(self, val):\n        pass\n    def pop(self):\n        pass\n    def top(self):\n        pass\n    def empty(self):\n        pass`,
       javascript: `class MyStack {\n  constructor() {}\n  push(val) {}\n  pop() {}\n  top() {}\n  empty() {}\n}`,
+      typescript: `class MyStack {\n  constructor() {}\n  push(val) {}\n  pop() {}\n  top() {}\n  empty() {}\n}`,
       java: `class MyStack {\n    public MyStack() {}\n    public void push(int x) {}\n    public int pop() { return 0; }\n    public int top() { return 0; }\n    public boolean empty() { return false; }\n}`,
       cpp: `class MyStack {\npublic:\n    MyStack() {}\n    void push(int x) {}\n    int pop() { return 0; }\n    int top() { return 0; }\n    bool empty() { return false; }\n};`,
     },
@@ -5118,6 +5269,7 @@ const rawProblems = [
     starterCode: {
       python: `class MyHashMap:\n    def __init__(self):\n        pass\n    def put(self, key, value):\n        pass\n    def get(self, key):\n        pass\n    def remove(self, key):\n        pass`,
       javascript: `class MyHashMap {\n  constructor() {}\n  put(key, value) {}\n  get(key) { return -1; }\n  remove(key) {}\n}`,
+      typescript: `class MyHashMap {\n  constructor() {}\n  put(key, value) {}\n  get(key) { return -1; }\n  remove(key) {}\n}`,
       java: `class MyHashMap {\n    public MyHashMap() {}\n    public void put(int key, int value) {}\n    public int get(int key) { return -1; }\n    public void remove(int key) {}\n}`,
       cpp: `class MyHashMap {\npublic:\n    MyHashMap() {}\n    void put(int key, int value) {}\n    int get(int key) { return -1; }\n    void remove(int key) {}\n};`,
     },
@@ -5149,6 +5301,7 @@ const rawProblems = [
     starterCode: {
       python: `class MyCircularQueue:\n    def __init__(self, k):\n        pass\n    def enQueue(self, value):\n        pass\n    def deQueue(self):\n        pass\n    def Front(self):\n        pass\n    def Rear(self):\n        pass\n    def isEmpty(self):\n        pass\n    def isFull(self):\n        pass`,
       javascript: `class MyCircularQueue {\n  constructor(k) {}\n  enQueue(value) {}\n  deQueue() {}\n  Front() {}\n  Rear() {}\n  isEmpty() {}\n  isFull() {}\n}`,
+      typescript: `class MyCircularQueue {\n  constructor(k) {}\n  enQueue(value) {}\n  deQueue() {}\n  Front() {}\n  Rear() {}\n  isEmpty() {}\n  isFull() {}\n}`,
       java: `class MyCircularQueue {\n    public MyCircularQueue(int k) {}\n    public boolean enQueue(int value) { return false; }\n    public boolean deQueue() { return false; }\n    public int Front() { return -1; }\n    public int Rear() { return -1; }\n    public boolean isEmpty() { return false; }\n    public boolean isFull() { return false; }\n}`,
       cpp: `class MyCircularQueue {\npublic:\n    MyCircularQueue(int k) {}\n    bool enQueue(int value) { return false; }\n    bool deQueue() { return false; }\n    int Front() { return -1; }\n    int Rear() { return -1; }\n    bool isEmpty() { return false; }\n    bool isFull() { return false; }\n};`,
     },
@@ -5160,9 +5313,9 @@ const rawProblems = [
     ],
   },
 
-  { id: 157, title: "Design Twitter", slug: "design-twitter", functionName: "Twitter", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Design", pattern: "heap + timestamp", companies: ["Amazon","Facebook"], description: "Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).", examples: [{ input: '["Twitter","postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"]\n[[],[1,5],[1],[1,2],[2,6],[1],[1,2],[1]]', output: "[null,null,[5],null,null,[6,5],null,[5]]" }], constraints: ["1 <= userId, followerId, followeeId <= 500", "0 <= tweetId <= 10^4", "At most 3 * 10^4 calls."], starterCode: { python: `class Twitter:\n    def __init__(self):\n        pass\n    def postTweet(self, userId, tweetId):\n        pass\n    def getNewsFeed(self, userId):\n        pass\n    def follow(self, followerId, followeeId):\n        pass\n    def unfollow(self, followerId, followeeId):\n        pass`, javascript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, java: `class Twitter {\n    public Twitter() {}\n    public void postTweet(int userId, int tweetId) {}\n    public List<Integer> getNewsFeed(int userId) { return new ArrayList<>(); }\n    public void follow(int followerId, int followeeId) {}\n    public void unfollow(int followerId, int followeeId) {}\n}`, cpp: `class Twitter {\npublic:\n    Twitter() {}\n    void postTweet(int userId, int tweetId) {}\n    vector<int> getNewsFeed(int userId) { return {}; }\n    void follow(int followerId, int followeeId) {}\n    void unfollow(int followerId, int followeeId) {}\n};` }, testcases: [{ input: { ops: ["postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"], vals: [[1,5],[1],[1,2],[2,6],[1],[1,2],[1]] }, expectedOutput: [null,[5],null,null,[6,5],null,[5]] }], hiddentestcases: [{ input: { ops: ["postTweet","follow","getNewsFeed"], vals: [[2,5],[1,2],[1]] }, expectedOutput: [null,null,[5]] }] },
+  { id: 157, title: "Design Twitter", slug: "design-twitter", functionName: "Twitter", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Design", pattern: "heap + timestamp", companies: ["Amazon","Facebook"], description: "Design a simplified version of Twitter with postTweet(userId, tweetId), getNewsFeed(userId) (returns 10 most recent tweets from user + followees), follow(followerId, followeeId), unfollow(followerId, followeeId).", examples: [{ input: '["Twitter","postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"]\n[[],[1,5],[1],[1,2],[2,6],[1],[1,2],[1]]', output: "[null,null,[5],null,null,[6,5],null,[5]]" }], constraints: ["1 <= userId, followerId, followeeId <= 500", "0 <= tweetId <= 10^4", "At most 3 * 10^4 calls."], starterCode: { python: `class Twitter:\n    def __init__(self):\n        pass\n    def postTweet(self, userId, tweetId):\n        pass\n    def getNewsFeed(self, userId):\n        pass\n    def follow(self, followerId, followeeId):\n        pass\n    def unfollow(self, followerId, followeeId):\n        pass`, javascript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, typescript: `class Twitter {\n  constructor() {}\n  postTweet(userId, tweetId) {}\n  getNewsFeed(userId) { return []; }\n  follow(followerId, followeeId) {}\n  unfollow(followerId, followeeId) {}\n}`, java: `class Twitter {\n    public Twitter() {}\n    public void postTweet(int userId, int tweetId) {}\n    public List<Integer> getNewsFeed(int userId) { return new ArrayList<>(); }\n    public void follow(int followerId, int followeeId) {}\n    public void unfollow(int followerId, int followeeId) {}\n}`, cpp: `class Twitter {\npublic:\n    Twitter() {}\n    void postTweet(int userId, int tweetId) {}\n    vector<int> getNewsFeed(int userId) { return {}; }\n    void follow(int followerId, int followeeId) {}\n    void unfollow(int followerId, int followeeId) {}\n};` }, testcases: [{ input: { ops: ["postTweet","getNewsFeed","follow","postTweet","getNewsFeed","unfollow","getNewsFeed"], vals: [[1,5],[1],[1,2],[2,6],[1],[1,2],[1]] }, expectedOutput: [null,[5],null,null,[6,5],null,[5]] }], hiddentestcases: [{ input: { ops: ["postTweet","follow","getNewsFeed"], vals: [[2,5],[1,2],[1]] }, expectedOutput: [null,null,[5]] }] },
 
-  { id: 158, title: "Random Pick with Weight", slug: "random-pick-with-weight", functionName: "Solution", difficulty: "Medium", topic: "Binary Search", pattern: "prefix sum + binary search", comingSoon: true, companies: ["Facebook","Google","Amazon"], description: "Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.", examples: [{ input: "w = [1,3], pickIndex called", output: "Returns 0 with 25% probability, 1 with 75% probability" }], constraints: ["1 <= w.length <= 10^4", "1 <= w[i] <= 10^5", "pickIndex called at most 10^4 times"], starterCode: { python: `class Solution:\n    def __init__(self, w):\n        pass\n    def pickIndex(self):\n        pass`, javascript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, java: `class Solution {\n    public Solution(int[] w) {}\n    public int pickIndex() { return 0; }\n}`, cpp: `class Solution {\npublic:\n    Solution(vector<int>& w) {}\n    int pickIndex() { return 0; }\n};` }, testcases: [{ input: { w: [1], ops: ["pickIndex"] }, expectedOutput: [0] }, { input: { w: [1,3], ops: ["pickIndex","pickIndex","pickIndex","pickIndex"] }, expectedOutput: "varies" }], hiddentestcases: [{ input: { w: [1,1,1,1], ops: ["pickIndex"] }, expectedOutput: "0-3" }] },
+  { id: 158, title: "Random Pick with Weight", slug: "random-pick-with-weight", functionName: "Solution", difficulty: "Medium", topic: "Binary Search", pattern: "prefix sum + binary search", comingSoon: true, companies: ["Facebook","Google","Amazon"], description: "Implement Solution(w) which picks an index in [0, w.length-1] with probability proportional to w[i]. pickIndex() returns a random index according to this distribution.", examples: [{ input: "w = [1,3], pickIndex called", output: "Returns 0 with 25% probability, 1 with 75% probability" }], constraints: ["1 <= w.length <= 10^4", "1 <= w[i] <= 10^5", "pickIndex called at most 10^4 times"], starterCode: { python: `class Solution:\n    def __init__(self, w):\n        pass\n    def pickIndex(self):\n        pass`, javascript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, typescript: `class Solution {\n  constructor(w) {}\n  pickIndex() { return 0; }\n}`, java: `class Solution {\n    public Solution(int[] w) {}\n    public int pickIndex() { return 0; }\n}`, cpp: `class Solution {\npublic:\n    Solution(vector<int>& w) {}\n    int pickIndex() { return 0; }\n};` }, testcases: [{ input: { w: [1], ops: ["pickIndex"] }, expectedOutput: [0] }, { input: { w: [1,3], ops: ["pickIndex","pickIndex","pickIndex","pickIndex"] }, expectedOutput: "varies" }], hiddentestcases: [{ input: { w: [1,1,1,1], ops: ["pickIndex"] }, expectedOutput: "0-3" }] },
 
   {
     id: 159,
@@ -5184,6 +5337,7 @@ const rawProblems = [
     starterCode: {
       python: `class FreqStack:\n    def __init__(self):\n        pass\n    def push(self, val):\n        pass\n    def pop(self):\n        pass`,
       javascript: `class FreqStack {\n  constructor() {}\n  push(val) {}\n  pop() { return 0; }\n}`,
+      typescript: `class FreqStack {\n  constructor() {}\n  push(val) {}\n  pop() { return 0; }\n}`,
       java: `class FreqStack {\n    public FreqStack() {}\n    public void push(int val) {}\n    public int pop() { return 0; }\n}`,
       cpp: `class FreqStack {\npublic:\n    FreqStack() {}\n    void push(int val) {}\n    int pop() { return 0; }\n};`,
     },
@@ -5214,6 +5368,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxSlidingWindow(self, nums, k):\n        pass`,
       javascript: `function maxSlidingWindow(nums, k) {\n\n}`,
+      typescript: `function maxSlidingWindow(nums, k) {\n\n}`,
       java: `class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> maxSlidingWindow(vector<int>& nums, int k) {\n        return {};\n    }\n};`,
     },
@@ -5230,7 +5385,7 @@ const rawProblems = [
 
   // ── BATCH 042: Mixed Hard + Company-Specific (IDs 161-170) ───────────────
 
-  { id: 161, title: "Path With Minimum Effort", slug: "path-with-minimum-effort", functionName: "minimumEffortPath", difficulty: "Medium", topic: "Graphs", pattern: "union find", companies: ["LinkedIn","Amazon"], description: "You are given a rows x columns matrix heights, where heights[row][col] represents the height of cell (row, col). You start at (0, 0) and want to travel to (rows-1, columns-1). You can move up, down, left, or right, and you want to find a route that minimizes the maximum absolute difference in heights between two consecutive cells of the route. Return the minimum effort required to travel from the top-left cell to the bottom-right cell.", examples: [{ input: "heights = [[1,2,2],[3,8,2],[5,3,5]]", output: "2", explanation: "The route [1,3,5,3,5] down the left column then right along the bottom has a maximum absolute difference of 2." }, { input: "heights = [[1,2,3],[3,8,4],[5,3,5]]", output: "1", explanation: "The route [1,2,3,4,5] along the top row then down the right column has a maximum absolute difference of 1." }, { input: "heights = [[1]]", output: "0", explanation: "Start and end are the same single cell, so no movement is required." }], constraints: ["rows == heights.length", "columns == heights[i].length", "1 <= rows, columns <= 100", "1 <= heights[i][j] <= 10^6"], starterCode: { python: `class Solution:\n    def minimumEffortPath(self, heights):\n        pass`, javascript: `function minimumEffortPath(heights) {\n\n}`, java: `class Solution {\n    public int minimumEffortPath(int[][] heights) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minimumEffortPath(vector<vector<int>>& heights) { return 0; }\n};` }, testcases: [{ input: { heights: [[1,2,2],[3,8,2],[5,3,5]] }, expectedOutput: 2 }, { input: { heights: [[1,2,3],[3,8,4],[5,3,5]] }, expectedOutput: 1 }, { input: { heights: [[1]] }, expectedOutput: 0 }], hiddentestcases: [{ input: { heights: [[1,10,6,7,9,10,4,9]] }, expectedOutput: 9 }, { input: { heights: [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]] }, expectedOutput: 0 }] },
+  { id: 161, title: "Path With Minimum Effort", slug: "path-with-minimum-effort", functionName: "minimumEffortPath", difficulty: "Medium", topic: "Graphs", pattern: "union find", companies: ["LinkedIn","Amazon"], description: "You are given a rows x columns matrix heights, where heights[row][col] represents the height of cell (row, col). You start at (0, 0) and want to travel to (rows-1, columns-1). You can move up, down, left, or right, and you want to find a route that minimizes the maximum absolute difference in heights between two consecutive cells of the route. Return the minimum effort required to travel from the top-left cell to the bottom-right cell.", examples: [{ input: "heights = [[1,2,2],[3,8,2],[5,3,5]]", output: "2", explanation: "The route [1,3,5,3,5] down the left column then right along the bottom has a maximum absolute difference of 2." }, { input: "heights = [[1,2,3],[3,8,4],[5,3,5]]", output: "1", explanation: "The route [1,2,3,4,5] along the top row then down the right column has a maximum absolute difference of 1." }, { input: "heights = [[1]]", output: "0", explanation: "Start and end are the same single cell, so no movement is required." }], constraints: ["rows == heights.length", "columns == heights[i].length", "1 <= rows, columns <= 100", "1 <= heights[i][j] <= 10^6"], starterCode: { python: `class Solution:\n    def minimumEffortPath(self, heights):\n        pass`, javascript: `function minimumEffortPath(heights) {\n\n}`, typescript: `function minimumEffortPath(heights) {\n\n}`, java: `class Solution {\n    public int minimumEffortPath(int[][] heights) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minimumEffortPath(vector<vector<int>>& heights) { return 0; }\n};` }, testcases: [{ input: { heights: [[1,2,2],[3,8,2],[5,3,5]] }, expectedOutput: 2 }, { input: { heights: [[1,2,3],[3,8,4],[5,3,5]] }, expectedOutput: 1 }, { input: { heights: [[1]] }, expectedOutput: 0 }], hiddentestcases: [{ input: { heights: [[1,10,6,7,9,10,4,9]] }, expectedOutput: 9 }, { input: { heights: [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]] }, expectedOutput: 0 }] },
 
   {
     id: 162,
@@ -5251,6 +5406,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reverseKGroup(self, head, k):\n        pass`,
       javascript: `function reverseKGroup(head, k) {\n\n}`,
+      typescript: `function reverseKGroup(head, k) {\n\n}`,
       java: `class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        return null;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    ListNode* reverseKGroup(ListNode* head, int k) {\n        return nullptr;\n    }\n};`,
     },
@@ -5285,6 +5441,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestValidParentheses(self, s):\n        pass`,
       javascript: `function longestValidParentheses(s) {\n\n}`,
+      typescript: `function longestValidParentheses(s) {\n\n}`,
       java: `class Solution {\n    public int longestValidParentheses(String s) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int longestValidParentheses(string s) {\n        return 0;\n    }\n};`,
     },
@@ -5299,11 +5456,11 @@ const rawProblems = [
     ],
   },
 
-  { id: 164, title: "Shortest Bridge", slug: "shortest-bridge", functionName: "shortestBridge", difficulty: "Medium", topic: "Graphs", pattern: "DFS island marking + multi-source BFS", companies: ["Amazon","Google"], description: "You are given an n x n binary matrix grid where 1 represents land and 0 represents water. An island is a group of 1's connected 4-directionally. The grid contains exactly two islands. You may change any 0 to a 1 to connect the two islands into one. Return the smallest number of 0's you must flip to connect the two islands.", examples: [{ input: "grid = [[0,1],[1,0]]", output: "1", explanation: "The two single-cell islands at (0,1) and (1,0) are 2 apart (Manhattan distance), so 1 flip connects them." }, { input: "grid = [[0,1,0],[0,0,0],[0,0,1]]", output: "2", explanation: "The islands at (0,1) and (2,2) are 3 apart, so 2 flips connect them." }, { input: "grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]", output: "1", explanation: "The outer ring and the single center cell are separated by a ring of water only 1 cell thick at the closest point." }], constraints: ["n == grid.length == grid[i].length", "2 <= n <= 100", "grid[i][j] is either 0 or 1", "There are exactly two islands in grid"], starterCode: { python: `class Solution:\n    def shortestBridge(self, grid):\n        pass`, javascript: `function shortestBridge(grid) {\n\n}`, java: `class Solution {\n    public int shortestBridge(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int shortestBridge(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[0,1],[1,0]] }, expectedOutput: 1 }, { input: { grid: [[0,1,0],[0,0,0],[0,0,1]] }, expectedOutput: 2 }, { input: { grid: [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { grid: [[1,0],[0,1]] }, expectedOutput: 1 }, { input: { grid: [[1,1,0],[0,0,0],[0,1,1]] }, expectedOutput: 1 }] },
+  { id: 164, title: "Shortest Bridge", slug: "shortest-bridge", functionName: "shortestBridge", difficulty: "Medium", topic: "Graphs", pattern: "DFS island marking + multi-source BFS", companies: ["Amazon","Google"], description: "You are given an n x n binary matrix grid where 1 represents land and 0 represents water. An island is a group of 1's connected 4-directionally. The grid contains exactly two islands. You may change any 0 to a 1 to connect the two islands into one. Return the smallest number of 0's you must flip to connect the two islands.", examples: [{ input: "grid = [[0,1],[1,0]]", output: "1", explanation: "The two single-cell islands at (0,1) and (1,0) are 2 apart (Manhattan distance), so 1 flip connects them." }, { input: "grid = [[0,1,0],[0,0,0],[0,0,1]]", output: "2", explanation: "The islands at (0,1) and (2,2) are 3 apart, so 2 flips connect them." }, { input: "grid = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]", output: "1", explanation: "The outer ring and the single center cell are separated by a ring of water only 1 cell thick at the closest point." }], constraints: ["n == grid.length == grid[i].length", "2 <= n <= 100", "grid[i][j] is either 0 or 1", "There are exactly two islands in grid"], starterCode: { python: `class Solution:\n    def shortestBridge(self, grid):\n        pass`, javascript: `function shortestBridge(grid) {\n\n}`, typescript: `function shortestBridge(grid) {\n\n}`, java: `class Solution {\n    public int shortestBridge(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int shortestBridge(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[0,1],[1,0]] }, expectedOutput: 1 }, { input: { grid: [[0,1,0],[0,0,0],[0,0,1]] }, expectedOutput: 2 }, { input: { grid: [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { grid: [[1,0],[0,1]] }, expectedOutput: 1 }, { input: { grid: [[1,1,0],[0,0,0],[0,1,1]] }, expectedOutput: 1 }] },
 
-  { id: 165, title: "Optimize Water Distribution in a Village", slug: "optimize-water-distribution", functionName: "minCostToSupplyWater", difficulty: "Hard", topic: "Graphs", pattern: "MST with a virtual source node", companies: ["Amazon","Google"], description: "There are n houses in a village, numbered 1 to n. For each house i, you can either build a well directly in that house at cost wells[i-1], or connect it to another house via a pipe. pipes[j] = [house1, house2, cost] represents a bidirectional pipe between house1 and house2 with the given cost. Return the minimum total cost to supply water to all houses (every house must end up with water, either from its own well or via a chain of pipes to a house that has a well).", examples: [{ input: "n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]", output: "3", explanation: "Build a well at house 1 (cost 1), then pipe 1-2 (cost 1) and pipe 2-3 (cost 1), total 3 — cheaper than any other combination." }, { input: "n = 2, wells = [1,1], pipes = [[1,2,1]]", output: "2", explanation: "Build a well at house 1 (cost 1) and a pipe to house 2 (cost 1), total 2." }], constraints: ["1 <= n <= 10^4", "wells.length == n", "0 <= wells[i] <= 10^5", "1 <= pipes.length <= 10^4", "pipes[j].length == 3", "1 <= house1_j, house2_j <= n", "0 <= cost_j <= 10^5", "house1_j != house2_j"], starterCode: { python: `class Solution:\n    def minCostToSupplyWater(self, n, wells, pipes):\n        pass`, javascript: `function minCostToSupplyWater(n, wells, pipes) {\n\n}`, java: `class Solution {\n    public int minCostToSupplyWater(int n, int[] wells, int[][] pipes) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minCostToSupplyWater(int n, vector<int>& wells, vector<vector<int>>& pipes) { return 0; }\n};` }, testcases: [{ input: { n: 3, wells: [1,2,2], pipes: [[1,2,1],[2,3,1]] }, expectedOutput: 3 }, { input: { n: 2, wells: [1,1], pipes: [[1,2,1]] }, expectedOutput: 2 }], hiddentestcases: [{ input: { n: 1, wells: [5], pipes: [] }, expectedOutput: 5 }, { input: { n: 3, wells: [10,10,10], pipes: [[1,2,1],[1,3,1]] }, expectedOutput: 12 }] },
+  { id: 165, title: "Optimize Water Distribution in a Village", slug: "optimize-water-distribution", functionName: "minCostToSupplyWater", difficulty: "Hard", topic: "Graphs", pattern: "MST with a virtual source node", companies: ["Amazon","Google"], description: "There are n houses in a village, numbered 1 to n. For each house i, you can either build a well directly in that house at cost wells[i-1], or connect it to another house via a pipe. pipes[j] = [house1, house2, cost] represents a bidirectional pipe between house1 and house2 with the given cost. Return the minimum total cost to supply water to all houses (every house must end up with water, either from its own well or via a chain of pipes to a house that has a well).", examples: [{ input: "n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]", output: "3", explanation: "Build a well at house 1 (cost 1), then pipe 1-2 (cost 1) and pipe 2-3 (cost 1), total 3 — cheaper than any other combination." }, { input: "n = 2, wells = [1,1], pipes = [[1,2,1]]", output: "2", explanation: "Build a well at house 1 (cost 1) and a pipe to house 2 (cost 1), total 2." }], constraints: ["1 <= n <= 10^4", "wells.length == n", "0 <= wells[i] <= 10^5", "1 <= pipes.length <= 10^4", "pipes[j].length == 3", "1 <= house1_j, house2_j <= n", "0 <= cost_j <= 10^5", "house1_j != house2_j"], starterCode: { python: `class Solution:\n    def minCostToSupplyWater(self, n, wells, pipes):\n        pass`, javascript: `function minCostToSupplyWater(n, wells, pipes) {\n\n}`, typescript: `function minCostToSupplyWater(n, wells, pipes) {\n\n}`, java: `class Solution {\n    public int minCostToSupplyWater(int n, int[] wells, int[][] pipes) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minCostToSupplyWater(int n, vector<int>& wells, vector<vector<int>>& pipes) { return 0; }\n};` }, testcases: [{ input: { n: 3, wells: [1,2,2], pipes: [[1,2,1],[2,3,1]] }, expectedOutput: 3 }, { input: { n: 2, wells: [1,1], pipes: [[1,2,1]] }, expectedOutput: 2 }], hiddentestcases: [{ input: { n: 1, wells: [5], pipes: [] }, expectedOutput: 5 }, { input: { n: 3, wells: [10,10,10], pipes: [[1,2,1],[1,3,1]] }, expectedOutput: 12 }] },
 
-  { id: 166, title: "Minimum Genetic Mutation", slug: "minimum-genetic-mutation", functionName: "minMutation", difficulty: "Medium", topic: "Graphs", pattern: "BFS shortest path over strings", companies: ["Amazon","Facebook","Google"], description: "A gene string is an 8-character string made only of the characters 'A', 'C', 'G', and 'T'. A single mutation changes exactly one character in the gene string. There is also a bank of valid gene strings — every gene the string mutates into (including the final endGene) must appear in bank. Given startGene, endGene, and bank, return the minimum number of mutations needed to mutate startGene into endGene. If there is no such path, return -1. Note that startGene itself does not need to be in bank.", examples: [{ input: "startGene = \"AACCGGTT\", endGene = \"AACCGGTA\", bank = [\"AACCGGTA\"]", output: "1", explanation: "Changing the last character T to A produces endGene directly, and \"AACCGGTA\" is in bank." }, { input: "startGene = \"AACCGGTT\", endGene = \"AAACGGTA\", bank = [\"AACCGGTA\",\"AACCGCTA\",\"AAACGGTA\"]", output: "2", explanation: "AACCGGTT -> AACCGGTA -> AAACGGTA, both intermediate/final genes are in bank, so 2 mutations suffice." }, { input: "startGene = \"AAAAACCC\", endGene = \"AACCCCCC\", bank = [\"AAAACCCC\",\"AAACCCCC\",\"AACCCCCC\"]", output: "3", explanation: "AAAAACCC -> AAAACCCC -> AAACCCCC -> AACCCCCC, one character changes at a time and every step is in bank." }], constraints: ["0 <= bank.length <= 10", "startGene.length == endGene.length == bank[i].length == 8", "startGene, endGene, and bank[i] consist of only the characters 'A', 'C', 'G', and 'T'"], starterCode: { python: `class Solution:\n    def minMutation(self, startGene, endGene, bank):\n        pass`, javascript: `function minMutation(startGene, endGene, bank) {\n\n}`, java: `class Solution {\n    public int minMutation(String startGene, String endGene, String[] bank) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minMutation(string startGene, string endGene, vector<string>& bank) { return 0; }\n};` }, testcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: ["AACCGGTA"] }, expectedOutput: 1 }, { input: { startGene: "AACCGGTT", endGene: "AAACGGTA", bank: ["AACCGGTA","AACCGCTA","AAACGGTA"] }, expectedOutput: 2 }, { input: { startGene: "AAAAACCC", endGene: "AACCCCCC", bank: ["AAAACCCC","AAACCCCC","AACCCCCC"] }, expectedOutput: 3 }], hiddentestcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: [] }, expectedOutput: -1 }, { input: { startGene: "AAAAAAAA", endGene: "AAAAAAAA", bank: [] }, expectedOutput: 0 }] },
+  { id: 166, title: "Minimum Genetic Mutation", slug: "minimum-genetic-mutation", functionName: "minMutation", difficulty: "Medium", topic: "Graphs", pattern: "BFS shortest path over strings", companies: ["Amazon","Facebook","Google"], description: "A gene string is an 8-character string made only of the characters 'A', 'C', 'G', and 'T'. A single mutation changes exactly one character in the gene string. There is also a bank of valid gene strings — every gene the string mutates into (including the final endGene) must appear in bank. Given startGene, endGene, and bank, return the minimum number of mutations needed to mutate startGene into endGene. If there is no such path, return -1. Note that startGene itself does not need to be in bank.", examples: [{ input: "startGene = \"AACCGGTT\", endGene = \"AACCGGTA\", bank = [\"AACCGGTA\"]", output: "1", explanation: "Changing the last character T to A produces endGene directly, and \"AACCGGTA\" is in bank." }, { input: "startGene = \"AACCGGTT\", endGene = \"AAACGGTA\", bank = [\"AACCGGTA\",\"AACCGCTA\",\"AAACGGTA\"]", output: "2", explanation: "AACCGGTT -> AACCGGTA -> AAACGGTA, both intermediate/final genes are in bank, so 2 mutations suffice." }, { input: "startGene = \"AAAAACCC\", endGene = \"AACCCCCC\", bank = [\"AAAACCCC\",\"AAACCCCC\",\"AACCCCCC\"]", output: "3", explanation: "AAAAACCC -> AAAACCCC -> AAACCCCC -> AACCCCCC, one character changes at a time and every step is in bank." }], constraints: ["0 <= bank.length <= 10", "startGene.length == endGene.length == bank[i].length == 8", "startGene, endGene, and bank[i] consist of only the characters 'A', 'C', 'G', and 'T'"], starterCode: { python: `class Solution:\n    def minMutation(self, startGene, endGene, bank):\n        pass`, javascript: `function minMutation(startGene, endGene, bank) {\n\n}`, typescript: `function minMutation(startGene, endGene, bank) {\n\n}`, java: `class Solution {\n    public int minMutation(String startGene, String endGene, String[] bank) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minMutation(string startGene, string endGene, vector<string>& bank) { return 0; }\n};` }, testcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: ["AACCGGTA"] }, expectedOutput: 1 }, { input: { startGene: "AACCGGTT", endGene: "AAACGGTA", bank: ["AACCGGTA","AACCGCTA","AAACGGTA"] }, expectedOutput: 2 }, { input: { startGene: "AAAAACCC", endGene: "AACCCCCC", bank: ["AAAACCCC","AAACCCCC","AACCCCCC"] }, expectedOutput: 3 }], hiddentestcases: [{ input: { startGene: "AACCGGTT", endGene: "AACCGGTA", bank: [] }, expectedOutput: -1 }, { input: { startGene: "AAAAAAAA", endGene: "AAAAAAAA", bank: [] }, expectedOutput: 0 }] },
 
   {
     id: 167,
@@ -5324,6 +5481,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def kthSmallest(self, root, k):\n        pass`,
       javascript: `function kthSmallest(root, k) {\n\n}`,
+      typescript: `function kthSmallest(root, k) {\n\n}`,
       java: `class Solution {\n    public int kthSmallest(TreeNode root, int k) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int kthSmallest(TreeNode* root, int k) {\n        return 0;\n    }\n};`,
     },
@@ -5357,6 +5515,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def pathSum(self, root, targetSum):\n        pass`,
       javascript: `function pathSum(root, targetSum) {\n\n}`,
+      typescript: `function pathSum(root, targetSum) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> pathSum(TreeNode* root, int targetSum) {\n        return {};\n    }\n};`,
     },
@@ -5391,6 +5550,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def widthOfBinaryTree(self, root):\n        pass`,
       javascript: `function widthOfBinaryTree(root) {\n\n}`,
+      typescript: `function widthOfBinaryTree(root) {\n\n}`,
       java: `class Solution {\n    public int widthOfBinaryTree(TreeNode root) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int widthOfBinaryTree(TreeNode* root) {\n        return 0;\n    }\n};`,
     },
@@ -5424,6 +5584,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def numberOfWays(self, startPos, endPos, k):\n        pass`,
       javascript: `function numberOfWays(startPos, endPos, k) {\n\n}`,
+      typescript: `function numberOfWays(startPos, endPos, k) {\n\n}`,
       java: `class Solution {\n    public int numberOfWays(int startPos, int endPos, int k) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numberOfWays(int startPos, int endPos, int k) {\n        return 0;\n    }\n};`,
     },
@@ -5440,9 +5601,9 @@ const rawProblems = [
 
   // ── BATCH 043: More DP + More Graphs (IDs 171-180) ────────────────────────
 
-  { id: 171, title: "Distinct Subsequences", slug: "distinct-subsequences", functionName: "numDistinct", difficulty: "Hard", topic: "Dynamic Programming", pattern: "2D DP subsequence count", companies: ["Google","Facebook"], description: "Given two strings s and t, return the number of distinct subsequences of s which equals t.", examples: [{ input: 's = "rabbbit", t = "rabbit"', output: "3" }, { input: 's = "babgbag", t = "bag"', output: "5" }], constraints: ["1 <= s.length, t.length <= 1000", "s and t consist of English letters."], starterCode: { python: `class Solution:\n    def numDistinct(self, s, t):\n        pass`, javascript: `function numDistinct(s, t) {\n\n}`, java: `class Solution {\n    public int numDistinct(String s, String t) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int numDistinct(string s, string t) { return 0; }\n};` }, testcases: [{ input: { s: "rabbbit", t: "rabbit" }, expectedOutput: 3 }, { input: { s: "babgbag", t: "bag" }, expectedOutput: 5 }], hiddentestcases: [{ input: { s: "b", t: "b" }, expectedOutput: 1 }, { input: { s: "aabb", t: "ab" }, expectedOutput: 4 }] },
+  { id: 171, title: "Distinct Subsequences", slug: "distinct-subsequences", functionName: "numDistinct", difficulty: "Hard", topic: "Dynamic Programming", pattern: "2D DP subsequence count", companies: ["Google","Facebook"], description: "Given two strings s and t, return the number of distinct subsequences of s which equals t.", examples: [{ input: 's = "rabbbit", t = "rabbit"', output: "3" }, { input: 's = "babgbag", t = "bag"', output: "5" }], constraints: ["1 <= s.length, t.length <= 1000", "s and t consist of English letters."], starterCode: { python: `class Solution:\n    def numDistinct(self, s, t):\n        pass`, javascript: `function numDistinct(s, t) {\n\n}`, typescript: `function numDistinct(s, t) {\n\n}`, java: `class Solution {\n    public int numDistinct(String s, String t) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int numDistinct(string s, string t) { return 0; }\n};` }, testcases: [{ input: { s: "rabbbit", t: "rabbit" }, expectedOutput: 3 }, { input: { s: "babgbag", t: "bag" }, expectedOutput: 5 }], hiddentestcases: [{ input: { s: "b", t: "b" }, expectedOutput: 1 }, { input: { s: "aabb", t: "ab" }, expectedOutput: 4 }] },
 
-  { id: 172, title: "Interleaving String", slug: "interleaving-string", functionName: "isInterleave", difficulty: "Medium", topic: "Dynamic Programming", pattern: "2D DP interleave check", companies: ["Amazon","Google"], description: "Given strings s1, s2, s3, return true if s3 is formed by an interleaving of s1 and s2.", examples: [{ input: 's1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"', output: "true" }, { input: 's1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"', output: "false" }], constraints: ["0 <= s1.length, s2.length <= 100", "0 <= s3.length <= 200"], starterCode: { python: `class Solution:\n    def isInterleave(self, s1, s2, s3):\n        pass`, javascript: `function isInterleave(s1, s2, s3) {\n\n}`, java: `class Solution {\n    public boolean isInterleave(String s1, String s2, String s3) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool isInterleave(string s1, string s2, string s3) { return false; }\n};` }, testcases: [{ input: { s1: "aabcc", s2: "dbbca", s3: "aadbbcbcac" }, expectedOutput: true }, { input: { s1: "aabcc", s2: "dbbca", s3: "aadbbbaccc" }, expectedOutput: false }, { input: { s1: "", s2: "", s3: "" }, expectedOutput: true }], hiddentestcases: [{ input: { s1: "a", s2: "b", s3: "ab" }, expectedOutput: true }, { input: { s1: "a", s2: "b", s3: "ba" }, expectedOutput: true }] },
+  { id: 172, title: "Interleaving String", slug: "interleaving-string", functionName: "isInterleave", difficulty: "Medium", topic: "Dynamic Programming", pattern: "2D DP interleave check", companies: ["Amazon","Google"], description: "Given strings s1, s2, s3, return true if s3 is formed by an interleaving of s1 and s2.", examples: [{ input: 's1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"', output: "true" }, { input: 's1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"', output: "false" }], constraints: ["0 <= s1.length, s2.length <= 100", "0 <= s3.length <= 200"], starterCode: { python: `class Solution:\n    def isInterleave(self, s1, s2, s3):\n        pass`, javascript: `function isInterleave(s1, s2, s3) {\n\n}`, typescript: `function isInterleave(s1, s2, s3) {\n\n}`, java: `class Solution {\n    public boolean isInterleave(String s1, String s2, String s3) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool isInterleave(string s1, string s2, string s3) { return false; }\n};` }, testcases: [{ input: { s1: "aabcc", s2: "dbbca", s3: "aadbbcbcac" }, expectedOutput: true }, { input: { s1: "aabcc", s2: "dbbca", s3: "aadbbbaccc" }, expectedOutput: false }, { input: { s1: "", s2: "", s3: "" }, expectedOutput: true }], hiddentestcases: [{ input: { s1: "a", s2: "b", s3: "ab" }, expectedOutput: true }, { input: { s1: "a", s2: "b", s3: "ba" }, expectedOutput: true }] },
 
   {
     id: 173,
@@ -5463,6 +5624,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minCostClimbingStairs(self, cost):\n        pass`,
       javascript: `function minCostClimbingStairs(cost) {\n\n}`,
+      typescript: `function minCostClimbingStairs(cost) {\n\n}`,
       java: `class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minCostClimbingStairs(vector<int>& cost) {\n        return 0;\n    }\n};`,
     },
@@ -5496,6 +5658,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minimumTotal(self, triangle):\n        pass`,
       javascript: `function minimumTotal(triangle) {\n\n}`,
+      typescript: `function minimumTotal(triangle) {\n\n}`,
       java: `class Solution {\n    public int minimumTotal(List<List<Integer>> triangle) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int minimumTotal(vector<vector<int>>& triangle) {\n        return 0;\n    }\n};`,
     },
@@ -5527,6 +5690,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def numSquares(self, n):\n        pass`,
       javascript: `function numSquares(n) {\n\n}`,
+      typescript: `function numSquares(n) {\n\n}`,
       java: `class Solution {\n    public int numSquares(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numSquares(int n) {\n        return 0;\n    }\n};`,
     },
@@ -5560,6 +5724,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def validTree(self, n, edges):\n        pass`,
       javascript: `function validTree(n, edges) {\n\n}`,
+      typescript: `function validTree(n, edges) {\n\n}`,
       java: `class Solution {\n    public boolean validTree(int n, int[][] edges) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool validTree(int n, vector<vector<int>>& edges) {\n        return false;\n    }\n};`,
     },
@@ -5592,6 +5757,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def accountsMerge(self, accounts):\n        pass`,
       javascript: `function accountsMerge(accounts) {\n\n}`,
+      typescript: `function accountsMerge(accounts) {\n\n}`,
       java: `class Solution {\n    public List<List<String>> accountsMerge(List<List<String>> accounts) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {\n        return {};\n    }\n};`,
     },
@@ -5622,6 +5788,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canVisitAllRooms(self, rooms):\n        pass`,
       javascript: `function canVisitAllRooms(rooms) {\n\n}`,
+      typescript: `function canVisitAllRooms(rooms) {\n\n}`,
       java: `class Solution {\n    public boolean canVisitAllRooms(List<List<Integer>> rooms) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canVisitAllRooms(vector<vector<int>>& rooms) {\n        return false;\n    }\n};`,
     },
@@ -5655,6 +5822,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findJudge(self, n, trust):\n        pass`,
       javascript: `function findJudge(n, trust) {\n\n}`,
+      typescript: `function findJudge(n, trust) {\n\n}`,
       java: `class Solution {\n    public int findJudge(int n, int[][] trust) {\n        return -1;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findJudge(int n, vector<vector<int>>& trust) {\n        return -1;\n    }\n};`,
     },
@@ -5691,6 +5859,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def allPathsSourceTarget(self, graph):\n        pass`,
       javascript: `function allPathsSourceTarget(graph) {\n\n}`,
+      typescript: `function allPathsSourceTarget(graph) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {\n        return {};\n    }\n};`,
     },
@@ -5706,7 +5875,7 @@ const rawProblems = [
 
   // ── BATCH 044: Backtracking II + Binary Search II (IDs 181-190) ───────────
 
-  { id: 181, title: "Subsets II", slug: "subsets-ii", functionName: "subsetsWithDup", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with dedup sort", companies: ["Amazon","Facebook"], description: "Given an integer array nums that may contain duplicates, return all possible subsets (the power set). The solution must not contain duplicate subsets.", examples: [{ input: "nums = [1,2,2]", output: "[[],[1],[1,2],[1,2,2],[2],[2,2]]" }, { input: "nums = [0]", output: "[[],[0]]" }], constraints: ["1 <= nums.length <= 10", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def subsetsWithDup(self, nums):\n        pass`, javascript: `function subsetsWithDup(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> subsetsWithDup(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> subsetsWithDup(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,2] }, expectedOutput: [[],[1],[1,2],[1,2,2],[2],[2,2]] }, { input: { nums: [0] }, expectedOutput: [[],[0]] }], hiddentestcases: [{ input: { nums: [1,1] }, expectedOutput: [[],[1],[1,1]] }, { input: { nums: [4,4,4,1,4] }, expectedOutput: [[],[1],[1,4],[1,4,4],[1,4,4,4],[1,4,4,4,4],[4],[4,4],[4,4,4],[4,4,4,4]] }] },
+  { id: 181, title: "Subsets II", slug: "subsets-ii", functionName: "subsetsWithDup", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with dedup sort", companies: ["Amazon","Facebook"], description: "Given an integer array nums that may contain duplicates, return all possible subsets (the power set). The solution must not contain duplicate subsets.", examples: [{ input: "nums = [1,2,2]", output: "[[],[1],[1,2],[1,2,2],[2],[2,2]]" }, { input: "nums = [0]", output: "[[],[0]]" }], constraints: ["1 <= nums.length <= 10", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def subsetsWithDup(self, nums):\n        pass`, javascript: `function subsetsWithDup(nums) {\n\n}`, typescript: `function subsetsWithDup(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> subsetsWithDup(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> subsetsWithDup(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,2] }, expectedOutput: [[],[1],[1,2],[1,2,2],[2],[2,2]] }, { input: { nums: [0] }, expectedOutput: [[],[0]] }], hiddentestcases: [{ input: { nums: [1,1] }, expectedOutput: [[],[1],[1,1]] }, { input: { nums: [4,4,4,1,4] }, expectedOutput: [[],[1],[1,4],[1,4,4],[1,4,4,4],[1,4,4,4,4],[4],[4,4],[4,4,4],[4,4,4,4]] }] },
 
   {
     id: 182,
@@ -5727,6 +5896,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def combinationSum2(self, candidates, target):\n        pass`,
       javascript: `function combinationSum2(candidates, target) {\n\n}`,
+      typescript: `function combinationSum2(candidates, target) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> combinationSum2(int[] candidates, int target) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {\n        return {};\n    }\n};`,
     },
@@ -5740,15 +5910,15 @@ const rawProblems = [
     ],
   },
 
-  { id: 183, title: "N-Queens II", slug: "n-queens-ii", functionName: "totalNQueens", difficulty: "Hard", topic: "Backtracking", pattern: "constraint backtracking count-only", companies: ["Amazon","Microsoft"], description: "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other (no two queens share the same row, column, or diagonal). Given an integer n, return the number of distinct solutions to the n-queens puzzle.", examples: [{ input: "n = 4", output: "2", explanation: "There are exactly 2 distinct ways to place 4 non-attacking queens on a 4x4 board." }, { input: "n = 1", output: "1", explanation: "A single queen on a 1x1 board trivially doesn't attack anything." }, { input: "n = 2", output: "0", explanation: "No arrangement of 2 non-attacking queens exists on a 2x2 board." }], constraints: ["1 <= n <= 9"], starterCode: { python: `class Solution:\n    def totalNQueens(self, n):\n        pass`, javascript: `function totalNQueens(n) {\n\n}`, java: `class Solution {\n    public int totalNQueens(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalNQueens(int n) { return 0; }\n};` }, testcases: [{ input: { n: 4 }, expectedOutput: 2 }, { input: { n: 1 }, expectedOutput: 1 }, { input: { n: 2 }, expectedOutput: 0 }], hiddentestcases: [{ input: { n: 3 }, expectedOutput: 0 }, { input: { n: 5 }, expectedOutput: 10 }] },
+  { id: 183, title: "N-Queens II", slug: "n-queens-ii", functionName: "totalNQueens", difficulty: "Hard", topic: "Backtracking", pattern: "constraint backtracking count-only", companies: ["Amazon","Microsoft"], description: "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other (no two queens share the same row, column, or diagonal). Given an integer n, return the number of distinct solutions to the n-queens puzzle.", examples: [{ input: "n = 4", output: "2", explanation: "There are exactly 2 distinct ways to place 4 non-attacking queens on a 4x4 board." }, { input: "n = 1", output: "1", explanation: "A single queen on a 1x1 board trivially doesn't attack anything." }, { input: "n = 2", output: "0", explanation: "No arrangement of 2 non-attacking queens exists on a 2x2 board." }], constraints: ["1 <= n <= 9"], starterCode: { python: `class Solution:\n    def totalNQueens(self, n):\n        pass`, javascript: `function totalNQueens(n) {\n\n}`, typescript: `function totalNQueens(n) {\n\n}`, java: `class Solution {\n    public int totalNQueens(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalNQueens(int n) { return 0; }\n};` }, testcases: [{ input: { n: 4 }, expectedOutput: 2 }, { input: { n: 1 }, expectedOutput: 1 }, { input: { n: 2 }, expectedOutput: 0 }], hiddentestcases: [{ input: { n: 3 }, expectedOutput: 0 }, { input: { n: 5 }, expectedOutput: 10 }] },
 
-  { id: 184, title: "Letter Combinations of a Phone Number", slug: "letter-combinations-phone-number", functionName: "letterCombinations", difficulty: "Medium", topic: "Backtracking", pattern: "DFS digit mapping", companies: ["Amazon","Facebook","Google","Microsoft"], description: "Given a string containing digits 2-9, return all possible letter combinations that the number could represent (phone keypad mapping). Return an empty list for empty input.", examples: [{ input: 'digits = "23"', output: '["ad","ae","af","bd","be","bf","cd","ce","cf"]' }, { input: 'digits = ""', output: "[]" }, { input: 'digits = "2"', output: '["a","b","c"]' }], constraints: ["0 <= digits.length <= 4", "digits[i] is a digit in ['2','9']."], starterCode: { python: `class Solution:\n    def letterCombinations(self, digits):\n        pass`, javascript: `function letterCombinations(digits) {\n\n}`, java: `class Solution {\n    public List<String> letterCombinations(String digits) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> letterCombinations(string digits) { return {}; }\n};` }, testcases: [{ input: { digits: "23" }, expectedOutput: ["ad","ae","af","bd","be","bf","cd","ce","cf"] }, { input: { digits: "" }, expectedOutput: [] }, { input: { digits: "2" }, expectedOutput: ["a","b","c"] }], hiddentestcases: [{ input: { digits: "9" }, expectedOutput: ["w","x","y","z"] }, { input: { digits: "29" }, expectedOutput: ["aw","ax","ay","az","bw","bx","by","bz","cw","cx","cy","cz"] }] },
+  { id: 184, title: "Letter Combinations of a Phone Number", slug: "letter-combinations-phone-number", functionName: "letterCombinations", difficulty: "Medium", topic: "Backtracking", pattern: "DFS digit mapping", companies: ["Amazon","Facebook","Google","Microsoft"], description: "Given a string containing digits 2-9, return all possible letter combinations that the number could represent (phone keypad mapping). Return an empty list for empty input.", examples: [{ input: 'digits = "23"', output: '["ad","ae","af","bd","be","bf","cd","ce","cf"]' }, { input: 'digits = ""', output: "[]" }, { input: 'digits = "2"', output: '["a","b","c"]' }], constraints: ["0 <= digits.length <= 4", "digits[i] is a digit in ['2','9']."], starterCode: { python: `class Solution:\n    def letterCombinations(self, digits):\n        pass`, javascript: `function letterCombinations(digits) {\n\n}`, typescript: `function letterCombinations(digits) {\n\n}`, java: `class Solution {\n    public List<String> letterCombinations(String digits) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> letterCombinations(string digits) { return {}; }\n};` }, testcases: [{ input: { digits: "23" }, expectedOutput: ["ad","ae","af","bd","be","bf","cd","ce","cf"] }, { input: { digits: "" }, expectedOutput: [] }, { input: { digits: "2" }, expectedOutput: ["a","b","c"] }], hiddentestcases: [{ input: { digits: "9" }, expectedOutput: ["w","x","y","z"] }, { input: { digits: "29" }, expectedOutput: ["aw","ax","ay","az","bw","bx","by","bz","cw","cx","cy","cz"] }] },
 
-  { id: 185, title: "Permutations II", slug: "permutations-ii", comparisonMode: "unordered", functionName: "permuteUnique", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with used array + dedup", companies: ["Amazon","Microsoft"], description: "Given a collection of numbers that might contain duplicates, return all possible unique permutations in any order.", examples: [{ input: "nums = [1,1,2]", output: "[[1,1,2],[1,2,1],[2,1,1]]" }, { input: "nums = [1,2,3]", output: "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]" }], constraints: ["1 <= nums.length <= 8", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def permuteUnique(self, nums):\n        pass`, javascript: `function permuteUnique(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> permuteUnique(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> permuteUnique(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,1,2] }, expectedOutput: [[1,1,2],[1,2,1],[2,1,1]] }, { input: { nums: [1,2,3] }, expectedOutput: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]] }], hiddentestcases: [{ input: { nums: [0,1] }, expectedOutput: [[0,1],[1,0]] }, { input: { nums: [1,1,1] }, expectedOutput: [[1,1,1]] }] },
+  { id: 185, title: "Permutations II", slug: "permutations-ii", comparisonMode: "unordered", functionName: "permuteUnique", difficulty: "Medium", topic: "Backtracking", pattern: "DFS with used array + dedup", companies: ["Amazon","Microsoft"], description: "Given a collection of numbers that might contain duplicates, return all possible unique permutations in any order.", examples: [{ input: "nums = [1,1,2]", output: "[[1,1,2],[1,2,1],[2,1,1]]" }, { input: "nums = [1,2,3]", output: "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]" }], constraints: ["1 <= nums.length <= 8", "-10 <= nums[i] <= 10"], starterCode: { python: `class Solution:\n    def permuteUnique(self, nums):\n        pass`, javascript: `function permuteUnique(nums) {\n\n}`, typescript: `function permuteUnique(nums) {\n\n}`, java: `class Solution {\n    public List<List<Integer>> permuteUnique(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<vector<int>> permuteUnique(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,1,2] }, expectedOutput: [[1,1,2],[1,2,1],[2,1,1]] }, { input: { nums: [1,2,3] }, expectedOutput: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]] }], hiddentestcases: [{ input: { nums: [0,1] }, expectedOutput: [[0,1],[1,0]] }, { input: { nums: [1,1,1] }, expectedOutput: [[1,1,1]] }] },
 
-  { id: 186, title: "First Bad Version", slug: "first-bad-version", functionName: "firstBadVersion", difficulty: "Easy", topic: "Binary Search", pattern: "leftmost binary search", companies: ["Facebook","Amazon"], description: "You are a product manager with n versions. isBadVersion(version) returns whether a version is bad. All versions after the first bad one are also bad. Find the first bad version using minimum API calls.", examples: [{ input: "n = 5, bad = 4", output: "4" }, { input: "n = 1, bad = 1", output: "1" }], constraints: ["1 <= bad <= n <= 2^31 - 1"], starterCode: { python: `class Solution:\n    def firstBadVersion(self, n):\n        pass`, javascript: `function solution(isBadVersion) {\n    return function(n) {\n\n    };\n}`, java: `class Solution extends VersionControl {\n    public int firstBadVersion(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int firstBadVersion(int n) { return 0; }\n};` }, testcases: [{ input: { n: 5, bad: 4 }, expectedOutput: 4 }, { input: { n: 1, bad: 1 }, expectedOutput: 1 }], hiddentestcases: [{ input: { n: 2126753390, bad: 1702766719 }, expectedOutput: 1702766719 }, { input: { n: 100, bad: 1 }, expectedOutput: 1 }] },
+  { id: 186, title: "First Bad Version", slug: "first-bad-version", functionName: "firstBadVersion", difficulty: "Easy", topic: "Binary Search", pattern: "leftmost binary search", companies: ["Facebook","Amazon"], description: "You are a product manager with n versions. isBadVersion(version) returns whether a version is bad. All versions after the first bad one are also bad. Find the first bad version using minimum API calls.", examples: [{ input: "n = 5, bad = 4", output: "4" }, { input: "n = 1, bad = 1", output: "1" }], constraints: ["1 <= bad <= n <= 2^31 - 1"], starterCode: { python: `class Solution:\n    def firstBadVersion(self, n):\n        pass`, javascript: `function solution(isBadVersion) {\n    return function(n) {\n\n    };\n}`, typescript: `function solution(isBadVersion) {\n    return function(n) {\n\n    };\n}`, java: `class Solution extends VersionControl {\n    public int firstBadVersion(int n) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int firstBadVersion(int n) { return 0; }\n};` }, testcases: [{ input: { n: 5, bad: 4 }, expectedOutput: 4 }, { input: { n: 1, bad: 1 }, expectedOutput: 1 }], hiddentestcases: [{ input: { n: 2126753390, bad: 1702766719 }, expectedOutput: 1702766719 }, { input: { n: 100, bad: 1 }, expectedOutput: 1 }] },
 
-  { id: 187, title: "Peak Index in a Mountain Array", slug: "peak-index-mountain-array", functionName: "peakIndexInMountainArray", difficulty: "Medium", topic: "Binary Search", pattern: "binary search on slope", companies: ["Amazon","Google"], description: "An array arr is a mountain if arr[0] < arr[1] < ... < arr[i] > arr[i+1] > ... > arr[n-1]. Return the index i where arr[i] is the peak. Solve in O(log n).", examples: [{ input: "arr = [0,1,0]", output: "1" }, { input: "arr = [0,2,1,0]", output: "1" }, { input: "arr = [0,10,5,2]", output: "1" }], constraints: ["3 <= arr.length <= 10^5", "0 <= arr[i] <= 10^6", "arr is a mountain array."], starterCode: { python: `class Solution:\n    def peakIndexInMountainArray(self, arr):\n        pass`, javascript: `function peakIndexInMountainArray(arr) {\n\n}`, java: `class Solution {\n    public int peakIndexInMountainArray(int[] arr) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int peakIndexInMountainArray(vector<int>& arr) { return 0; }\n};` }, testcases: [{ input: { arr: [0,1,0] }, expectedOutput: 1 }, { input: { arr: [0,2,1,0] }, expectedOutput: 1 }, { input: { arr: [0,10,5,2] }, expectedOutput: 1 }], hiddentestcases: [{ input: { arr: [3,5,3,2,0] }, expectedOutput: 1 }, { input: { arr: [0,1,2,3,4,5,4,3,2,1] }, expectedOutput: 5 }] },
+  { id: 187, title: "Peak Index in a Mountain Array", slug: "peak-index-mountain-array", functionName: "peakIndexInMountainArray", difficulty: "Medium", topic: "Binary Search", pattern: "binary search on slope", companies: ["Amazon","Google"], description: "An array arr is a mountain if arr[0] < arr[1] < ... < arr[i] > arr[i+1] > ... > arr[n-1]. Return the index i where arr[i] is the peak. Solve in O(log n).", examples: [{ input: "arr = [0,1,0]", output: "1" }, { input: "arr = [0,2,1,0]", output: "1" }, { input: "arr = [0,10,5,2]", output: "1" }], constraints: ["3 <= arr.length <= 10^5", "0 <= arr[i] <= 10^6", "arr is a mountain array."], starterCode: { python: `class Solution:\n    def peakIndexInMountainArray(self, arr):\n        pass`, javascript: `function peakIndexInMountainArray(arr) {\n\n}`, typescript: `function peakIndexInMountainArray(arr) {\n\n}`, java: `class Solution {\n    public int peakIndexInMountainArray(int[] arr) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int peakIndexInMountainArray(vector<int>& arr) { return 0; }\n};` }, testcases: [{ input: { arr: [0,1,0] }, expectedOutput: 1 }, { input: { arr: [0,2,1,0] }, expectedOutput: 1 }, { input: { arr: [0,10,5,2] }, expectedOutput: 1 }], hiddentestcases: [{ input: { arr: [3,5,3,2,0] }, expectedOutput: 1 }, { input: { arr: [0,1,2,3,4,5,4,3,2,1] }, expectedOutput: 5 }] },
 
   {
     id: 188,
@@ -5769,6 +5939,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def search(self, nums, target):\n        pass`,
       javascript: `function search(nums, target) {\n\n}`,
+      typescript: `function search(nums, target) {\n\n}`,
       java: `class Solution {\n    public boolean search(int[] nums, int target) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool search(vector<int>& nums, int target) {\n        return false;\n    }\n};`,
     },
@@ -5802,6 +5973,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findClosestElements(self, arr, k, x):\n        pass`,
       javascript: `function findClosestElements(arr, k, x) {\n\n}`,
+      typescript: `function findClosestElements(arr, k, x) {\n\n}`,
       java: `class Solution {\n    public List<Integer> findClosestElements(int[] arr, int k, int x) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findClosestElements(vector<int>& arr, int k, int x) {\n        return {};\n    }\n};`,
     },
@@ -5816,15 +5988,15 @@ const rawProblems = [
     ],
   },
 
-  { id: 190, title: "Count of Smaller Numbers After Self", slug: "count-smaller-numbers-after-self", functionName: "countSmaller", difficulty: "Hard", topic: "Binary Search", pattern: "BIT / merge sort", companies: ["Google","Amazon","Facebook"], description: "Given an integer array nums, return an integer array counts where counts[i] is the number of elements to the right of nums[i] that are smaller than nums[i].", examples: [{ input: "nums = [5,2,6,1]", output: "[2,1,1,0]" }, { input: "nums = [-1]", output: "[0]" }, { input: "nums = [-1,-1]", output: "[0,0]" }], constraints: ["1 <= nums.length <= 10^5", "-10^4 <= nums[i] <= 10^4"], starterCode: { python: `class Solution:\n    def countSmaller(self, nums):\n        pass`, javascript: `function countSmaller(nums) {\n\n}`, java: `class Solution {\n    public List<Integer> countSmaller(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<int> countSmaller(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [5,2,6,1] }, expectedOutput: [2,1,1,0] }, { input: { nums: [-1] }, expectedOutput: [0] }, { input: { nums: [-1,-1] }, expectedOutput: [0,0] }], hiddentestcases: [{ input: { nums: [1,9,7,8,5] }, expectedOutput: [0,3,1,1,0] }] },
+  { id: 190, title: "Count of Smaller Numbers After Self", slug: "count-smaller-numbers-after-self", functionName: "countSmaller", difficulty: "Hard", topic: "Binary Search", pattern: "BIT / merge sort", companies: ["Google","Amazon","Facebook"], description: "Given an integer array nums, return an integer array counts where counts[i] is the number of elements to the right of nums[i] that are smaller than nums[i].", examples: [{ input: "nums = [5,2,6,1]", output: "[2,1,1,0]" }, { input: "nums = [-1]", output: "[0]" }, { input: "nums = [-1,-1]", output: "[0,0]" }], constraints: ["1 <= nums.length <= 10^5", "-10^4 <= nums[i] <= 10^4"], starterCode: { python: `class Solution:\n    def countSmaller(self, nums):\n        pass`, javascript: `function countSmaller(nums) {\n\n}`, typescript: `function countSmaller(nums) {\n\n}`, java: `class Solution {\n    public List<Integer> countSmaller(int[] nums) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<int> countSmaller(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [5,2,6,1] }, expectedOutput: [2,1,1,0] }, { input: { nums: [-1] }, expectedOutput: [0] }, { input: { nums: [-1,-1] }, expectedOutput: [0,0] }], hiddentestcases: [{ input: { nums: [1,9,7,8,5] }, expectedOutput: [0,3,1,1,0] }] },
 
   // ── BATCH 045: Hash Maps + Heap II (IDs 191-200) ──────────────────────────
 
-  { id: 191, title: "Two Sum III — Data Structure Design", slug: "two-sum-iii-data-structure", functionName: "TwoSum", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Easy", topic: "Hash Maps", pattern: "frequency map", companies: ["LinkedIn"], description: "Design a TwoSum class that supports add(number) and find(value). find(value) returns true if there exist any two numbers whose sum equals value.", examples: [{ input: '["TwoSum","add","add","add","find","find"]\n[[],[1],[3],[5],[4],[7]]', output: "[null,null,null,null,true,false]" }], constraints: ["At most 10^4 calls to add and find.", "-2^31 <= number <= 2^31 - 1", "-2^63 <= value <= 2^63 - 1"], starterCode: { python: `class TwoSum:\n    def __init__(self):\n        pass\n    def add(self, number):\n        pass\n    def find(self, value):\n        pass`, javascript: `class TwoSum {\n  constructor() {}\n  add(number) {}\n  find(value) { return false; }\n}`, java: `class TwoSum {\n    public TwoSum() {}\n    public void add(int number) {}\n    public boolean find(int value) { return false; }\n}`, cpp: `class TwoSum {\npublic:\n    TwoSum() {}\n    void add(int number) {}\n    bool find(int value) { return false; }\n};` }, testcases: [{ input: { ops: ["add","add","add","find","find"], vals: [[1],[3],[5],[4],[7]] }, expectedOutput: [null,null,null,true,false] }], hiddentestcases: [{ input: { ops: ["add","find"], vals: [[0],[0]] }, expectedOutput: [null,false] }, { input: { ops: ["add","add","find"], vals: [[3],[3],[6]] }, expectedOutput: [null,null,true] }] },
+  { id: 191, title: "Two Sum III — Data Structure Design", slug: "two-sum-iii-data-structure", functionName: "TwoSum", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Easy", topic: "Hash Maps", pattern: "frequency map", companies: ["LinkedIn"], description: "Design a TwoSum class that supports add(number) and find(value). find(value) returns true if there exist any two numbers whose sum equals value.", examples: [{ input: '["TwoSum","add","add","add","find","find"]\n[[],[1],[3],[5],[4],[7]]', output: "[null,null,null,null,true,false]" }], constraints: ["At most 10^4 calls to add and find.", "-2^31 <= number <= 2^31 - 1", "-2^63 <= value <= 2^63 - 1"], starterCode: { python: `class TwoSum:\n    def __init__(self):\n        pass\n    def add(self, number):\n        pass\n    def find(self, value):\n        pass`, javascript: `class TwoSum {\n  constructor() {}\n  add(number) {}\n  find(value) { return false; }\n}`, typescript: `class TwoSum {\n  constructor() {}\n  add(number) {}\n  find(value) { return false; }\n}`, java: `class TwoSum {\n    public TwoSum() {}\n    public void add(int number) {}\n    public boolean find(int value) { return false; }\n}`, cpp: `class TwoSum {\npublic:\n    TwoSum() {}\n    void add(int number) {}\n    bool find(int value) { return false; }\n};` }, testcases: [{ input: { ops: ["add","add","add","find","find"], vals: [[1],[3],[5],[4],[7]] }, expectedOutput: [null,null,null,true,false] }], hiddentestcases: [{ input: { ops: ["add","find"], vals: [[0],[0]] }, expectedOutput: [null,false] }, { input: { ops: ["add","add","find"], vals: [[3],[3],[6]] }, expectedOutput: [null,null,true] }] },
 
-  { id: 192, title: "Top K Frequent Words", slug: "top-k-frequent-words", functionName: "topKFrequent", difficulty: "Medium", topic: "Hash Maps", pattern: "frequency map + heap", companies: ["Amazon","Facebook","Bloomberg"], description: "Given an array of strings words and an integer k, return the k most frequent strings. Return the answer sorted by frequency (highest first). For ties, sort lexicographically.", examples: [{ input: 'words = ["i","love","leetcode","i","love","coding"], k = 2', output: '["i","love"]' }, { input: 'words = ["the","day","is","sunny","the","the","the","sunny","is","is"], k = 4', output: '["the","is","sunny","day"]' }], constraints: ["1 <= words.length <= 500", "1 <= words[i].length <= 10", "k is in [1, unique word count]"], starterCode: { python: `class Solution:\n    def topKFrequent(self, words, k):\n        pass`, javascript: `function topKFrequent(words, k) {\n\n}`, java: `class Solution {\n    public List<String> topKFrequent(String[] words, int k) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> topKFrequent(vector<string>& words, int k) { return {}; }\n};` }, testcases: [{ input: { words: ["i","love","leetcode","i","love","coding"], k: 2 }, expectedOutput: ["i","love"] }, { input: { words: ["the","day","is","sunny","the","the","the","sunny","is","is"], k: 4 }, expectedOutput: ["the","is","sunny","day"] }], hiddentestcases: [{ input: { words: ["a","aa","aaa"], k: 1 }, expectedOutput: ["a"] }, { input: { words: ["a","b","a"], k: 2 }, expectedOutput: ["a","b"] }] },
+  { id: 192, title: "Top K Frequent Words", slug: "top-k-frequent-words", functionName: "topKFrequent", difficulty: "Medium", topic: "Hash Maps", pattern: "frequency map + heap", companies: ["Amazon","Facebook","Bloomberg"], description: "Given an array of strings words and an integer k, return the k most frequent strings. Return the answer sorted by frequency (highest first). For ties, sort lexicographically.", examples: [{ input: 'words = ["i","love","leetcode","i","love","coding"], k = 2', output: '["i","love"]' }, { input: 'words = ["the","day","is","sunny","the","the","the","sunny","is","is"], k = 4', output: '["the","is","sunny","day"]' }], constraints: ["1 <= words.length <= 500", "1 <= words[i].length <= 10", "k is in [1, unique word count]"], starterCode: { python: `class Solution:\n    def topKFrequent(self, words, k):\n        pass`, javascript: `function topKFrequent(words, k) {\n\n}`, typescript: `function topKFrequent(words, k) {\n\n}`, java: `class Solution {\n    public List<String> topKFrequent(String[] words, int k) { return new ArrayList<>(); }\n}`, cpp: `class Solution {\npublic:\n    vector<string> topKFrequent(vector<string>& words, int k) { return {}; }\n};` }, testcases: [{ input: { words: ["i","love","leetcode","i","love","coding"], k: 2 }, expectedOutput: ["i","love"] }, { input: { words: ["the","day","is","sunny","the","the","the","sunny","is","is"], k: 4 }, expectedOutput: ["the","is","sunny","day"] }], hiddentestcases: [{ input: { words: ["a","aa","aaa"], k: 1 }, expectedOutput: ["a"] }, { input: { words: ["a","b","a"], k: 2 }, expectedOutput: ["a","b"] }] },
 
-  { id: 193, title: "Longest Substring with At Most Two Distinct Characters", slug: "longest-substring-two-distinct", functionName: "lengthOfLongestSubstringTwoDistinct", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window frequency map", companies: ["Amazon","Facebook"], description: "Given a string s, return the length of the longest substring that contains at most two distinct characters.", examples: [{ input: 's = "eceba"', output: "3", explanation: '"ece"' }, { input: 's = "ccaabbb"', output: "5", explanation: '"aabbb"' }], constraints: ["1 <= s.length <= 10^5", "s consists of English letters."], starterCode: { python: `class Solution:\n    def lengthOfLongestSubstringTwoDistinct(self, s):\n        pass`, javascript: `function lengthOfLongestSubstringTwoDistinct(s) {\n\n}`, java: `class Solution {\n    public int lengthOfLongestSubstringTwoDistinct(String s) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int lengthOfLongestSubstringTwoDistinct(string s) { return 0; }\n};` }, testcases: [{ input: { s: "eceba" }, expectedOutput: 3 }, { input: { s: "ccaabbb" }, expectedOutput: 5 }], hiddentestcases: [{ input: { s: "a" }, expectedOutput: 1 }, { input: { s: "abcabcabc" }, expectedOutput: 2 }] },
+  { id: 193, title: "Longest Substring with At Most Two Distinct Characters", slug: "longest-substring-two-distinct", functionName: "lengthOfLongestSubstringTwoDistinct", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window frequency map", companies: ["Amazon","Facebook"], description: "Given a string s, return the length of the longest substring that contains at most two distinct characters.", examples: [{ input: 's = "eceba"', output: "3", explanation: '"ece"' }, { input: 's = "ccaabbb"', output: "5", explanation: '"aabbb"' }], constraints: ["1 <= s.length <= 10^5", "s consists of English letters."], starterCode: { python: `class Solution:\n    def lengthOfLongestSubstringTwoDistinct(self, s):\n        pass`, javascript: `function lengthOfLongestSubstringTwoDistinct(s) {\n\n}`, typescript: `function lengthOfLongestSubstringTwoDistinct(s) {\n\n}`, java: `class Solution {\n    public int lengthOfLongestSubstringTwoDistinct(String s) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int lengthOfLongestSubstringTwoDistinct(string s) { return 0; }\n};` }, testcases: [{ input: { s: "eceba" }, expectedOutput: 3 }, { input: { s: "ccaabbb" }, expectedOutput: 5 }], hiddentestcases: [{ input: { s: "a" }, expectedOutput: 1 }, { input: { s: "abcabcabc" }, expectedOutput: 2 }] },
 
   {
     id: 194,
@@ -5845,6 +6017,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMaxLength(self, nums):\n        pass`,
       javascript: `function findMaxLength(nums) {\n\n}`,
+      typescript: `function findMaxLength(nums) {\n\n}`,
       java: `class Solution {\n    public int findMaxLength(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMaxLength(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -5878,6 +6051,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def fourSumCount(self, nums1, nums2, nums3, nums4):\n        pass`,
       javascript: `function fourSumCount(nums1, nums2, nums3, nums4) {\n\n}`,
+      typescript: `function fourSumCount(nums1, nums2, nums3, nums4) {\n\n}`,
       java: `class Solution {\n    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int fourSumCount(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3, vector<int>& nums4) {\n        return 0;\n    }\n};`,
     },
@@ -5912,6 +6086,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def kSmallestPairs(self, nums1, nums2, k):\n        pass`,
       javascript: `function kSmallestPairs(nums1, nums2, k) {\n\n}`,
+      typescript: `function kSmallestPairs(nums1, nums2, k) {\n\n}`,
       java: `class Solution {\n    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {\n        return {};\n    }\n};`,
     },
@@ -5943,6 +6118,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def nthUglyNumber(self, n):\n        pass`,
       javascript: `function nthUglyNumber(n) {\n\n}`,
+      typescript: `function nthUglyNumber(n) {\n\n}`,
       java: `class Solution {\n    public int nthUglyNumber(int n) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int nthUglyNumber(int n) {\n        return 0;\n    }\n};`,
     },
@@ -5976,6 +6152,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMaximizedCapital(self, k, w, profits, capital):\n        pass`,
       javascript: `function findMaximizedCapital(k, w, profits, capital) {\n\n}`,
+      typescript: `function findMaximizedCapital(k, w, profits, capital) {\n\n}`,
       java: `class Solution {\n    public int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {\n        return 0;\n    }\n};`,
     },
@@ -6008,6 +6185,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def getOrder(self, tasks):\n        pass`,
       javascript: `function getOrder(tasks) {\n\n}`,
+      typescript: `function getOrder(tasks) {\n\n}`,
       java: `class Solution {\n    public int[] getOrder(int[][] tasks) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> getOrder(vector<vector<int>>& tasks) {\n        return {};\n    }\n};`,
     },
@@ -6039,6 +6217,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reorganizeString(self, s):\n        pass`,
       javascript: `function reorganizeString(s) {\n\n}`,
+      typescript: `function reorganizeString(s) {\n\n}`,
       java: `class Solution {\n    public String reorganizeString(String s) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string reorganizeString(string s) {\n        return "";\n    }\n};`,
     },
@@ -6055,7 +6234,7 @@ const rawProblems = [
 
   // ── BATCH 046: Trie II + More Strings (IDs 201-210) ───────────────────────
 
-  { id: 201, title: "Palindromic Substrings", slug: "palindromic-substrings", functionName: "countSubstrings", difficulty: "Medium", topic: "Dynamic Programming", pattern: "expand around center", companies: ["Facebook","Amazon"], description: "Given a string s, return the number of palindromic substrings in it. A string is a palindrome when it reads the same backward as forward.", examples: [{ input: 's = "abc"', output: "3", explanation: "a, b, c" }, { input: 's = "aaa"', output: "6", explanation: "a, a, a, aa, aa, aaa" }], constraints: ["1 <= s.length <= 1000", "s consists of lowercase English letters."], starterCode: { python: `class Solution:\n    def countSubstrings(self, s):\n        pass`, javascript: `function countSubstrings(s) {\n\n}`, java: `class Solution {\n    public int countSubstrings(String s) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int countSubstrings(string s) { return 0; }\n};` }, testcases: [{ input: { s: "abc" }, expectedOutput: 3 }, { input: { s: "aaa" }, expectedOutput: 6 }, { input: { s: "a" }, expectedOutput: 1 }], hiddentestcases: [{ input: { s: "aba" }, expectedOutput: 4 }, { input: { s: "abba" }, expectedOutput: 6 }] },
+  { id: 201, title: "Palindromic Substrings", slug: "palindromic-substrings", functionName: "countSubstrings", difficulty: "Medium", topic: "Dynamic Programming", pattern: "expand around center", companies: ["Facebook","Amazon"], description: "Given a string s, return the number of palindromic substrings in it. A string is a palindrome when it reads the same backward as forward.", examples: [{ input: 's = "abc"', output: "3", explanation: "a, b, c" }, { input: 's = "aaa"', output: "6", explanation: "a, a, a, aa, aa, aaa" }], constraints: ["1 <= s.length <= 1000", "s consists of lowercase English letters."], starterCode: { python: `class Solution:\n    def countSubstrings(self, s):\n        pass`, javascript: `function countSubstrings(s) {\n\n}`, typescript: `function countSubstrings(s) {\n\n}`, java: `class Solution {\n    public int countSubstrings(String s) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int countSubstrings(string s) { return 0; }\n};` }, testcases: [{ input: { s: "abc" }, expectedOutput: 3 }, { input: { s: "aaa" }, expectedOutput: 6 }, { input: { s: "a" }, expectedOutput: 1 }], hiddentestcases: [{ input: { s: "aba" }, expectedOutput: 4 }, { input: { s: "abba" }, expectedOutput: 6 }] },
 
   {
     id: 202,
@@ -6077,6 +6256,7 @@ const rawProblems = [
     starterCode: {
       python: `class Trie:\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def countWordsEqualTo(self, word):\n        pass\n\n    def countWordsStartingWith(self, prefix):\n        pass\n\n    def erase(self, word):\n        pass`,
       javascript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  countWordsEqualTo(word) { return 0; }\n  countWordsStartingWith(prefix) { return 0; }\n  erase(word) {}\n}`,
+      typescript: `class Trie {\n  constructor() {}\n  insert(word) {}\n  countWordsEqualTo(word) { return 0; }\n  countWordsStartingWith(prefix) { return 0; }\n  erase(word) {}\n}`,
       java: `class Trie {\n    public Trie() {}\n    public void insert(String word) {}\n    public int countWordsEqualTo(String word) { return 0; }\n    public int countWordsStartingWith(String prefix) { return 0; }\n    public void erase(String word) {}\n}`,
       cpp: `class Trie {\npublic:\n    Trie() {}\n    void insert(string word) {}\n    int countWordsEqualTo(string word) { return 0; }\n    int countWordsStartingWith(string prefix) { return 0; }\n    void erase(string word) {}\n};`,
     },
@@ -6108,6 +6288,7 @@ const rawProblems = [
     starterCode: {
       python: `class MapSum:\n    def __init__(self):\n        pass\n\n    def insert(self, key, val):\n        pass\n\n    def sum(self, prefix):\n        pass`,
       javascript: `class MapSum {\n  constructor() {}\n  insert(key, val) {}\n  sum(prefix) { return 0; }\n}`,
+      typescript: `class MapSum {\n  constructor() {}\n  insert(key, val) {}\n  sum(prefix) { return 0; }\n}`,
       java: `class MapSum {\n    public MapSum() {}\n    public void insert(String key, int val) {}\n    public int sum(String prefix) { return 0; }\n}`,
       cpp: `class MapSum {\npublic:\n    MapSum() {}\n    void insert(string key, int val) {}\n    int sum(string prefix) { return 0; }\n};`,
     },
@@ -6138,6 +6319,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def longestWord(self, words):\n        pass`,
       javascript: `function longestWord(words) {\n\n}`,
+      typescript: `function longestWord(words) {\n\n}`,
       java: `class Solution {\n    public String longestWord(String[] words) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string longestWord(vector<string>& words) {\n        return "";\n    }\n};`,
     },
@@ -6150,7 +6332,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 205, title: "Maximum Width Ramp", slug: "maximum-width-ramp", functionName: "maxWidthRamp", difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack two pass", companies: ["Google","Amazon"], description: "A ramp in an integer array nums is a pair (i, j) for which i < j and nums[i] <= nums[j]. The width of such a ramp is j - i. Return the maximum width of a ramp in nums, or 0 if none exists.", examples: [{ input: "nums = [6,0,8,2,1,5]", output: "4", explanation: "ramp (1,5): 0 <= 5" }, { input: "nums = [9,8,1,0,1,9,4,0,4,1]", output: "7" }], constraints: ["2 <= nums.length <= 5 * 10^4", "0 <= nums[i] <= 5 * 10^4"], starterCode: { python: `class Solution:\n    def maxWidthRamp(self, nums):\n        pass`, javascript: `function maxWidthRamp(nums) {\n\n}`, java: `class Solution {\n    public int maxWidthRamp(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int maxWidthRamp(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [6,0,8,2,1,5] }, expectedOutput: 4 }, { input: { nums: [9,8,1,0,1,9,4,0,4,1] }, expectedOutput: 7 }], hiddentestcases: [{ input: { nums: [1,0] }, expectedOutput: 0 }, { input: { nums: [0,1] }, expectedOutput: 1 }] },
+  { id: 205, title: "Maximum Width Ramp", slug: "maximum-width-ramp", functionName: "maxWidthRamp", difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack two pass", companies: ["Google","Amazon"], description: "A ramp in an integer array nums is a pair (i, j) for which i < j and nums[i] <= nums[j]. The width of such a ramp is j - i. Return the maximum width of a ramp in nums, or 0 if none exists.", examples: [{ input: "nums = [6,0,8,2,1,5]", output: "4", explanation: "ramp (1,5): 0 <= 5" }, { input: "nums = [9,8,1,0,1,9,4,0,4,1]", output: "7" }], constraints: ["2 <= nums.length <= 5 * 10^4", "0 <= nums[i] <= 5 * 10^4"], starterCode: { python: `class Solution:\n    def maxWidthRamp(self, nums):\n        pass`, javascript: `function maxWidthRamp(nums) {\n\n}`, typescript: `function maxWidthRamp(nums) {\n\n}`, java: `class Solution {\n    public int maxWidthRamp(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int maxWidthRamp(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [6,0,8,2,1,5] }, expectedOutput: 4 }, { input: { nums: [9,8,1,0,1,9,4,0,4,1] }, expectedOutput: 7 }], hiddentestcases: [{ input: { nums: [1,0] }, expectedOutput: 0 }, { input: { nums: [0,1] }, expectedOutput: 1 }] },
 
   {
     id: 206,
@@ -6172,6 +6354,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isIsomorphic(self, s, t):\n        pass`,
       javascript: `function isIsomorphic(s, t) {\n\n}`,
+      typescript: `function isIsomorphic(s, t) {\n\n}`,
       java: `class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isIsomorphic(string s, string t) {\n        return false;\n    }\n};`,
     },
@@ -6206,6 +6389,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def canConstruct(self, ransomNote, magazine):\n        pass`,
       javascript: `function canConstruct(ransomNote, magazine) {\n\n}`,
+      typescript: `function canConstruct(ransomNote, magazine) {\n\n}`,
       java: `class Solution {\n    public boolean canConstruct(String ransomNote, String magazine) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool canConstruct(string ransomNote, string magazine) {\n        return false;\n    }\n};`,
     },
@@ -6240,6 +6424,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findAnagrams(self, s, p):\n        pass`,
       javascript: `function findAnagrams(s, p) {\n\n}`,
+      typescript: `function findAnagrams(s, p) {\n\n}`,
       java: `class Solution {\n    public List<Integer> findAnagrams(String s, String p) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> findAnagrams(string s, string p) {\n        return {};\n    }\n};`,
     },
@@ -6254,29 +6439,29 @@ const rawProblems = [
     ],
   },
 
-  { id: 209, title: "Max Consecutive Ones III", slug: "max-consecutive-ones-iii", functionName: "longestOnes", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with flip budget", companies: ["Amazon","Google"], description: "Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's to 1's.", examples: [{ input: "nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2", output: "6", explanation: "Flip the two 0's at indices 3 and 4 to get [1,1,1,1,1,1,1,1,1,1,0], which has 6 consecutive 1's starting at index 5." }, { input: "nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k = 3", output: "10", explanation: "Flip the three 0's at indices 4,5,9 to get a run of 10 consecutive 1's." }, { input: "nums = [0], k = 0", output: "0", explanation: "No flips allowed and there are no 1's, so the longest run of 1's is 0." }], constraints: ["1 <= nums.length <= 10^5", "nums[i] is either 0 or 1", "0 <= k <= nums.length"], starterCode: { python: `class Solution:\n    def longestOnes(self, nums, k):\n        pass`, javascript: `function longestOnes(nums, k) {\n\n}`, java: `class Solution {\n    public int longestOnes(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int longestOnes(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [1,1,1,0,0,0,1,1,1,1,0], k: 2 }, expectedOutput: 6 }, { input: { nums: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k: 3 }, expectedOutput: 10 }, { input: { nums: [0], k: 0 }, expectedOutput: 0 }], hiddentestcases: [{ input: { nums: [1,1,1,1], k: 0 }, expectedOutput: 4 }, { input: { nums: [0,0,0,0], k: 2 }, expectedOutput: 2 }] },
+  { id: 209, title: "Max Consecutive Ones III", slug: "max-consecutive-ones-iii", functionName: "longestOnes", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with flip budget", companies: ["Amazon","Google"], description: "Given a binary array nums and an integer k, return the maximum number of consecutive 1's in the array if you can flip at most k 0's to 1's.", examples: [{ input: "nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2", output: "6", explanation: "Flip the two 0's at indices 3 and 4 to get [1,1,1,1,1,1,1,1,1,1,0], which has 6 consecutive 1's starting at index 5." }, { input: "nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k = 3", output: "10", explanation: "Flip the three 0's at indices 4,5,9 to get a run of 10 consecutive 1's." }, { input: "nums = [0], k = 0", output: "0", explanation: "No flips allowed and there are no 1's, so the longest run of 1's is 0." }], constraints: ["1 <= nums.length <= 10^5", "nums[i] is either 0 or 1", "0 <= k <= nums.length"], starterCode: { python: `class Solution:\n    def longestOnes(self, nums, k):\n        pass`, javascript: `function longestOnes(nums, k) {\n\n}`, typescript: `function longestOnes(nums, k) {\n\n}`, java: `class Solution {\n    public int longestOnes(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int longestOnes(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [1,1,1,0,0,0,1,1,1,1,0], k: 2 }, expectedOutput: 6 }, { input: { nums: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k: 3 }, expectedOutput: 10 }, { input: { nums: [0], k: 0 }, expectedOutput: 0 }], hiddentestcases: [{ input: { nums: [1,1,1,1], k: 0 }, expectedOutput: 4 }, { input: { nums: [0,0,0,0], k: 2 }, expectedOutput: 2 }] },
 
-  { id: 210, title: "Course Schedule II", slug: "course-schedule-ii", functionName: "findOrder", difficulty: "Medium", topic: "Graphs", pattern: "topological sort DFS/BFS", companies: ["Amazon","Facebook","Microsoft","Google"], description: "Given numCourses and prerequisites where prerequisites[i] = [ai, bi] means you must take bi before ai, return an ordering of courses you can take to finish all courses. Return empty array if impossible.", examples: [{ input: "numCourses = 2, prerequisites = [[1,0]]", output: "[0,1]" }, { input: "numCourses = 4, prerequisites = [[1,0],[2,1],[3,2]]", output: "[0,1,2,3]", explanation: "A strict chain: 0 before 1, 1 before 2, 2 before 3 — only one valid order exists." }, { input: "numCourses = 1, prerequisites = []", output: "[0]" }], constraints: ["1 <= numCourses <= 2000", "0 <= prerequisites.length <= numCourses * (numCourses-1)"], starterCode: { python: `class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        pass`, javascript: `function findOrder(numCourses, prerequisites) {\n\n}`, java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) { return {}; }\n};` }, testcases: [{ input: { numCourses: 2, prerequisites: [[1,0]] }, expectedOutput: [0,1] }, { input: { numCourses: 4, prerequisites: [[1,0],[2,1],[3,2]] }, expectedOutput: [0,1,2,3] }, { input: { numCourses: 1, prerequisites: [] }, expectedOutput: [0] }], hiddentestcases: [{ input: { numCourses: 2, prerequisites: [[1,0],[0,1]] }, expectedOutput: [] }, { input: { numCourses: 3, prerequisites: [[0,1],[0,2],[1,2]] }, expectedOutput: [2,1,0] }] },
+  { id: 210, title: "Course Schedule II", slug: "course-schedule-ii", functionName: "findOrder", difficulty: "Medium", topic: "Graphs", pattern: "topological sort DFS/BFS", companies: ["Amazon","Facebook","Microsoft","Google"], description: "Given numCourses and prerequisites where prerequisites[i] = [ai, bi] means you must take bi before ai, return an ordering of courses you can take to finish all courses. Return empty array if impossible.", examples: [{ input: "numCourses = 2, prerequisites = [[1,0]]", output: "[0,1]" }, { input: "numCourses = 4, prerequisites = [[1,0],[2,1],[3,2]]", output: "[0,1,2,3]", explanation: "A strict chain: 0 before 1, 1 before 2, 2 before 3 — only one valid order exists." }, { input: "numCourses = 1, prerequisites = []", output: "[0]" }], constraints: ["1 <= numCourses <= 2000", "0 <= prerequisites.length <= numCourses * (numCourses-1)"], starterCode: { python: `class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        pass`, javascript: `function findOrder(numCourses, prerequisites) {\n\n}`, typescript: `function findOrder(numCourses, prerequisites) {\n\n}`, java: `class Solution {\n    public int[] findOrder(int numCourses, int[][] prerequisites) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) { return {}; }\n};` }, testcases: [{ input: { numCourses: 2, prerequisites: [[1,0]] }, expectedOutput: [0,1] }, { input: { numCourses: 4, prerequisites: [[1,0],[2,1],[3,2]] }, expectedOutput: [0,1,2,3] }, { input: { numCourses: 1, prerequisites: [] }, expectedOutput: [0] }], hiddentestcases: [{ input: { numCourses: 2, prerequisites: [[1,0],[0,1]] }, expectedOutput: [] }, { input: { numCourses: 3, prerequisites: [[0,1],[0,2],[1,2]] }, expectedOutput: [2,1,0] }] },
 
   // ── BATCH 047: Mixed Interview Favorites (IDs 211-220) ────────────────────
 
-  { id: 211, title: "Longest Turbulent Subarray", slug: "longest-turbulent-subarray", functionName: "maxTurbulenceSize", difficulty: "Medium", topic: "Dynamic Programming", pattern: "state DP alternating", companies: ["Amazon"], description: "A subarray [arr[l], arr[l+1], ..., arr[r]] is turbulent if comparisons strictly alternate. Return the maximum length of a turbulent subarray.", examples: [{ input: "arr = [9,4,2,10,7,8,8,1,9]", output: "5", explanation: "[4,2,10,7,8]" }, { input: "arr = [4,8,12,16]", output: "2" }, { input: "arr = [100]", output: "1" }], constraints: ["1 <= arr.length <= 4 * 10^4", "0 <= arr[i] <= 10^9"], starterCode: { python: `class Solution:\n    def maxTurbulenceSize(self, arr):\n        pass`, javascript: `function maxTurbulenceSize(arr) {\n\n}`, java: `class Solution {\n    public int maxTurbulenceSize(int[] arr) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int maxTurbulenceSize(vector<int>& arr) { return 0; }\n};` }, testcases: [{ input: { arr: [9,4,2,10,7,8,8,1,9] }, expectedOutput: 5 }, { input: { arr: [4,8,12,16] }, expectedOutput: 2 }, { input: { arr: [100] }, expectedOutput: 1 }], hiddentestcases: [{ input: { arr: [0,1,0,1,0] }, expectedOutput: 5 }, { input: { arr: [9,9] }, expectedOutput: 1 }] },
+  { id: 211, title: "Longest Turbulent Subarray", slug: "longest-turbulent-subarray", functionName: "maxTurbulenceSize", difficulty: "Medium", topic: "Dynamic Programming", pattern: "state DP alternating", companies: ["Amazon"], description: "A subarray [arr[l], arr[l+1], ..., arr[r]] is turbulent if comparisons strictly alternate. Return the maximum length of a turbulent subarray.", examples: [{ input: "arr = [9,4,2,10,7,8,8,1,9]", output: "5", explanation: "[4,2,10,7,8]" }, { input: "arr = [4,8,12,16]", output: "2" }, { input: "arr = [100]", output: "1" }], constraints: ["1 <= arr.length <= 4 * 10^4", "0 <= arr[i] <= 10^9"], starterCode: { python: `class Solution:\n    def maxTurbulenceSize(self, arr):\n        pass`, javascript: `function maxTurbulenceSize(arr) {\n\n}`, typescript: `function maxTurbulenceSize(arr) {\n\n}`, java: `class Solution {\n    public int maxTurbulenceSize(int[] arr) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int maxTurbulenceSize(vector<int>& arr) { return 0; }\n};` }, testcases: [{ input: { arr: [9,4,2,10,7,8,8,1,9] }, expectedOutput: 5 }, { input: { arr: [4,8,12,16] }, expectedOutput: 2 }, { input: { arr: [100] }, expectedOutput: 1 }], hiddentestcases: [{ input: { arr: [0,1,0,1,0] }, expectedOutput: 5 }, { input: { arr: [9,9] }, expectedOutput: 1 }] },
 
-  { id: 212, title: "Minimum Path Sum", slug: "minimum-path-sum", functionName: "minPathSum", difficulty: "Medium", topic: "Dynamic Programming", pattern: "2D DP grid", companies: ["Amazon","Google","Facebook"], description: "Given an m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path. You can only move right or down.", examples: [{ input: "grid = [[1,3,1],[1,5,1],[4,2,1]]", output: "7", explanation: "1→3→1→1→1" }, { input: "grid = [[1,2,3],[4,5,6]]", output: "12" }], constraints: ["m == grid.length", "n == grid[i].length", "1 <= m, n <= 200", "0 <= grid[i][j] <= 200"], starterCode: { python: `class Solution:\n    def minPathSum(self, grid):\n        pass`, javascript: `function minPathSum(grid) {\n\n}`, java: `class Solution {\n    public int minPathSum(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minPathSum(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[1,3,1],[1,5,1],[4,2,1]] }, expectedOutput: 7 }, { input: { grid: [[1,2,3],[4,5,6]] }, expectedOutput: 12 }], hiddentestcases: [{ input: { grid: [[1]] }, expectedOutput: 1 }, { input: { grid: [[1,2],[1,1]] }, expectedOutput: 3 }] },
+  { id: 212, title: "Minimum Path Sum", slug: "minimum-path-sum", functionName: "minPathSum", difficulty: "Medium", topic: "Dynamic Programming", pattern: "2D DP grid", companies: ["Amazon","Google","Facebook"], description: "Given an m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path. You can only move right or down.", examples: [{ input: "grid = [[1,3,1],[1,5,1],[4,2,1]]", output: "7", explanation: "1→3→1→1→1" }, { input: "grid = [[1,2,3],[4,5,6]]", output: "12" }], constraints: ["m == grid.length", "n == grid[i].length", "1 <= m, n <= 200", "0 <= grid[i][j] <= 200"], starterCode: { python: `class Solution:\n    def minPathSum(self, grid):\n        pass`, javascript: `function minPathSum(grid) {\n\n}`, typescript: `function minPathSum(grid) {\n\n}`, java: `class Solution {\n    public int minPathSum(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int minPathSum(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[1,3,1],[1,5,1],[4,2,1]] }, expectedOutput: 7 }, { input: { grid: [[1,2,3],[4,5,6]] }, expectedOutput: 12 }], hiddentestcases: [{ input: { grid: [[1]] }, expectedOutput: 1 }, { input: { grid: [[1,2],[1,1]] }, expectedOutput: 3 }] },
 
-  { id: 213, title: "Dungeon Game", slug: "dungeon-game", functionName: "calculateMinimumHP", difficulty: "Hard", topic: "Dynamic Programming", pattern: "2D DP reverse", companies: ["Amazon","Google"], description: "A knight must rescue the princess at dungeon[m-1][n-1], starting at dungeon[0][0]. Each room has a value (positive=health gain, negative=health loss). Knight dies if health <= 0 at any point. Return minimum initial health needed.", examples: [{ input: "dungeon = [[-2,-3,3],[-5,-10,1],[10,30,-5]]", output: "7" }, { input: "dungeon = [[0]]", output: "1" }], constraints: ["m == dungeon.length", "n == dungeon[i].length", "1 <= m, n <= 200", "-1000 <= dungeon[i][j] <= 1000"], starterCode: { python: `class Solution:\n    def calculateMinimumHP(self, dungeon):\n        pass`, javascript: `function calculateMinimumHP(dungeon) {\n\n}`, java: `class Solution {\n    public int calculateMinimumHP(int[][] dungeon) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int calculateMinimumHP(vector<vector<int>>& dungeon) { return 0; }\n};` }, testcases: [{ input: { dungeon: [[-2,-3,3],[-5,-10,1],[10,30,-5]] }, expectedOutput: 7 }, { input: { dungeon: [[0]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { dungeon: [[-1,-30]] }, expectedOutput: 32 }, { input: { dungeon: [[1,-3,3],[-5,10,1]] }, expectedOutput: 5 }] },
+  { id: 213, title: "Dungeon Game", slug: "dungeon-game", functionName: "calculateMinimumHP", difficulty: "Hard", topic: "Dynamic Programming", pattern: "2D DP reverse", companies: ["Amazon","Google"], description: "A knight must rescue the princess at dungeon[m-1][n-1], starting at dungeon[0][0]. Each room has a value (positive=health gain, negative=health loss). Knight dies if health <= 0 at any point. Return minimum initial health needed.", examples: [{ input: "dungeon = [[-2,-3,3],[-5,-10,1],[10,30,-5]]", output: "7" }, { input: "dungeon = [[0]]", output: "1" }], constraints: ["m == dungeon.length", "n == dungeon[i].length", "1 <= m, n <= 200", "-1000 <= dungeon[i][j] <= 1000"], starterCode: { python: `class Solution:\n    def calculateMinimumHP(self, dungeon):\n        pass`, javascript: `function calculateMinimumHP(dungeon) {\n\n}`, typescript: `function calculateMinimumHP(dungeon) {\n\n}`, java: `class Solution {\n    public int calculateMinimumHP(int[][] dungeon) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int calculateMinimumHP(vector<vector<int>>& dungeon) { return 0; }\n};` }, testcases: [{ input: { dungeon: [[-2,-3,3],[-5,-10,1],[10,30,-5]] }, expectedOutput: 7 }, { input: { dungeon: [[0]] }, expectedOutput: 1 }], hiddentestcases: [{ input: { dungeon: [[-1,-30]] }, expectedOutput: 32 }, { input: { dungeon: [[1,-3,3],[-5,10,1]] }, expectedOutput: 5 }] },
 
-  { id: 214, title: "Cherry Pickup", slug: "cherry-pickup", functionName: "cherryPickup", difficulty: "Hard", topic: "Dynamic Programming", pattern: "3D DP two robots", companies: ["Google","Amazon"], description: "You have an n x n grid with -1 (thorn), 0 (empty), 1 (cherry). Walk from (0,0) to (n-1,n-1) picking cherries, then return via the same rules. Cherries can only be picked once. Return maximum cherries collected.", examples: [{ input: "grid = [[0,1,-1],[1,0,-1],[1,1,1]]", output: "5" }, { input: "grid = [[1,1,-1],[1,-1,1],[-1,1,1]]", output: "0" }], constraints: ["n == grid.length == grid[i].length", "1 <= n <= 50", "grid[i][j] is -1, 0, or 1."], starterCode: { python: `class Solution:\n    def cherryPickup(self, grid):\n        pass`, javascript: `function cherryPickup(grid) {\n\n}`, java: `class Solution {\n    public int cherryPickup(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int cherryPickup(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[0,1,-1],[1,0,-1],[1,1,1]] }, expectedOutput: 5 }, { input: { grid: [[1,1,-1],[1,-1,1],[-1,1,1]] }, expectedOutput: 0 }], hiddentestcases: [{ input: { grid: [[1]] }, expectedOutput: 1 }, { input: { grid: [[1,1],[1,1]] }, expectedOutput: 4 }] },
+  { id: 214, title: "Cherry Pickup", slug: "cherry-pickup", functionName: "cherryPickup", difficulty: "Hard", topic: "Dynamic Programming", pattern: "3D DP two robots", companies: ["Google","Amazon"], description: "You have an n x n grid with -1 (thorn), 0 (empty), 1 (cherry). Walk from (0,0) to (n-1,n-1) picking cherries, then return via the same rules. Cherries can only be picked once. Return maximum cherries collected.", examples: [{ input: "grid = [[0,1,-1],[1,0,-1],[1,1,1]]", output: "5" }, { input: "grid = [[1,1,-1],[1,-1,1],[-1,1,1]]", output: "0" }], constraints: ["n == grid.length == grid[i].length", "1 <= n <= 50", "grid[i][j] is -1, 0, or 1."], starterCode: { python: `class Solution:\n    def cherryPickup(self, grid):\n        pass`, javascript: `function cherryPickup(grid) {\n\n}`, typescript: `function cherryPickup(grid) {\n\n}`, java: `class Solution {\n    public int cherryPickup(int[][] grid) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int cherryPickup(vector<vector<int>>& grid) { return 0; }\n};` }, testcases: [{ input: { grid: [[0,1,-1],[1,0,-1],[1,1,1]] }, expectedOutput: 5 }, { input: { grid: [[1,1,-1],[1,-1,1],[-1,1,1]] }, expectedOutput: 0 }], hiddentestcases: [{ input: { grid: [[1]] }, expectedOutput: 1 }, { input: { grid: [[1,1],[1,1]] }, expectedOutput: 4 }] },
 
-  { id: 215, title: "Stone Game", slug: "stone-game", functionName: "stoneGame", difficulty: "Medium", topic: "Dynamic Programming", pattern: "game theory DP", companies: ["Amazon","Facebook"], description: "Alice and Bob play a game with piles of stones. Each turn, a player takes the entire leftmost or rightmost pile. Scores accumulate. Alice always goes first. Both play optimally. Return true if Alice wins (her score > Bob's score). Alice always wins — but prove it with DP.", examples: [{ input: "piles = [5,3,4,5]", output: "true" }, { input: "piles = [3,7,2,3]", output: "true" }], constraints: ["2 <= piles.length <= 500", "piles.length is even.", "1 <= piles[i] <= 500", "sum of piles is odd."], starterCode: { python: `class Solution:\n    def stoneGame(self, piles):\n        pass`, javascript: `function stoneGame(piles) {\n\n}`, java: `class Solution {\n    public boolean stoneGame(int[] piles) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool stoneGame(vector<int>& piles) { return false; }\n};` }, testcases: [{ input: { piles: [5,3,4,5] }, expectedOutput: true }, { input: { piles: [3,7,2,3] }, expectedOutput: true }], hiddentestcases: [{ input: { piles: [1,2] }, expectedOutput: true }, { input: { piles: [1,100,3,5] }, expectedOutput: true }] },
+  { id: 215, title: "Stone Game", slug: "stone-game", functionName: "stoneGame", difficulty: "Medium", topic: "Dynamic Programming", pattern: "game theory DP", companies: ["Amazon","Facebook"], description: "Alice and Bob play a game with piles of stones. Each turn, a player takes the entire leftmost or rightmost pile. Scores accumulate. Alice always goes first. Both play optimally. Return true if Alice wins (her score > Bob's score). Alice always wins — but prove it with DP.", examples: [{ input: "piles = [5,3,4,5]", output: "true" }, { input: "piles = [3,7,2,3]", output: "true" }], constraints: ["2 <= piles.length <= 500", "piles.length is even.", "1 <= piles[i] <= 500", "sum of piles is odd."], starterCode: { python: `class Solution:\n    def stoneGame(self, piles):\n        pass`, javascript: `function stoneGame(piles) {\n\n}`, typescript: `function stoneGame(piles) {\n\n}`, java: `class Solution {\n    public boolean stoneGame(int[] piles) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool stoneGame(vector<int>& piles) { return false; }\n};` }, testcases: [{ input: { piles: [5,3,4,5] }, expectedOutput: true }, { input: { piles: [3,7,2,3] }, expectedOutput: true }], hiddentestcases: [{ input: { piles: [1,2] }, expectedOutput: true }, { input: { piles: [1,100,3,5] }, expectedOutput: true }] },
 
-  { id: 216, title: "Single Number III", slug: "single-number-iii", functionName: "singleNumber", difficulty: "Medium", topic: "Bit Manipulation", pattern: "XOR split on differing bit", companies: ["Amazon","Facebook"], description: "Given an integer array nums in which exactly two elements appear only once and all others appear exactly twice, return the two elements that appear only once. You must use O(1) extra space.", examples: [{ input: "nums = [1,2,1,3,2,5]", output: "[3,5]" }, { input: "nums = [-1,0]", output: "[-1,0]" }, { input: "nums = [0,1]", output: "[1,0]" }], constraints: ["2 <= nums.length <= 3 * 10^4", "-2^31 <= nums[i] <= 2^31 - 1", "Each integer appears exactly twice except for two."], starterCode: { python: `class Solution:\n    def singleNumber(self, nums):\n        pass`, javascript: `function singleNumber(nums) {\n\n}`, java: `class Solution {\n    public int[] singleNumber(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> singleNumber(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,1,3,2,5] }, expectedOutput: [3,5] }, { input: { nums: [-1,0] }, expectedOutput: [-1,0] }, { input: { nums: [0,1] }, expectedOutput: [1,0] }], hiddentestcases: [{ input: { nums: [2,4,2,5,5,6] }, expectedOutput: [4,6] }] },
+  { id: 216, title: "Single Number III", slug: "single-number-iii", functionName: "singleNumber", difficulty: "Medium", topic: "Bit Manipulation", pattern: "XOR split on differing bit", companies: ["Amazon","Facebook"], description: "Given an integer array nums in which exactly two elements appear only once and all others appear exactly twice, return the two elements that appear only once. You must use O(1) extra space.", examples: [{ input: "nums = [1,2,1,3,2,5]", output: "[3,5]" }, { input: "nums = [-1,0]", output: "[-1,0]" }, { input: "nums = [0,1]", output: "[1,0]" }], constraints: ["2 <= nums.length <= 3 * 10^4", "-2^31 <= nums[i] <= 2^31 - 1", "Each integer appears exactly twice except for two."], starterCode: { python: `class Solution:\n    def singleNumber(self, nums):\n        pass`, javascript: `function singleNumber(nums) {\n\n}`, typescript: `function singleNumber(nums) {\n\n}`, java: `class Solution {\n    public int[] singleNumber(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> singleNumber(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,1,3,2,5] }, expectedOutput: [3,5] }, { input: { nums: [-1,0] }, expectedOutput: [-1,0] }, { input: { nums: [0,1] }, expectedOutput: [1,0] }], hiddentestcases: [{ input: { nums: [2,4,2,5,5,6] }, expectedOutput: [4,6] }] },
 
-  { id: 217, title: "Total Hamming Distance", slug: "total-hamming-distance", functionName: "totalHammingDistance", difficulty: "Medium", topic: "Bit Manipulation", pattern: "count set bits per position", companies: ["Facebook","Amazon"], description: "The Hamming distance between two integers is the number of positions at which the corresponding bits are different. Given an integer array nums, return the sum of Hamming distances between all pairs of integers in nums.", examples: [{ input: "nums = [4,14,2]", output: "6" }, { input: "nums = [4,14,4]", output: "4" }], constraints: ["1 <= nums.length <= 10^4", "0 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def totalHammingDistance(self, nums):\n        pass`, javascript: `function totalHammingDistance(nums) {\n\n}`, java: `class Solution {\n    public int totalHammingDistance(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalHammingDistance(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [4,14,2] }, expectedOutput: 6 }, { input: { nums: [4,14,4] }, expectedOutput: 4 }], hiddentestcases: [{ input: { nums: [0,0] }, expectedOutput: 0 }, { input: { nums: [1,2,3] }, expectedOutput: 4 }] },
+  { id: 217, title: "Total Hamming Distance", slug: "total-hamming-distance", functionName: "totalHammingDistance", difficulty: "Medium", topic: "Bit Manipulation", pattern: "count set bits per position", companies: ["Facebook","Amazon"], description: "The Hamming distance between two integers is the number of positions at which the corresponding bits are different. Given an integer array nums, return the sum of Hamming distances between all pairs of integers in nums.", examples: [{ input: "nums = [4,14,2]", output: "6" }, { input: "nums = [4,14,4]", output: "4" }], constraints: ["1 <= nums.length <= 10^4", "0 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def totalHammingDistance(self, nums):\n        pass`, javascript: `function totalHammingDistance(nums) {\n\n}`, typescript: `function totalHammingDistance(nums) {\n\n}`, java: `class Solution {\n    public int totalHammingDistance(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int totalHammingDistance(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [4,14,2] }, expectedOutput: 6 }, { input: { nums: [4,14,4] }, expectedOutput: 4 }], hiddentestcases: [{ input: { nums: [0,0] }, expectedOutput: 0 }, { input: { nums: [1,2,3] }, expectedOutput: 4 }] },
 
-  { id: 218, title: "Bitwise AND of Numbers Range", slug: "bitwise-and-numbers-range", functionName: "rangeBitwiseAnd", difficulty: "Medium", topic: "Bit Manipulation", pattern: "common prefix bit shift", companies: ["Amazon","Google"], description: "Given two integers left and right representing a range [left, right], return the bitwise AND of all numbers in this range.", examples: [{ input: "left = 5, right = 7", output: "4" }, { input: "left = 0, right = 0", output: "0" }, { input: "left = 1, right = 2147483647", output: "0" }], constraints: ["0 <= left <= right <= 2^31 - 1"], starterCode: { python: `class Solution:\n    def rangeBitwiseAnd(self, left, right):\n        pass`, javascript: `function rangeBitwiseAnd(left, right) {\n\n}`, java: `class Solution {\n    public int rangeBitwiseAnd(int left, int right) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int rangeBitwiseAnd(int left, int right) { return 0; }\n};` }, testcases: [{ input: { left: 5, right: 7 }, expectedOutput: 4 }, { input: { left: 0, right: 0 }, expectedOutput: 0 }, { input: { left: 1, right: 2147483647 }, expectedOutput: 0 }], hiddentestcases: [{ input: { left: 3, right: 3 }, expectedOutput: 3 }, { input: { left: 4, right: 7 }, expectedOutput: 4 }] },
+  { id: 218, title: "Bitwise AND of Numbers Range", slug: "bitwise-and-numbers-range", functionName: "rangeBitwiseAnd", difficulty: "Medium", topic: "Bit Manipulation", pattern: "common prefix bit shift", companies: ["Amazon","Google"], description: "Given two integers left and right representing a range [left, right], return the bitwise AND of all numbers in this range.", examples: [{ input: "left = 5, right = 7", output: "4" }, { input: "left = 0, right = 0", output: "0" }, { input: "left = 1, right = 2147483647", output: "0" }], constraints: ["0 <= left <= right <= 2^31 - 1"], starterCode: { python: `class Solution:\n    def rangeBitwiseAnd(self, left, right):\n        pass`, javascript: `function rangeBitwiseAnd(left, right) {\n\n}`, typescript: `function rangeBitwiseAnd(left, right) {\n\n}`, java: `class Solution {\n    public int rangeBitwiseAnd(int left, int right) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int rangeBitwiseAnd(int left, int right) { return 0; }\n};` }, testcases: [{ input: { left: 5, right: 7 }, expectedOutput: 4 }, { input: { left: 0, right: 0 }, expectedOutput: 0 }, { input: { left: 1, right: 2147483647 }, expectedOutput: 0 }], hiddentestcases: [{ input: { left: 3, right: 3 }, expectedOutput: 3 }, { input: { left: 4, right: 7 }, expectedOutput: 4 }] },
 
-  { id: 219, title: "Largest Number", slug: "largest-number", functionName: "largestNumber", difficulty: "Medium", topic: "Greedy", pattern: "custom comparator sort", companies: ["Amazon","Facebook","Microsoft"], description: "Given a list of non-negative integers nums, arrange them such that they form the largest number and return it as a string. Note: The result may be very large, so return a string instead of an integer.", examples: [{ input: "nums = [10,2]", output: '"210"' }, { input: "nums = [3,30,34,5,9]", output: '"9534330"' }], constraints: ["1 <= nums.length <= 100", "0 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def largestNumber(self, nums):\n        pass`, javascript: `function largestNumber(nums) {\n\n}`, java: `class Solution {\n    public String largestNumber(int[] nums) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string largestNumber(vector<int>& nums) { return ""; }\n};` }, testcases: [{ input: { nums: [10,2] }, expectedOutput: "210" }, { input: { nums: [3,30,34,5,9] }, expectedOutput: "9534330" }, { input: { nums: [0,0] }, expectedOutput: "0" }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: "1" }, { input: { nums: [824,938,1399,5607,6973,5703,9609,4398,8247] }, expectedOutput: "9609938824824769735703560743981399" }] },
+  { id: 219, title: "Largest Number", slug: "largest-number", functionName: "largestNumber", difficulty: "Medium", topic: "Greedy", pattern: "custom comparator sort", companies: ["Amazon","Facebook","Microsoft"], description: "Given a list of non-negative integers nums, arrange them such that they form the largest number and return it as a string. Note: The result may be very large, so return a string instead of an integer.", examples: [{ input: "nums = [10,2]", output: '"210"' }, { input: "nums = [3,30,34,5,9]", output: '"9534330"' }], constraints: ["1 <= nums.length <= 100", "0 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def largestNumber(self, nums):\n        pass`, javascript: `function largestNumber(nums) {\n\n}`, typescript: `function largestNumber(nums) {\n\n}`, java: `class Solution {\n    public String largestNumber(int[] nums) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string largestNumber(vector<int>& nums) { return ""; }\n};` }, testcases: [{ input: { nums: [10,2] }, expectedOutput: "210" }, { input: { nums: [3,30,34,5,9] }, expectedOutput: "9534330" }, { input: { nums: [0,0] }, expectedOutput: "0" }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: "1" }, { input: { nums: [824,938,1399,5607,6973,5703,9609,4398,8247] }, expectedOutput: "9609938824824769735703560743981399" }] },
 
   {
     id: 220,
@@ -6297,6 +6482,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def singleNumber(self, nums):\n        pass`,
       javascript: `function singleNumber(nums) {\n\n}`,
+      typescript: `function singleNumber(nums) {\n\n}`,
       java: `class Solution {\n    public int singleNumber(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int singleNumber(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -6312,11 +6498,11 @@ const rawProblems = [
 
   // ── BATCH 048: Stacks II + Queues (IDs 221-230) ───────────────────────────
 
-  { id: 221, title: "Next Greater Element I", slug: "next-greater-element-i", functionName: "nextGreaterElement", difficulty: "Easy", topic: "Stacks", pattern: "monotonic stack with hash map", companies: ["Amazon","Microsoft"], description: "The next greater element of some element x in an array is the first greater element to the right. Given two arrays nums1 and nums2 (nums1 is a subset of nums2), return an array of the next greater element for each element in nums1. Return -1 if no greater element exists.", examples: [{ input: "nums1 = [4,1,2], nums2 = [1,3,4,2]", output: "[-1,3,-1]" }, { input: "nums1 = [2,4], nums2 = [1,2,3,4]", output: "[3,-1]" }], constraints: ["1 <= nums1.length <= nums2.length <= 1000", "0 <= nums1[i], nums2[i] <= 10^4", "All integers in nums2 are unique."], starterCode: { python: `class Solution:\n    def nextGreaterElement(self, nums1, nums2):\n        pass`, javascript: `function nextGreaterElement(nums1, nums2) {\n\n}`, java: `class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) { return {}; }\n};` }, testcases: [{ input: { nums1: [4,1,2], nums2: [1,3,4,2] }, expectedOutput: [-1,3,-1] }, { input: { nums1: [2,4], nums2: [1,2,3,4] }, expectedOutput: [3,-1] }], hiddentestcases: [{ input: { nums1: [1,3,5,2,4], nums2: [6,5,4,3,2,1,7] }, expectedOutput: [7,7,7,7,7] }] },
+  { id: 221, title: "Next Greater Element I", slug: "next-greater-element-i", functionName: "nextGreaterElement", difficulty: "Easy", topic: "Stacks", pattern: "monotonic stack with hash map", companies: ["Amazon","Microsoft"], description: "The next greater element of some element x in an array is the first greater element to the right. Given two arrays nums1 and nums2 (nums1 is a subset of nums2), return an array of the next greater element for each element in nums1. Return -1 if no greater element exists.", examples: [{ input: "nums1 = [4,1,2], nums2 = [1,3,4,2]", output: "[-1,3,-1]" }, { input: "nums1 = [2,4], nums2 = [1,2,3,4]", output: "[3,-1]" }], constraints: ["1 <= nums1.length <= nums2.length <= 1000", "0 <= nums1[i], nums2[i] <= 10^4", "All integers in nums2 are unique."], starterCode: { python: `class Solution:\n    def nextGreaterElement(self, nums1, nums2):\n        pass`, javascript: `function nextGreaterElement(nums1, nums2) {\n\n}`, typescript: `function nextGreaterElement(nums1, nums2) {\n\n}`, java: `class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) { return {}; }\n};` }, testcases: [{ input: { nums1: [4,1,2], nums2: [1,3,4,2] }, expectedOutput: [-1,3,-1] }, { input: { nums1: [2,4], nums2: [1,2,3,4] }, expectedOutput: [3,-1] }], hiddentestcases: [{ input: { nums1: [1,3,5,2,4], nums2: [6,5,4,3,2,1,7] }, expectedOutput: [7,7,7,7,7] }] },
 
-  { id: 222, title: "Next Greater Element II", slug: "next-greater-element-ii", functionName: "nextGreaterElements", difficulty: "Medium", topic: "Stacks", pattern: "circular monotonic stack", companies: ["Amazon","Facebook"], description: "Given a circular integer array nums, return the next greater number for every element. The next greater number of a number x is the first greater number to its traversal order next in the circular array.", examples: [{ input: "nums = [1,2,1]", output: "[2,-1,2]" }, { input: "nums = [1,2,3,4,3]", output: "[2,3,4,-1,4]" }], constraints: ["1 <= nums.length <= 10^4", "-10^9 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def nextGreaterElements(self, nums):\n        pass`, javascript: `function nextGreaterElements(nums) {\n\n}`, java: `class Solution {\n    public int[] nextGreaterElements(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> nextGreaterElements(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,1] }, expectedOutput: [2,-1,2] }, { input: { nums: [1,2,3,4,3] }, expectedOutput: [2,3,4,-1,4] }], hiddentestcases: [{ input: { nums: [5,4,3,2,1] }, expectedOutput: [-1,5,5,5,5] }, { input: { nums: [1] }, expectedOutput: [-1] }] },
+  { id: 222, title: "Next Greater Element II", slug: "next-greater-element-ii", functionName: "nextGreaterElements", difficulty: "Medium", topic: "Stacks", pattern: "circular monotonic stack", companies: ["Amazon","Facebook"], description: "Given a circular integer array nums, return the next greater number for every element. The next greater number of a number x is the first greater number to its traversal order next in the circular array.", examples: [{ input: "nums = [1,2,1]", output: "[2,-1,2]" }, { input: "nums = [1,2,3,4,3]", output: "[2,3,4,-1,4]" }], constraints: ["1 <= nums.length <= 10^4", "-10^9 <= nums[i] <= 10^9"], starterCode: { python: `class Solution:\n    def nextGreaterElements(self, nums):\n        pass`, javascript: `function nextGreaterElements(nums) {\n\n}`, typescript: `function nextGreaterElements(nums) {\n\n}`, java: `class Solution {\n    public int[] nextGreaterElements(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> nextGreaterElements(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [1,2,1] }, expectedOutput: [2,-1,2] }, { input: { nums: [1,2,3,4,3] }, expectedOutput: [2,3,4,-1,4] }], hiddentestcases: [{ input: { nums: [5,4,3,2,1] }, expectedOutput: [-1,5,5,5,5] }, { input: { nums: [1] }, expectedOutput: [-1] }] },
 
-  { id: 223, title: "Trapping Rain Water II", slug: "trapping-rain-water-ii", functionName: "trapRainWater", difficulty: "Hard", topic: "Heap", pattern: "min heap BFS from border", companies: ["Amazon","Google"], description: "Given an m x n matrix of non-negative integers representing heights, compute how much water it can trap after raining (3D version).", examples: [{ input: "heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]", output: "4" }, { input: "heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]", output: "10" }], constraints: ["m == heightMap.length", "n == heightMap[i].length", "1 <= m, n <= 200", "0 <= heightMap[i][j] <= 2 * 10^4"], starterCode: { python: `class Solution:\n    def trapRainWater(self, heightMap):\n        pass`, javascript: `function trapRainWater(heightMap) {\n\n}`, java: `class Solution {\n    public int trapRainWater(int[][] heightMap) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int trapRainWater(vector<vector<int>>& heightMap) { return 0; }\n};` }, testcases: [{ input: { heightMap: [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]] }, expectedOutput: 4 }, { input: { heightMap: [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]] }, expectedOutput: 10 }], hiddentestcases: [{ input: { heightMap: [[1,1],[1,1]] }, expectedOutput: 0 }] },
+  { id: 223, title: "Trapping Rain Water II", slug: "trapping-rain-water-ii", functionName: "trapRainWater", difficulty: "Hard", topic: "Heap", pattern: "min heap BFS from border", companies: ["Amazon","Google"], description: "Given an m x n matrix of non-negative integers representing heights, compute how much water it can trap after raining (3D version).", examples: [{ input: "heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]", output: "4" }, { input: "heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]", output: "10" }], constraints: ["m == heightMap.length", "n == heightMap[i].length", "1 <= m, n <= 200", "0 <= heightMap[i][j] <= 2 * 10^4"], starterCode: { python: `class Solution:\n    def trapRainWater(self, heightMap):\n        pass`, javascript: `function trapRainWater(heightMap) {\n\n}`, typescript: `function trapRainWater(heightMap) {\n\n}`, java: `class Solution {\n    public int trapRainWater(int[][] heightMap) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int trapRainWater(vector<vector<int>>& heightMap) { return 0; }\n};` }, testcases: [{ input: { heightMap: [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]] }, expectedOutput: 4 }, { input: { heightMap: [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]] }, expectedOutput: 10 }], hiddentestcases: [{ input: { heightMap: [[1,1],[1,1]] }, expectedOutput: 0 }] },
 
   {
     id: 224,
@@ -6338,6 +6524,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maximalRectangle(self, matrix):\n        pass`,
       javascript: `function maximalRectangle(matrix) {\n\n}`,
+      typescript: `function maximalRectangle(matrix) {\n\n}`,
       java: `class Solution {\n    public int maximalRectangle(char[][] matrix) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maximalRectangle(vector<vector<char>>& matrix) {\n        return 0;\n    }\n};`,
     },
@@ -6352,9 +6539,9 @@ const rawProblems = [
     ],
   },
 
-  { id: 225, title: "Decode String", slug: "decode-string", functionName: "decodeString", difficulty: "Medium", topic: "Stacks", pattern: "stack string expansion", companies: ["Amazon","Facebook","Google"], description: 'Given an encoded string, return its decoded string. The encoding rule is k[encoded_string], where the encoded_string is repeated exactly k times. You may assume k is always positive. Input is always valid.', examples: [{ input: 's = "3[a]2[bc]"', output: '"aaabcbc"' }, { input: 's = "3[a2[c]]"', output: '"accaccacc"' }, { input: 's = "2[abc]3[cd]ef"', output: '"abcabccdcdcdef"' }], constraints: ["1 <= s.length <= 30", "s consists of lowercase letters, digits, and '[]'.", "All integers are in range [1,300]."], starterCode: { python: `class Solution:\n    def decodeString(self, s):\n        pass`, javascript: `function decodeString(s) {\n\n}`, java: `class Solution {\n    public String decodeString(String s) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string decodeString(string s) { return ""; }\n};` }, testcases: [{ input: { s: "3[a]2[bc]" }, expectedOutput: "aaabcbc" }, { input: { s: "3[a2[c]]" }, expectedOutput: "accaccacc" }, { input: { s: "2[abc]3[cd]ef" }, expectedOutput: "abcabccdcdcdef" }], hiddentestcases: [{ input: { s: "100[leetcode]" }, expectedOutput: "leetcode".repeat(100) }, { input: { s: "1[a]" }, expectedOutput: "a" }] },
+  { id: 225, title: "Decode String", slug: "decode-string", functionName: "decodeString", difficulty: "Medium", topic: "Stacks", pattern: "stack string expansion", companies: ["Amazon","Facebook","Google"], description: 'Given an encoded string, return its decoded string. The encoding rule is k[encoded_string], where the encoded_string is repeated exactly k times. You may assume k is always positive. Input is always valid.', examples: [{ input: 's = "3[a]2[bc]"', output: '"aaabcbc"' }, { input: 's = "3[a2[c]]"', output: '"accaccacc"' }, { input: 's = "2[abc]3[cd]ef"', output: '"abcabccdcdcdef"' }], constraints: ["1 <= s.length <= 30", "s consists of lowercase letters, digits, and '[]'.", "All integers are in range [1,300]."], starterCode: { python: `class Solution:\n    def decodeString(self, s):\n        pass`, javascript: `function decodeString(s) {\n\n}`, typescript: `function decodeString(s) {\n\n}`, java: `class Solution {\n    public String decodeString(String s) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string decodeString(string s) { return ""; }\n};` }, testcases: [{ input: { s: "3[a]2[bc]" }, expectedOutput: "aaabcbc" }, { input: { s: "3[a2[c]]" }, expectedOutput: "accaccacc" }, { input: { s: "2[abc]3[cd]ef" }, expectedOutput: "abcabccdcdcdef" }], hiddentestcases: [{ input: { s: "100[leetcode]" }, expectedOutput: "leetcode".repeat(100) }, { input: { s: "1[a]" }, expectedOutput: "a" }] },
 
-  { id: 226, title: "Online Stock Span", slug: "online-stock-span", functionName: "StockSpanner", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack span count", companies: ["Amazon","Google"], description: "Design an algorithm to collect stock prices and return the span of the stock's price for the current day. The span is the maximum number of consecutive days (starting from today and going backward) for which the stock price was <= today's price.", examples: [{ input: '["StockSpanner","next","next","next","next","next","next","next"]\n[[],[100],[80],[60],[70],[60],[75],[85]]', output: "[null,1,1,1,2,1,4,6]" }], constraints: ["0 <= price <= 10^5", "At most 10^4 calls to next."], starterCode: { python: `class StockSpanner:\n    def __init__(self):\n        pass\n    def next(self, price):\n        pass`, javascript: `class StockSpanner {\n  constructor() {}\n  next(price) { return 0; }\n}`, java: `class StockSpanner {\n    public StockSpanner() {}\n    public int next(int price) { return 0; }\n}`, cpp: `class StockSpanner {\npublic:\n    StockSpanner() {}\n    int next(int price) { return 0; }\n};` }, testcases: [{ input: { ops: ["next","next","next","next","next","next","next"], vals: [[100],[80],[60],[70],[60],[75],[85]] }, expectedOutput: [1,1,1,2,1,4,6] }], hiddentestcases: [{ input: { ops: ["next","next","next"], vals: [[1],[1],[1]] }, expectedOutput: [1,2,3] }] },
+  { id: 226, title: "Online Stock Span", slug: "online-stock-span", functionName: "StockSpanner", operationSequence: { enabled: true, resultMode: "all" }, difficulty: "Medium", topic: "Stacks", pattern: "monotonic stack span count", companies: ["Amazon","Google"], description: "Design an algorithm to collect stock prices and return the span of the stock's price for the current day. The span is the maximum number of consecutive days (starting from today and going backward) for which the stock price was <= today's price.", examples: [{ input: '["StockSpanner","next","next","next","next","next","next","next"]\n[[],[100],[80],[60],[70],[60],[75],[85]]', output: "[null,1,1,1,2,1,4,6]" }], constraints: ["0 <= price <= 10^5", "At most 10^4 calls to next."], starterCode: { python: `class StockSpanner:\n    def __init__(self):\n        pass\n    def next(self, price):\n        pass`, javascript: `class StockSpanner {\n  constructor() {}\n  next(price) { return 0; }\n}`, typescript: `class StockSpanner {\n  constructor() {}\n  next(price) { return 0; }\n}`, java: `class StockSpanner {\n    public StockSpanner() {}\n    public int next(int price) { return 0; }\n}`, cpp: `class StockSpanner {\npublic:\n    StockSpanner() {}\n    int next(int price) { return 0; }\n};` }, testcases: [{ input: { ops: ["next","next","next","next","next","next","next"], vals: [[100],[80],[60],[70],[60],[75],[85]] }, expectedOutput: [1,1,1,2,1,4,6] }], hiddentestcases: [{ input: { ops: ["next","next","next"], vals: [[1],[1],[1]] }, expectedOutput: [1,2,3] }] },
 
   {
     id: 227,
@@ -6376,6 +6563,7 @@ const rawProblems = [
     starterCode: {
       python: `class MinStack:\n    def __init__(self):\n        pass\n    def push(self, val):\n        pass\n    def pop(self):\n        pass\n    def top(self):\n        pass\n    def getMin(self):\n        pass`,
       javascript: `class MinStack {\n  constructor() {}\n  push(val) {}\n  pop() {}\n  top() {}\n  getMin() {}\n}`,
+      typescript: `class MinStack {\n  constructor() {}\n  push(val) {}\n  pop() {}\n  top() {}\n  getMin() {}\n}`,
       java: `class MinStack {\n    public MinStack() {}\n    public void push(int val) {}\n    public void pop() {}\n    public int top() { return 0; }\n    public int getMin() { return 0; }\n}`,
       cpp: `class MinStack {\npublic:\n    MinStack() {}\n    void push(int val) {}\n    void pop() {}\n    int top() { return 0; }\n    int getMin() { return 0; }\n};`,
     },
@@ -6387,7 +6575,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 228, title: "Minimum Cost For Tickets", slug: "minimum-cost-for-tickets", functionName: "mincostTickets", difficulty: "Medium", topic: "Dynamic Programming", pattern: "1D DP travel days", companies: ["Amazon","Google"], description: "You travel on some days in a year [1, 365]. Train tickets cost costs[0] for 1 day, costs[1] for 7 days, costs[2] for 30 days. Return the minimum cost to travel every day in the given days array.", examples: [{ input: "days = [1,4,6,7,8,20], costs = [2,7,15]", output: "11" }, { input: "days = [1,2,3,4,5,6,7,8,9,10,30,31], costs = [2,7,15]", output: "17" }], constraints: ["1 <= days.length <= 365", "1 <= days[i] <= 365", "days is sorted in strictly increasing order.", "costs.length == 3", "1 <= costs[i] <= 1000"], starterCode: { python: `class Solution:\n    def mincostTickets(self, days, costs):\n        pass`, javascript: `function mincostTickets(days, costs) {\n\n}`, java: `class Solution {\n    public int mincostTickets(int[] days, int[] costs) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int mincostTickets(vector<int>& days, vector<int>& costs) { return 0; }\n};` }, testcases: [{ input: { days: [1,4,6,7,8,20], costs: [2,7,15] }, expectedOutput: 11 }, { input: { days: [1,2,3,4,5,6,7,8,9,10,30,31], costs: [2,7,15] }, expectedOutput: 17 }], hiddentestcases: [{ input: { days: [1], costs: [10,20,30] }, expectedOutput: 10 }, { input: { days: [1,2,3,4,5,6,7], costs: [1,2,10] }, expectedOutput: 7 }] },
+  { id: 228, title: "Minimum Cost For Tickets", slug: "minimum-cost-for-tickets", functionName: "mincostTickets", difficulty: "Medium", topic: "Dynamic Programming", pattern: "1D DP travel days", companies: ["Amazon","Google"], description: "You travel on some days in a year [1, 365]. Train tickets cost costs[0] for 1 day, costs[1] for 7 days, costs[2] for 30 days. Return the minimum cost to travel every day in the given days array.", examples: [{ input: "days = [1,4,6,7,8,20], costs = [2,7,15]", output: "11" }, { input: "days = [1,2,3,4,5,6,7,8,9,10,30,31], costs = [2,7,15]", output: "17" }], constraints: ["1 <= days.length <= 365", "1 <= days[i] <= 365", "days is sorted in strictly increasing order.", "costs.length == 3", "1 <= costs[i] <= 1000"], starterCode: { python: `class Solution:\n    def mincostTickets(self, days, costs):\n        pass`, javascript: `function mincostTickets(days, costs) {\n\n}`, typescript: `function mincostTickets(days, costs) {\n\n}`, java: `class Solution {\n    public int mincostTickets(int[] days, int[] costs) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int mincostTickets(vector<int>& days, vector<int>& costs) { return 0; }\n};` }, testcases: [{ input: { days: [1,4,6,7,8,20], costs: [2,7,15] }, expectedOutput: 11 }, { input: { days: [1,2,3,4,5,6,7,8,9,10,30,31], costs: [2,7,15] }, expectedOutput: 17 }], hiddentestcases: [{ input: { days: [1], costs: [10,20,30] }, expectedOutput: 10 }, { input: { days: [1,2,3,4,5,6,7], costs: [1,2,10] }, expectedOutput: 7 }] },
 
   {
     id: 229,
@@ -6409,6 +6597,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def asteroidCollision(self, asteroids):\n        pass`,
       javascript: `function asteroidCollision(asteroids) {\n\n}`,
+      typescript: `function asteroidCollision(asteroids) {\n\n}`,
       java: `class Solution {\n    public int[] asteroidCollision(int[] asteroids) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> asteroidCollision(vector<int>& asteroids) {\n        return {};\n    }\n};`,
     },
@@ -6443,6 +6632,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def removeKdigits(self, num, k):\n        pass`,
       javascript: `function removeKdigits(num, k) {\n\n}`,
+      typescript: `function removeKdigits(num, k) {\n\n}`,
       java: `class Solution {\n    public String removeKdigits(String num, int k) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string removeKdigits(string num, int k) {\n        return "";\n    }\n};`,
     },
@@ -6479,6 +6669,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def isMatch(self, s, p):\n        pass`,
       javascript: `function isMatch(s, p) {\n\n}`,
+      typescript: `function isMatch(s, p) {\n\n}`,
       java: `class Solution {\n    public boolean isMatch(String s, String p) {\n        return false;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    bool isMatch(string s, string p) {\n        return false;\n    }\n};`,
     },
@@ -6493,7 +6684,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 232, title: "Minimum Remove to Make Valid Parentheses", slug: "minimum-remove-valid-parentheses", functionName: "minRemoveToMakeValid", difficulty: "Medium", topic: "Stacks", pattern: "stack index tracking removal", companies: ["Facebook","Amazon","Google"], description: "Given a string s consisting of '(', ')' and lowercase English letters, remove the minimum number of parentheses to make the resulting string valid. Return any valid result.", examples: [{ input: 's = "lee(t(c)o)de)"', output: '"lee(t(c)o)de"' }, { input: 's = "a)b(c)d"', output: '"ab(c)d"' }, { input: 's = "))(("', output: '""' }], constraints: ["1 <= s.length <= 10^5", "s[i] is either '(' , ')' or a lowercase English letter."], starterCode: { python: `class Solution:\n    def minRemoveToMakeValid(self, s):\n        pass`, javascript: `function minRemoveToMakeValid(s) {\n\n}`, java: `class Solution {\n    public String minRemoveToMakeValid(String s) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string minRemoveToMakeValid(string s) { return ""; }\n};` }, testcases: [{ input: { s: "lee(t(c)o)de)" }, expectedOutput: "lee(t(c)o)de" }, { input: { s: "a)b(c)d" }, expectedOutput: "ab(c)d" }, { input: { s: "))((" }, expectedOutput: "" }], hiddentestcases: [{ input: { s: "(a(b(c)d)" }, expectedOutput: "a(b(c)d)" }, { input: { s: "a" }, expectedOutput: "a" }] },
+  { id: 232, title: "Minimum Remove to Make Valid Parentheses", slug: "minimum-remove-valid-parentheses", functionName: "minRemoveToMakeValid", difficulty: "Medium", topic: "Stacks", pattern: "stack index tracking removal", companies: ["Facebook","Amazon","Google"], description: "Given a string s consisting of '(', ')' and lowercase English letters, remove the minimum number of parentheses to make the resulting string valid. Return any valid result.", examples: [{ input: 's = "lee(t(c)o)de)"', output: '"lee(t(c)o)de"' }, { input: 's = "a)b(c)d"', output: '"ab(c)d"' }, { input: 's = "))(("', output: '""' }], constraints: ["1 <= s.length <= 10^5", "s[i] is either '(' , ')' or a lowercase English letter."], starterCode: { python: `class Solution:\n    def minRemoveToMakeValid(self, s):\n        pass`, javascript: `function minRemoveToMakeValid(s) {\n\n}`, typescript: `function minRemoveToMakeValid(s) {\n\n}`, java: `class Solution {\n    public String minRemoveToMakeValid(String s) { return ""; }\n}`, cpp: `class Solution {\npublic:\n    string minRemoveToMakeValid(string s) { return ""; }\n};` }, testcases: [{ input: { s: "lee(t(c)o)de)" }, expectedOutput: "lee(t(c)o)de" }, { input: { s: "a)b(c)d" }, expectedOutput: "ab(c)d" }, { input: { s: "))((" }, expectedOutput: "" }], hiddentestcases: [{ input: { s: "(a(b(c)d)" }, expectedOutput: "a(b(c)d)" }, { input: { s: "a" }, expectedOutput: "a" }] },
 
   {
     id: 233,
@@ -6515,6 +6706,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maxProfit(self, prices):\n        pass`,
       javascript: `function maxProfit(prices) {\n\n}`,
+      typescript: `function maxProfit(prices) {\n\n}`,
       java: `class Solution {\n    public int maxProfit(int[] prices) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n        return 0;\n    }\n};`,
     },
@@ -6549,6 +6741,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def maximalSquare(self, matrix):\n        pass`,
       javascript: `function maximalSquare(matrix) {\n\n}`,
+      typescript: `function maximalSquare(matrix) {\n\n}`,
       java: `class Solution {\n    public int maximalSquare(char[][] matrix) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int maximalSquare(vector<vector<char>>& matrix) {\n        return 0;\n    }\n};`,
     },
@@ -6582,6 +6775,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def candy(self, ratings):\n        pass`,
       javascript: `function candy(ratings) {\n\n}`,
+      typescript: `function candy(ratings) {\n\n}`,
       java: `class Solution {\n    public int candy(int[] ratings) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int candy(vector<int>& ratings) {\n        return 0;\n    }\n};`,
     },
@@ -6615,6 +6809,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def partitionLabels(self, s):\n        pass`,
       javascript: `function partitionLabels(s) {\n\n}`,
+      typescript: `function partitionLabels(s) {\n\n}`,
       java: `class Solution {\n    public List<Integer> partitionLabels(String s) {\n        return new ArrayList<>();\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> partitionLabels(string s) {\n        return {};\n    }\n};`,
     },
@@ -6649,6 +6844,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def numRescueBoats(self, people, limit):\n        pass`,
       javascript: `function numRescueBoats(people, limit) {\n\n}`,
+      typescript: `function numRescueBoats(people, limit) {\n\n}`,
       java: `class Solution {\n    public int numRescueBoats(int[] people, int limit) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int numRescueBoats(vector<int>& people, int limit) {\n        return 0;\n    }\n};`,
     },
@@ -6682,6 +6878,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def reconstructQueue(self, people):\n        pass`,
       javascript: `function reconstructQueue(people) {\n\n}`,
+      typescript: `function reconstructQueue(people) {\n\n}`,
       java: `class Solution {\n    public int[][] reconstructQueue(int[][] people) {\n        return new int[][]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {\n        return {};\n    }\n};`,
     },
@@ -6714,6 +6911,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def wiggleMaxLength(self, nums):\n        pass`,
       javascript: `function wiggleMaxLength(nums) {\n\n}`,
+      typescript: `function wiggleMaxLength(nums) {\n\n}`,
       java: `class Solution {\n    public int wiggleMaxLength(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int wiggleMaxLength(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -6748,6 +6946,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findMinArrowShots(self, points):\n        pass`,
       javascript: `function findMinArrowShots(points) {\n\n}`,
+      typescript: `function findMinArrowShots(points) {\n\n}`,
       java: `class Solution {\n    public int findMinArrowShots(int[][] points) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findMinArrowShots(vector<vector<int>>& points) {\n        return 0;\n    }\n};`,
     },
@@ -6764,9 +6963,9 @@ const rawProblems = [
 
   // ── BATCH 050: Final 10 — Hard + Company Specials (IDs 241-250) ───────────
 
-  { id: 241, title: "Squares of a Sorted Array", slug: "squares-of-sorted-array", functionName: "sortedSquares", difficulty: "Easy", topic: "Two Pointers", pattern: "two pointer merge from ends", companies: ["Google","Amazon","Facebook"], description: "Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.", examples: [{ input: "nums = [-4,-1,0,3,10]", output: "[0,1,9,16,100]" }, { input: "nums = [-7,-3,2,3,11]", output: "[4,9,9,49,121]" }], constraints: ["1 <= nums.length <= 10^4", "-10^4 <= nums[i] <= 10^4", "nums is sorted in non-decreasing order."], starterCode: { python: `class Solution:\n    def sortedSquares(self, nums):\n        pass`, javascript: `function sortedSquares(nums) {\n\n}`, java: `class Solution {\n    public int[] sortedSquares(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> sortedSquares(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [-4,-1,0,3,10] }, expectedOutput: [0,1,9,16,100] }, { input: { nums: [-7,-3,2,3,11] }, expectedOutput: [4,9,9,49,121] }], hiddentestcases: [{ input: { nums: [-3,-1,0,1,3] }, expectedOutput: [0,1,1,9,9] }, { input: { nums: [1] }, expectedOutput: [1] }] },
+  { id: 241, title: "Squares of a Sorted Array", slug: "squares-of-sorted-array", functionName: "sortedSquares", difficulty: "Easy", topic: "Two Pointers", pattern: "two pointer merge from ends", companies: ["Google","Amazon","Facebook"], description: "Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.", examples: [{ input: "nums = [-4,-1,0,3,10]", output: "[0,1,9,16,100]" }, { input: "nums = [-7,-3,2,3,11]", output: "[4,9,9,49,121]" }], constraints: ["1 <= nums.length <= 10^4", "-10^4 <= nums[i] <= 10^4", "nums is sorted in non-decreasing order."], starterCode: { python: `class Solution:\n    def sortedSquares(self, nums):\n        pass`, javascript: `function sortedSquares(nums) {\n\n}`, typescript: `function sortedSquares(nums) {\n\n}`, java: `class Solution {\n    public int[] sortedSquares(int[] nums) { return new int[]{}; }\n}`, cpp: `class Solution {\npublic:\n    vector<int> sortedSquares(vector<int>& nums) { return {}; }\n};` }, testcases: [{ input: { nums: [-4,-1,0,3,10] }, expectedOutput: [0,1,9,16,100] }, { input: { nums: [-7,-3,2,3,11] }, expectedOutput: [4,9,9,49,121] }], hiddentestcases: [{ input: { nums: [-3,-1,0,1,3] }, expectedOutput: [0,1,1,9,9] }, { input: { nums: [1] }, expectedOutput: [1] }] },
 
-  { id: 242, title: "Subarray Product Less Than K", slug: "subarray-product-less-than-k", functionName: "numSubarrayProductLessThanK", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with running product", companies: ["Amazon","Facebook","Google"], description: "Given an array of positive integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.", examples: [{ input: "nums = [10,5,2,6], k = 100", output: "8", explanation: "The 8 subarrays with product less than 100 are [10], [5], [2], [6], [10,5], [5,2], [2,6], [5,2,6]. Note that [10,5,2] is not included because its product is 100, which is not strictly less than 100." }, { input: "nums = [1,2,3], k = 0", output: "0", explanation: "No product of positive integers can be less than 0, so there are no valid subarrays." }, { input: "nums = [1], k = 2", output: "1", explanation: "The only subarray is [1], with product 1, which is less than 2." }], constraints: ["1 <= nums.length <= 3 * 10^4", "1 <= nums[i] <= 1000", "0 <= k <= 10^6"], starterCode: { python: `class Solution:\n    def numSubarrayProductLessThanK(self, nums, k):\n        pass`, javascript: `function numSubarrayProductLessThanK(nums, k) {\n\n}`, java: `class Solution {\n    public int numSubarrayProductLessThanK(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int numSubarrayProductLessThanK(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [10,5,2,6], k: 100 }, expectedOutput: 8 }, { input: { nums: [1,2,3], k: 0 }, expectedOutput: 0 }, { input: { nums: [1], k: 2 }, expectedOutput: 1 }], hiddentestcases: [{ input: { nums: [1,1,1], k: 1 }, expectedOutput: 0 }, { input: { nums: [100], k: 100 }, expectedOutput: 0 }] },
+  { id: 242, title: "Subarray Product Less Than K", slug: "subarray-product-less-than-k", functionName: "numSubarrayProductLessThanK", difficulty: "Medium", topic: "Sliding Window", pattern: "variable window with running product", companies: ["Amazon","Facebook","Google"], description: "Given an array of positive integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.", examples: [{ input: "nums = [10,5,2,6], k = 100", output: "8", explanation: "The 8 subarrays with product less than 100 are [10], [5], [2], [6], [10,5], [5,2], [2,6], [5,2,6]. Note that [10,5,2] is not included because its product is 100, which is not strictly less than 100." }, { input: "nums = [1,2,3], k = 0", output: "0", explanation: "No product of positive integers can be less than 0, so there are no valid subarrays." }, { input: "nums = [1], k = 2", output: "1", explanation: "The only subarray is [1], with product 1, which is less than 2." }], constraints: ["1 <= nums.length <= 3 * 10^4", "1 <= nums[i] <= 1000", "0 <= k <= 10^6"], starterCode: { python: `class Solution:\n    def numSubarrayProductLessThanK(self, nums, k):\n        pass`, javascript: `function numSubarrayProductLessThanK(nums, k) {\n\n}`, typescript: `function numSubarrayProductLessThanK(nums, k) {\n\n}`, java: `class Solution {\n    public int numSubarrayProductLessThanK(int[] nums, int k) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int numSubarrayProductLessThanK(vector<int>& nums, int k) { return 0; }\n};` }, testcases: [{ input: { nums: [10,5,2,6], k: 100 }, expectedOutput: 8 }, { input: { nums: [1,2,3], k: 0 }, expectedOutput: 0 }, { input: { nums: [1], k: 2 }, expectedOutput: 1 }], hiddentestcases: [{ input: { nums: [1,1,1], k: 1 }, expectedOutput: 0 }, { input: { nums: [100], k: 100 }, expectedOutput: 0 }] },
 
   {
     id: 243,
@@ -6788,6 +6987,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def alienOrder(self, words):\n        pass`,
       javascript: `function alienOrder(words) {\n\n}`,
+      typescript: `function alienOrder(words) {\n\n}`,
       java: `class Solution {\n    public String alienOrder(String[] words) {\n        return "";\n    }\n}`,
       cpp: `class Solution {\npublic:\n    string alienOrder(vector<string>& words) {\n        return "";\n    }\n};`,
     },
@@ -6802,7 +7002,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 244, title: "Jump Game VII", slug: "jump-game-vii", functionName: "canReach", difficulty: "Medium", topic: "Graphs", pattern: "BFS with sliding window", companies: ["Amazon","Google"], description: "Given a string s of 0s and 1s, you start at index 0. You can jump from index i to i+j where minJump <= j <= maxJump, only if s[i+j] == '0'. Return true if you can reach index s.length-1. s[0] == '0' and s[s.length-1] == '0'.", examples: [{ input: 's = "011010", minJump = 2, maxJump = 3', output: "true" }, { input: 's = "01101110", minJump = 2, maxJump = 3', output: "false" }], constraints: ["2 <= s.length <= 10^5", "s[i] is '0' or '1'.", "s[0] == '0'", "1 <= minJump <= maxJump < s.length"], starterCode: { python: `class Solution:\n    def canReach(self, s, minJump, maxJump):\n        pass`, javascript: `function canReach(s, minJump, maxJump) {\n\n}`, java: `class Solution {\n    public boolean canReach(String s, int minJump, int maxJump) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool canReach(string s, int minJump, int maxJump) { return false; }\n};` }, testcases: [{ input: { s: "011010", minJump: 2, maxJump: 3 }, expectedOutput: true }, { input: { s: "01101110", minJump: 2, maxJump: 3 }, expectedOutput: false }], hiddentestcases: [{ input: { s: "00", minJump: 1, maxJump: 1 }, expectedOutput: true }, { input: { s: "0000000000", minJump: 3, maxJump: 7 }, expectedOutput: true }] },
+  { id: 244, title: "Jump Game VII", slug: "jump-game-vii", functionName: "canReach", difficulty: "Medium", topic: "Graphs", pattern: "BFS with sliding window", companies: ["Amazon","Google"], description: "Given a string s of 0s and 1s, you start at index 0. You can jump from index i to i+j where minJump <= j <= maxJump, only if s[i+j] == '0'. Return true if you can reach index s.length-1. s[0] == '0' and s[s.length-1] == '0'.", examples: [{ input: 's = "011010", minJump = 2, maxJump = 3', output: "true" }, { input: 's = "01101110", minJump = 2, maxJump = 3', output: "false" }], constraints: ["2 <= s.length <= 10^5", "s[i] is '0' or '1'.", "s[0] == '0'", "1 <= minJump <= maxJump < s.length"], starterCode: { python: `class Solution:\n    def canReach(self, s, minJump, maxJump):\n        pass`, javascript: `function canReach(s, minJump, maxJump) {\n\n}`, typescript: `function canReach(s, minJump, maxJump) {\n\n}`, java: `class Solution {\n    public boolean canReach(String s, int minJump, int maxJump) { return false; }\n}`, cpp: `class Solution {\npublic:\n    bool canReach(string s, int minJump, int maxJump) { return false; }\n};` }, testcases: [{ input: { s: "011010", minJump: 2, maxJump: 3 }, expectedOutput: true }, { input: { s: "01101110", minJump: 2, maxJump: 3 }, expectedOutput: false }], hiddentestcases: [{ input: { s: "00", minJump: 1, maxJump: 1 }, expectedOutput: true }, { input: { s: "0000000000", minJump: 3, maxJump: 7 }, expectedOutput: true }] },
 
   {
     id: 245,
@@ -6823,6 +7023,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def wallsAndGates(self, rooms):\n        pass`,
       javascript: `function wallsAndGates(rooms) {\n\n}`,
+      typescript: `function wallsAndGates(rooms) {\n\n}`,
       java: `class Solution {\n    public void wallsAndGates(int[][] rooms) {\n        \n    }\n}`,
       cpp: `class Solution {\npublic:\n    void wallsAndGates(vector<vector<int>>& rooms) {\n        \n    }\n};`,
     },
@@ -6854,6 +7055,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def swimInWater(self, grid):\n        pass`,
       javascript: `function swimInWater(grid) {\n\n}`,
+      typescript: `function swimInWater(grid) {\n\n}`,
       java: `class Solution {\n    public int swimInWater(int[][] grid) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int swimInWater(vector<vector<int>>& grid) {\n        return 0;\n    }\n};`,
     },
@@ -6887,6 +7089,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def findDuplicate(self, nums):\n        pass`,
       javascript: `function findDuplicate(nums) {\n\n}`,
+      typescript: `function findDuplicate(nums) {\n\n}`,
       java: `class Solution {\n    public int findDuplicate(int[] nums) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int findDuplicate(vector<int>& nums) {\n        return 0;\n    }\n};`,
     },
@@ -6920,6 +7123,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def minInterval(self, intervals, queries):\n        pass`,
       javascript: `function minInterval(intervals, queries) {\n\n}`,
+      typescript: `function minInterval(intervals, queries) {\n\n}`,
       java: `class Solution {\n    public int[] minInterval(int[][] intervals, int[] queries) {\n        return new int[]{};\n    }\n}`,
       cpp: `class Solution {\npublic:\n    vector<int> minInterval(vector<vector<int>>& intervals, vector<int>& queries) {\n        return {};\n    }\n};`,
     },
@@ -6932,7 +7136,7 @@ const rawProblems = [
     ],
   },
 
-  { id: 249, title: "Number of Longest Increasing Subsequence", slug: "number-of-lis", functionName: "findNumberOfLIS", difficulty: "Medium", topic: "Dynamic Programming", pattern: "DP length + count arrays", companies: ["Facebook","Amazon"], description: "Given an integer array nums, return the number of longest increasing subsequences. Notice that the sequence has to be strictly increasing.", examples: [{ input: "nums = [1,3,5,4,7]", output: "2", explanation: "Two LIS: [1,3,5,7] and [1,3,4,7]" }, { input: "nums = [2,2,2,2,2]", output: "5" }], constraints: ["1 <= nums.length <= 2000", "-10^6 <= nums[i] <= 10^6"], starterCode: { python: `class Solution:\n    def findNumberOfLIS(self, nums):\n        pass`, javascript: `function findNumberOfLIS(nums) {\n\n}`, java: `class Solution {\n    public int findNumberOfLIS(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int findNumberOfLIS(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [1,3,5,4,7] }, expectedOutput: 2 }, { input: { nums: [2,2,2,2,2] }, expectedOutput: 5 }, { input: { nums: [1,2,4,3,5,4,7,2] }, expectedOutput: 3 }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: 1 }, { input: { nums: [1,2,3,1,2,3] }, expectedOutput: 4 }] },
+  { id: 249, title: "Number of Longest Increasing Subsequence", slug: "number-of-lis", functionName: "findNumberOfLIS", difficulty: "Medium", topic: "Dynamic Programming", pattern: "DP length + count arrays", companies: ["Facebook","Amazon"], description: "Given an integer array nums, return the number of longest increasing subsequences. Notice that the sequence has to be strictly increasing.", examples: [{ input: "nums = [1,3,5,4,7]", output: "2", explanation: "Two LIS: [1,3,5,7] and [1,3,4,7]" }, { input: "nums = [2,2,2,2,2]", output: "5" }], constraints: ["1 <= nums.length <= 2000", "-10^6 <= nums[i] <= 10^6"], starterCode: { python: `class Solution:\n    def findNumberOfLIS(self, nums):\n        pass`, javascript: `function findNumberOfLIS(nums) {\n\n}`, typescript: `function findNumberOfLIS(nums) {\n\n}`, java: `class Solution {\n    public int findNumberOfLIS(int[] nums) { return 0; }\n}`, cpp: `class Solution {\npublic:\n    int findNumberOfLIS(vector<int>& nums) { return 0; }\n};` }, testcases: [{ input: { nums: [1,3,5,4,7] }, expectedOutput: 2 }, { input: { nums: [2,2,2,2,2] }, expectedOutput: 5 }, { input: { nums: [1,2,4,3,5,4,7,2] }, expectedOutput: 3 }], hiddentestcases: [{ input: { nums: [1] }, expectedOutput: 1 }, { input: { nums: [1,2,3,1,2,3] }, expectedOutput: 4 }] },
 
   {
     id: 250,
@@ -6953,6 +7157,7 @@ const rawProblems = [
     starterCode: {
       python: `class Solution:\n    def threeSumClosest(self, nums, target):\n        pass`,
       javascript: `function threeSumClosest(nums, target) {\n\n}`,
+      typescript: `function threeSumClosest(nums, target) {\n\n}`,
       java: `class Solution {\n    public int threeSumClosest(int[] nums, int target) {\n        return 0;\n    }\n}`,
       cpp: `class Solution {\npublic:\n    int threeSumClosest(vector<int>& nums, int target) {\n        return 0;\n    }\n};`,
     },
