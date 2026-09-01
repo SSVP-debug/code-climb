@@ -98,8 +98,8 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
 
   if (editing) {
     return (
-      <div className="bg-zinc-800 rounded-xl p-3">
-        <label className="text-zinc-400 text-xs flex items-center gap-1.5">
+      <div className="bg-[var(--surface-elevated)] rounded-xl p-3">
+        <label className="text-[var(--muted-foreground)] text-xs flex items-center gap-1.5">
           {icon}
           {label}
         </label>
@@ -110,7 +110,7 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={placeholder}
-            className="flex-1 min-w-0 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary,#2dd4bf)]"
+            className="flex-1 min-w-0 bg-[var(--surface)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary,#2dd4bf)]"
           />
           <Button size="sm" variant="theme" disabled={saving} onClick={handleSave}>
             {saving ? "Saving…" : "Save"}
@@ -125,14 +125,14 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
 
   if (value) {
     return (
-      <div className="flex items-center justify-between gap-3 bg-zinc-800 rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)] rounded-xl px-4 py-3">
         <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center gap-2.5 min-w-0 text-sm font-medium text-white hover:text-[var(--theme-primary,#2dd4bf)] transition"
+          className="group flex items-center gap-2.5 min-w-0 text-sm font-medium text-[var(--foreground)] hover:text-[var(--theme-primary,#2dd4bf)] transition"
         >
-          <span className="text-zinc-400 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">
+          <span className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0">
             {icon}
           </span>
           <span className="truncate">{displayValue}</span>
@@ -142,7 +142,7 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
           <button
             type="button"
             onClick={startEdit}
-            className="text-xs text-zinc-500 hover:text-white transition"
+            className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           >
             Edit
           </button>
@@ -150,7 +150,7 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
             type="button"
             onClick={handleRemove}
             disabled={saving}
-            className="text-zinc-500 hover:text-red-400 transition"
+            className="text-[var(--muted-foreground)] hover:text-red-400 transition"
             aria-label={`Remove ${label}`}
           >
             <X size={14} strokeWidth={2} />
@@ -161,8 +161,8 @@ function LinkRow({ icon, label, value, displayValue, placeholder, fieldKey, onSa
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-zinc-800/60 border border-dashed border-zinc-700 rounded-xl px-4 py-3">
-      <span className="flex items-center gap-2.5 text-sm text-zinc-500">
+    <div className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)]/60 border border-dashed border-[var(--border-strong)] rounded-xl px-4 py-3">
+      <span className="flex items-center gap-2.5 text-sm text-[var(--muted-foreground)]">
         <span className="flex-shrink-0">{icon}</span>
         {label}
       </span>

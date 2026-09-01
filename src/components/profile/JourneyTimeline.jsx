@@ -65,16 +65,16 @@ function JourneyTimeline({ joinedDate, achievements = [] }) {
           {events.map((event, i) => (
             <div key={event.key} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center text-sm flex-shrink-0">
                   {event.icon}
                 </div>
                 {i < events.length - 1 && (
-                  <div className="w-px flex-1 bg-zinc-800 my-1" />
+                  <div className="w-px flex-1 bg-[var(--surface-elevated)] my-1" />
                 )}
               </div>
               <div className="pb-6 min-w-0">
                 <p className="font-medium">{event.label}</p>
-                <p className="text-zinc-500 text-xs mt-0.5">
+                <p className="text-[var(--muted-foreground)] text-xs mt-0.5">
                   {event.date.toLocaleDateString(undefined, {
                     year: "numeric", month: "short", day: "numeric",
                   })}

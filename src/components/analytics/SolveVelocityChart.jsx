@@ -18,8 +18,8 @@ function SolveVelocityChart({ velocityData }) {
       accented
       action={
         hasActivity ? (
-          <span className="text-xs text-zinc-500">
-            <span className="text-white font-semibold">{totalSolved}</span> solved this period
+          <span className="text-xs text-[var(--muted-foreground)]">
+            <span className="text-[var(--foreground)] font-semibold">{totalSolved}</span> solved this period
           </span>
         ) : undefined
       }
@@ -40,12 +40,12 @@ function SolveVelocityChart({ velocityData }) {
                 <stop offset="100%" stopColor={theme.colors.primary} stopOpacity={0.5} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="week" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <XAxis dataKey="week" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
             <Tooltip
-              contentStyle={{ background: "#18181b", border: "1px solid #3f3f46", borderRadius: 8, color: "#fff" }}
-              labelStyle={{ color: "#a1a1aa" }}
-              cursor={{ fill: "#27272a" }}
+              contentStyle={{ background: "var(--surface-elevated)", border: "1px solid var(--border-strong)", borderRadius: 8, color: "var(--foreground)" }}
+              labelStyle={{ color: "var(--muted-foreground)" }}
+              cursor={{ fill: "var(--surface-elevated)" }}
             />
             <Bar dataKey="solved" fill={`url(#${gradientId})`} radius={[4, 4, 0, 0]} maxBarSize={32} />
           </BarChart>

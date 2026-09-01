@@ -98,12 +98,12 @@ function PinnedProblems() {
           {pinnedProblems.map((p) => (
             <div
               key={p.slug}
-              className="flex items-center justify-between bg-zinc-800 rounded-xl px-4 py-3"
+              className="flex items-center justify-between bg-[var(--surface-elevated)] rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-3 min-w-0">
                 {!hideDifficulty && (
                   <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700 bg-zinc-800"}`}
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${DIFFICULTY_COLOR[p.difficulty] || "text-[var(--muted-foreground)] border-[var(--border-strong)] bg-[var(--surface-elevated)]"}`}
                   >
                     {p.difficulty}
                   </span>
@@ -118,7 +118,7 @@ function PinnedProblems() {
               <button
                 onClick={() => handleUnpin(p.slug)}
                 disabled={busySlug === p.slug}
-                className="text-zinc-500 hover:text-red-400 text-xs flex-shrink-0 ml-4 transition disabled:opacity-50"
+                className="text-[var(--muted-foreground)] hover:text-red-400 text-xs flex-shrink-0 ml-4 transition disabled:opacity-50"
               >
                 Unpin
               </button>
@@ -139,9 +139,9 @@ function PinnedProblems() {
             </button>
           )
         ) : (
-          <div className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-3">
+          <div className="bg-[var(--surface-elevated)]/50 border border-[var(--border-strong)] rounded-xl p-3">
             {atCap ? (
-              <p className="text-zinc-500 text-sm">
+              <p className="text-[var(--muted-foreground)] text-sm">
                 You've pinned the max of {MAX_PINNED}. Unpin one to add another.
               </p>
             ) : (
@@ -152,11 +152,11 @@ function PinnedProblems() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search your solved problems…"
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm mb-2"
+                  className="w-full bg-[var(--surface)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm mb-2"
                 />
                 <div className="max-h-48 overflow-y-auto space-y-1">
                   {pinnableOptions.length === 0 ? (
-                    <p className="text-zinc-500 text-xs px-1 py-2">
+                    <p className="text-[var(--muted-foreground)] text-xs px-1 py-2">
                       {solvedProblems.length === 0
                         ? "Solve a problem first to be able to pin it."
                         : "No matching solved problems."}
@@ -167,11 +167,11 @@ function PinnedProblems() {
                         key={p.slug}
                         onClick={() => handlePin(p.slug)}
                         disabled={busySlug === p.slug}
-                        className="w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg hover:bg-zinc-800 transition disabled:opacity-50"
+                        className="w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg hover:bg-[var(--surface-elevated)] transition disabled:opacity-50"
                       >
                         <span className="text-sm truncate">{p.title}</span>
                         {!hideDifficulty && (
-                          <span className={`text-xs px-1.5 py-0.5 rounded-full border flex-shrink-0 ml-2 ${DIFFICULTY_COLOR[p.difficulty] || "text-zinc-400 border-zinc-700"}`}>
+                          <span className={`text-xs px-1.5 py-0.5 rounded-full border flex-shrink-0 ml-2 ${DIFFICULTY_COLOR[p.difficulty] || "text-[var(--muted-foreground)] border-[var(--border-strong)]"}`}>
                             {p.difficulty}
                           </span>
                         )}
@@ -183,7 +183,7 @@ function PinnedProblems() {
             )}
             <button
               onClick={() => { setPickerOpen(false); setSearch(""); }}
-              className="text-xs text-zinc-500 hover:text-zinc-300 mt-2 transition"
+              className="text-xs text-[var(--muted-foreground)] hover:text-[var(--muted-foreground)] mt-2 transition"
             >
               Close
             </button>

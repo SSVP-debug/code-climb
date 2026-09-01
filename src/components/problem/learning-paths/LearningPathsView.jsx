@@ -55,8 +55,8 @@ function LearningPathsView({ problems, solvedProblems }) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Learning Paths</h2>
-        <p className="text-zinc-400 mt-1 text-sm">
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">Learning Paths</h2>
+        <p className="text-[var(--muted-foreground)] mt-1 text-sm">
           A guided roadmap to solve problems in order, one unlocks the next.
         </p>
       </div>

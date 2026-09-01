@@ -85,7 +85,7 @@ function LearningPathDetail({ path, solvedProblems, isFirstPathToComplete, onBac
     <div className="flex flex-col gap-6">
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition w-fit"
+        className="flex items-center gap-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition w-fit"
       >
         <ArrowLeft size={15} aria-hidden="true" />
         Back to Learning Paths
@@ -108,10 +108,10 @@ function LearningPathDetail({ path, solvedProblems, isFirstPathToComplete, onBac
           )}
         </div>
 
-        <h2 className="mt-3 text-xl font-bold text-white">{path.name}</h2>
-        <p className="text-sm text-zinc-400 mt-1">{path.tagline}</p>
+        <h2 className="mt-3 text-xl font-bold text-[var(--foreground)]">{path.name}</h2>
+        <p className="text-sm text-[var(--muted-foreground)] mt-1">{path.tagline}</p>
 
-        <div className="mt-3 flex items-center gap-3 text-xs text-zinc-500">
+        <div className="mt-3 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
           <span className="flex items-center gap-1">
             <ListTodo size={13} aria-hidden="true" /> {total} problems
           </span>
@@ -121,11 +121,11 @@ function LearningPathDetail({ path, solvedProblems, isFirstPathToComplete, onBac
         </div>
 
         <div className="mt-4">
-          <div className="flex items-center justify-between text-xs text-zinc-400 mb-1.5">
+          <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)] mb-1.5">
             <span>{solvedCount}/{total} solved</span>
             <span>{percent}% complete</span>
           </div>
-          <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-[var(--surface-elevated)] overflow-hidden">
             <div
               className={`h-full rounded-full ${colors.bar} transition-all`}
               style={{ width: `${percent}%` }}
@@ -136,7 +136,7 @@ function LearningPathDetail({ path, solvedProblems, isFirstPathToComplete, onBac
 
       {/* Problem list */}
       {total === 0 ? (
-        <p className="text-sm text-zinc-500 text-center py-10">
+        <p className="text-sm text-[var(--muted-foreground)] text-center py-10">
           This path doesn't have any problems yet — check back soon.
         </p>
       ) : (

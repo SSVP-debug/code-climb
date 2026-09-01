@@ -40,7 +40,7 @@ function ActivityHeatmap({
   }
 
   return (
-    <div className="relative overflow-hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+    <div className="relative overflow-hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
 
       <div
         aria-hidden="true"
@@ -53,7 +53,7 @@ function ActivityHeatmap({
           Activity Heatmap
         </h2>
 
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-[var(--muted-foreground)]">
           Last 90 days
         </span>
       </div>
@@ -65,15 +65,15 @@ function ActivityHeatmap({
             key={day.date}
             title={day.date}
             className="w-4 h-4 rounded transition-colors"
-            style={{ backgroundColor: day.active ? accentColor : "#27272a" }}
+            style={{ backgroundColor: day.active ? accentColor : "var(--surface-elevated)" }}
           />
         ))}
 
       </div>
-      <div className="flex items-center justify-end gap-2 mt-5 text-xs text-zinc-500">
+      <div className="flex items-center justify-end gap-2 mt-5 text-xs text-[var(--muted-foreground)]">
         <span>Less</span>
 
-        <div className="w-3 h-3 rounded bg-zinc-800" />
+        <div className="w-3 h-3 rounded bg-[var(--surface-elevated)]" />
         <div className="w-3 h-3 rounded" style={{ backgroundColor: `${accentColor}66` }} />
         <div className="w-3 h-3 rounded" style={{ backgroundColor: accentColor }} />
 

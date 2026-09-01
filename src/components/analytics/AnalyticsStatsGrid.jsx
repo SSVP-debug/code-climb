@@ -4,7 +4,7 @@ import { useTheme } from "../../hooks/useTheme";
 function StatCard({ label, value, icon: Icon, valueColor }) {
   const { theme } = useTheme();
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
       <div className="flex items-center gap-2.5 mb-3">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -12,9 +12,9 @@ function StatCard({ label, value, icon: Icon, valueColor }) {
         >
           <Icon size={16} strokeWidth={2} aria-hidden="true" />
         </div>
-        <p className="text-zinc-400 text-xs uppercase tracking-wide">{label}</p>
+        <p className="text-[var(--muted-foreground)] text-xs uppercase tracking-wide">{label}</p>
       </div>
-      <p className={`text-2xl font-bold ${valueColor || "text-white"}`}>{value}</p>
+      <p className={`text-2xl font-bold ${valueColor || "text-[var(--foreground)]"}`}>{value}</p>
     </div>
   );
 }

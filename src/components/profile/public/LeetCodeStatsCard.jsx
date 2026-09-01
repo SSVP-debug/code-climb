@@ -5,10 +5,10 @@ function LeetCodeStatsCard({ leetcode }) {
     <div className="mt-10">
       <h2 className="text-2xl font-bold mb-4">LeetCode</h2>
 
-      <div className="bg-zinc-800 rounded-2xl p-6 space-y-5">
+      <div className="bg-[var(--surface-elevated)] rounded-2xl p-6 space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-zinc-400 text-sm">Username</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Username</p>
             <p className="text-xl font-semibold">@{leetcode.username}</p>
           </div>
 
@@ -25,7 +25,7 @@ function LeetCodeStatsCard({ leetcode }) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-zinc-400 text-sm">Total</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Total</p>
             <p className="text-2xl font-bold">{leetcode.totalSolved}</p>
           </div>
           <div>
@@ -43,7 +43,7 @@ function LeetCodeStatsCard({ leetcode }) {
         </div>
 
         {leetcode.lastSyncedAt && (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-[var(--muted-foreground)]">
             Last synced {new Date(leetcode.lastSyncedAt).toLocaleDateString()}
           </p>
         )}

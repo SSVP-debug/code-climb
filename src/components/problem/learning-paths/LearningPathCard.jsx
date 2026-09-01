@@ -44,12 +44,12 @@ function LearningPathCard({ path, onOpen }) {
         )}
       </div>
 
-      <h3 className="mt-3 font-semibold text-white group-hover:underline">
+      <h3 className="mt-3 font-semibold text-[var(--foreground)] group-hover:underline">
         {path.name}
       </h3>
-      <p className="text-xs text-zinc-400 mt-1 line-clamp-2">{path.tagline}</p>
+      <p className="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">{path.tagline}</p>
 
-      <div className="mt-3 flex items-center gap-3 text-[11px] text-zinc-500">
+      <div className="mt-3 flex items-center gap-3 text-[11px] text-[var(--muted-foreground)]">
         <span className="flex items-center gap-1">
           <ListTodo size={12} aria-hidden="true" /> {total} problems
         </span>
@@ -59,11 +59,11 @@ function LearningPathCard({ path, onOpen }) {
       </div>
 
       <div className="mt-4">
-        <div className="flex items-center justify-between text-[11px] text-zinc-500 mb-1.5">
+        <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] mb-1.5">
           <span>{solvedCount}/{total} solved</span>
           <span>{percent}%</span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-[var(--surface-elevated)] overflow-hidden">
           <div
             className={`h-full rounded-full ${colors.bar} transition-all`}
             style={{ width: `${percent}%` }}

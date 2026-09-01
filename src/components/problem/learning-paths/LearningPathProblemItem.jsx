@@ -15,7 +15,7 @@ const DIFFICULTY_BADGE = {
 const STATUS_STYLES = {
   [STATUS.SOLVED]: "text-verdict-accept",
   [STATUS.CURRENT]: "text-teal-400",
-  [STATUS.LOCKED]: "text-zinc-600",
+  [STATUS.LOCKED]: "text-[var(--muted-foreground)]",
 };
 
 function LearningPathProblemItem({ problem, order, status, unlockHintTitle, pathId }) {
@@ -25,7 +25,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle, path
 
   const content = (
     <>
-      <span className="flex-shrink-0 w-6 text-center text-xs font-semibold text-zinc-600">
+      <span className="flex-shrink-0 w-6 text-center text-xs font-semibold text-[var(--muted-foreground)]">
         {order}
       </span>
 
@@ -35,7 +35,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle, path
 
       <span
         className={`flex-1 min-w-0 truncate text-sm font-medium ${
-          locked ? "text-zinc-600" : "text-zinc-100"
+          locked ? "text-[var(--muted-foreground)]" : "text-[var(--foreground)]"
         }`}
       >
         {problem.title}
@@ -55,7 +55,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle, path
           lives here; XP is always computed server-side (see
           plans/001-learning-paths.md §7). */}
       <span
-        className={`flex-shrink-0 text-[10px] font-semibold rounded-full border border-zinc-700 px-2 py-0.5 text-zinc-500 ${
+        className={`flex-shrink-0 text-[10px] font-semibold rounded-full border border-[var(--border-strong)] px-2 py-0.5 text-[var(--muted-foreground)] ${
           locked ? "opacity-40" : ""
         }`}
       >
@@ -70,7 +70,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle, path
   if (locked) {
     return (
       <div
-        className={`${rowClasses} border-zinc-800 bg-zinc-900/40 opacity-60 cursor-not-allowed`}
+        className={`${rowClasses} border-[var(--border)] bg-[var(--surface)]/40 opacity-60 cursor-not-allowed`}
         aria-disabled="true"
         title={
           unlockHintTitle
@@ -89,7 +89,7 @@ function LearningPathProblemItem({ problem, order, status, unlockHintTitle, path
       className={`${rowClasses} ${
         status === STATUS.CURRENT
           ? "border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10"
-          : "border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900"
+          : "border-[var(--border)] bg-[var(--surface)]/40 hover:bg-[var(--surface)]"
       }`}
     >
       {content}

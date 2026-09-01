@@ -27,7 +27,7 @@ export default function TodaysFocus({ topic, onContinue }) {
           <Compass size={30} strokeWidth={2} aria-hidden="true" />
         </div>
 
-        <p className="text-sm font-semibold uppercase tracking-wide mb-3 text-zinc-500">
+        <p className="text-sm font-semibold uppercase tracking-wide mb-3 text-[var(--muted-foreground)]">
           Today's Focus
         </p>
 
@@ -35,7 +35,7 @@ export default function TodaysFocus({ topic, onContinue }) {
           {topic}
         </h1>
 
-        <p className="text-zinc-400 text-lg mb-10">
+        <p className="text-[var(--muted-foreground)] text-lg mb-10">
           Keep an eye out for it as you practice today.
         </p>
 
@@ -43,7 +43,7 @@ export default function TodaysFocus({ topic, onContinue }) {
           variant="primary"
           size="lg"
           onClick={onContinue}
-          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
         >
           Start Coding
         </Button>

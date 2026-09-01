@@ -21,10 +21,10 @@ import { RefreshCw, Home } from "lucide-react";
  */
 function GlobalErrorFallback() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center px-4">
       <div className="max-w-sm w-full text-center space-y-5">
         <p className="text-lg font-semibold">Something went wrong.</p>
-        <p className="text-zinc-500 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           Our team has been notified. You can try reloading, or head back to
           your dashboard.
         </p>
@@ -32,14 +32,14 @@ function GlobalErrorFallback() {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-white text-black text-sm font-semibold px-4 py-2.5 hover:bg-zinc-200 transition"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-[var(--foreground)] text-[var(--background)] text-sm font-semibold px-4 py-2.5 hover:opacity-90 transition"
           >
             <RefreshCw size={15} strokeWidth={2} aria-hidden="true" />
             Reload page
           </button>
           <a
             href="/dashboard"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-zinc-700 text-zinc-300 text-sm font-medium px-4 py-2.5 hover:border-zinc-500 hover:text-white transition"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-[var(--border-strong)] text-[var(--muted-foreground)] text-sm font-medium px-4 py-2.5 hover:border-[var(--foreground)] hover:text-[var(--foreground)] transition"
           >
             <Home size={15} strokeWidth={2} aria-hidden="true" />
             Go to dashboard

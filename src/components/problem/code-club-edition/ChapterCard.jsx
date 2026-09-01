@@ -23,8 +23,8 @@ function ChapterCard({ chapter, onOpen }) {
       disabled={locked || comingSoon}
       className={`text-left rounded-3xl border overflow-hidden transition-all group relative flex flex-col ${
         locked || comingSoon
-          ? "border-zinc-800 bg-zinc-950 cursor-not-allowed"
-          : `${colors.border} bg-zinc-950 hover:-translate-y-0.5 hover:shadow-2xl ${colors.glow}`
+          ? "border-[var(--border)] bg-[var(--surface)] cursor-not-allowed"
+          : `${colors.border} bg-[var(--surface)] hover:-translate-y-0.5 hover:shadow-2xl ${colors.glow}`
       }`}
     >
       {/* Banner — large artwork placeholder: layered radial glow + icon,
@@ -33,21 +33,21 @@ function ChapterCard({ chapter, onOpen }) {
       <div
         className={`relative h-28 flex items-center justify-between px-5 ${
           locked || comingSoon
-            ? "bg-zinc-900"
+            ? "bg-[var(--surface-elevated)]"
             : `bg-gradient-to-br ${colors.gradient}`
         }`}
       >
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted-foreground)]">
             Chapter {chapter.chapterNumber}
           </p>
-          <h3 className={`mt-1 text-lg font-black leading-tight ${locked || comingSoon ? "text-zinc-500" : "text-white"}`}>
+          <h3 className={`mt-1 text-lg font-black leading-tight ${locked || comingSoon ? "text-[var(--muted-foreground)]" : "text-[var(--foreground)]"}`}>
             {chapter.title}
           </h3>
         </div>
         <span
           className={`flex-shrink-0 p-2.5 rounded-2xl ${
-            locked || comingSoon ? "bg-zinc-800 text-zinc-600" : `${colors.bg} ${colors.text}`
+            locked || comingSoon ? "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]" : `${colors.bg} ${colors.text}`
           }`}
         >
           {locked ? (
@@ -65,11 +65,11 @@ function ChapterCard({ chapter, onOpen }) {
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2 flex-1">
+        <p className="text-xs text-[var(--muted-foreground)] leading-relaxed line-clamp-2 flex-1">
           {chapter.tagline}
         </p>
 
-        <div className="mt-3 flex items-center gap-3 flex-wrap text-[11px] text-zinc-500">
+        <div className="mt-3 flex items-center gap-3 flex-wrap text-[11px] text-[var(--muted-foreground)]">
           {!hideDifficulty && (
             <span
               className={`text-[10px] font-semibold uppercase tracking-wide rounded-full border px-2 py-0.5 ${
@@ -89,21 +89,21 @@ function ChapterCard({ chapter, onOpen }) {
         </div>
 
         {comingSoon ? (
-          <div className="mt-4 inline-flex items-center justify-center w-full rounded-xl py-2 text-xs font-bold uppercase tracking-widest text-zinc-600 border border-zinc-800 bg-zinc-900">
+          <div className="mt-4 inline-flex items-center justify-center w-full rounded-xl py-2 text-xs font-bold uppercase tracking-widest text-[var(--muted-foreground)] border border-[var(--border)] bg-[var(--surface-elevated)]">
             Coming Soon
           </div>
         ) : locked ? (
-          <div className="mt-4 inline-flex items-center justify-center gap-1.5 w-full rounded-xl py-2 text-xs font-semibold text-zinc-500 border border-zinc-800 bg-zinc-900">
+          <div className="mt-4 inline-flex items-center justify-center gap-1.5 w-full rounded-xl py-2 text-xs font-semibold text-[var(--muted-foreground)] border border-[var(--border)] bg-[var(--surface-elevated)]">
             <Lock size={12} aria-hidden="true" /> Complete the previous chapter
           </div>
         ) : (
           <>
             <div className="mt-4">
-              <div className="flex items-center justify-between text-[11px] text-zinc-500 mb-1.5">
+              <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] mb-1.5">
                 <span>{solvedCount}/{total} solved</span>
                 <span>{percent}%</span>
               </div>
-              <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div className="w-full h-1.5 rounded-full bg-[var(--surface-elevated)] overflow-hidden">
                 <div
                   className={`h-full rounded-full ${colors.bar} transition-all`}
                   style={{ width: `${percent}%` }}

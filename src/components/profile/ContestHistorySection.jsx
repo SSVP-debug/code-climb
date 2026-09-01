@@ -34,7 +34,7 @@ export default function ContestHistorySection() {
       {contests === undefined ? (
         <div className="space-y-2">
           {[0, 1].map((i) => (
-            <div key={i} className="h-14 bg-zinc-800 rounded-xl animate-pulse" />
+            <div key={i} className="h-14 bg-[var(--surface-elevated)] rounded-xl animate-pulse" />
           ))}
         </div>
       ) : contests.length === 0 ? (
@@ -50,14 +50,14 @@ export default function ContestHistorySection() {
             <Link
               key={c._id}
               to={`/club/public-contests/${c._id}`}
-              className="flex items-center justify-between gap-3 bg-zinc-800 hover:bg-zinc-800/70 rounded-xl px-4 py-3 transition"
+              className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)] hover:bg-[var(--surface-elevated)]/70 rounded-xl px-4 py-3 transition"
             >
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium truncate flex items-center gap-1.5">
                   {c.myRank === 1 && <Trophy size={13} className="text-yellow-400 flex-shrink-0" aria-hidden="true" />}
                   {c.title}
                 </p>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
                   {c.status === "ended" ? "Ended" : c.status === "active" ? "Live now" : "Upcoming"}
                   {" · "}{c.mySolvedCount}/{c.problemCount} solved
                   {" · "}{c.participantCount} participants
@@ -65,7 +65,7 @@ export default function ContestHistorySection() {
               </div>
               <div className="text-right flex-shrink-0">
                 <p className="font-bold" style={{ color: theme.colors.primary }}>{c.myScore}</p>
-                {c.myRank && <p className="text-xs text-zinc-500">#{c.myRank}</p>}
+                {c.myRank && <p className="text-xs text-[var(--muted-foreground)]">#{c.myRank}</p>}
               </div>
             </Link>
           ))}

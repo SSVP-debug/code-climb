@@ -19,23 +19,23 @@ export default function ThemeFlowProgress({ step }) {
             <span
               className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold border transition-colors ${
                 active
-                  ? "bg-white text-black border-white"
+                  ? "bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)]"
                   : complete
-                  ? "bg-zinc-600 text-white border-zinc-600"
-                  : "border-zinc-700 text-zinc-500"
+                  ? "bg-[var(--border-strong)] text-[var(--foreground)] border-[var(--border-strong)]"
+                  : "border-[var(--border-strong)] text-[var(--muted-foreground)]"
               }`}
             >
               {num}
             </span>
             <span
               className={`text-xs font-medium transition-colors ${
-                active ? "text-white" : "text-zinc-500"
+                active ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)]"
               }`}
             >
               {label}
             </span>
             {i < STEPS.length - 1 && (
-              <span aria-hidden="true" className="w-6 h-px bg-zinc-700 mx-1" />
+              <span aria-hidden="true" className="w-6 h-px bg-[var(--border-strong)] mx-1" />
             )}
           </div>
         );

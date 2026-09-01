@@ -45,7 +45,7 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-sm w-full mx-4"
+        className="bg-[var(--surface)] border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-sm w-full mx-4"
         style={{ animation: "chapterCompletePop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
@@ -58,17 +58,17 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
         <p className="text-xs text-teal-400 uppercase tracking-[0.2em] font-semibold mb-1">
           Chapter Complete
         </p>
-        <h2 className="text-xl font-black text-white mb-2">
+        <h2 className="text-xl font-black text-[var(--foreground)] mb-2">
           {chapter.title} has been solved.
         </h2>
 
         {nextChapter ? (
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             You've unlocked{" "}
-            <span className="text-white font-semibold">{nextChapter.title}</span>.
+            <span className="text-[var(--foreground)] font-semibold">{nextChapter.title}</span>.
           </p>
         ) : (
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             You've cleared every chapter released so far — more are on the way.
           </p>
         )}
@@ -78,7 +78,7 @@ function ChapterCompletionModal({ chapter, nextChapter, onDismiss }) {
           {chapter.title} Badge
         </div>
 
-        <p className="mt-4 text-[10px] text-zinc-600">
+        <p className="mt-4 text-[10px] text-[var(--muted-foreground)]">
           Press Escape or click outside to dismiss
         </p>
       </div>

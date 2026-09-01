@@ -41,7 +41,7 @@ export default function AdminAccountView({ user, joinedDisplay }) {
               className="w-16 h-16 rounded-full flex-shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center text-xl font-bold text-zinc-300 flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center text-xl font-bold text-[var(--muted-foreground)] flex-shrink-0">
               {(user?.displayName || "A")[0]}
             </div>
           )}
@@ -53,23 +53,23 @@ export default function AdminAccountView({ user, joinedDisplay }) {
                 Administrator
               </span>
             </div>
-            <p className="text-zinc-400 text-sm truncate">{user?.email}</p>
-            <p className="text-zinc-500 text-sm mt-1">Joined {joinedDisplay}</p>
+            <p className="text-[var(--muted-foreground)] text-sm truncate">{user?.email}</p>
+            <p className="text-[var(--muted-foreground)] text-sm mt-1">Joined {joinedDisplay}</p>
           </div>
         </div>
       </SectionCard>
 
-      <p className="text-zinc-500 text-sm">
+      <p className="text-[var(--muted-foreground)] text-sm">
         Admin accounts don't have XP, streaks, or a public profile — those
         are student-facing. Platform management, users, and settings all
         live in the Admin Console.
       </p>
 
       <div className="flex flex-wrap items-center gap-4 text-sm">
-        <Link to="/admin" className="text-white font-medium hover:underline">
+        <Link to="/admin" className="text-[var(--foreground)] font-medium hover:underline">
           Open Admin Console →
         </Link>
-        <Link to="/settings" className="text-zinc-400 hover:text-white transition">
+        <Link to="/settings" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
           Account settings →
         </Link>
       </div>

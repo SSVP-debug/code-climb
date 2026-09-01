@@ -44,9 +44,9 @@ function ProfileCompletion() {
     <SectionCard title="Complete Your Profile" icon={<Sparkles size={18} strokeWidth={2} />} accented>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-sm font-semibold">{percent}% complete</span>
-        <span className="text-xs text-zinc-500">{doneCount}/{checklist.length}</span>
+        <span className="text-xs text-[var(--muted-foreground)]">{doneCount}/{checklist.length}</span>
       </div>
-      <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
+      <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden mb-4">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${percent}%`, backgroundColor: theme.colors.primary }}
@@ -58,11 +58,11 @@ function ProfileCompletion() {
           <Link
             key={item.label}
             to={item.to}
-            className="flex items-center gap-2.5 text-sm text-zinc-400 hover:text-white transition group"
+            className="flex items-center gap-2.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition group"
           >
-            <span className="w-4 h-4 rounded-full border border-zinc-600 flex-shrink-0 group-hover:border-[var(--theme-primary,#2dd4bf)] transition" />
+            <span className="w-4 h-4 rounded-full border border-[var(--border-strong)] flex-shrink-0 group-hover:border-[var(--theme-primary,#2dd4bf)] transition" />
             {item.label}
-            <span className="ml-auto text-zinc-600 group-hover:text-[var(--theme-primary,#2dd4bf)] transition">→</span>
+            <span className="ml-auto text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition">→</span>
           </Link>
         ))}
       </div>

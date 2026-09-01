@@ -66,27 +66,27 @@ function ResumeCard() {
       {editing ? (
         <div className="space-y-3">
           <div>
-            <label className="text-zinc-400 text-xs">Resume link</label>
+            <label className="text-[var(--muted-foreground)] text-xs">Resume link</label>
             <input
               autoFocus
               type="text"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder="drive.google.com/... or your site"
-              className="w-full mt-1.5 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary,#2dd4bf)]"
+              className="w-full mt-1.5 bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary,#2dd4bf)]"
             />
           </div>
 
           <div>
-            <label className="text-zinc-400 text-xs">Visibility</label>
+            <label className="text-[var(--muted-foreground)] text-xs">Visibility</label>
             <div className="grid grid-cols-2 gap-2 mt-1.5">
               <button
                 type="button"
                 onClick={() => setVisibility("private")}
                 className={`flex items-center justify-center gap-1.5 text-xs font-medium rounded-lg py-2 border transition ${
                   visibility === "private"
-                    ? "bg-zinc-700 border-zinc-600 text-white"
-                    : "bg-zinc-800 border-zinc-700 text-zinc-500 hover:text-white"
+                    ? "bg-[var(--border-strong)] border-[var(--border-strong)] text-[var(--foreground)]"
+                    : "bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 }`}
               >
                 <Lock size={12} strokeWidth={2} aria-hidden="true" />
@@ -97,15 +97,15 @@ function ResumeCard() {
                 onClick={() => setVisibility("public")}
                 className={`flex items-center justify-center gap-1.5 text-xs font-medium rounded-lg py-2 border transition ${
                   visibility === "public"
-                    ? "bg-zinc-700 border-zinc-600 text-white"
-                    : "bg-zinc-800 border-zinc-700 text-zinc-500 hover:text-white"
+                    ? "bg-[var(--border-strong)] border-[var(--border-strong)] text-[var(--foreground)]"
+                    : "bg-[var(--surface-elevated)] border-[var(--border-strong)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 }`}
               >
                 <Globe size={12} strokeWidth={2} aria-hidden="true" />
                 Public
               </button>
             </div>
-            <p className="text-zinc-500 text-xs mt-1.5">
+            <p className="text-[var(--muted-foreground)] text-xs mt-1.5">
               {visibility === "public"
                 ? "Visible to anyone who views your public profile."
                 : "Only visible to you — hidden from your public profile."}
@@ -122,14 +122,14 @@ function ResumeCard() {
           </div>
         </div>
       ) : resumeUrl ? (
-        <div className="flex items-center justify-between gap-3 bg-zinc-800 rounded-xl px-4 py-3">
+        <div className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)] rounded-xl px-4 py-3">
           <a
             href={resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-2.5 min-w-0 text-sm font-medium text-white hover:text-[var(--theme-primary,#2dd4bf)] transition"
+            className="group flex items-center gap-2.5 min-w-0 text-sm font-medium text-[var(--foreground)] hover:text-[var(--theme-primary,#2dd4bf)] transition"
           >
-            <FileText size={18} strokeWidth={2} className="text-zinc-400 group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0" aria-hidden="true" />
+            <FileText size={18} strokeWidth={2} className="text-[var(--muted-foreground)] group-hover:text-[var(--theme-primary,#2dd4bf)] transition flex-shrink-0" aria-hidden="true" />
             <span className="truncate">View Resume</span>
             <ArrowUpRight size={14} strokeWidth={2} className="flex-shrink-0" aria-hidden="true" />
           </a>
@@ -138,7 +138,7 @@ function ResumeCard() {
               className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
                 resumeVisibility === "public"
                   ? "bg-green-500/10 text-green-400"
-                  : "bg-zinc-700 text-zinc-400"
+                  : "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"
               }`}
             >
               {resumeVisibility === "public" ? (
@@ -148,14 +148,14 @@ function ResumeCard() {
               )}
               {resumeVisibility === "public" ? "Public" : "Private"}
             </span>
-            <button type="button" onClick={startEdit} className="text-xs text-zinc-500 hover:text-white transition">
+            <button type="button" onClick={startEdit} className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
               Edit
             </button>
             <button
               type="button"
               onClick={handleRemove}
               disabled={saving}
-              className="text-zinc-500 hover:text-red-400 transition"
+              className="text-[var(--muted-foreground)] hover:text-red-400 transition"
               aria-label="Remove resume"
             >
               <X size={14} strokeWidth={2} />
@@ -163,8 +163,8 @@ function ResumeCard() {
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-3 bg-zinc-800/60 border border-dashed border-zinc-700 rounded-xl px-4 py-3">
-          <span className="flex items-center gap-2.5 text-sm text-zinc-500">
+        <div className="flex items-center justify-between gap-3 bg-[var(--surface-elevated)]/60 border border-dashed border-[var(--border-strong)] rounded-xl px-4 py-3">
+          <span className="flex items-center gap-2.5 text-sm text-[var(--muted-foreground)]">
             <FileText size={18} strokeWidth={2} className="flex-shrink-0" aria-hidden="true" />
             Add your resume link.
           </span>

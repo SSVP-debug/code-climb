@@ -21,9 +21,9 @@ function PublicProfileHeader({ profile }) {
           )}
         </div>
 
-        <p className="text-zinc-400 mt-2">@{profile.username}</p>
+        <p className="text-[var(--muted-foreground)] mt-2">@{profile.username}</p>
 
-        {subline && <p className="text-zinc-500 text-sm mt-1">{subline}</p>}
+        {subline && <p className="text-[var(--muted-foreground)] text-sm mt-1">{subline}</p>}
       </div>
 
       <LinkedInShareButton url={`${SITE_URL}/u/${profile.username}`} />

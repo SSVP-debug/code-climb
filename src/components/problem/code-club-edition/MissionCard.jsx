@@ -16,7 +16,7 @@ const PROBLEM_DIFFICULTY_BADGE = {
 const STATUS_TEXT_COLOR = {
   [STATUS.SOLVED]: "text-verdict-accept",
   [STATUS.CURRENT]: "text-teal-400",
-  [STATUS.LOCKED]: "text-zinc-600",
+  [STATUS.LOCKED]: "text-[var(--muted-foreground)]",
 };
 
 function MissionCard({ mission, status, order, unlockHintTitle, chapterId }) {
@@ -34,7 +34,7 @@ function MissionCard({ mission, status, order, unlockHintTitle, chapterId }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">
               Mission {order}
             </span>
             {!hideDifficulty && (
@@ -48,19 +48,19 @@ function MissionCard({ mission, status, order, unlockHintTitle, chapterId }) {
             )}
           </div>
 
-          <h4 className={`mt-0.5 font-semibold ${locked ? "text-zinc-600" : "text-white"}`}>
+          <h4 className={`mt-0.5 font-semibold ${locked ? "text-[var(--muted-foreground)]" : "text-[var(--foreground)]"}`}>
             {mission.missionTitle}
           </h4>
 
           {!locked && mission.storyIntro && (
-            <p className="text-xs text-zinc-400 mt-1 italic leading-relaxed">
+            <p className="text-xs text-[var(--muted-foreground)] mt-1 italic leading-relaxed">
               "{mission.storyIntro}"
             </p>
           )}
         </div>
 
         <span
-          className={`flex-shrink-0 text-[10px] font-semibold rounded-full border border-zinc-700 px-2 py-1 text-zinc-500 ${
+          className={`flex-shrink-0 text-[10px] font-semibold rounded-full border border-[var(--border-strong)] px-2 py-1 text-[var(--muted-foreground)] ${
             locked ? "opacity-40" : ""
           }`}
         >
@@ -76,7 +76,7 @@ function MissionCard({ mission, status, order, unlockHintTitle, chapterId }) {
   if (locked) {
     return (
       <div
-        className={`${rowClasses} border-zinc-800 bg-zinc-900/40 opacity-60 cursor-not-allowed`}
+        className={`${rowClasses} border-[var(--border)] bg-[var(--surface)]/40 opacity-60 cursor-not-allowed`}
         aria-disabled="true"
         title={unlockHintTitle ? `Solve "${unlockHintTitle}" to unlock` : undefined}
       >
@@ -91,7 +91,7 @@ function MissionCard({ mission, status, order, unlockHintTitle, chapterId }) {
       className={`${rowClasses} group ${
         status === STATUS.CURRENT
           ? "border-teal-500/30 bg-teal-500/5 hover:bg-teal-500/10"
-          : "border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900"
+          : "border-[var(--border)] bg-[var(--surface)]/40 hover:bg-[var(--surface)]"
       }`}
     >
       {inner}

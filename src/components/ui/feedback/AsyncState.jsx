@@ -63,7 +63,7 @@ function AsyncState({
     return (
       loadingFallback || (
         <div
-          className={`${loadingHeight} rounded-xl bg-zinc-900/60 border border-zinc-800 animate-pulse`}
+          className={`${loadingHeight} rounded-xl bg-[var(--surface)]/60 border border-[var(--border)] animate-pulse`}
         />
       )
     );
@@ -111,7 +111,7 @@ function AsyncState({
 
     return (
       emptyFallback || (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 px-4 py-3.5 text-sm text-zinc-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)]/40 px-4 py-3.5 text-sm text-[var(--muted-foreground)]">
           No data yet.
         </div>
       )

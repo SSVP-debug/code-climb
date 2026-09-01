@@ -91,7 +91,7 @@ export default function RoleAccountView({
               className="w-16 h-16 rounded-full flex-shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center text-xl font-bold text-zinc-300 flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-[var(--surface-elevated)] flex items-center justify-center text-xl font-bold text-[var(--muted-foreground)] flex-shrink-0">
               {(user?.displayName || meta.label)[0]}
             </div>
           )}
@@ -105,14 +105,14 @@ export default function RoleAccountView({
                 {meta.label}
               </span>
             </div>
-            <p className="text-zinc-400 text-sm truncate">{user?.email}</p>
-            {subtitle && <p className="text-zinc-500 text-sm truncate">{subtitle}</p>}
-            <p className="text-zinc-500 text-sm mt-1">Joined {joinedDisplay}</p>
+            <p className="text-[var(--muted-foreground)] text-sm truncate">{user?.email}</p>
+            {subtitle && <p className="text-[var(--muted-foreground)] text-sm truncate">{subtitle}</p>}
+            <p className="text-[var(--muted-foreground)] text-sm mt-1">Joined {joinedDisplay}</p>
           </div>
         </div>
       </SectionCard>
 
-      <p className="text-zinc-500 text-sm">
+      <p className="text-[var(--muted-foreground)] text-sm">
         {meta.label} accounts don't have XP, streaks, or solved-problem stats on this
         page — those belong to a Student session. Candidate search, dashboards, and
         role-specific tools live in your {meta.label} Dashboard.
@@ -121,9 +121,9 @@ export default function RoleAccountView({
       {otherRoles.length > 0 && (
         <SectionCard>
           <div className="flex items-start gap-3">
-            <Repeat size={16} className="text-zinc-500 mt-0.5 shrink-0" />
+            <Repeat size={16} className="text-[var(--muted-foreground)] mt-0.5 shrink-0" />
             <div className="min-w-0 flex-1 space-y-2">
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 This account is also authorized for {otherRoles.join(", ")}.
               </p>
               <div className="flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ export default function RoleAccountView({
                     type="button"
                     disabled={switching}
                     onClick={() => handleSwitch(r)}
-                    className="text-xs font-medium px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 transition disabled:opacity-50"
+                    className="text-xs font-medium px-3 py-1.5 rounded-full border border-[var(--border-strong)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[var(--muted-foreground)] transition disabled:opacity-50"
                   >
                     Switch to {r === "student" ? "Student" : r === "tpo" ? "TPO" : "Recruiter"}
                   </button>
@@ -146,10 +146,10 @@ export default function RoleAccountView({
       )}
 
       <div className="flex flex-wrap items-center gap-4 text-sm">
-        <Link to={meta.dashboardPath} className="text-white font-medium hover:underline">
+        <Link to={meta.dashboardPath} className="text-[var(--foreground)] font-medium hover:underline">
           {meta.dashboardLabel} →
         </Link>
-        <Link to="/settings" className="text-zinc-400 hover:text-white transition">
+        <Link to="/settings" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition">
           Account settings →
         </Link>
       </div>

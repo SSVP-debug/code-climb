@@ -27,11 +27,11 @@ export default function WelcomeScreen({ onStart }) {
           <Sparkles size={30} strokeWidth={2} aria-hidden="true" />
         </div>
 
-        <h1 className="text-4xl font-bold mb-4 text-white">
+        <h1 className="text-4xl font-bold mb-4 text-[var(--foreground)]">
           Good to see you today.
         </h1>
 
-        <p className="text-zinc-400 text-lg mb-10">
+        <p className="text-[var(--muted-foreground)] text-lg mb-10">
           Every session you show up for adds to who you're becoming as a
           problem solver. This one's already started.
         </p>
@@ -40,7 +40,7 @@ export default function WelcomeScreen({ onStart }) {
           variant="primary"
           size="lg"
           onClick={onStart}
-          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
         >
           Start Today's Session
         </Button>

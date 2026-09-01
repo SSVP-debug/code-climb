@@ -85,7 +85,7 @@ export default function WorkspaceSwitcher({ activeRole }) {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label="Switch workspace"
-        className="flex items-center gap-1 text-[10px] text-zinc-500 uppercase tracking-widest hover:text-zinc-300 transition"
+        className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest hover:text-[var(--foreground)] transition"
       >
         {current.label}
         <ChevronDown size={10} className={`transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
@@ -96,9 +96,9 @@ export default function WorkspaceSwitcher({ activeRole }) {
           role="menu"
           aria-label="Workspaces"
           onKeyDown={handleKeyDown}
-          className="absolute left-0 mt-3 w-64 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-xl overflow-hidden z-50"
+          className="absolute left-0 mt-3 w-64 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl overflow-hidden z-50"
         >
-          <p className="px-4 pt-3 pb-2 text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">
+          <p className="px-4 pt-3 pb-2 text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">
             Workspaces
           </p>
           <div className="pb-2">
@@ -114,20 +114,20 @@ export default function WorkspaceSwitcher({ activeRole }) {
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => go(ws)}
                   className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition ${
-                    isHighlighted ? "bg-zinc-800/80" : "hover:bg-zinc-800/50"
+                    isHighlighted ? "bg-[var(--surface-elevated)]" : "hover:bg-[var(--surface-elevated)]/50"
                   }`}
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                      isActiveWorkspace ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-zinc-700"
+                      isActiveWorkspace ? "bg-[var(--theme-primary,#2dd4bf)]" : "bg-[var(--border-strong)]"
                     }`}
                     aria-hidden="true"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-white truncate">{ws.label}</span>
-                    <span className="block text-[11px] text-zinc-500 truncate">{ws.tagline}</span>
+                    <span className="block text-sm font-medium text-[var(--foreground)] truncate">{ws.label}</span>
+                    <span className="block text-[11px] text-[var(--muted-foreground)] truncate">{ws.tagline}</span>
                   </span>
-                  {isActiveWorkspace && <Check size={13} className="text-zinc-500 shrink-0" aria-hidden="true" />}
+                  {isActiveWorkspace && <Check size={13} className="text-[var(--muted-foreground)] shrink-0" aria-hidden="true" />}
                 </button>
               );
             })}

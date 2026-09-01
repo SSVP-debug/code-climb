@@ -78,15 +78,15 @@ export default function DailyQuickQuiz({ onComplete }) {
         <span className="text-sm font-semibold uppercase tracking-wide">Daily Quick Quiz</span>
       </div>
 
-      <p className="text-zinc-500 text-sm text-center mb-8">
+      <p className="text-[var(--muted-foreground)] text-sm text-center mb-8">
         {QUESTION_COUNT} quick questions to warm up before your dashboard.
       </p>
 
       <QuizProgress current={currentIndex} total={questions.length} />
 
       <SectionCard className="mt-6">
-        <p className="text-xs font-medium text-zinc-500 mb-2">{currentQuestion.topic}</p>
-        <h2 className="text-lg sm:text-xl font-semibold text-white mb-6">
+        <p className="text-xs font-medium text-[var(--muted-foreground)] mb-2">{currentQuestion.topic}</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-[var(--foreground)] mb-6">
           {currentQuestion.question}
         </h2>
 
@@ -118,7 +118,7 @@ function QuizProgress({ current, total }) {
               ? "w-6 bg-[var(--theme-primary,#2dd4bf)]"
               : i === current
               ? "w-8 bg-[var(--theme-primary,#2dd4bf)]"
-              : "w-6 bg-zinc-800"
+              : "w-6 bg-[var(--surface-elevated)]"
           }`}
         />
       ))}
@@ -131,13 +131,13 @@ function QuizOption({ option, index, selectedOption, correctIndex, onSelect }) {
   const isCorrect = index === correctIndex;
   const isPicked = index === selectedOption;
 
-  let stateClasses = "border-zinc-800 hover:border-zinc-600 text-zinc-200";
+  let stateClasses = "border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--foreground)]";
   if (hasAnswered && isCorrect) {
-    stateClasses = "border-verdict-accept/60 bg-verdict-accept/10 text-white";
+    stateClasses = "border-verdict-accept/60 bg-verdict-accept/10 text-[var(--foreground)]";
   } else if (hasAnswered && isPicked && !isCorrect) {
-    stateClasses = "border-verdict-reject/60 bg-verdict-reject/10 text-white";
+    stateClasses = "border-verdict-reject/60 bg-verdict-reject/10 text-[var(--foreground)]";
   } else if (hasAnswered) {
-    stateClasses = "border-zinc-800 text-zinc-500";
+    stateClasses = "border-[var(--border)] text-[var(--muted-foreground)]";
   }
 
   return (
@@ -166,7 +166,7 @@ function QuizResult({ questions, answers, result, onComplete }) {
       </div>
 
       <div className="mt-8">
-        <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">
+        <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide mb-3">
           Review your answers
         </h3>
         <QuizAnswerReview questions={questions} answers={answers} />

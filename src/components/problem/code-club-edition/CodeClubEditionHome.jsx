@@ -65,8 +65,8 @@ function CodeClubEditionHome({ problems, solvedProblems }) {
       />
 
       <div>
-        <h2 className="text-lg font-bold text-white">Chapters</h2>
-        <p className="text-zinc-500 text-sm mt-0.5">
+        <h2 className="text-lg font-bold text-[var(--foreground)]">Chapters</h2>
+        <p className="text-[var(--muted-foreground)] text-sm mt-0.5">
           Clear each chapter's missions in order to unlock the next.
         </p>
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

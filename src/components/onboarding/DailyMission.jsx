@@ -46,7 +46,7 @@ export default function DailyMission({ onContinue }) {
         <p className="text-sm font-semibold uppercase tracking-wide mb-2" style={{ color: primary }}>
           Today's Mission
         </p>
-        <h1 className="text-3xl font-bold mb-10 text-white">
+        <h1 className="text-3xl font-bold mb-10 text-[var(--foreground)]">
           Three small goals for today
         </h1>
 
@@ -54,7 +54,7 @@ export default function DailyMission({ onContinue }) {
           {goals.map(({ icon: Icon, label }) => (
             <div
               key={label}
-              className="flex items-center gap-4 px-5 py-4 rounded-xl border border-zinc-800 bg-zinc-900/50"
+              className="flex items-center gap-4 px-5 py-4 rounded-xl border border-[var(--border)] bg-[var(--surface)]/50"
             >
               <span
                 className="flex items-center justify-center w-10 h-10 rounded-lg flex-shrink-0"
@@ -62,7 +62,7 @@ export default function DailyMission({ onContinue }) {
               >
                 <Icon size={18} strokeWidth={2} aria-hidden="true" />
               </span>
-              <span className="text-white font-medium">{label}</span>
+              <span className="text-[var(--foreground)] font-medium">{label}</span>
             </div>
           ))}
         </div>
@@ -71,7 +71,7 @@ export default function DailyMission({ onContinue }) {
           variant="primary"
           size="lg"
           onClick={onContinue}
-          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+          className="focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
         >
           See Today's Focus
         </Button>

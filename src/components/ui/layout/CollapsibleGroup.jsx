@@ -39,9 +39,9 @@ function CollapsibleGroup({
         type="button"
         onClick={toggle}
         aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 mb-3 px-1 py-1.5 -mx-1 rounded-lg hover:bg-white/[0.03] transition text-left"
+        className="w-full flex items-center justify-between gap-3 mb-3 px-1 py-1.5 -mx-1 rounded-lg hover:bg-[var(--surface-elevated)]/60 transition text-left"
       >
-        <span className="flex items-center gap-2 text-sm font-semibold text-zinc-400 uppercase tracking-wide">
+        <span className="flex items-center gap-2 text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-wide">
           {icon && (
             <span className="flex-shrink-0" aria-hidden="true">
               {icon}
@@ -52,7 +52,7 @@ function CollapsibleGroup({
         <ChevronDown
           size={16}
           strokeWidth={2}
-          className={`text-zinc-500 transition-transform duration-200 flex-shrink-0 ${open ? "" : "-rotate-90"}`}
+          className={`text-[var(--muted-foreground)] transition-transform duration-200 flex-shrink-0 ${open ? "" : "-rotate-90"}`}
           aria-hidden="true"
         />
       </button>

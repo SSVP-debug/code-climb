@@ -58,7 +58,7 @@ export default function LevelUpModal() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-[var(--theme-primary,#2dd4bf)]/30 rounded-3xl p-8 text-center shadow-2xl shadow-[var(--theme-primary,#2dd4bf)]/20 max-w-xs w-full mx-4"
+        className="bg-[var(--surface)] border border-[var(--theme-primary,#2dd4bf)]/30 rounded-3xl p-8 text-center shadow-2xl shadow-[var(--theme-primary,#2dd4bf)]/20 max-w-xs w-full mx-4"
         style={{ animation: "levelUpPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
@@ -70,10 +70,10 @@ export default function LevelUpModal() {
         <p className="text-xs text-[var(--theme-primary,#2dd4bf)] uppercase tracking-[0.2em] font-semibold mb-1">
           {theme.words?.level ?? "Level"} Up!
         </p>
-        <h2 className="text-2xl font-black text-white mb-2">
+        <h2 className="text-2xl font-black text-[var(--foreground)] mb-2">
           {theme.words?.level ?? "Level"} {newLevel}
         </h2>
-        <p className="text-zinc-400 text-sm">{messages[theme.id] ?? "Keep solving. The next level awaits."}</p>
+        <p className="text-[var(--muted-foreground)] text-sm">{messages[theme.id] ?? "Keep solving. The next level awaits."}</p>
         <div className="mt-4 space-y-3">
           <button
             onClick={() =>
@@ -88,7 +88,7 @@ export default function LevelUpModal() {
             Share
           </button>
 
-          <p className="text-[10px] text-zinc-600">
+          <p className="text-[10px] text-[var(--muted-foreground)]">
             Press Escape or click outside to dismiss
           </p>
         </div>

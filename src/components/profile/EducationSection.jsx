@@ -66,12 +66,12 @@ export default function EducationSection() {
       storageKey="profile-collapse-education"
     >
       {education === undefined ? (
-        <div className="h-16 bg-zinc-800 rounded-xl animate-pulse" />
+        <div className="h-16 bg-[var(--surface-elevated)] rounded-xl animate-pulse" />
       ) : state === "verified" ? (
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="font-semibold text-white">{education.collegeName}</p>
-            <p className="text-sm text-zinc-500 mt-0.5">
+            <p className="font-semibold text-[var(--foreground)]">{education.collegeName}</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
               {[education.degree, education.branch, education.graduationYear]
                 .filter(Boolean)
                 .join(" · ") || "No further details added"}
@@ -88,12 +88,12 @@ export default function EducationSection() {
       ) : state === "college_pending" ? (
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="font-semibold text-white">{education.collegeName}</p>
-            <p className="text-sm text-zinc-500 mt-1">
+            <p className="font-semibold text-[var(--foreground)]">{education.collegeName}</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-1">
               Your college email has been verified. We're reviewing{" "}
               {education.collegeName} before adding it to official college rankings.
             </p>
-            <p className="text-xs text-zinc-600 mt-2 flex items-center gap-3">
+            <p className="text-xs text-[var(--muted-foreground)] mt-2 flex items-center gap-3">
               <span className="inline-flex items-center gap-1 text-emerald-500">
                 <BadgeCheck size={12} aria-hidden="true" /> Email verified
               </span>
@@ -106,8 +106,8 @@ export default function EducationSection() {
       ) : state === "college_rejected" ? (
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="font-semibold text-white">{education.collegeName}</p>
-            <p className="text-sm text-zinc-500 mt-1 flex items-center gap-1.5">
+            <p className="font-semibold text-[var(--foreground)]">{education.collegeName}</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-1 flex items-center gap-1.5">
               <XCircle size={13} className="text-red-500" aria-hidden="true" />
               Wasn't approved for official college features. Your email verification is still valid.
             </p>
@@ -119,8 +119,8 @@ export default function EducationSection() {
       ) : state === "email_pending" ? (
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="font-semibold text-white">{education.collegeName}</p>
-            <p className="text-sm text-zinc-500 mt-0.5 flex items-center gap-1.5">
+            <p className="font-semibold text-[var(--foreground)]">{education.collegeName}</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-0.5 flex items-center gap-1.5">
               <Clock size={13} aria-hidden="true" />
               Verification pending — check {education.collegeEmail}
             </p>
@@ -136,7 +136,7 @@ export default function EducationSection() {
         </div>
       ) : (
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-zinc-500 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             Add your college to unlock the College Leaderboard, college-only
             contests, and a verified badge.
           </p>

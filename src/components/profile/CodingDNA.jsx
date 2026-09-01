@@ -82,8 +82,8 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
     >
       <div className="grid grid-cols-2 gap-4">
         {dnaItems.map((item) => (
-          <div key={item.label} className="bg-zinc-800 rounded-xl p-4">
-            <p className="text-zinc-400 text-xs">{item.label}</p>
+          <div key={item.label} className="bg-[var(--surface-elevated)] rounded-xl p-4">
+            <p className="text-[var(--muted-foreground)] text-xs">{item.label}</p>
             <p className="text-lg font-semibold mt-1 truncate">{item.value}</p>
           </div>
         ))}

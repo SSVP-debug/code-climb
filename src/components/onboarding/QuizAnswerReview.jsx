@@ -16,9 +16,9 @@ export default function QuizAnswerReview({ questions, answers }) {
         const correctText = question.options[question.correctIndex];
 
         return (
-          <div key={question.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+          <div key={question.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <p className="text-xs font-medium text-zinc-500">
+              <p className="text-xs font-medium text-[var(--muted-foreground)]">
                 Question {index + 1} · {question.topic}
               </p>
               {isCorrect ? (
@@ -28,7 +28,7 @@ export default function QuizAnswerReview({ questions, answers }) {
               )}
             </div>
 
-            <p className="text-sm font-semibold text-white mb-3">{question.question}</p>
+            <p className="text-sm font-semibold text-[var(--foreground)] mb-3">{question.question}</p>
 
             <p className={`text-sm ${isCorrect ? "text-verdict-accept" : "text-verdict-reject"}`}>
               Your answer: {selectedText ?? "Not answered"}

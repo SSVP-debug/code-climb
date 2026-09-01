@@ -69,7 +69,7 @@ function BWModeToggle({ showLabel = false }) {
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-zinc-300">Black &amp; White Mode</span>
+      <span className="text-sm text-[var(--foreground)]">Black &amp; White Mode</span>
       {switchEl}
     </div>
   );

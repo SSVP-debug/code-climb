@@ -95,17 +95,17 @@ function ConnectLeetCodeSection({ initial }) {
   if (isConnected && stats) {
     return (
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3 flex-wrap bg-zinc-800 rounded-xl p-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-[var(--surface-elevated)] rounded-xl p-4">
           <div className="min-w-0">
-            <p className="text-sm text-zinc-400">LeetCode</p>
+            <p className="text-sm text-[var(--muted-foreground)]">LeetCode</p>
             <p className="font-semibold text-[var(--theme-primary,#2dd4bf)] truncate">@{username}</p>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">
               {totalSolved} solved — {stats.easySolved} Easy, {stats.mediumSolved} Medium, {stats.hardSolved} Hard
             </p>
           </div>
           <button
             onClick={handleEdit}
-            className="flex-shrink-0 bg-zinc-700 hover:bg-zinc-600 transition px-4 py-2 rounded-lg text-sm"
+            className="flex-shrink-0 bg-[var(--border-strong)] hover:brightness-110 transition px-4 py-2 rounded-lg text-sm"
           >
             Edit
           </button>
@@ -116,7 +116,7 @@ function ConnectLeetCodeSection({ initial }) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-400">
+      <p className="text-sm text-[var(--muted-foreground)]">
         Show recruiters your LeetCode solve history alongside Code Club sync automatically or enter your numbers.
       </p>
 
@@ -126,7 +126,7 @@ function ConnectLeetCodeSection({ initial }) {
           placeholder="LeetCode username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="flex-1 min-w-[180px] bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl outline-none focus:border-[var(--theme-primary,#2dd4bf)] transition"
+          className="flex-1 min-w-[180px] bg-[var(--surface)] border border-[var(--border)] px-4 py-3 rounded-xl outline-none focus:border-[var(--theme-primary,#2dd4bf)] transition"
         />
         <Button
           onClick={handleSync}
@@ -144,21 +144,21 @@ function ConnectLeetCodeSection({ initial }) {
       )}
 
       {(manualMode || stats) && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
-          <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+          <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold">
             {manualMode
               ? "Self-reported counts"
               : "Synced from LeetCode"}
           </p>
           {!manualMode && (
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[var(--muted-foreground)]">
               These values were fetched from LeetCode and cannot be edited.
             </p>
           )}
           <div className="grid grid-cols-3 gap-3">
             {DIFFICULTY_KEYS.map((key) => (
               <div key={key}>
-                <label className="block text-xs text-zinc-500 mb-1 capitalize">
+                <label className="block text-xs text-[var(--muted-foreground)] mb-1 capitalize">
                   {key.replace("Solved", "")}
                 </label>
                 <input
@@ -175,8 +175,8 @@ function ConnectLeetCodeSection({ initial }) {
                     }));
                   }}
                   className={`w-full rounded-lg px-3 py-2 text-sm outline-none ${manualMode
-                    ? "bg-zinc-800 border border-zinc-700 focus:border-[var(--theme-primary,#2dd4bf)]/50"
-                    : "bg-zinc-950 border border-zinc-800 text-zinc-400 cursor-not-allowed"
+                    ? "bg-[var(--surface-elevated)] border border-[var(--border-strong)] focus:border-[var(--theme-primary,#2dd4bf)]/50"
+                    : "bg-[var(--surface)] border border-[var(--border)] text-[var(--muted-foreground)] cursor-not-allowed"
                     }`}
                 />
               </div>
@@ -201,7 +201,7 @@ function ConnectLeetCodeSection({ initial }) {
             setManualMode(true);
             setStats({ easySolved: 0, mediumSolved: 0, hardSolved: 0 });
           }}
-          className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+          className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
         >
           Enter counts manually instead
         </button>

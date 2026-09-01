@@ -20,8 +20,8 @@ function ProtectedRoute({ children, guestPortal = null }) {
   // logged-in users to /login on every page refresh.
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-[var(--theme-primary,#2dd4bf)] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[var(--border-strong)] border-t-[var(--theme-primary,#2dd4bf)] rounded-full animate-spin" />
       </div>
     );
   }

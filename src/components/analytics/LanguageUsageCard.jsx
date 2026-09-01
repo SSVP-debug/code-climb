@@ -33,14 +33,14 @@ function LanguageUsageCard({ languageStats, favoriteLanguage }) {
             return (
               <div key={lang}>
                 <div className="flex items-baseline justify-between mb-1">
-                  <span className={`text-sm capitalize ${isFavorite ? "text-white font-medium" : "text-zinc-300"}`}>
+                  <span className={`text-sm capitalize ${isFavorite ? "text-[var(--foreground)] font-medium" : "text-[var(--muted-foreground)]"}`}>
                     {lang}
                   </span>
-                  <span className="text-xs text-zinc-500 flex-shrink-0 ml-2">
+                  <span className="text-xs text-[var(--muted-foreground)] flex-shrink-0 ml-2">
                     {count} · {percent}%
                   </span>
                 </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{

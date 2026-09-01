@@ -139,12 +139,12 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
-        className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md w-full relative"
+        className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 max-w-md w-full relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"
+          className="absolute top-4 right-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           aria-label="Close"
         >
           <X size={18} aria-hidden="true" />
@@ -166,7 +166,7 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
             <h2 ref={headingRef} tabIndex={-1} className="text-xl font-bold mb-2 outline-none">
               Verify Your College Email
             </h2>
-            <p className="text-zinc-400 text-sm mb-5">
+            <p className="text-[var(--muted-foreground)] text-sm mb-5">
               Connect your official college email address to access your college
               leaderboard, participate in college-exclusive contests, and compete
               with your classmates.
@@ -179,13 +179,13 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
                 placeholder="you@college.ac.in"
                 type="email"
                 autoFocus
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
 
               <button
                 type="button"
                 onClick={() => setShowAcademicFields((v) => !v)}
-                className="text-xs text-zinc-500 hover:text-zinc-300 transition"
+                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--muted-foreground)] transition"
               >
                 {showAcademicFields ? "Hide" : "Add"} degree, branch & graduation year (optional)
               </button>
@@ -197,13 +197,13 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
                       value={degree}
                       onChange={(e) => setDegree(e.target.value)}
                       placeholder="Degree (optional)"
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                      className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
                     />
                     <input
                       value={branch}
                       onChange={(e) => setBranch(e.target.value)}
                       placeholder="Branch (optional)"
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                      className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
                     />
                   </div>
                   <input
@@ -211,7 +211,7 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
                     onChange={(e) => setGraduationYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
                     placeholder="Graduation year (optional)"
                     inputMode="numeric"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                    className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
                   />
                 </div>
               )}
@@ -239,8 +239,8 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
             <h2 ref={headingRef} tabIndex={-1} className="text-xl font-bold mb-2 outline-none">
               We haven't added your college yet
             </h2>
-            <p className="text-zinc-400 text-sm mb-5">
-              We don't recognize <span className="text-white font-medium">{domain}</span> yet. You
+            <p className="text-[var(--muted-foreground)] text-sm mb-5">
+              We don't recognize <span className="text-[var(--foreground)] font-medium">{domain}</span> yet. You
               can verify your college email and request your college to be added to Code Club.
             </p>
 
@@ -250,13 +250,13 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
                 onChange={(e) => setCollegeName(e.target.value)}
                 placeholder="College name"
                 autoFocus
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
               <input
                 value={collegeWebsite}
                 onChange={(e) => setCollegeWebsite(e.target.value)}
                 placeholder={`College website (e.g. https://${domain})`}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
+                className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl px-4 py-2.5 text-[var(--foreground)] text-sm outline-none focus:border-[var(--theme-primary,#2dd4bf)]"
               />
 
               {error && (
@@ -282,12 +282,12 @@ export default function CollegeVerifyModal({ onClose, onSent }) {
             <h2 ref={headingRef} tabIndex={-1} className="text-xl font-bold mb-2 outline-none">
               Check your college inbox
             </h2>
-            <p className="text-zinc-400 text-sm mb-2">
+            <p className="text-[var(--muted-foreground)] text-sm mb-2">
               We sent a verification link to:{" "}
-              <span className="text-white font-medium">{maskEmail(collegeEmail)}</span>
+              <span className="text-[var(--foreground)] font-medium">{maskEmail(collegeEmail)}</span>
             </p>
             {collegePending && (
-              <p className="text-zinc-500 text-sm flex items-start gap-1.5 mb-5">
+              <p className="text-[var(--muted-foreground)] text-sm flex items-start gap-1.5 mb-5">
                 <Clock size={14} className="shrink-0 mt-0.5" aria-hidden="true" />
                 Your college is also being reviewed for the College Leaderboard.
               </p>

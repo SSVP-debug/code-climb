@@ -18,10 +18,10 @@ export default function ClubSubNav() {
   const location = useLocation();
 
   return (
-    <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-zinc-800 mb-6 -mx-1 px-1">
+    <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-[var(--border)] mb-6 -mx-1 px-1">
       <Link
         to="/club"
-        className="flex-shrink-0 px-3 py-2.5 text-sm text-zinc-500 hover:text-zinc-300 transition"
+        className="flex-shrink-0 px-3 py-2.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
       >
         ← Club
       </Link>
@@ -38,13 +38,13 @@ export default function ClubSubNav() {
             to={section.to}
             aria-current={active ? "page" : undefined}
             className={`flex-shrink-0 relative flex items-center gap-1.5 px-3.5 py-2.5 text-sm font-medium transition whitespace-nowrap ${
-              active ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+              active ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             }`}
           >
             <Icon size={14} strokeWidth={2} aria-hidden="true" />
             {section.label}
             {section.soon && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-800 text-zinc-500 uppercase tracking-wide">
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--surface-elevated)] text-[var(--muted-foreground)] uppercase tracking-wide">
                 Soon
               </span>
             )}

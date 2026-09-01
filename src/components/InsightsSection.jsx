@@ -2,8 +2,8 @@ import { Flame, TrendingUp, Target, AlertTriangle } from "lucide-react";
 
 function InsightCard({ Icon, label, value, valueClass, description }) {
   return (
-    <div className="bg-ink-900 p-6 rounded-2xl border border-ink-700">
-      <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
+    <div className="bg-[var(--surface)] p-6 rounded-2xl border border-[var(--border)]">
+      <h3 className="text-sm font-semibold text-[var(--muted-foreground)] mb-3 flex items-center gap-2">
         <Icon size={16} strokeWidth={2} aria-hidden="true" />
         {label}
       </h3>
@@ -12,7 +12,7 @@ function InsightCard({ Icon, label, value, valueClass, description }) {
         {value}
       </p>
 
-      <p className="text-zinc-400 mt-2">
+      <p className="text-[var(--muted-foreground)] mt-2">
         {description}
       </p>
     </div>

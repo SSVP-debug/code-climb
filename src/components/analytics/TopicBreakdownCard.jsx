@@ -26,12 +26,12 @@ function TopicBreakdownCard({ topicStats, strongestTopic }) {
             return (
               <div key={topic}>
                 <div className="flex items-baseline justify-between mb-1">
-                  <span className={`text-sm ${isStrongest ? "text-white font-medium" : "text-zinc-300"}`}>
+                  <span className={`text-sm ${isStrongest ? "text-[var(--foreground)] font-medium" : "text-[var(--muted-foreground)]"}`}>
                     {topic}
                   </span>
-                  <span className="text-xs text-zinc-500 flex-shrink-0 ml-2">{count}</span>
+                  <span className="text-xs text-[var(--muted-foreground)] flex-shrink-0 ml-2">{count}</span>
                 </div>
-                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
@@ -47,8 +47,8 @@ function TopicBreakdownCard({ topicStats, strongestTopic }) {
       )}
 
       {strongestTopic && (
-        <p className="text-zinc-500 text-xs mt-4 pt-4 border-t border-zinc-800">
-          {theme.words.strongestTopic}: <span className="text-white font-medium">{strongestTopic}</span>
+        <p className="text-[var(--muted-foreground)] text-xs mt-4 pt-4 border-t border-[var(--border)]">
+          {theme.words.strongestTopic}: <span className="text-[var(--foreground)] font-medium">{strongestTopic}</span>
         </p>
       )}
     </SectionCard>

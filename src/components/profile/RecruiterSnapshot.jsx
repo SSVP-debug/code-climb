@@ -99,7 +99,7 @@ function RecruiterSnapshot() {
             aria-checked={availableForWork}
             onClick={() => markDirty(setAvailableForWork)(!availableForWork)}
             className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
-              availableForWork ? "bg-green-500" : "bg-zinc-700"
+              availableForWork ? "bg-green-500" : "bg-[var(--border-strong)]"
             }`}
           >
             <span

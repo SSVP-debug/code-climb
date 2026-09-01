@@ -39,7 +39,7 @@ function LearningPathCompletionModal({ path, isFirstPathCompleted, onDismiss }) 
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-zinc-900 border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-xs w-full mx-4"
+        className="bg-[var(--surface)] border border-teal-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-teal-900/40 max-w-xs w-full mx-4"
         style={{ animation: "learningPathCompletePop 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}
       >
         <div className="relative w-24 h-24 mx-auto mb-5">
@@ -52,10 +52,10 @@ function LearningPathCompletionModal({ path, isFirstPathCompleted, onDismiss }) 
         <p className="text-xs text-teal-400 uppercase tracking-[0.2em] font-semibold mb-1">
           Path Complete
         </p>
-        <h2 className="text-xl font-black text-white mb-2">
+        <h2 className="text-xl font-black text-[var(--foreground)] mb-2">
           {path.name} Bundle Complete!
         </h2>
-        <p className="text-zinc-400 text-sm">
+        <p className="text-[var(--muted-foreground)] text-sm">
           {isFirstPathCompleted
             ? "You've completed your first learning path."
             : "You've completed this learning path."}
@@ -70,7 +70,7 @@ function LearningPathCompletionModal({ path, isFirstPathCompleted, onDismiss }) 
           {path.name} Badge
         </div>
 
-        <p className="mt-4 text-[10px] text-zinc-600">
+        <p className="mt-4 text-[10px] text-[var(--muted-foreground)]">
           Press Escape or click outside to dismiss
         </p>
       </div>

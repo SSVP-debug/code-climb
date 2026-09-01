@@ -38,13 +38,13 @@ function RecentSubmissionsCard({ submissions }) {
               return (
                 <div
                   key={submission._id || submission.id}
-                  className="bg-zinc-800 px-4 py-3 rounded-xl flex items-center justify-between gap-3"
+                  className="bg-[var(--surface-elevated)] px-4 py-3 rounded-xl flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <p className="font-medium truncate">
                       {submission.problemTitle || submission.problemSlug}
                     </p>
-                    <p className="text-zinc-500 text-xs">{submission.language}</p>
+                    <p className="text-[var(--muted-foreground)] text-xs">{submission.language}</p>
                   </div>
                   <span className={`flex items-center gap-1.5 text-sm font-medium flex-shrink-0 ${meta.color}`}>
                     <meta.icon size={14} strokeWidth={2.25} aria-hidden="true" />
@@ -59,7 +59,7 @@ function RecentSubmissionsCard({ submissions }) {
             <button
               type="button"
               onClick={() => setShowAll((v) => !v)}
-              className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-zinc-400 hover:text-white py-2 rounded-lg hover:bg-white/[0.03] transition"
+              className="w-full mt-3 flex items-center justify-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] py-2 rounded-lg hover:bg-[var(--surface-elevated)] transition"
             >
               {showAll
                 ? "Show less"

@@ -72,7 +72,7 @@ export default function OnboardingTour() {
       onClick={dismiss}
     >
       <div
-        className="relative bg-ink-900 border border-ink-700 rounded-2xl p-7 max-w-sm w-full mx-4 shadow-2xl"
+        className="relative bg-[var(--surface)] border border-[var(--border-strong)] rounded-2xl p-7 max-w-sm w-full mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-1.5 mb-5">
@@ -80,7 +80,7 @@ export default function OnboardingTour() {
             <span
               key={i}
               className={`h-1 rounded-full transition-all ${
-                i === step ? "w-6 bg-verdict-accept" : "w-2 bg-ink-700"
+                i === step ? "w-6 bg-verdict-accept" : "w-2 bg-[var(--border-strong)]"
               }`}
             />
           ))}
@@ -88,8 +88,8 @@ export default function OnboardingTour() {
         <div className="w-11 h-11 rounded-xl bg-verdict-accept/10 text-verdict-accept flex items-center justify-center mb-4">
           <current.Icon size={22} strokeWidth={2} aria-hidden="true" />
         </div>
-        <h3 className="text-lg font-bold text-white mb-2">{current.title}</h3>
-        <p className="text-sm text-zinc-400 leading-relaxed mb-6">{current.body}</p>
+        <h3 className="text-lg font-bold text-[var(--foreground)] mb-2">{current.title}</h3>
+        <p className="text-sm text-[var(--muted-foreground)] leading-relaxed mb-6">{current.body}</p>
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={dismiss}>
             Skip tour

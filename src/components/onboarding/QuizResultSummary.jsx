@@ -16,17 +16,17 @@ export default function QuizResultSummary({ result }) {
         <Trophy size={26} strokeWidth={2} />
       </div>
 
-      <h2 className="text-2xl font-bold text-white mb-2">
+      <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">
         {correctCount} / {total} correct
       </h2>
-      <p className="text-zinc-500 text-sm mb-8">Nice warm-up. Here's how it broke down.</p>
+      <p className="text-[var(--muted-foreground)] text-sm mb-8">Nice warm-up. Here's how it broke down.</p>
 
       <div className="space-y-3 text-left">
         <SectionCard
           icon={<TrendingUp size={18} strokeWidth={2} />}
           title={strongestTopic ? "You're strongest in" : "Strongest topic"}
         >
-          <p className="text-white font-medium">
+          <p className="text-[var(--foreground)] font-medium">
             {strongestTopic ?? "No correct answers today — tomorrow's a fresh set."}
           </p>
         </SectionCard>
@@ -36,7 +36,7 @@ export default function QuizResultSummary({ result }) {
           title="Today's Mission"
           accented
         >
-          <p className="text-white font-medium">
+          <p className="text-[var(--foreground)] font-medium">
             {improvementTopic
               ? `Improvement area: ${improvementTopic}. Solve one ${improvementTopic} problem today to lock it in.`
               : "Perfect score — no weak spot flagged today. Keep the streak going with one more problem."}

@@ -21,7 +21,7 @@ function ProfileQuickNav({ items }) {
   return (
     <nav
       aria-label="Jump to profile section"
-      className="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-ink-950/95 backdrop-blur border-b border-zinc-800"
+      className="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-[var(--background)]/95 backdrop-blur border-b border-[var(--border)]"
     >
       <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
         {items.map((item) => (
@@ -29,7 +29,7 @@ function ProfileQuickNav({ items }) {
             key={item.id}
             href={`#${item.id}`}
             onClick={(e) => handleClick(e, item.id)}
-            className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600 transition whitespace-nowrap"
+            className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] hover:border-[var(--border-strong)] transition whitespace-nowrap"
           >
             {item.label}
           </a>

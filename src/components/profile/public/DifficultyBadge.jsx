@@ -11,7 +11,7 @@ function DifficultyBadge({ difficulty }) {
   if (hideDifficulty) return null;
 
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${DIFFICULTY_STYLE[difficulty] || "bg-zinc-700 text-zinc-300"}`}>
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${DIFFICULTY_STYLE[difficulty] || "bg-[var(--surface-elevated)] text-[var(--muted-foreground)]"}`}>
       {difficulty}
     </span>
   );

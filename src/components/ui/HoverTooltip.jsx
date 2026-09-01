@@ -80,7 +80,7 @@ function HoverTooltip({ label, side = "right", children }) {
             role="tooltip"
             className={`pointer-events-none fixed z-[100] -translate-y-1/2 ${
               side === "right" ? "" : "-translate-x-full"
-            } whitespace-nowrap rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xl`}
+            } whitespace-nowrap rounded-lg border border-[var(--border-strong)] bg-[var(--surface-elevated)] px-2.5 py-1.5 text-xs font-semibold text-[var(--foreground)] shadow-xl`}
             style={{ top: coords.top, left: coords.left }}
           >
             {label}

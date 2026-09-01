@@ -25,14 +25,14 @@ export default function UpgradePrompt({
   feature,
 }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center max-w-md mx-auto">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center max-w-md mx-auto">
       <div className="w-12 h-12 rounded-2xl bg-[var(--theme-primary,#2dd4bf)]/10 text-[var(--theme-primary,#2dd4bf)] flex items-center justify-center mx-auto mb-4">
         <Sparkles size={22} strokeWidth={2} aria-hidden="true" />
       </div>
-      <h2 className="text-xl font-bold text-white mb-2">
+      <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">
         {feature ? `${feature} is a Pro feature` : "Pro feature"}
       </h2>
-      <p className="text-zinc-400 text-sm mb-6">{message}</p>
+      <p className="text-[var(--muted-foreground)] text-sm mb-6">{message}</p>
       <Button to={upgradeUrl} variant="primary" className="w-full">
         Upgrade to Pro
       </Button>

@@ -78,10 +78,10 @@ export default function WorkspacePreparationScreen({ onReady }) {
           <Sparkles size={30} strokeWidth={2} aria-hidden="true" />
         </div>
 
-        <h1 className="text-3xl font-bold mb-3 text-white">
+        <h1 className="text-3xl font-bold mb-3 text-[var(--foreground)]">
           Building today's coding session...
         </h1>
-        <p className="text-zinc-400 text-lg mb-10">
+        <p className="text-[var(--muted-foreground)] text-lg mb-10">
           Just a moment while everything's set up for you.
         </p>
 
@@ -99,7 +99,7 @@ export default function WorkspacePreparationScreen({ onReady }) {
               >
                 <Check size={13} strokeWidth={3} aria-hidden="true" />
               </span>
-              <span className="text-zinc-300">{item}</span>
+              <span className="text-[var(--muted-foreground)]">{item}</span>
             </li>
           ))}
         </ul>

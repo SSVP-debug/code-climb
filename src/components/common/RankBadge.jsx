@@ -17,7 +17,7 @@ function RankBadge({ rank, size = 26 }) {
 
   if (!style) {
     return (
-      <span className="text-zinc-500 font-black text-sm">#{rank}</span>
+      <span className="text-[var(--muted-foreground)] font-black text-sm">#{rank}</span>
     );
   }
 

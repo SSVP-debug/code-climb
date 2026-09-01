@@ -126,30 +126,30 @@ export default function CommandPalette({ onClose, commands }) {
         aria-modal="true"
         aria-label="Command palette"
         onKeyDown={handleTabTrap}
-        className="relative w-full max-w-xl rounded-2xl border border-zinc-800 bg-ink-900/95 backdrop-blur-xl shadow-2xl shadow-black/60 overflow-hidden animate-fadeIn"
+        className="relative w-full max-w-xl rounded-2xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-xl shadow-2xl shadow-black/60 overflow-hidden animate-fadeIn"
       >
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-zinc-800">
-          <Search size={16} className="text-zinc-500 shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--border)]">
+          <Search size={16} className="text-[var(--muted-foreground)] shrink-0" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search pages and actions…"
-            className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-zinc-600"
+            className="flex-1 bg-transparent outline-none text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]"
           />
-          <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1.5 py-0.5 font-mono-ui">
+          <kbd className="hidden sm:inline text-[10px] text-[var(--muted-foreground)] border border-[var(--border-strong)] rounded px-1.5 py-0.5 font-mono-ui">
             ESC
           </kbd>
         </div>
 
         <div className="max-h-80 overflow-y-auto custom-scrollbar py-2">
           {groups.length === 0 && (
-            <p className="px-4 py-6 text-center text-sm text-zinc-600">No matches for "{query}".</p>
+            <p className="px-4 py-6 text-center text-sm text-[var(--muted-foreground)]">No matches for "{query}".</p>
           )}
           {groups.map((g) => (
             <div key={g.name} className="mb-1 last:mb-0">
-              <p className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-zinc-600 font-semibold">
+              <p className="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-[var(--muted-foreground)] font-semibold">
                 {g.name}
               </p>
               {g.items.map((cmd) => {
@@ -163,13 +163,13 @@ export default function CommandPalette({ onClose, commands }) {
                     onMouseEnter={() => setActiveIndex(flatIndex)}
                     onClick={() => run(cmd)}
                     className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition ${
-                      isActive ? "bg-zinc-800/80 text-white" : "text-zinc-300 hover:bg-zinc-900"
+                      isActive ? "bg-[var(--surface-elevated)] text-[var(--foreground)]" : "text-[var(--foreground)] hover:bg-[var(--surface)]"
                     }`}
                   >
-                    {Icon && <Icon size={14} className="text-zinc-500 shrink-0" />}
+                    {Icon && <Icon size={14} className="text-[var(--muted-foreground)] shrink-0" />}
                     <span className="flex-1 truncate">{cmd.label}</span>
-                    {cmd.hint && <span className="text-xs text-zinc-600">{cmd.hint}</span>}
-                    {isActive && <CornerDownLeft size={12} className="text-zinc-500" />}
+                    {cmd.hint && <span className="text-xs text-[var(--muted-foreground)]">{cmd.hint}</span>}
+                    {isActive && <CornerDownLeft size={12} className="text-[var(--muted-foreground)]" />}
                   </button>
                 );
               })}
@@ -177,7 +177,7 @@ export default function CommandPalette({ onClose, commands }) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2 border-t border-zinc-800 text-[10px] text-zinc-600">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--border)] text-[10px] text-[var(--muted-foreground)]">
           <span className="flex items-center gap-1">
             <ArrowRight size={10} className="rotate-90" /> navigate
           </span>
