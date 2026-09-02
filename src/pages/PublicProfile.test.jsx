@@ -12,8 +12,26 @@ vi.mock("react-hot-toast", () => ({
 }));
 
 const apiFetch = vi.fn();
+// languageBreakdown rendering now uses useLanguages() (Content &
+// Execution Architecture cross-check follow-up, Phase 6 — see
+// docs/adding-a-language.md), which calls apiFetchOptional, not
+// apiFetch. Mocked here to resolve with the fallback shape rather than
+// leaving it unmocked — an unmocked call still degrades gracefully
+// (useLanguages() catches the resulting error and falls back to its
+// static list), but silently relying on that produces a console warning
+// on every single test in this file rather than a clean, intentional
+// mock.
+const apiFetchOptional = vi.fn().mockResolvedValue({
+  languages: [
+    { id: "python", name: "Python", extension: "py" },
+    { id: "javascript", name: "JavaScript", extension: "js" },
+    { id: "java", name: "Java", extension: "java" },
+    { id: "cpp", name: "C++", extension: "cpp" },
+  ],
+});
 vi.mock("../services/api", () => ({
   apiFetch: (...args) => apiFetch(...args),
+  apiFetchOptional: (...args) => apiFetchOptional(...args),
 }));
 
 let appContextValue;

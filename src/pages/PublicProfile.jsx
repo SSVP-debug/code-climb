@@ -18,6 +18,7 @@ import DifficultyBadge from "../components/profile/public/DifficultyBadge";
 import { Pin, FileText, ArrowUpRight, Sparkles, Briefcase } from "lucide-react";
 import { GithubMark, LinkedinMark } from "../components/icons/BrandIcons";
 import { useAppContext } from "../hooks/useAppContext";
+import { useLanguages } from "../hooks/useLanguages";
 import Button from "../components/ui/Button";
 import toast from "react-hot-toast";
 import { SendTestModal, ExpressInterestModal } from "../components/recruiter/RecruiterActionModals";
@@ -76,6 +77,16 @@ function RecruiterActionBar({ profile }) {
 
 function PublicProfile() {
     const { username } = useParams();
+    // Content & Execution Architecture cross-check follow-up (Phase 6):
+    // was a `LANG_LABELS` object literal re-declared inline inside a
+    // `.map()` callback below (rebuilt on every array item, every
+    // render) — one of three near-identical hardcoded copies found
+    // across the frontend this session (see docs/adding-a-language.md's
+    // caveat on why this needed a per-file grep, not a one-time check).
+    // Derived from the registry now, computed once per render instead of
+    // once per list item.
+    const { languages } = useLanguages();
+    const langLabels = Object.fromEntries(languages.map((l) => [l.id, l.name]));
 
     const [profile, setProfile] =
         useState(null);
@@ -389,11 +400,10 @@ function PublicProfile() {
                                 {profile.languageBreakdown.map((item) => {
                                     const total = profile.solvedCount || 1;
                                     const pct = Math.round((item.solved / total) * 100);
-                                    const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", cpp: "C++" };
                                     return (
                                         <div key={item.language}>
                                             <div className="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
-                                                <span className="font-medium text-[var(--foreground)]">{LANG_LABELS[item.language] ?? item.language}</span>
+                                                <span className="font-medium text-[var(--foreground)]">{langLabels[item.language] ?? item.language}</span>
                                                 <span>{item.solved} solved</span>
                                             </div>
                                             <div className="h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">

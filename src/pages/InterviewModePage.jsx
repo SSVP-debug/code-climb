@@ -8,6 +8,7 @@ import Button from "../components/ui/Button";
 import UpgradePrompt from "../components/ui/UpgradePrompt";
 import ErrorBanner from "../components/ErrorBanner";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
+import { useLanguages } from "../hooks/useLanguages";
 
 function formatTime(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -20,6 +21,15 @@ export default function InterviewModePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const hideDifficulty = useHideDifficultyLabels();
+  // Content & Execution Architecture cross-check follow-up (Phase 6):
+  // this page's language <select> used to be a completely separate,
+  // hardcoded set of 4 <option> tags — a second copy of the same
+  // hardcoding already found and fixed once in ProblemEditor.jsx /
+  // ProblemForm.jsx this session, missed because it's a genuinely
+  // separate component tree with no shared UI, not because the fix
+  // pattern was wrong. See docs/adding-a-language.md's caveat on why
+  // "no frontend hardcoding" needs a per-file grep, not a one-time check.
+  const { languages } = useLanguages();
 
   const [session, setSession]       = useState(null);
   const [code, setCode]             = useState("// Think out loud — explain your approach before coding.\n");
@@ -217,10 +227,11 @@ export default function InterviewModePage() {
                   onChange={e => setLanguage(e.target.value)}
                   className="bg-zinc-800 text-zinc-200 text-sm border-none rounded-md px-2 py-1 outline-none"
                 >
-                  <option value="python">Python</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="java">Java</option>
-                  <option value="cpp">C++</option>
+                  {languages.map((lang) => (
+                    <option key={lang.id} value={lang.id}>
+                      {lang.name}
+                    </option>
+                  ))}
                 </select>
                 <Button size="sm" onClick={handleSubmit}>
                   End Interview

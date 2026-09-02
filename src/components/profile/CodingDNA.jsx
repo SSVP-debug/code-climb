@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import SectionCard from "../ui/layout/SectionCard";
 import { Dna } from "lucide-react";
-
-const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", cpp: "C++" };
+import { useLanguages } from "../../hooks/useLanguages";
 
 /**
  * CodingDNA
@@ -13,6 +12,14 @@ const LANG_LABELS = { python: "Python", javascript: "JavaScript", java: "Java", 
  * already used on Analytics.jsx so the two pages never disagree.
  */
 function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, longestStreak = 0, languageBreakdown = null }) {
+  // Content & Execution Architecture cross-check follow-up (Phase 6):
+  // was a hardcoded `LANG_LABELS` object literal — one of three
+  // near-identical copies found across the frontend this session (see
+  // docs/adding-a-language.md's caveat on why this needed a per-file
+  // grep, not a one-time check). Derived from the registry now.
+  const { languages } = useLanguages();
+  const langLabels = useMemo(() => Object.fromEntries(languages.map((l) => [l.id, l.name])), [languages]);
+
   const { favoriteLanguage, averageRuntime } = useMemo(() => {
     // Public-profile callers don't have raw submissions (executionTime isn't
     // exposed by the public API) — when a precomputed languageBreakdown is
@@ -21,7 +28,7 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
     if (languageBreakdown && languageBreakdown.length > 0) {
       const topLang = languageBreakdown[0].language;
       return {
-        favoriteLanguage: LANG_LABELS[topLang] ?? topLang,
+        favoriteLanguage: langLabels[topLang] ?? topLang,
         averageRuntime: "—",
       };
     }
@@ -45,10 +52,10 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
       : null;
 
     return {
-      favoriteLanguage: topLang ? (LANG_LABELS[topLang] ?? topLang) : "—",
+      favoriteLanguage: topLang ? (langLabels[topLang] ?? topLang) : "—",
       averageRuntime: avgRuntime ? `${avgRuntime}ms` : "—",
     };
-  }, [submissions, languageBreakdown]);
+  }, [submissions, languageBreakdown, langLabels]);
 
   const favoriteTopic = useMemo(() => {
     const entries = Object.entries(topicStats || {});
@@ -82,8 +89,8 @@ function CodingDNA({ submissions = [], topicStats = {}, solvedDifficulty = {}, l
     >
       <div className="grid grid-cols-2 gap-4">
         {dnaItems.map((item) => (
-          <div key={item.label} className="bg-[var(--surface-elevated)] rounded-xl p-4">
-            <p className="text-[var(--muted-foreground)] text-xs">{item.label}</p>
+          <div key={item.label} className="bg-zinc-800 rounded-xl p-4">
+            <p className="text-zinc-400 text-xs">{item.label}</p>
             <p className="text-lg font-semibold mt-1 truncate">{item.value}</p>
           </div>
         ))}
