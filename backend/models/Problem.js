@@ -430,12 +430,23 @@ const GRADING_CONTRACT_FIELDS = [
 // problems don't yet expose a hidden-testcase-set toggle either, but this
 // is written to cover any future write path through `.save()`, not just
 // what exists right now).
-problemSchema.pre("save", function (next) {
-  if (this.isNew) return next(); // starts at the schema default (1)
+//
+// Deliberately promise-style (no `next` parameter) rather than the
+// legacy callback style — this project runs Mongoose 9, which dropped
+// callback-based middleware support entirely; an earlier version of
+// this hook took a `next` argument and called `next()`, which threw
+// "next is not a function" on every single `.save()` (caught by real CI
+// running against a real Mongo — mongodb-memory-server isn't reachable
+// in the sandbox this was originally written in, so this couldn't be
+// verified before landing). Fixed by removing `next` entirely; a
+// synchronous hook function with no declared parameters is treated as
+// already-resolved by Mongoose/Kareem, same effect as calling `next()`
+// used to have.
+problemSchema.pre("save", function () {
+  if (this.isNew) return; // starts at the schema default (1)
   if (GRADING_CONTRACT_FIELDS.some((f) => this.isModified(f))) {
     this.contentVersion = (this.contentVersion || 1) + 1;
   }
-  next();
 });
 
 // Covers seedProblems.js / importProblems.js / migrateHiddenTestcases.js's
@@ -446,7 +457,12 @@ problemSchema.pre("save", function (next) {
 // about it actually changed, because it's reconstructed from the flat
 // `hiddentestcases` array each run) — a presence-only check would bump
 // the version on every routine, no-op reseed, which defeats the purpose.
-problemSchema.pre("findOneAndUpdate", async function (next) {
+//
+// Same Mongoose-9 fix as the `pre("save")` hook above: async function
+// with no `next` parameter, resolved by returning (implicitly or
+// explicitly) rather than calling a `next()` that was never actually
+// passed in.
+problemSchema.pre("findOneAndUpdate", async function () {
   const update = this.getUpdate() || {};
   // seedProblems.js/importProblems.js use `{ $set: {...} }`; editorial.js
   // uses a flat (non-`$set`) update object — support both shapes rather
@@ -456,13 +472,13 @@ problemSchema.pre("findOneAndUpdate", async function (next) {
   const touchedFields = GRADING_CONTRACT_FIELDS.filter((f) =>
     Object.prototype.hasOwnProperty.call(setDoc, f)
   );
-  if (touchedFields.length === 0) return next();
+  if (touchedFields.length === 0) return;
 
   const current = await this.model.findOne(this.getQuery()).select(touchedFields.join(" ")).lean();
   // No existing document — this is an upsert creating a brand-new
   // problem, which correctly starts at the schema default (1); nothing
   // to compare against.
-  if (!current) return next();
+  if (!current) return;
 
   const changed = touchedFields.some(
     (f) => JSON.stringify(current[f] ?? null) !== JSON.stringify(setDoc[f] ?? null)
@@ -471,7 +487,6 @@ problemSchema.pre("findOneAndUpdate", async function (next) {
     update.$inc = { ...(update.$inc || {}), contentVersion: 1 };
     this.setUpdate(update);
   }
-  next();
 });
 
 const Problem = mongoose.model("Problem", problemSchema);

@@ -23,6 +23,11 @@ function baseProblem(overrides = {}) {
     functionName: "twoSum",
     difficulty: "Easy",
     topic: "Arrays",
+    // Missed on the first pass — only caught by real CI (mongodb-memory-server
+    // isn't reachable in the sandbox this was originally written in), which
+    // is exactly why this integration tier exists rather than trusting the
+    // unit-mocked tier alone for schema-shape correctness.
+    description: "Given an array of integers, return indices of the two numbers that add up to a target.",
     ...overrides,
   };
 }
