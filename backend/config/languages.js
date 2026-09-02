@@ -80,24 +80,41 @@ export const LANGUAGES = {
     name: "Python",
     judge0Id: 71,
     extension: "py",
+    // Content & Execution Architecture cross-check follow-up (Phase 6):
+    // this exists specifically to replace a hardcoded
+    // `language === "javascript" ? 2 : 4` conditional found in
+    // src/components/problem/ProblemEditor.jsx — TypeScript conventionally
+    // indents like JavaScript (2), not like Java/C++ (4), and that
+    // conditional had no way to express that without becoming a growing
+    // per-language if/else chain in a frontend file no language addition
+    // should need to touch. This is exactly the `configuration` field the
+    // original Content & Execution Architecture spec's `Language` shape
+    // proposed — added narrowly (just this one property) rather than a
+    // generic catch-all bag, per that same spec's explicit
+    // "do not blindly implement this schema" / avoid-over-engineering
+    // instruction.
+    editorIndentSize: 4,
     enabled: true,
   },
   javascript: {
     name: "JavaScript",
     judge0Id: 63,
     extension: "js",
+    editorIndentSize: 2,
     enabled: true,
   },
   java: {
     name: "Java",
     judge0Id: 62,
     extension: "java",
+    editorIndentSize: 4,
     enabled: true,
   },
   cpp: {
     name: "C++",
     judge0Id: 54,
     extension: "cpp",
+    editorIndentSize: 4,
     enabled: true,
   },
   // Phase 6 (Language Expansion) — see plans/010-language-expansion-scoping.md
@@ -116,6 +133,7 @@ export const LANGUAGES = {
     // gets added there, or query the instance's /languages endpoint).
     judge0Id: 74,
     extension: "ts",
+    editorIndentSize: 2,
     enabled: false,
   },
 };
@@ -194,6 +212,7 @@ export function getEnabledLanguagesForApi() {
       id: key,
       name: lang.name,
       extension: lang.extension,
+      editorIndentSize: lang.editorIndentSize,
     }));
 }
 

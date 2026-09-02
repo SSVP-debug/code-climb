@@ -32,12 +32,18 @@ vi.mock("../../hooks/useTheme", () => ({
   }),
 }));
 
-// Monaco is heavy and irrelevant to what this test covers (the language
-// <select>, which lives outside the editor itself) — stubbed to a plain
-// textarea-like placeholder, same "stub the unrelated heavy child" idea
-// as EducationSection.test.jsx stubbing out CollegeVerifyModal.
+// Monaco is heavy and irrelevant to what most of this file covers (the
+// language <select>, which lives outside the editor itself) — stubbed to
+// a plain textarea-like placeholder, same "stub the unrelated heavy
+// child" idea as EducationSection.test.jsx stubbing out
+// CollegeVerifyModal. The stub DOES forward `options` onto a data
+// attribute (rather than discarding all props) specifically so the
+// tabSize tests below — a real regression test for the hardcoded
+// `language === "javascript" ? 2 : 4` conditional this file used to
+// have — can assert on what was actually passed to Monaco, not just
+// that a placeholder rendered.
 vi.mock("@monaco-editor/react", () => ({
-  default: () => <div data-testid="monaco-editor-stub" />,
+  default: (props) => <div data-testid="monaco-editor-stub" data-tab-size={props.options?.tabSize} />,
 }));
 
 function noop() {}
@@ -78,5 +84,55 @@ describe("ProblemEditor — language selector sourced from useLanguages()", () =
     await screen.findByRole("option", { name: "JavaScript" });
     expect(screen.queryByRole("option", { name: "Java" })).not.toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "C++" })).not.toBeInTheDocument();
+  });
+});
+
+describe("ProblemEditor — Monaco tabSize sourced from the registry's editorIndentSize (Phase 6 regression test)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function renderWithLanguage(language, languages) {
+    apiFetchOptional.mockResolvedValueOnce({ languages });
+    return render(
+      <ProblemEditor
+        slug="two-sum"
+        language={language}
+        setLanguage={noop}
+        code=""
+        setCode={noop}
+        customInput=""
+        setCustomInput={noop}
+        onRun={noop}
+        onSubmit={noop}
+        onReset={noop}
+        running={false}
+        submitting={false}
+      />
+    );
+  }
+
+  it("uses the fetched language's editorIndentSize once GET /api/languages resolves (2 for TypeScript, not the old javascript-only special case)", async () => {
+    renderWithLanguage("typescript", [
+      { id: "python", name: "Python", extension: "py", editorIndentSize: 4 },
+      { id: "typescript", name: "TypeScript", extension: "ts", editorIndentSize: 2 },
+    ]);
+
+    await screen.findByRole("option", { name: "TypeScript" });
+    expect(screen.getByTestId("monaco-editor-stub").dataset.tabSize).toBe("2");
+  });
+
+  it("uses 4 for a registry language whose editorIndentSize is 4 (e.g. Java)", async () => {
+    renderWithLanguage("java", [{ id: "java", name: "Java", extension: "java", editorIndentSize: 4 }]);
+
+    await screen.findByRole("option", { name: "Java" });
+    expect(screen.getByTestId("monaco-editor-stub").dataset.tabSize).toBe("4");
+  });
+
+  it("falls back to 4 for a language not present in the fetched list at all, rather than crashing", async () => {
+    renderWithLanguage("some-future-language", [{ id: "python", name: "Python", extension: "py", editorIndentSize: 4 }]);
+
+    await screen.findByRole("option", { name: "Python" });
+    expect(screen.getByTestId("monaco-editor-stub").dataset.tabSize).toBe("4");
   });
 });

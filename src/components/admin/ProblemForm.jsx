@@ -1,30 +1,42 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import { DrawerSection } from "./command/SideDrawer";
+import { useLanguages } from "../../hooks/useLanguages";
 
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 const SOURCE_TYPES = ["core", "variant", "original"];
-const LANGUAGES = ["python", "javascript", "java", "cpp"];
+// Content & Execution Architecture cross-check follow-up (Phase 6): this
+// used to be a hardcoded `const LANGUAGES = ["python", "javascript",
+// "java", "cpp"]` — meaning adding TypeScript to the registry gave
+// admins no way to actually enter TypeScript starter code for a NEW
+// problem through this form, directly contradicting the "adding a
+// language shouldn't require hunting through the codebase" goal (plan
+// 010, docs/adding-a-language.md). Now derived from useLanguages() —
+// the same hook ProblemEditor.jsx already uses for the same reason —
+// so this form automatically grows/shrinks with the backend registry
+// with no code change here.
 
-const EMPTY_FORM = {
-  title: "",
-  slug: "",
-  functionName: "",
-  difficulty: "Easy",
-  topic: "",
-  pattern: "",
-  sourceType: "core",
-  estimatedTime: "",
-  description: "",
-  companies: "",
-  constraints: "",
-  examples: "[]",
-  testcases: "[]",
-  hiddentestcases: "[]",
-  hints: "[]",
-  editorial: "",
-  starterCode: { python: "", javascript: "", java: "", cpp: "" },
-};
+function buildEmptyForm(languageIds) {
+  return {
+    title: "",
+    slug: "",
+    functionName: "",
+    difficulty: "Easy",
+    topic: "",
+    pattern: "",
+    sourceType: "core",
+    estimatedTime: "",
+    description: "",
+    companies: "",
+    constraints: "",
+    examples: "[]",
+    testcases: "[]",
+    hiddentestcases: "[]",
+    hints: "[]",
+    editorial: "",
+    starterCode: Object.fromEntries(languageIds.map((id) => [id, ""])),
+  };
+}
 
 // Fields represented as JSON-in-a-textarea rather than a bespoke dynamic
 // list-editor widget per field. A pragmatic choice for an internal admin
@@ -36,8 +48,8 @@ const JSON_FIELDS = ["examples", "testcases", "hiddentestcases", "hints"];
 // Comma-or-newline-separated plain text, converted to a string array.
 const LIST_FIELDS = ["companies", "constraints"];
 
-function problemToFormValues(problem) {
-  if (!problem) return EMPTY_FORM;
+function problemToFormValues(problem, languageIds) {
+  if (!problem) return buildEmptyForm(languageIds);
   return {
     title: problem.title || "",
     slug: problem.slug || "",
@@ -55,12 +67,19 @@ function problemToFormValues(problem) {
     hiddentestcases: JSON.stringify(problem.hiddentestcases || [], null, 2),
     hints: JSON.stringify(problem.hints || [], null, 2),
     editorial: problem.editorial?.content || "",
-    starterCode: {
-      python: problem.starterCode?.python || "",
-      javascript: problem.starterCode?.javascript || "",
-      java: problem.starterCode?.java || "",
-      cpp: problem.starterCode?.cpp || "",
-    },
+    // Union of the currently-enabled registry and whatever language keys
+    // this specific problem's starterCode already has — so an admin can
+    // still see/edit a language's starter code even if that language was
+    // since disabled (matches Submission.js's own SUPPORTED-not-ENABLED
+    // posture: disabling a language shouldn't make its historical
+    // content invisible), while every enabled language always gets a
+    // field even if this problem has no starter code for it yet.
+    starterCode: Object.fromEntries(
+      Array.from(new Set([...languageIds, ...Object.keys(problem.starterCode || {})])).map((id) => [
+        id,
+        problem.starterCode?.[id] || "",
+      ])
+    ),
   };
 }
 
@@ -116,8 +135,24 @@ const inputClass =
   "w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--border-strong)] disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, saving, serverIssues }) {
-  const [values, setValues] = useState(() => problemToFormValues(initialProblem));
+  const { languages } = useLanguages();
+  const languageIds = languages.map((l) => l.id);
+  const [values, setValues] = useState(() => problemToFormValues(initialProblem, languageIds));
   const [localErrors, setLocalErrors] = useState({});
+
+  // Union of the live registry and whatever keys `values.starterCode`
+  // already has (which itself starts as the same union, computed once at
+  // mount by `problemToFormValues` — see its own comment). Computed
+  // during render, not synced into state via an effect: useLanguages()
+  // resolves asynchronously (its first render uses a synchronous static
+  // fallback — see useLanguages.js), so `languageIds` at mount time can
+  // be stale by the time the real GET /api/languages response lands, and
+  // this needs to reflect that update on every render it changes, not
+  // just once. `setStarterCode` already adds a new key to `values`
+  // on write, so this only needs to widen what's *displayed* — no
+  // setState-in-effect needed (this codebase's lint config forbids that
+  // pattern outright — see react-hooks/set-state-in-effect).
+  const displayLanguageIds = Array.from(new Set([...languageIds, ...Object.keys(values.starterCode)]));
 
   const isCatalog = mode === "edit" && initialProblem?.adminSource === "catalog";
 
@@ -298,12 +333,20 @@ export default function ProblemForm({ mode, initialProblem, onSubmit, onCancel, 
 
         <Field label="Starter code" error={issueFor("starterCode")}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {LANGUAGES.map((lang) => (
+            {displayLanguageIds.map((lang) => (
               <div key={lang}>
                 <span className="block text-[11px] text-[var(--muted-foreground)] mb-1 capitalize font-mono">{lang}</span>
                 <textarea
                   className={`${inputClass} min-h-[80px] font-mono text-xs`}
-                  value={values.starterCode[lang]}
+                  // `?? ""` guards a real edge case, not defensive
+                  // paranoia: `languageIds` can update after mount (once
+                  // useLanguages()'s real fetch resolves, replacing its
+                  // synchronous fallback) while `values.starterCode` was
+                  // seeded once at mount time — without this, a language
+                  // that becomes available mid-session would render an
+                  // uncontrolled-input React warning until the admin
+                  // typed something into it.
+                  value={values.starterCode[lang] ?? ""}
                   onChange={(e) => setStarterCode(lang, e.target.value)}
                   disabled={isCatalog}
                 />

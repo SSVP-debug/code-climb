@@ -186,7 +186,17 @@ function ProblemEditor({
             padding: { top: 16, bottom: 16 },
             scrollBeyondLastLine: false,
             automaticLayout: true,
-            tabSize: language === "javascript" ? 2 : 4,
+            tabSize:
+              // Content & Execution Architecture cross-check follow-up
+              // (Phase 6): was `language === "javascript" ? 2 : 4` — a
+              // hardcoded per-language conditional that silently gave
+              // TypeScript the wrong (4, Java/C++-style) indent instead
+              // of the 2-space convention it actually shares with
+              // JavaScript. Now derived from the registry
+              // (`editorIndentSize`, see config/languages.js) so a future
+              // language's indent convention is a registry entry, not a
+              // line to find and edit in this file.
+              languages.find((l) => l.id === language)?.editorIndentSize ?? 4,
             // Accessibility
             accessibilitySupport: "auto",
             wordWrap: "on",

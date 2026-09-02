@@ -17,10 +17,10 @@ import { apiFetchOptional } from "../services/api";
 // backend's ever disagree, the backend wins the moment the request
 // succeeds.
 const FALLBACK_LANGUAGES = [
-  { id: "python", name: "Python", extension: "py" },
-  { id: "javascript", name: "JavaScript", extension: "js" },
-  { id: "java", name: "Java", extension: "java" },
-  { id: "cpp", name: "C++", extension: "cpp" },
+  { id: "python", name: "Python", extension: "py", editorIndentSize: 4 },
+  { id: "javascript", name: "JavaScript", extension: "js", editorIndentSize: 2 },
+  { id: "java", name: "Java", extension: "java", editorIndentSize: 4 },
+  { id: "cpp", name: "C++", extension: "cpp", editorIndentSize: 4 },
 ];
 
 export function useLanguages() {
