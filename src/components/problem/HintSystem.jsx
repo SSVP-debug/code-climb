@@ -25,7 +25,7 @@ function HintSystem({ hints }) {
         className="flex items-center gap-2 w-full text-left group"
         aria-expanded={open}
       >
-        <h3 className="text-lg font-semibold text-white group-hover:text-zinc-300 transition">
+        <h3 className="text-lg font-semibold text-[var(--foreground)] group-hover:text-[var(--muted-foreground)] transition">
           Hints
         </h3>
         <svg
@@ -33,7 +33,7 @@ function HintSystem({ hints }) {
           height="16"
           viewBox="0 0 16 16"
           fill="none"
-          className={`text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`text-[var(--muted-foreground)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         >
           <path
             d="M4 6L8 10L12 6"
@@ -44,7 +44,7 @@ function HintSystem({ hints }) {
           />
         </svg>
         {!open && (
-          <span className="ml-auto text-xs text-zinc-600 font-mono">
+          <span className="ml-auto text-xs text-[var(--muted-foreground)] font-mono">
             {hints.length} hint{hints.length !== 1 ? "s" : ""} available
           </span>
         )}
@@ -56,12 +56,12 @@ function HintSystem({ hints }) {
           {hints.slice(0, revealed).map((hint, i) => (
             <div
               key={i}
-              className="flex gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3"
+              className="flex gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-3"
             >
               <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-[10px] font-bold text-amber-400">
                 {hint.level ?? i + 1}
               </span>
-              <p className="text-sm text-zinc-300 leading-relaxed">{hint.text}</p>
+              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{hint.text}</p>
             </div>
           ))}
 
@@ -69,7 +69,7 @@ function HintSystem({ hints }) {
           {revealed < hints.length ? (
             <button
               onClick={handleRevealNext}
-              className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-700 hover:border-amber-500/40 hover:bg-amber-500/5 transition px-4 py-3 text-sm text-zinc-500 hover:text-amber-400"
+              className="w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-strong)] hover:border-amber-500/40 hover:bg-amber-500/5 transition px-4 py-3 text-sm text-[var(--muted-foreground)] hover:text-amber-400"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path
@@ -87,7 +87,7 @@ function HintSystem({ hints }) {
               Reveal hint {revealed + 1} of {hints.length}
             </button>
           ) : (
-            <p className="text-center text-xs text-zinc-600 font-mono py-2">
+            <p className="text-center text-xs text-[var(--muted-foreground)] font-mono py-2">
               All hints revealed
             </p>
           )}

@@ -34,12 +34,12 @@ function MissionHeader({ chapterId, slug }) {
 
   return (
     <div className={`mb-5 rounded-2xl border ${colors.border} ${colors.bg} px-4 py-3.5`}>
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-400 flex-wrap">
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--muted-foreground)] flex-wrap">
         <span className={colors.text}>Code Club Edition</span>
-        <ChevronRight size={12} className="text-zinc-600" aria-hidden="true" />
+        <ChevronRight size={12} className="text-[var(--muted-foreground)]" aria-hidden="true" />
         <span>{chapter.title}</span>
-        <ChevronRight size={12} className="text-zinc-600" aria-hidden="true" />
-        <span className="text-zinc-500">Mission {mission.missionNumber}</span>
+        <ChevronRight size={12} className="text-[var(--muted-foreground)]" aria-hidden="true" />
+        <span className="text-[var(--muted-foreground)]">Mission {mission.missionNumber}</span>
       </div>
 
       <div className="mt-2 flex items-start gap-2.5">
@@ -47,9 +47,9 @@ function MissionHeader({ chapterId, slug }) {
           <Icon size={16} strokeWidth={2} aria-hidden="true" />
         </span>
         <div>
-          <h3 className="text-sm font-bold text-white">{mission.missionTitle}</h3>
+          <h3 className="text-sm font-bold text-[var(--foreground)]">{mission.missionTitle}</h3>
           {mission.storyIntro && (
-            <p className="text-xs text-zinc-400 italic mt-0.5 leading-relaxed">
+            <p className="text-xs text-[var(--muted-foreground)] italic mt-0.5 leading-relaxed">
               "{mission.storyIntro}"
             </p>
           )}

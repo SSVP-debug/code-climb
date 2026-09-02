@@ -26,7 +26,7 @@ function ProblemUnderstandOverlay({ problem, isSolved, onProceed }) {
       onClick={onProceed}
     >
       <div
-        className="relative w-full max-w-2xl max-h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-6 sm:p-8 animate-understand-card-in"
+        className="relative w-full max-w-2xl max-h-full overflow-y-auto custom-scrollbar bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-2xl p-6 sm:p-8 animate-understand-card-in"
         onClick={(e) => e.stopPropagation()}
       >
         <ProblemHeader problem={problem} isSolved={isSolved} />

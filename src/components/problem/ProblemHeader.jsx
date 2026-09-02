@@ -10,7 +10,7 @@ const COMPANY_COLORS = {
   Bloomberg: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   LinkedIn:  "bg-blue-600/10   text-blue-300   border-blue-600/20",
   Flipkart:  "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  default:   "bg-zinc-800/50   text-zinc-400   border-zinc-700/50",
+  default:   "bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border-[var(--border-strong)]",
 };
 
 function CompanyChip({ name }) {
@@ -32,7 +32,7 @@ function ProblemHeader({ problem, isSolved }) {
     <div className="mb-5">
       {/* Title row */}
       <div className="flex items-center gap-4 flex-wrap">
-        <h1 className="text-2xl xl:text-3xl font-bold text-white leading-tight">
+        <h1 className="text-2xl xl:text-3xl font-bold text-[var(--foreground)] leading-tight">
           {problem.title}
         </h1>
         {isSolved && (
@@ -56,12 +56,12 @@ function ProblemHeader({ problem, isSolved }) {
           </span>
         )}
 
-        <span className="px-3 py-1 bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 rounded-full text-xs font-medium">
+        <span className="px-3 py-1 bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border border-[var(--border-strong)] rounded-full text-xs font-medium">
           {problem.topic}
         </span>
 
         {problem.estimatedTime && (
-          <span className="flex items-center gap-1.5 text-zinc-500 text-xs font-mono">
+          <span className="flex items-center gap-1.5 text-[var(--muted-foreground)] text-xs font-mono">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0">
               <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
               <path d="M6 3.5V6L7.5 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
@@ -74,14 +74,14 @@ function ProblemHeader({ problem, isSolved }) {
       {/* Company tags row shown only when companies are present */}
       {companies.length > 0 && (
         <div className="flex items-center gap-2 mt-3 flex-wrap">
-          <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-semibold">
+          <span className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-widest font-semibold">
             Asked at
           </span>
           {companies.slice(0, 6).map(co => (
             <CompanyChip key={co} name={co} />
           ))}
           {companies.length > 6 && (
-            <span className="text-[10px] text-zinc-600">
+            <span className="text-[10px] text-[var(--muted-foreground)]">
               +{companies.length - 6} more
             </span>
           )}

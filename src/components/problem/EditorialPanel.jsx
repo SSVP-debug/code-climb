@@ -78,9 +78,9 @@ function EditorialPanel({ slug }) {
   if (state.loading) {
     return (
       <section>
-        <h3 className="text-lg font-semibold text-white mb-3">Editorial</h3>
-        <div className="flex items-center gap-2 text-sm text-zinc-500 px-1 py-2">
-          <div className="w-3.5 h-3.5 border-2 border-zinc-600 border-t-transparent rounded-full animate-spin" />
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">Editorial</h3>
+        <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)] px-1 py-2">
+          <div className="w-3.5 h-3.5 border-2 border-[var(--border-strong)] border-t-transparent rounded-full animate-spin" />
           Loading editorial…
         </div>
       </section>
@@ -90,7 +90,7 @@ function EditorialPanel({ slug }) {
   if (state.locked) {
     return (
       <section>
-        <h3 className="text-lg font-semibold text-white mb-3">Editorial</h3>
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">Editorial</h3>
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 flex items-start gap-3">
           <Lock size={18} strokeWidth={2} className="text-amber-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
           <div>
@@ -112,7 +112,7 @@ function EditorialPanel({ slug }) {
   if (state.error) {
     return (
       <section>
-        <h3 className="text-lg font-semibold text-white mb-3">Editorial</h3>
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">Editorial</h3>
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
           <p className="text-sm text-amber-400">{state.error}</p>
         </div>
@@ -123,8 +123,8 @@ function EditorialPanel({ slug }) {
   if (!state.available) {
     return (
       <section>
-        <h3 className="text-lg font-semibold text-white mb-3">Editorial</h3>
-        <p className="text-sm text-zinc-500">
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">Editorial</h3>
+        <p className="text-sm text-[var(--muted-foreground)]">
           No editorial has been written for this problem yet.
         </p>
       </section>
@@ -134,13 +134,13 @@ function EditorialPanel({ slug }) {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-semibold text-white">Editorial</h3>
-        <span className="text-xs text-zinc-500">
+        <h3 className="text-lg font-semibold text-[var(--foreground)]">Editorial</h3>
+        <span className="text-xs text-[var(--muted-foreground)]">
           {state.author}
           {state.updatedAt && ` · ${new Date(state.updatedAt).toLocaleDateString()}`}
         </span>
       </div>
-      <div className="text-zinc-300 leading-relaxed whitespace-pre-wrap text-[15px] rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3">
+      <div className="text-[var(--muted-foreground)] leading-relaxed whitespace-pre-wrap text-[15px] rounded-xl border border-[var(--border)] bg-[var(--surface)]/60 px-4 py-3">
         {state.content}
       </div>
     </section>
