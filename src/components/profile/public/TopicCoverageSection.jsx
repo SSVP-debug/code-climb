@@ -12,8 +12,8 @@ function LanguageBreakdown({ languageBreakdown, solvedCount }) {
   const langLabels = Object.fromEntries(languages.map((l) => [l.id, l.name]));
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+      <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">
         Languages
       </h3>
       <div className="space-y-3">
@@ -21,11 +21,11 @@ function LanguageBreakdown({ languageBreakdown, solvedCount }) {
           const pct = Math.round((item.solved / total) * 100);
           return (
             <div key={item.language}>
-              <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                <span className="font-medium text-white">{langLabels[item.language] ?? item.language}</span>
+              <div className="flex justify-between text-xs text-[var(--muted-foreground)] mb-1">
+                <span className="font-medium text-[var(--foreground)]">{langLabels[item.language] ?? item.language}</span>
                 <span>{item.solved} solved</span>
               </div>
-              <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-[var(--surface-elevated)] rounded-full overflow-hidden">
                 <div className="h-full bg-[var(--theme-primary,#2dd4bf)] rounded-full transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
@@ -38,14 +38,14 @@ function LanguageBreakdown({ languageBreakdown, solvedCount }) {
 
 function PinnedProblemsList({ pinnedProblems }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+      <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">
         Pinned Problems
       </h3>
       <div className="space-y-2">
         {pinnedProblems.map((p) => (
-          <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
-            <span className="text-sm text-zinc-300">{p.title}</span>
+          <div key={p.slug} className="flex items-center justify-between py-1.5 border-b border-[var(--border)] last:border-0">
+            <span className="text-sm text-[var(--muted-foreground)]">{p.title}</span>
             <DifficultyBadge difficulty={p.difficulty} />
           </div>
         ))}
@@ -56,14 +56,14 @@ function PinnedProblemsList({ pinnedProblems }) {
 
 function RecentSolvesList({ recentSolves }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-4">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6">
+      <h3 className="text-sm font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-4">
         Recent Solves
       </h3>
       <div className="space-y-2">
         {recentSolves.map((solve, i) => (
-          <div key={i} className="flex items-center justify-between py-1.5 border-b border-zinc-800 last:border-0">
-            <span className="text-sm text-zinc-300">{solve.title}</span>
+          <div key={i} className="flex items-center justify-between py-1.5 border-b border-[var(--border)] last:border-0">
+            <span className="text-sm text-[var(--muted-foreground)]">{solve.title}</span>
             <DifficultyBadge difficulty={solve.difficulty} />
           </div>
         ))}
