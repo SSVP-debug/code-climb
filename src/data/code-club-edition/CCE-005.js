@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def countMalwareClusters(self, grid, numCols):\n        # grid is a flat list of 0s and 1s\n        pass`,
     javascript: `function countMalwareClusters(grid, numCols) {\n  // grid is a flat array of 0s and 1s\n}`,
+    typescript: `function countMalwareClusters(grid, numCols) {\n  // grid is a flat array of 0s and 1s\n}`,
     java: `class Solution {\n    public int countMalwareClusters(int[] grid, int numCols) {\n        return 0;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    int countMalwareClusters(vector<int>& grid, int numCols) {\n        return 0;\n    }\n};`,
   },

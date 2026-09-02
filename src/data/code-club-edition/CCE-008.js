@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def findBreachTimestamp(self, logs, target):\n        pass`,
     javascript: `function findBreachTimestamp(logs, target) {\n\n}`,
+    typescript: `function findBreachTimestamp(logs, target) {\n\n}`,
     java: `class Solution {\n    public int findBreachTimestamp(int[] logs, int target) {\n        return -1;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    int findBreachTimestamp(vector<int>& logs, int target) {\n        return -1;\n    }\n};`,
   },

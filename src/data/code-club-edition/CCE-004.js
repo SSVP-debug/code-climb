@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def bestHeistWindow(self, changes):\n        pass`,
     javascript: `function bestHeistWindow(changes) {\n\n}`,
+    typescript: `function bestHeistWindow(changes) {\n\n}`,
     java: `class Solution {\n    public int bestHeistWindow(int[] changes) {\n        return 0;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    int bestHeistWindow(vector<int>& changes) {\n        return 0;\n    }\n};`,
   },

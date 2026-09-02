@@ -283,7 +283,7 @@ int main() {
  * generateOperationSequenceDriver — public entry point, mirrors
  * generateDriverCode()'s call shape.
  *
- * @param {string} language - "python" | "javascript" | "java" | "cpp"
+ * @param {string} language - "python" | "javascript" | "typescript" | "java" | "cpp"
  * @param {string} userCode - the user's class implementation
  * @param {{opNames: string[], opArgsList: any[][], constructorArgs: [string, any][]}} shape
  *   - the result of operationSequenceShape.js's identifyOperationSequence()
@@ -293,7 +293,20 @@ int main() {
 export function generateOperationSequenceDriver(language, userCode, shape, className, resultMode = "all") {
   const { constructorArgs, opNames, opArgsList } = shape;
 
-  if (language === "javascript") {
+  if (language === "javascript" || language === "typescript") {
+    // Phase 6 (Language Expansion, plan 010) follow-up — this file was
+    // completely missed by the original TypeScript rollout, which only
+    // touched generateDriverCode.js. This is a SEPARATE driver-gen path
+    // (constructor + method-sequence replay, not a single call), used by
+    // the 17/250 "operation-sequence" problems (LRU Cache, Trie-with-
+    // wildcard-search, MyCalendar, etc.) — those 17 would have thrown
+    // `Unsupported language: typescript` on every Run/Submit if
+    // `enabled: true` had been flipped without this fix. Same reasoning
+    // as generateDriverCode.js's typescript branch: reuse
+    // generateJsDriver directly rather than a separate function, since
+    // TypeScript is a structural superset of JS and there is nothing
+    // TS-specific about this file's literal-formatting or call-sequence
+    // logic to differ on.
     return generateJsDriver(userCode, className, constructorArgs, opNames, opArgsList, resultMode);
   }
   if (language === "python") {

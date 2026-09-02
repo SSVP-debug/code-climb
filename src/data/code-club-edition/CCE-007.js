@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def reverseSignalChain(self, chain):\n        pass`,
     javascript: `function reverseSignalChain(chain) {\n\n}`,
+    typescript: `function reverseSignalChain(chain) {\n\n}`,
     java: `class Solution {\n    public int[] reverseSignalChain(int[] chain) {\n        return new int[]{};\n    }\n}`,
     cpp: `class Solution {\npublic:\n    vector<int> reverseSignalChain(vector<int>& chain) {\n        return {};\n    }\n};`,
   },

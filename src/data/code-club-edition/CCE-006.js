@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def canApplyPatches(self, numPatches, dependencies):\n        pass`,
     javascript: `function canApplyPatches(numPatches, dependencies) {\n\n}`,
+    typescript: `function canApplyPatches(numPatches, dependencies) {\n\n}`,
     java: `class Solution {\n    public boolean canApplyPatches(int numPatches, int[][] dependencies) {\n        return false;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    bool canApplyPatches(int numPatches, vector<vector<int>>& dependencies) {\n        return false;\n    }\n};`,
   },

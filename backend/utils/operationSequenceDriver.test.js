@@ -64,6 +64,19 @@ describe("generateOperationSequenceDriver — structural checks", () => {
     expect(code).not.toContain("if constexpr"); // must not rely on C++17
   });
 
+  it("typescript: reuses generateJsDriver verbatim (Phase 6, plan 010 — this file was missed by the original TypeScript rollout, which only touched generateDriverCode.js; found via a real content-validation run, not by inspection)", () => {
+    const tsCode = generateOperationSequenceDriver(
+      "typescript", "class MinStack {}", minStackShape, "MinStack", "all"
+    );
+    const jsCode = generateOperationSequenceDriver(
+      "javascript", "class MinStack {}", minStackShape, "MinStack", "all"
+    );
+    expect(tsCode).toBe(jsCode);
+    expect(tsCode).toContain("new MinStack()");
+    expect(tsCode).toContain("_instance.push(-2)");
+    expect(tsCode).toContain("_instance.getMin()");
+  });
+
   it("resultMode \"returningOnly\" omits void-call entries instead of nulling them", () => {
     const jsCode = generateOperationSequenceDriver(
       "javascript", "class C {}", minStackShape, "C", "returningOnly"
@@ -149,6 +162,33 @@ private:
     },
     15_000
   );
+
+  // Node is always available in this environment (unlike g++/python3,
+  // which degrade gracefully above) — this is the strongest proof
+  // available that the typescript branch added this session actually
+  // works end-to-end, not just that it produces text matching the
+  // javascript branch's text (the structural test above already proves
+  // that; this proves the RESULT of actually running it is correct too).
+  it("typescript (via generateJsDriver reuse): a correct MinStack implementation produces the real stored expectedOutput", () => {
+    const userCode = `class MinStack {
+  constructor() { this.s = []; this.mn = []; }
+  push(val) { this.s.push(val); if (!this.mn.length || val <= this.mn[this.mn.length - 1]) this.mn.push(val); }
+  pop() { if (this.s[this.s.length - 1] === this.mn[this.mn.length - 1]) this.mn.pop(); this.s.pop(); }
+  top() { return this.s[this.s.length - 1]; }
+  getMin() { return this.mn[this.mn.length - 1]; }
+}`;
+
+    const code = generateOperationSequenceDriver("typescript", userCode, minStackShape, "MinStack", "all");
+    const dir = mkdtempSync(join(tmpdir(), "opseq-ts-test-"));
+    const file = join(dir, "driver.js"); // plain Node execution — no tsc needed, this IS just JS
+    writeFileSync(file, code);
+
+    const out = execFileSync("node", [file], { encoding: "utf-8" }).trim();
+
+    // Same real stored expectedOutput as the python/cpp equivalents above
+    // (minimum-stack's visible testcase, src/data/problems.js).
+    expect(JSON.parse(out)).toEqual([null, null, null, -3, null, 0, -2]);
+  });
 
   it.skipIf(!HAS_PYTHON3)(
     "python: a Twitter implementation returning vector/List results matches the real stored expectedOutput",

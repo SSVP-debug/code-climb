@@ -35,6 +35,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def findLedgerPair(self, amounts, target):\n        pass`,
     javascript: `function findLedgerPair(amounts, target) {\n\n}`,
+    typescript: `function findLedgerPair(amounts, target) {\n\n}`,
     java: `class Solution {\n    public int[] findLedgerPair(int[] amounts, int target) {\n        return new int[]{};\n    }\n}`,
     cpp: `class Solution {\npublic:\n    vector<int> findLedgerPair(vector<int>& amounts, int target) {\n        return {};\n    }\n};`,
   },

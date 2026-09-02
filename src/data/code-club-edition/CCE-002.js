@@ -23,6 +23,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def hasDuplicateSuspect(self, badgeIds):\n        pass`,
     javascript: `function hasDuplicateSuspect(badgeIds) {\n\n}`,
+    typescript: `function hasDuplicateSuspect(badgeIds) {\n\n}`,
     java: `class Solution {\n    public boolean hasDuplicateSuspect(int[] badgeIds) {\n        return false;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    bool hasDuplicateSuspect(vector<int>& badgeIds) {\n        return false;\n    }\n};`,
   },

@@ -24,6 +24,7 @@ export default {
   starterCode: {
     python: `class Solution:\n    def isValidLockCode(self, code):\n        pass`,
     javascript: `function isValidLockCode(code) {\n\n}`,
+    typescript: `function isValidLockCode(code) {\n\n}`,
     java: `class Solution {\n    public boolean isValidLockCode(String code) {\n        return false;\n    }\n}`,
     cpp: `class Solution {\npublic:\n    bool isValidLockCode(string code) {\n        return false;\n    }\n};`,
   },

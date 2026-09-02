@@ -1,5 +1,6 @@
 // Read-only structural pre-filter for the full problem-bank audit.
 import problems from "../../src/data/problems.js";
+import { SUPPORTED_LANGUAGE_KEYS } from "../config/languages.js";
 
 const issues = [];
 const flag = (slug, sev, type, msg) => issues.push({ slug, sev, type, msg });
@@ -40,7 +41,13 @@ for (const p of problems) {
     flag(p.slug, "HIGH", "no-hidden-testcases", "no hidden testcases — visible tests alone are gameable");
   }
 
-  ["python", "javascript", "java", "cpp"].forEach((lang) => {
+  // Phase 6 (Language Expansion, plan 010) follow-up: was hardcoded to
+  // ["python", "javascript", "java", "cpp"] — derived from the registry
+  // now so a future language's missing-starter-code / functionName-
+  // mismatch problems get caught by this audit automatically, the same
+  // "would this have caught it" reasoning as validateProblemContracts.js's
+  // identical fix this session.
+  SUPPORTED_LANGUAGE_KEYS.forEach((lang) => {
     const code = p.starterCode?.[lang];
     if (!code || !code.trim()) flag(p.slug, "HIGH", "missing-starter-code", `starterCode.${lang} missing/empty`);
     else if (!p.operationSequence?.enabled && p.functionName && !code.includes(p.functionName)) {

@@ -38,6 +38,7 @@ import problems from "../../src/data/problems.js";
 import { generateDriverCode } from "../utils/generateDriverCode.js";
 import { generateOperationSequenceDriver } from "../utils/operationSequenceDriver.js";
 import { identifyOperationSequence } from "../utils/operationSequenceShape.js";
+import { SUPPORTED_LANGUAGE_KEYS } from "../config/languages.js";
 
 const JAVA_RETURN_RE = /public\s+([\w<>[\],]+(?:\s*<[\w<>[\],\s]*>)?)\s+\w+\s*\(/;
 
@@ -201,7 +202,15 @@ function checkOperationSequenceGeneration(problem) {
       continue;
     }
 
-    for (const lang of ["python", "javascript", "java", "cpp"]) {
+    for (const lang of SUPPORTED_LANGUAGE_KEYS) {
+      // Phase 6 (Language Expansion, plan 010) follow-up: this used to
+      // hardcode ["python", "javascript", "java", "cpp"] — meaning this
+      // exact script would NOT have caught operationSequenceDriver.js
+      // missing a `typescript` branch entirely (a real bug found and
+      // fixed this session; see that file's own comment). Derived from
+      // the registry now specifically so this class of gap gets caught
+      // automatically for the next language too, rather than relying on
+      // someone remembering to update this literal array.
       if (!problem.starterCode?.[lang]) continue;
       try {
         generateOperationSequenceDriver(
