@@ -1,5 +1,11 @@
 class TimeMap {
-  constructor() {}
-  set(key, value, timestamp) {}
-  get(key, timestamp) { return ""; }
+  constructor() {
+    throw new Error("Not implemented");
+  }
+  set(key: string, value: string, timestamp: number): void {
+    throw new Error("Not implemented");
+  }
+  get(key: string, timestamp: number): string {
+    throw new Error("Not implemented");
+  }
 }

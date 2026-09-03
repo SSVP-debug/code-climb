@@ -1,5 +1,3 @@
-function solution(isBadVersion) {
-    return function(n) {
-
-    };
+function solution(isBadVersion: any): any {
+    throw new Error("Not implemented");
 }

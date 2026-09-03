@@ -1,3 +1,3 @@
-function reverseList(head) {
-
+function reverseList(head: number[]): number[] {
+    throw new Error("Not implemented");
 }

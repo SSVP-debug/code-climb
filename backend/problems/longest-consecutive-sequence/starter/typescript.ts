@@ -1,3 +1,3 @@
-function longestConsecutive(nums) {
-
+function longestConsecutive(nums: number[]): number {
+    throw new Error("Not implemented");
 }

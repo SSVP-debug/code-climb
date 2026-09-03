@@ -1,3 +1,3 @@
-function countSmaller(nums) {
-
+function countSmaller(nums: number[]): number[] {
+    throw new Error("Not implemented");
 }

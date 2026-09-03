@@ -1,3 +1,3 @@
-function numIslands(grid, numCols) {
-  // grid is a flat array of 0s and 1s
+function numIslands(grid: number[], numCols: number): number {
+    throw new Error("Not implemented");
 }

@@ -1,5 +1,11 @@
 class BSTIterator {
-  constructor(root) {}
-  next() { return 0; }
-  hasNext() { return false; }
+  constructor(root: any) {
+    throw new Error("Not implemented");
+  }
+  next(): number {
+    throw new Error("Not implemented");
+  }
+  hasNext(): boolean {
+    throw new Error("Not implemented");
+  }
 }

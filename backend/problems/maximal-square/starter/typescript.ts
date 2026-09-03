@@ -1,3 +1,3 @@
-function maximalSquare(matrix) {
-
+function maximalSquare(matrix: string[][]): number {
+    throw new Error("Not implemented");
 }

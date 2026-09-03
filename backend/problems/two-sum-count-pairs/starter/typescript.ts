@@ -1,3 +1,3 @@
-function countPairs(nums, target) {
-
+function countPairs(nums: number[], target: number): number {
+    throw new Error("Not implemented");
 }

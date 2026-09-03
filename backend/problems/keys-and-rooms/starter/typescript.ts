@@ -1,3 +1,3 @@
-function canVisitAllRooms(rooms) {
-
+function canVisitAllRooms(rooms: number[][]): boolean {
+    throw new Error("Not implemented");
 }

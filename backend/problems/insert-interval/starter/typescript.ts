@@ -1,3 +1,3 @@
-function insert(intervals, newInterval) {
-
+function insert(intervals: number[][], newInterval: number[]): number[][] {
+    throw new Error("Not implemented");
 }

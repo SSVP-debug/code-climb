@@ -1,3 +1,3 @@
-function findNumberOfLIS(nums) {
-
+function findNumberOfLIS(nums: number[]): number {
+    throw new Error("Not implemented");
 }

@@ -1,3 +1,3 @@
-function moveZeroes(nums) {
-
+function moveZeroes(nums: number[]): number[] {
+    throw new Error("Not implemented");
 }

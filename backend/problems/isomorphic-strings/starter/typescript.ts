@@ -1,3 +1,3 @@
-function isIsomorphic(s, t) {
-
+function isIsomorphic(s: string, t: string): boolean {
+    throw new Error("Not implemented");
 }

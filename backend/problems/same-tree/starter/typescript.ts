@@ -1,3 +1,3 @@
-function isSameTree(p, q) {
-  // p and q are level-order arrays, -1 = null
+function isSameTree(p: number[], q: number[]): boolean {
+    throw new Error("Not implemented");
 }

@@ -1,5 +1,11 @@
 class FreqStack {
-  constructor() {}
-  push(val) {}
-  pop() { return 0; }
+  constructor() {
+    throw new Error("Not implemented");
+  }
+  push(val: number): void {
+    throw new Error("Not implemented");
+  }
+  pop(): number {
+    throw new Error("Not implemented");
+  }
 }

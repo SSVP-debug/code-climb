@@ -1,3 +1,3 @@
-function reconstructQueue(people) {
-
+function reconstructQueue(people: number[][]): number[][] {
+    throw new Error("Not implemented");
 }

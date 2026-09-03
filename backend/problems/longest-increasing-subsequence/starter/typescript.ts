@@ -1,3 +1,3 @@
-function lengthOfLIS(nums) {
-
+function lengthOfLIS(nums: number[]): number {
+    throw new Error("Not implemented");
 }

@@ -1,3 +1,3 @@
-function diameterOfBinaryTree(root) {
-  // root is a level-order array, -1 = null
+function diameterOfBinaryTree(root: number[]): number {
+    throw new Error("Not implemented");
 }

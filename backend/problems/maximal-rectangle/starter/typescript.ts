@@ -1,3 +1,3 @@
-function maximalRectangle(matrix) {
-
+function maximalRectangle(matrix: string[][]): number {
+    throw new Error("Not implemented");
 }

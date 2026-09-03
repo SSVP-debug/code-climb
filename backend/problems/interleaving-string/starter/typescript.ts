@@ -1,3 +1,3 @@
-function isInterleave(s1, s2, s3) {
-
+function isInterleave(s1: string, s2: string, s3: string): boolean {
+    throw new Error("Not implemented");
 }

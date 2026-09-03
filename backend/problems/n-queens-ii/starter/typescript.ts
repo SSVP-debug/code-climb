@@ -1,3 +1,3 @@
-function totalNQueens(n) {
-
+function totalNQueens(n: number): number {
+    throw new Error("Not implemented");
 }

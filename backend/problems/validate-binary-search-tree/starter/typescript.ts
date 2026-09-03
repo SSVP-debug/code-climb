@@ -1,3 +1,3 @@
-function isValidBST(root) {
-  // root is a level-order array, -1 = null
+function isValidBST(root: number[]): boolean {
+    throw new Error("Not implemented");
 }

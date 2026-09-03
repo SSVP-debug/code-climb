@@ -1,3 +1,3 @@
-function intervalIntersection(firstList, secondList) {
-
+function intervalIntersection(firstList: number[][], secondList: number[][]): number[][] {
+    throw new Error("Not implemented");
 }

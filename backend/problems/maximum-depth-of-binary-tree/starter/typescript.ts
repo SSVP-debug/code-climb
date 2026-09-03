@@ -1,3 +1,3 @@
-function maxDepth(root) {
-  // root is a level-order array, -1 = null node
+function maxDepth(root: number[]): number {
+    throw new Error("Not implemented");
 }

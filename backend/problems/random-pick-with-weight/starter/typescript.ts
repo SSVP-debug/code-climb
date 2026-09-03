@@ -1,4 +1,8 @@
 class Solution {
-  constructor(w) {}
-  pickIndex() { return 0; }
+  constructor(w: number[]) {
+    throw new Error("Not implemented");
+  }
+  pickIndex(): number {
+    throw new Error("Not implemented");
+  }
 }

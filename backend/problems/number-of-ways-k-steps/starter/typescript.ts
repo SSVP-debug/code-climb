@@ -1,3 +1,3 @@
-function numberOfWays(startPos, endPos, k) {
-
+function numberOfWays(startPos: number, endPos: number, k: number): number {
+    throw new Error("Not implemented");
 }

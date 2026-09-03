@@ -1,3 +1,3 @@
-function cloneGraph(node) {
-
+function cloneGraph(node: any): any {
+    throw new Error("Not implemented");
 }

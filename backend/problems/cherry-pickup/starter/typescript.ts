@@ -1,3 +1,3 @@
-function cherryPickup(grid) {
-
+function cherryPickup(grid: number[][]): number {
+    throw new Error("Not implemented");
 }

@@ -1,3 +1,3 @@
-function maxSubArray(nums) {
-
+function maxSubArray(nums: number[]): number {
+    throw new Error("Not implemented");
 }

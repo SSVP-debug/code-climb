@@ -1,3 +1,3 @@
-function floodFill(image, numCols, sr, sc, color) {
-  // image is a flat array; reconstruct grid with numCols
+function floodFill(image: number[], numCols: number, sr: number, sc: number, color: number): number[] {
+    throw new Error("Not implemented");
 }

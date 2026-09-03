@@ -1,3 +1,3 @@
-function subsets(nums) {
-  // return the count of all subsets
+function subsets(nums: number[]): number {
+    throw new Error("Not implemented");
 }

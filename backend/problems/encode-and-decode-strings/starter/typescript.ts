@@ -1,7 +1,3 @@
-function encode(strs) {
-
-}
-
-function decode(s) {
-
+function encode(strs: string[]): string {
+    throw new Error("Not implemented");
 }

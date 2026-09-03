@@ -1,3 +1,3 @@
-function combinationSum(candidates, target) {
-  // return the count of unique combinations
+function combinationSum(candidates: number[], target: number): number {
+    throw new Error("Not implemented");
 }

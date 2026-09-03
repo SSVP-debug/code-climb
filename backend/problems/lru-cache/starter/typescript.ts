@@ -1,11 +1,11 @@
 class LRUCache {
-  constructor(capacity) {
-
+  constructor(capacity: number) {
+    throw new Error("Not implemented");
   }
-  get(key) {
-
+  get(key: number): number {
+    throw new Error("Not implemented");
   }
-  put(key, value) {
-
+  put(key: number, value: number): void {
+    throw new Error("Not implemented");
   }
 }

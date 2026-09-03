@@ -1,3 +1,3 @@
-function countAndSay(n) {
-
+function countAndSay(n: number): string {
+    throw new Error("Not implemented");
 }

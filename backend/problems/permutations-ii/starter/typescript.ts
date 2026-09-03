@@ -1,3 +1,3 @@
-function permuteUnique(nums) {
-
+function permuteUnique(nums: number[]): number[][] {
+    throw new Error("Not implemented");
 }

@@ -1,3 +1,3 @@
-function letterCasePermutation(s) {
-  // return the count of unique case permutations
+function letterCasePermutation(s: string): number {
+    throw new Error("Not implemented");
 }

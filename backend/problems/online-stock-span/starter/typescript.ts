@@ -1,4 +1,8 @@
 class StockSpanner {
-  constructor() {}
-  next(price) { return 0; }
+  constructor() {
+    throw new Error("Not implemented");
+  }
+  next(price: number): number {
+    throw new Error("Not implemented");
+  }
 }

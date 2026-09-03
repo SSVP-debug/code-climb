@@ -1,3 +1,3 @@
-function getOrder(tasks) {
-
+function getOrder(tasks: number[][]): number[] {
+    throw new Error("Not implemented");
 }

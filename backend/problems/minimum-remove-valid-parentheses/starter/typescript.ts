@@ -1,3 +1,3 @@
-function minRemoveToMakeValid(s) {
-
+function minRemoveToMakeValid(s: string): string {
+    throw new Error("Not implemented");
 }

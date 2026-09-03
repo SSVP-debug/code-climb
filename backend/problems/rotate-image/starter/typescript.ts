@@ -1,3 +1,3 @@
-function rotate(matrix) {
-
+function rotate(matrix: number[][]): void {
+    throw new Error("Not implemented");
 }

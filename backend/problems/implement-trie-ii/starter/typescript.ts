@@ -1,7 +1,17 @@
 class Trie {
-  constructor() {}
-  insert(word) {}
-  countWordsEqualTo(word) { return 0; }
-  countWordsStartingWith(prefix) { return 0; }
-  erase(word) {}
+  constructor() {
+    throw new Error("Not implemented");
+  }
+  insert(word: string): void {
+    throw new Error("Not implemented");
+  }
+  countWordsEqualTo(word: string): number {
+    throw new Error("Not implemented");
+  }
+  countWordsStartingWith(prefix: string): number {
+    throw new Error("Not implemented");
+  }
+  erase(word: string): void {
+    throw new Error("Not implemented");
+  }
 }

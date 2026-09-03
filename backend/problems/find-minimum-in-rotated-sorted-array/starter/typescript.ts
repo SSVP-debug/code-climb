@@ -1,3 +1,3 @@
-function findMin(nums) {
-
+function findMin(nums: number[]): number {
+    throw new Error("Not implemented");
 }

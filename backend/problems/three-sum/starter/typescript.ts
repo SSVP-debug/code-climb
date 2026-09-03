@@ -1,3 +1,3 @@
-function threeSum(nums) {
-  // return the count of unique triplets summing to 0
+function threeSum(nums: number[]): number {
+    throw new Error("Not implemented");
 }

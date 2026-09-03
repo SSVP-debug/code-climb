@@ -1,3 +1,3 @@
-function calculate(s) {
-
+function calculate(s: string): number {
+    throw new Error("Not implemented");
 }

@@ -1,3 +1,3 @@
-function findCheapestPrice(n, flights, src, dst, k) {
-
+function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {
+    throw new Error("Not implemented");
 }
