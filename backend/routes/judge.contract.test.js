@@ -108,8 +108,10 @@ describe("Judge execution contract: frontend request shape vs backend schema", (
       const result = runSchema.safeParse(body);
 
       expect(result.success).toBe(false);
+      // Was "...java, or cpp" — updated now that TypeScript is enabled
+      // too (plan 010, confirmed against the real Judge0 instance).
       expect(result.error.issues[0].message).toBe(
-        "language must be: python, javascript, java, or cpp"
+        "language must be: python, javascript, java, cpp, or typescript"
       );
     });
   });

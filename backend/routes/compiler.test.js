@@ -32,11 +32,28 @@ describe("routes/compiler.js — runCodeSchema language_id allow-list", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects a supported-but-disabled language_id (typescript, 74) until enabled — plan 010", () => {
+  it("rejects any supported-but-currently-disabled language_id, if one exists (plan 010's ENABLED-vs-SUPPORTED split)", () => {
+    // Was hardcoded to "typescript, 74" specifically — broke the moment
+    // TypeScript's own `enabled` flipped to `true` (confirmed against
+    // the real Judge0 instance via verifyLanguageRegistry.js, see plan
+    // 010). Computed from the live registry instead, so this test keeps
+    // proving the ENABLED-vs-SUPPORTED distinction is enforced whenever
+    // it's actually relevant again (the next language shipped disabled),
+    // rather than asserting a fact about one specific language that was
+    // always going to become false.
     const disabledIds = SUPPORTED_LANGUAGE_IDS.filter((id) => !ENABLED_LANGUAGE_IDS.includes(id));
-    expect(disabledIds).toContain(74);
 
-    const result = runCodeSchema.safeParse(validBody({ language_id: 74 }));
+    if (disabledIds.length === 0) {
+      // Nothing currently disabled-but-supported — SUPPORTED and ENABLED
+      // are the same set right now (true again as of TypeScript's
+      // enable). Not a gap: the "unsupported entirely" case right below
+      // still proves the allow-list itself works; this specific
+      // disabled-vs-supported distinction just has nothing live to
+      // assert against until a future language ships disabled.
+      return;
+    }
+
+    const result = runCodeSchema.safeParse(validBody({ language_id: disabledIds[0] }));
     expect(result.success).toBe(false);
     expect(result.error.issues[0].message).toMatch(/supported languages/i);
   });

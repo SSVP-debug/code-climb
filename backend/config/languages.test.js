@@ -188,9 +188,12 @@ describe("config/languages.js — registry", () => {
     expect(mod.getEnabledLanguagesForApi().map((l) => l.id)).not.toContain("cpp");
   }, 15000);
 
-  it("formatEnabledLanguageKeysMessage produces the historical message text when all four are enabled", async () => {
+  it("formatEnabledLanguageKeysMessage produces the historical message text when all five are enabled", async () => {
     const { formatEnabledLanguageKeysMessage } = await import("./languages.js");
-    expect(formatEnabledLanguageKeysMessage()).toBe("python, javascript, java, or cpp");
+    // Was "...java, or cpp" (four languages) — updated now that
+    // TypeScript is enabled too (plan 010, confirmed against the real
+    // Judge0 instance via verifyLanguageRegistry.js).
+    expect(formatEnabledLanguageKeysMessage()).toBe("python, javascript, java, cpp, or typescript");
   });
 });
 
@@ -207,6 +210,7 @@ describe("GET /api/languages — languageController.getLanguages", () => {
         { id: "javascript", name: "JavaScript", extension: "js", editorIndentSize: 2 },
         { id: "java", name: "Java", extension: "java", editorIndentSize: 4 },
         { id: "cpp", name: "C++", extension: "cpp", editorIndentSize: 4 },
+        { id: "typescript", name: "TypeScript", extension: "ts", editorIndentSize: 2 },
       ],
     });
   });

@@ -126,15 +126,15 @@ export const LANGUAGES = {
   // Judge0 instance both happen — see the note on judge0Id below.
   typescript: {
     name: "TypeScript",
-    // Judge0 CE's well-known id for "TypeScript (3.7.4)". Not yet
-    // confirmed against this project's actual self-hosted Judge0
-    // instance/version — confirm before flipping `enabled: true` (see
-    // docs/judge0-setup.md's instance-specific language list, if one
-    // gets added there, or query the instance's /languages endpoint).
+    // Judge0 CE's well-known id for "TypeScript (3.7.4)". Confirmed
+    // against this deployment's real Judge0 instance (public
+    // ce.judge0.com, not self-hosted — per JUDGE0_API_URL) via
+    // scripts/verifyLanguageRegistry.js on 2026-09-03: reports
+    // "TypeScript (3.7.4)" at id 74, matching this entry exactly.
     judge0Id: 74,
     extension: "ts",
     editorIndentSize: 2,
-    enabled: false,
+    enabled: true,
   },
 };
 
