@@ -40,7 +40,7 @@ function ThemesShowcase({ user }) {
         </h2>
         <p className="mt-4 text-[var(--muted-foreground)]">
           Pick a universe and Code Club reframes the whole experience
-          around it — same problems, same judge, a different story.
+          around it same problems, same judge, a different story.
         </p>
       </div>
 

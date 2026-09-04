@@ -290,7 +290,7 @@ function ClubPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">Contribute</p>
-            <p className="text-[var(--muted-foreground)] text-sm">Submit a problem or improve testcases — approved contributions are rewarded.</p>
+            <p className="text-[var(--muted-foreground)] text-sm">Submit a problem or improve testcases - approved contributions are rewarded.</p>
           </div>
           <ArrowRight
             size={16}

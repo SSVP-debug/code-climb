@@ -50,7 +50,7 @@ function ProblemSection() {
             Proving it is different.
           </h2>
           <p className="mt-4 max-w-sm text-[var(--muted-foreground)]">
-            Most platforms take your word for it — a checklist you fill in
+            Most platforms take your word for it a checklist you fill in
             yourself, with nothing behind it once someone actually asks.
           </p>
         </div>

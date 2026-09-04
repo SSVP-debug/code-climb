@@ -103,7 +103,7 @@ function LandingFooter({ user }) {
             <span className="text-xl font-bold tracking-tight text-[var(--foreground)]">Code Club</span>
           </div>
           <p className="text-sm text-[var(--muted-foreground)] leading-relaxed max-w-sm">
-            Verified solves, a provable profile, and everywhere that leads —
+            Verified solves, a provable profile, and everywhere that leads -
             practice, community, and real placement opportunity.
           </p>
           <p className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]">

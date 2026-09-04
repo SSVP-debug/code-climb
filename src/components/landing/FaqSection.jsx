@@ -37,11 +37,11 @@ import Reveal from "./Reveal";
 const FAQS = [
   {
     q: "Is Code Club free?",
-    a: "Yes — right now, every feature is free and unlocked for every student: all problems, AI hints, themes, and interview mode. Pricing will launch later as the platform grows, but nothing you use today gets taken away retroactively.",
+    a: "Yes - right now, every feature is free and unlocked for every student: all problems, AI hints, themes, and interview mode. Pricing will launch later as the platform grows, but nothing you use today gets taken away retroactively.",
   },
   {
     q: "How are solutions actually verified?",
-    a: "On submit, your code runs against hidden test cases on the server — not in your browser. The verdict is set there, so an accepted solve isn't something you could fake by only handling the example shown on the problem page.",
+    a: "On submit, your code runs against hidden test cases on the server - not in your browser. The verdict is set there, so an accepted solve isn't something you could fake by only handling the example shown on the problem page.",
   },
   {
     q: "What are hidden test cases?",
@@ -49,7 +49,7 @@ const FAQS = [
   },
   {
     q: "Can I try it without creating an account?",
-    a: "Yes. Guest Mode lets you explore the Student, Recruiter, or TPO side of the product without signing up — pick one from the portal page and continue as a guest.",
+    a: "Yes. Guest Mode lets you explore the Student, Recruiter, or TPO side of the product without signing up - pick one from the portal page and continue as a guest.",
   },
   {
     q: "What languages are supported?",
@@ -57,7 +57,7 @@ const FAQS = [
   },
   {
     q: "What does a \"verified profile\" actually mean?",
-    a: "Your public profile shows solve history that was checked server-side, not self-reported. Certifications go further — each one has a verification code anyone can check independently, so a recruiter or TPO isn't taking your word for it.",
+    a: "Your public profile shows solve history that was checked server-side, not self-reported. Certifications go further - each one has a verification code anyone can check independently, so a recruiter or TPO isn't taking your word for it.",
   },
   {
     q: "Who is Code Club actually for?",

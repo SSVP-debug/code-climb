@@ -23,21 +23,21 @@ const STAGES = [
     Icon: Terminal,
     index: "01",
     title: "Solve",
-    body: "You write and run code against the problem's public test cases — same as any online judge.",
+    body: "You write and run code against the problem's public test cases same as any online judge.",
   },
   {
     id: "verify",
     Icon: ShieldCheck,
     index: "02",
     title: "Verify",
-    body: "On submit, the server checks your solution against hidden test cases it never exposes to the browser. The verdict is set there — not on your machine.",
+    body: "On submit, the server checks your solution against hidden test cases it never exposes to the browser. The verdict is set there not on your machine.",
   },
   {
     id: "prove",
     Icon: BadgeCheck,
     index: "03",
     title: "Prove",
-    body: "An accepted solve becomes a permanent, verifiable entry on your profile — not a box you checked yourself.",
+    body: "An accepted solve becomes a permanent, verifiable entry on your profile not a box you checked yourself.",
   },
 ];
 
@@ -52,7 +52,7 @@ function CompetitorComparison() {
           Solve. Verify. Prove.
         </h2>
         <p className="mt-4 text-[var(--muted-foreground)]">
-          Every accepted solve goes through the same three steps — nothing
+          Every accepted solve goes through the same three steps nothing
           about it is self-reported.
         </p>
       </div>

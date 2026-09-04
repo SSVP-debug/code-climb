@@ -91,7 +91,7 @@ function CommunitySection() {
                 </p>
                 <p className="mt-1.5 text-[var(--muted-foreground)]">
                   Leaderboards, public and private contests, and everyone
-                  else working through the same problems — all under one
+                  else working through the same problems -all under one
                   roof.
                 </p>
                 <Button to="/club" variant="secondary" size="sm" className="mt-4 group">

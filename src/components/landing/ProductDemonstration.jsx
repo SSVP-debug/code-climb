@@ -83,7 +83,7 @@ function ProductDemonstration() {
           </h2>
           <p className="mt-4 text-[var(--muted-foreground)]">
             What happens between hitting Run and a solve becoming part of
-            your proof — shown step by step, not as a live submission.
+            your proof shown step by step, not as a live submission.
           </p>
           <p className="sr-only">
             Demonstration of the Code Club workflow: a problem prompt
@@ -131,7 +131,7 @@ function ProductDemonstration() {
                   />
                 </svg>
                 <p className="mt-1 max-w-[9.5rem] font-mono-ui text-[11px] leading-snug text-zinc-500">
-                  Set server-side — never by the browser
+                  Set server-side never by the browser
                 </p>
               </div>
             </div>
@@ -145,7 +145,7 @@ function ProductDemonstration() {
           </div>
 
           <p className="mt-4 text-center font-mono-ui text-[11px] text-[var(--muted-foreground)]">
-            Illustrative walkthrough — not a live submission.
+            Illustrative walkthrough not a live submission.
           </p>
         </div>
       </div>

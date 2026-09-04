@@ -13,20 +13,20 @@ const FEATURES = [
     title: "Live AI Mock Interviews",
     tag: "Live",
     description:
-      "Practice with an AI interviewer that asks follow-ups, pushes on your approach, and gives real feedback — not just a hint panel.",
+      "Practice with an AI interviewer that asks follow-ups, pushes on your approach, and gives real feedback not just a hint panel.",
     featured: true,
   },
   {
     Icon: Layers,
     title: "Themed Universes",
     description:
-      "Practice as a lab scientist cracking experiments or a hacker breaching digital vaults — five story worlds built on the same DSA curriculum.",
+      "Practice as a lab scientist cracking experiments or a hacker breaching digital vaults five story worlds built on the same DSA curriculum.",
   },
   {
     Icon: Zap,
     title: "Multi-language Judge",
     description:
-      "Submit in Python, JavaScript, Java, or C++. Runs against hidden test cases on our Judge0 backend — same as production interviews.",
+      "Submit in Python, JavaScript, Java, or C++. Runs against hidden test cases on our Judge0 backend same as production interviews.",
   },
   {
     Icon: Brain,
@@ -38,7 +38,7 @@ const FEATURES = [
     Icon: Flame,
     title: "Streaks & XP",
     description:
-      "Daily challenges, streak tracking, and unlockable themes — built to keep you coming back, not just once a week before an interview.",
+      "Daily challenges, streak tracking, and unlockable themes built to keep you coming back, not just once a week before an interview.",
   },
   {
     Icon: BarChart3,
@@ -50,7 +50,7 @@ const FEATURES = [
     Icon: Trophy,
     title: "Public Profile",
     tag: "Beta",
-    description: `Share your solve history at ${SITE_DOMAIN}/u/yourname — consistency speaks louder than a resume line.`,
+    description: `Share your solve history at ${SITE_DOMAIN}/u/yourname consistency speaks louder than a resume line.`,
   },
 ];
 

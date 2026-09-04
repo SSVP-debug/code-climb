@@ -72,7 +72,7 @@ const ROLES = [
     index: "02",
     Icon: Briefcase,
     title: "Recruiters",
-    body: "Search candidates by real, server-verified solve history and send skills tests directly — no resume guesswork.",
+    body: "Search candidates by real, server-verified solve history and send skills tests directly - no resume guesswork.",
     cta: "Recruiter access",
     accent: "role-recruiter",
   },
@@ -81,7 +81,7 @@ const ROLES = [
     index: "03",
     Icon: Building2,
     title: "TPOs",
-    body: "Track your batch's placement readiness — solve counts, streaks, topic coverage — in one dashboard instead of a spreadsheet.",
+    body: "Track your batch's placement readiness -solve counts, streaks, topic coverage - in one dashboard instead of a spreadsheet.",
     cta: "TPO dashboard",
     accent: "role-tpo",
   },
@@ -102,7 +102,7 @@ function AudienceGrid({ user }) {
           </h2>
           <p className="mt-4 max-w-sm text-[var(--muted-foreground)]">
             Practice and proof stay yours. What happens with them depends
-            on who&apos;s looking — a recruiter searching by real solve
+            on who&apos;s looking -a recruiter searching by real solve
             history, or a TPO reading a whole batch&apos;s readiness.
           </p>
         </div>

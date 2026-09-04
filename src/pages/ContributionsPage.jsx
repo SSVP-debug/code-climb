@@ -100,7 +100,7 @@ export default function ContributionsPage() {
               <EmptyState
                 icon="🧩"
                 title="No contributions yet"
-                description="Submit your first one above — every submission shows up here."
+                description="Submit your first one above every submission shows up here."
                 compact
               />
             </SectionCard>

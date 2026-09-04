@@ -35,7 +35,7 @@ function CtaSection({ user }) {
           Prove it. Don&apos;t just say it.
         </h2>
         <p className="mt-5 text-[var(--muted-foreground)]">
-          Every problem here is graded the same way — hidden test cases,
+          Every problem here is graded the same way - hidden test cases,
           checked server-side, no exceptions. Start building a solve
           history that means something.
         </p>
@@ -47,7 +47,7 @@ function CtaSection({ user }) {
             size="xl"
             className="shadow-xl shadow-verdict-accept/10"
           >
-            {user ? "Go to Dashboard →" : "Start Solving — Free →"}
+            {user ? "Go to Dashboard →" : "Start Solving Free →"}
           </Button>
         </div>
 
