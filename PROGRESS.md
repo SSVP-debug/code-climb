@@ -994,3 +994,101 @@ full unit suite still 101/101 files / 1136/1136 tests) but the
 integration tier itself still needs a real CI run to confirm -- this
 fix has NOT been executed against a real Mongo from this environment,
 same limitation as every other integration test here.
+
+---
+
+## Black & White Mode — audit + completion (Sept 2026 session)
+
+**Context:** Bunny reported the Black & White Mode toggle "not sure it was
+implemented fully" and asked for an audit + fix, explicitly scoped to
+*only* the toggle (no other product changes). This feature was never
+logged in PROGRESS.md before this session — no prior phase entry exists
+for it, so this audit had no tracker claims to verify against, only the
+live code.
+
+### Audit findings
+
+The toggle's core infrastructure was solid: `BWModeContext`/`useBWMode`/
+`bwModeStorage` (persistence, pre-paint inline script to avoid a flash of
+the wrong theme), and semantic tokens (`--background`, `--foreground`,
+`--surface`, `--surface-elevated`, `--border`, `--border-strong`,
+`--muted-foreground`) toggled via an `html.bw-mode` class in `index.css`.
+207 of 284 `.jsx` files already consumed these tokens correctly.
+
+**The gap: 56 files bypassed the tokens with hardcoded Tailwind dark
+classes** (`bg-zinc-900`, `text-white`, etc.) that never reacted to the
+toggle. The worst of it was exactly the area Bunny was worried about —
+the problem workspace / test-results path:
+
+- `TestcaseResultPanel.jsx` (the literal testcase Input/Expected/Actual
+  display) used a *second, entirely separate* static color system
+  (`bg-ink-900/950`, defined as static hex values in index.css's
+  `@theme` block, not CSS custom properties) — invisible to a first-pass
+  grep for `zinc-`/`gray-`/etc. Only found by grepping for `ink-`
+  specifically after noticing the pattern in one file.
+- `ProblemEditor.jsx` and `InterviewModePage.jsx` both hardcoded the
+  Monaco editor itself to `theme="vs-dark"` — the actual code being
+  typed never switched theme even though the chrome around it did (or,
+  pre-fix, didn't either).
+- `ProblemLayout.jsx` (the full-page wrapper for every problem page) had
+  its entire `<body>`-level background and header hardcoded dark.
+
+### What was fixed (~28 files)
+
+Full problem-workspace chain: `ProblemLayout`, `ProblemEditor` (+ Monaco
+theme), `TestcaseResultPanel`, `WorkspacePanel`, `SubmitResultCard`,
+`SubmissionHistory`, `SubmissionDetailsModal`, `ProblemWorkspaceLayout`,
+`MobileTabBar`, `EditorMoreMenu`, the submission-experience modals
+(`NextBestProblemCard`, `ReflectionPrompt`, `SubmissionCelebrationModal`),
+the live `SubmissionResultBanner` (workspace/, not the unused
+problem/workspace/ duplicate — see below). Plus: shared `Button`,
+`ContactChannels`, `RecommendationSection`, `PublicProfileCard`,
+`InterviewModePage` (+ its own Monaco instance), `ThemeSelectionPage`,
+`ContestsPage`, `CandidateTestsPage`, `LandingFooter`, `QuizResultModal`,
+`DailyQuizGuard`/`DailyQuizGate` (full-screen quiz gate, seen by every
+student), and `App.jsx`'s route-transition loading screen.
+
+`ProblemEditor.test.jsx` needed a matching update: mocked `useBWMode`
+the same way the file already mocks `useTheme`, since the component now
+calls it and the test wasn't wrapped in a provider.
+
+### Deliberately left unchanged
+
+- **Fixed-dark "terminal readout" surfaces** — `HeroTerminal.jsx`,
+  `ShareCardCanvas.jsx` (a downloadable branded share-card image, not a
+  live UI surface), and the small diff/error output chips inside
+  `SubmitResultCard`/`SubmissionDetailsModal`/`WorkspacePanel`. These
+  use light-on-dark status colors (green-300/red-300/amber-500) that
+  would fail contrast on a white background — flipping them would make
+  things *less* readable, not more. This matches an existing, documented
+  precedent already in `index.css` for `HeroTerminal`/Hero ProofCard.
+- **Modal backdrop scrims** (`bg-black/NN` on ~20 files: `ConfirmDialog`,
+  `CommandPalette`, `SideDrawer`, most feature modals, admin pages) — a
+  standard semi-transparent overlay pattern, not a themed surface.
+- **`BottomWorkspaceTabs.jsx`** — confirmed dead code (not imported
+  anywhere; superseded by `WorkspacePanel`'s own built-in tab bar). Left
+  as-is rather than editing unused code.
+- **`src/components/problem/workspace/SubmissionResultBanner.jsx`** — a
+  second, unused duplicate of the live `src/components/workspace/`
+  version. Flagged here for a future cleanup pass (not touched, since
+  deleting/consolidating files wasn't in scope for this fix and it has
+  zero runtime effect either way).
+
+### Verification
+
+- `eslint` on all touched files: clean
+- `vitest run`: 64/64 test files, 400/400 tests passing
+- `npm run build`: succeeds
+- Diff scoped to exactly the files listed above — `package-lock.json`
+  churn from running `npm install` locally was reverted before handoff,
+  per Bunny's explicit "only Black & White Mode, nothing else touched"
+  constraint.
+
+### Not done / carried forward
+
+- Deleting or consolidating the dead `problem/workspace/
+  SubmissionResultBanner.jsx` duplicate — flagged, not actioned.
+- No further systemic sweep beyond the two greps used here
+  (`zinc-9/8|gray-9/8|slate-9/8|neutral-9/8|black` and `ink-`) — if a
+  third hardcoded-color convention exists somewhere in the codebase
+  under a different naming scheme, it wasn't caught by this pass.

@@ -70,13 +70,13 @@ function SubmissionCelebrationModal({ submitInfo, problem, nextBestProblem }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-900 shadow-2xl shadow-black/50 p-6 animate-celebration-pop-in"
+        className="relative w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl shadow-black/50 p-6 animate-celebration-pop-in"
       >
         <button
           type="button"
           onClick={() => setVisible(false)}
           aria-label="Close"
-          className="absolute top-3 right-3 p-1.5 rounded-full text-zinc-500 hover:text-white hover:bg-zinc-800 transition"
+          className="absolute top-3 right-3 p-1.5 rounded-full text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition"
         >
           <X size={16} />
         </button>
@@ -107,7 +107,7 @@ function SubmissionCelebrationModal({ submitInfo, problem, nextBestProblem }) {
           >
             {theme.words?.accepted ?? "Accepted"}
           </p>
-          <h2 className="text-lg font-bold text-white leading-snug truncate max-w-full px-2">
+          <h2 className="text-lg font-bold text-[var(--foreground)] leading-snug truncate max-w-full px-2">
             {problem.title}
           </h2>
 
@@ -123,11 +123,11 @@ function SubmissionCelebrationModal({ submitInfo, problem, nextBestProblem }) {
           </div>
 
           {/* Encouraging message — never algorithm hints, never solution talk. */}
-          <p className="text-sm text-zinc-400 mt-3">{encouragement}</p>
+          <p className="text-sm text-[var(--muted-foreground)] mt-3">{encouragement}</p>
         </div>
 
         {/* ── Reflection Score (Feature 3) ─────────────────────────────── */}
-        <div className="mt-5 pt-4 border-t border-zinc-800">
+        <div className="mt-5 pt-4 border-t border-[var(--border)]">
           <ReflectionPrompt submissionId={submissionId} />
         </div>
 
@@ -136,7 +136,7 @@ function SubmissionCelebrationModal({ submitInfo, problem, nextBestProblem }) {
             when every recommendation strategy came up empty (the user has
             solved everything currently available to them), which is a
             completion state worth celebrating, not an empty section. */}
-        <div className="mt-4 pt-4 border-t border-zinc-800">
+        <div className="mt-4 pt-4 border-t border-[var(--border)]">
           {nextBestProblem ? (
             <NextBestProblemCard nextProblem={nextBestProblem} />
           ) : (

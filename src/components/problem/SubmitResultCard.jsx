@@ -57,7 +57,7 @@ function PassRatioBar({ passed, total }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-zinc-400 font-mono">
+        <span className="text-[var(--muted-foreground)] font-mono">
           {passed} / {total} testcases passed
         </span>
         <span
@@ -70,7 +70,7 @@ function PassRatioBar({ passed, total }) {
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+      <div className="h-1.5 w-full bg-[var(--surface-elevated)] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             allPassed ? "bg-green-500" : "bg-red-500"
@@ -95,13 +95,18 @@ function DiffPanel({ expectedOutput, actualOutput }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">
+      <p className="text-xs text-[var(--muted-foreground)] font-mono uppercase tracking-widest">
         Output diff
       </p>
       <div className="grid grid-cols-2 gap-3">
-        {/* Expected */}
+        {/* Expected / Actual output chips are deliberately kept on a fixed
+            dark well (like a terminal readout) in both Black & White Mode —
+            the green-300/red-300 status text here is calibrated for a dark
+            background and would fail contrast on white, same reasoning as
+            HeroTerminal in index.css. Only the surrounding labels/card flip
+            with the theme. */}
         <div className="space-y-1">
-          <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
+          <span className="text-[10px] text-[var(--muted-foreground)] font-mono uppercase tracking-widest">
             Expected
           </span>
           <div className="bg-zinc-950 border border-green-500/20 rounded-lg px-3 py-2 font-mono text-xs text-green-300 break-all min-h-[36px]">
@@ -111,7 +116,7 @@ function DiffPanel({ expectedOutput, actualOutput }) {
 
         {/* Actual */}
         <div className="space-y-1">
-          <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
+          <span className="text-[10px] text-[var(--muted-foreground)] font-mono uppercase tracking-widest">
             Your output
           </span>
           <div
@@ -121,7 +126,7 @@ function DiffPanel({ expectedOutput, actualOutput }) {
                 : "border-red-500/20 text-red-300"
             }`}
           >
-            {actual || <span className="text-zinc-600 italic">empty</span>}
+            {actual || <span className="text-zinc-500 italic">empty</span>}
           </div>
         </div>
       </div>
@@ -140,8 +145,8 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
   // Nothing to show before the first submission
   if (!submitResult) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center justify-center min-h-[160px]">
-        <p className="text-zinc-600 text-sm font-mono">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 flex items-center justify-center min-h-[160px]">
+        <p className="text-[var(--muted-foreground)] text-sm font-mono">
           Submit your code to see results
         </p>
       </div>
@@ -155,7 +160,7 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
   return (
     <div
       className={`
-        bg-zinc-900 border rounded-2xl p-5 space-y-4
+        bg-[var(--surface)] border rounded-2xl p-5 space-y-4
         transition-all duration-300
         ${meta.border}
       `}
@@ -175,7 +180,7 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
 
           {/* Already solved line */}
           {isAccepted && !isFirstSolve && (
-            <p className="text-xs text-zinc-500 font-mono pl-1 pt-0.5">
+            <p className="text-xs text-[var(--muted-foreground)] font-mono pl-1 pt-0.5">
               Already solved — submission recorded
             </p>
           )}
@@ -184,7 +189,7 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
         {/* Execution time — top right */}
         {submitResult.executionTime !== undefined &&
           submitResult.executionTime !== null && (
-            <span className="text-[11px] text-zinc-600 font-mono pt-1 shrink-0">
+            <span className="text-[11px] text-[var(--muted-foreground)] font-mono pt-1 shrink-0">
               {submitResult.executionTime}ms
             </span>
           )}
@@ -213,9 +218,10 @@ export default function SubmitResultCard({ submitResult, isFirstSolve }) {
         meta.kind === "error") &&
         submitResult.error && (
           <div className="space-y-1">
-            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">
+            <p className="text-xs text-[var(--muted-foreground)] font-mono uppercase tracking-widest">
               Error detail
             </p>
+            {/* Fixed dark well — same reasoning as the diff chips above. */}
             <div className="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 font-mono text-xs text-red-300 break-all whitespace-pre-wrap max-h-[120px] overflow-y-auto">
               {submitResult.error}
             </div>

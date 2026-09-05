@@ -89,7 +89,7 @@ export default function SubmissionResultBanner({
                         message:
                             "The evaluation system encountered an issue.",
                         classes:
-                            "border-ink-700 bg-ink-800 text-zinc-300",
+                            "border-[var(--border-strong)] bg-[var(--surface-elevated)] text-[var(--foreground)]",
                     };
 
     return (

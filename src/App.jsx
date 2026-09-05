@@ -84,10 +84,10 @@ const AdminOpportunityAnalyticsPage = lazy(() => import("./pages/admin/AdminOppo
 // so there's no white flash during navigation.
 function PageLoader() {
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-2 border-[var(--theme-primary,#2dd4bf)] border-t-transparent rounded-full animate-spin" />
-        <p className="text-zinc-500 text-sm">Loading…</p>
+        <p className="text-[var(--muted-foreground)] text-sm">Loading…</p>
       </div>
     </div>
   );

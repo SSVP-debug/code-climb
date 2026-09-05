@@ -28,16 +28,16 @@ function SubmissionDetailsModal({ submission, onClose }) {
         onClick={onClose}
       />
       
-      <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-zinc-800 bg-zinc-900/50">
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border)] bg-[var(--surface)]/50">
           <div>
-            <h2 className="text-xl font-bold text-white mb-1">Submission Details</h2>
-            <p className="text-xs text-zinc-500 font-mono">ID: {submission._id || submission.id}</p>
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-1">Submission Details</h2>
+            <p className="text-xs text-[var(--muted-foreground)] font-mono">ID: {submission._id || submission.id}</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+            className="p-2 hover:bg-[var(--surface-elevated)] rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -48,21 +48,21 @@ function SubmissionDetailsModal({ submission, onClose }) {
         {/* Content */}
         <div className="p-6 overflow-y-auto custom-scrollbar flex-grow space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Status</p>
+            <div className="bg-[var(--surface-elevated)]/30 border border-[var(--border-strong)]/30 rounded-xl p-3">
+              <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Status</p>
               <p className={`text-sm font-bold ${getStatusMeta(submission.status).color}`}>{submission.status}</p>
             </div>
-            <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Language</p>
-              <p className="text-sm font-bold text-zinc-200 uppercase">{submission.language}</p>
+            <div className="bg-[var(--surface-elevated)]/30 border border-[var(--border-strong)]/30 rounded-xl p-3">
+              <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Language</p>
+              <p className="text-sm font-bold text-[var(--foreground)] uppercase">{submission.language}</p>
             </div>
-            <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Runtime</p>
-              <p className="text-sm font-bold text-zinc-200 font-mono">{formatRuntime(submission.executionTime) || '0'}ms</p>
+            <div className="bg-[var(--surface-elevated)]/30 border border-[var(--border-strong)]/30 rounded-xl p-3">
+              <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Runtime</p>
+              <p className="text-sm font-bold text-[var(--foreground)] font-mono">{formatRuntime(submission.executionTime) || '0'}ms</p>
             </div>
-            <div className="bg-zinc-800/30 border border-zinc-700/30 rounded-xl p-3">
-              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1">Passed</p>
-              <p className="text-sm font-bold text-zinc-200">{submission.passed}/{submission.total}</p>
+            <div className="bg-[var(--surface-elevated)]/30 border border-[var(--border-strong)]/30 rounded-xl p-3">
+              <p className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Passed</p>
+              <p className="text-sm font-bold text-[var(--foreground)]">{submission.passed}/{submission.total}</p>
             </div>
           </div>
 
@@ -79,9 +79,12 @@ function SubmissionDetailsModal({ submission, onClose }) {
 
              {(submission.expectedOutput || submission.actualOutput) && (
                <div className="space-y-4 pt-2">
+                 {/* Expected/Actual output wells kept on a fixed dark
+                     background in both modes (like a terminal readout) —
+                     same reasoning as SubmitResultCard's diff chips. */}
                  {submission.expectedOutput && (
                    <div className="space-y-2">
-                     <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Expected Output</p>
+                     <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest">Expected Output</p>
                      <div className="bg-black border border-zinc-800 rounded-xl p-4 font-mono text-xs text-zinc-400 overflow-x-auto">
                        {typeof submission.expectedOutput === 'object' 
                          ? JSON.stringify(submission.expectedOutput, null, 2) 
@@ -91,7 +94,7 @@ function SubmissionDetailsModal({ submission, onClose }) {
                  )}
                  {submission.actualOutput && (
                    <div className="space-y-2">
-                     <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Actual Output</p>
+                     <p className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest">Actual Output</p>
                      <div className="bg-black border border-zinc-800 rounded-xl p-4 font-mono text-xs text-amber-500 overflow-x-auto">
                         {typeof submission.actualOutput === 'object'
                           ? JSON.stringify(submission.actualOutput, null, 2)
@@ -105,10 +108,10 @@ function SubmissionDetailsModal({ submission, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-zinc-800 bg-zinc-900/50 flex justify-end">
+        <div className="p-4 border-t border-[var(--border)] bg-[var(--surface)]/50 flex justify-end">
           <button 
             onClick={onClose}
-            className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-sm font-semibold transition-colors"
+            className="px-6 py-2 bg-[var(--surface-elevated)] hover:brightness-110 text-[var(--foreground)] rounded-xl text-sm font-semibold transition-colors"
           >
             Close
           </button>

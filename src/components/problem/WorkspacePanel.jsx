@@ -15,8 +15,8 @@ function DebugPanel({
     if (isRunning || isSubmitting) {
         return (
             <div className="p-5 space-y-3 animate-pulse">
-                <div className="h-4 w-32 rounded bg-zinc-950" />
-                <div className="h-24 rounded-lg bg-zinc-950" />
+                <div className="h-4 w-32 rounded bg-[var(--surface-elevated)]" />
+                <div className="h-24 rounded-lg bg-[var(--surface-elevated)]" />
             </div>
         );
     }
@@ -44,13 +44,13 @@ function DebugPanel({
                 <div className="p-5 space-y-3">
                     <ErrorHeader kind="runtime" theme={theme} />
                     <div className="space-y-1.5">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-500">
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--muted-foreground)]">
                             Example {erroredCase.index + 1}
                         </span>
                         <ErrorBlock text={erroredCase.error} color="red" />
                     </div>
                     {runResults.results.filter((r) => r.error).length > 1 && (
-                        <p className="text-xs text-zinc-500 font-mono">
+                        <p className="text-xs text-[var(--muted-foreground)] font-mono">
                             + {runResults.results.filter((r) => r.error).length - 1} more
                             runtime error{runResults.results.filter((r) => r.error).length > 2 ? "s" : ""}
                         </p>
@@ -91,7 +91,7 @@ function DebugPanel({
                     <ErrorHeader kind={kind} label={submitInfo.status} theme={theme} />
                     {submitInfo.error && <ErrorBlock text={submitInfo.error} color="red" />}
                     {submitInfo.passed !== undefined && (
-                        <p className="text-xs text-zinc-500 font-mono">
+                        <p className="text-xs text-[var(--muted-foreground)] font-mono">
                             {submitInfo.passed}/{submitInfo.total} testcases passed before error
                         </p>
                     )}
@@ -103,9 +103,9 @@ function DebugPanel({
     return (
         <div className="flex items-center justify-center h-full min-h-[160px]">
             <div className="text-center space-y-2">
-                <Bug size={28} strokeWidth={1.75} className="mx-auto text-zinc-700" aria-hidden="true" />
-                <p className="text-zinc-600 text-sm font-mono">No errors to show</p>
-                <p className="text-zinc-700 text-xs font-mono">
+                <Bug size={28} strokeWidth={1.75} className="mx-auto text-[var(--muted-foreground)]" aria-hidden="true" />
+                <p className="text-[var(--muted-foreground)] text-sm font-mono">No errors to show</p>
+                <p className="text-[var(--muted-foreground)] text-xs font-mono">
                     Runtime errors and compile errors appear here
                 </p>
             </div>
@@ -131,13 +131,13 @@ function getKindMeta(theme) {
 
         judge: {
             label: theme.words.judgeError,
-            color: "text-zinc-400",
+            color: "text-[var(--muted-foreground)]",
             icon: Settings,
         },
 
         infra: {
             label: "Runner Unavailable",
-            color: "text-zinc-400",
+            color: "text-[var(--muted-foreground)]",
             icon: Settings,
         },
 
@@ -182,7 +182,7 @@ function ErrorHeader({ kind, label, theme }) {
 const COLOR_CLASSES = {
     yellow: "border-yellow-500/25 text-yellow-200",
     red: "border-red-500/25    text-red-300",
-    zinc: "border-zinc-700      text-zinc-400",
+    zinc: "border-[var(--border-strong)]      text-[var(--muted-foreground)]",
 };
 
 function ErrorBlock({ text, color = "red" }) {
@@ -190,7 +190,7 @@ function ErrorBlock({ text, color = "red" }) {
     return (
         <div
             className={`
-        bg-zinc-950 border rounded-lg px-3 py-2.5
+        bg-[var(--background)] border rounded-lg px-3 py-2.5
         font-mono text-xs whitespace-pre-wrap break-all
         max-h-56 overflow-y-auto
         ${COLOR_CLASSES[color] ?? COLOR_CLASSES.red}
@@ -259,7 +259,7 @@ overflow-hidden
 
             {/* ── Tab bar — flex-shrink-0, always visible ───────────────────── */}
             <div
-                className="flex items-center border-b border-zinc-700 px-1 pt-1 flex-shrink-0"
+                className="flex items-center border-b border-[var(--border-strong)] px-1 pt-1 flex-shrink-0"
             >
 
                 {TABS.map((tab) => {
@@ -288,7 +288,7 @@ overflow-hidden
                             className={`
                 relative px-5 py-3 text-sm font-mono font-medium
                 flex items-center gap-2 transition-colors duration-150
-                ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
+                ${isActive ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}
               `}
                         >
                             {tab === "testcases"
@@ -302,7 +302,7 @@ overflow-hidden
                             )}
 
                             {isActive && (
-                                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />
+                                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--foreground)] rounded-t-full" />
                             )}
                         </button>
                     );

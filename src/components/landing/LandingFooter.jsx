@@ -103,7 +103,7 @@ function LandingFooter({ user }) {
             <span className="text-xl font-bold tracking-tight text-[var(--foreground)]">Code Club</span>
           </div>
           <p className="text-sm text-[var(--muted-foreground)] leading-relaxed max-w-sm">
-            Verified solves, a provable profile, and everywhere that leads -
+            Verified solves, a provable profile, and everywhere that leads —
             practice, community, and real placement opportunity.
           </p>
           <p className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)]">
@@ -163,7 +163,7 @@ function LandingFooter({ user }) {
                   rel={key === "email" ? undefined : "noopener noreferrer"}
                   aria-label={label}
                   title={label}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-zinc-800/80 text-zinc-400 border border-zinc-800 hover:text-white hover:bg-zinc-700 hover:border-zinc-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center bg-[var(--surface-elevated)]/80 text-[var(--muted-foreground)] border border-[var(--border)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] hover:border-[var(--border-strong)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
                 >
                   <Icon size={15} />
                 </a>

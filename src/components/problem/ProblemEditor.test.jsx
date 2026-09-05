@@ -32,6 +32,14 @@ vi.mock("../../hooks/useTheme", () => ({
   }),
 }));
 
+// ProblemEditor now reads Black & White Mode to pick the Monaco editor
+// theme (vs-dark / light) — mocked the same way useTheme is above, rather
+// than wrapping every render() call in a real BWModeProvider, since these
+// tests aren't exercising the toggle itself.
+vi.mock("../../hooks/useBWMode", () => ({
+  useBWMode: () => ({ bwMode: false, toggleBWMode: () => {} }),
+}));
+
 // Monaco is heavy and irrelevant to what most of this file covers (the
 // language <select>, which lives outside the editor itself) — stubbed to
 // a plain textarea-like placeholder, same "stub the unrelated heavy

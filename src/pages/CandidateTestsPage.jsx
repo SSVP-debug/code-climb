@@ -10,7 +10,7 @@ const STATUS_STYLES = {
   pending:     "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
   in_progress: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   submitted:   "bg-green-500/10 text-green-400 border-green-500/20",
-  expired:     "bg-zinc-800 text-zinc-500 border-zinc-700",
+  expired:     "bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border-[var(--border-strong)]",
 };
 
 function formatTimeLeft(expiresAt) {

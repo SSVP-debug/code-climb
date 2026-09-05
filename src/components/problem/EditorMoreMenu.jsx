@@ -56,7 +56,7 @@ function EditorMoreMenu({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-zinc-700 transition-colors"
+        className="p-1.5 rounded-md text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors"
         title="More editor options"
         aria-expanded={open}
       >
@@ -65,29 +65,29 @@ function EditorMoreMenu({
 
       {open && (
         <div
-          className="absolute left-0 top-full mt-2 z-20 w-56 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl p-1.5"
+          className="absolute left-0 top-full mt-2 z-20 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-xl p-1.5"
           role="menu"
         >
           <div className="flex items-center justify-between px-2.5 py-1.5">
-            <span className="text-xs text-zinc-400">Font size</span>
-            <div className="flex items-center gap-0.5 bg-zinc-800/60 rounded-md px-0.5">
+            <span className="text-xs text-[var(--muted-foreground)]">Font size</span>
+            <div className="flex items-center gap-0.5 bg-[var(--surface-elevated)]/60 rounded-md px-0.5">
               <button
                 type="button"
                 onClick={() => onFontSizeChange(-1)}
                 disabled={fontSize <= fontSizeMin}
-                className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+                className="p-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors disabled:opacity-30"
                 title="Decrease font size"
               >
                 <Minus size={13} />
               </button>
-              <span className="text-xs text-zinc-400 w-5 text-center tabular-nums select-none">
+              <span className="text-xs text-[var(--muted-foreground)] w-5 text-center tabular-nums select-none">
                 {fontSize}
               </span>
               <button
                 type="button"
                 onClick={() => onFontSizeChange(1)}
                 disabled={fontSize >= fontSizeMax}
-                className="p-1 rounded text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors disabled:opacity-30"
+                className="p-1 rounded text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors disabled:opacity-30"
                 title="Increase font size"
               >
                 <Plus size={13} />
@@ -103,7 +103,7 @@ function EditorMoreMenu({
                 onReset();
                 setOpen(false);
               }}
-              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors text-left"
+              className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors text-left"
             >
               <RotateCcw size={14} />
               Reset to starter code
@@ -114,7 +114,7 @@ function EditorMoreMenu({
             type="button"
             role="menuitem"
             onClick={onCopy}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors text-left"
           >
             {justCopied ? (
               <Check size={14} className="text-green-400" />
@@ -131,7 +131,7 @@ function EditorMoreMenu({
               onToggleFullscreen();
               setOpen(false);
             }}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors text-left"
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-colors text-left"
           >
             {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
             {isFullscreen ? "Exit fullscreen" : "Fullscreen"}

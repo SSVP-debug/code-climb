@@ -44,7 +44,7 @@ function ReflectionPrompt({ submissionId }) {
 
   return (
     <div className="pt-1">
-      <p className="text-xs font-medium text-zinc-400 mb-2 text-center">
+      <p className="text-xs font-medium text-[var(--muted-foreground)] mb-2 text-center">
         How difficult did this problem feel?
       </p>
 
@@ -62,7 +62,7 @@ function ReflectionPrompt({ submissionId }) {
               disabled={!submissionId}
               title={opt.label}
               aria-label={opt.label}
-              className="group flex flex-col items-center gap-1 rounded-xl px-2.5 py-2 border border-transparent hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none"
+              className="group flex flex-col items-center gap-1 rounded-xl px-2.5 py-2 border border-transparent hover:border-[var(--border-strong)] hover:bg-[var(--surface-elevated)]/60 active:scale-95 transition disabled:opacity-40 disabled:pointer-events-none"
             >
               <span className="text-xl leading-none group-hover:scale-110 transition-transform">
                 <opt.Icon size={20} strokeWidth={1.75} aria-hidden="true" />

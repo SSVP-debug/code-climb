@@ -9,6 +9,7 @@ import UpgradePrompt from "../components/ui/UpgradePrompt";
 import ErrorBanner from "../components/ErrorBanner";
 import { useHideDifficultyLabels } from "../hooks/useHideDifficultyLabels";
 import { useLanguages } from "../hooks/useLanguages";
+import { useBWMode } from "../hooks/useBWMode";
 
 function formatTime(ms) {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -30,6 +31,7 @@ export default function InterviewModePage() {
   // pattern was wrong. See docs/adding-a-language.md's caveat on why
   // "no frontend hardcoding" needs a per-file grep, not a one-time check.
   const { languages } = useLanguages();
+  const { bwMode } = useBWMode();
 
   const [session, setSession]       = useState(null);
   const [code, setCode]             = useState("// Think out loud — explain your approach before coding.\n");
@@ -156,7 +158,7 @@ export default function InterviewModePage() {
           />
           <button
             onClick={() => navigate(`/problems/${slug}`)}
-            className="text-sm text-zinc-500 hover:text-zinc-300 transition"
+            className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
           >
             Back to Problem
           </button>
@@ -169,12 +171,12 @@ export default function InterviewModePage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-[70vh]">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center max-w-md">
-            <h2 className="text-xl font-bold text-white mb-2">Interview Mode Unavailable</h2>
-            <p className="text-zinc-400 text-sm mb-6">{error}</p>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center max-w-md">
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">Interview Mode Unavailable</h2>
+            <p className="text-[var(--muted-foreground)] text-sm mb-6">{error}</p>
             <button
               onClick={() => navigate(`/problems/${slug}`)}
-              className="px-5 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition"
+              className="px-5 py-2 bg-[var(--surface-elevated)] hover:brightness-110 text-[var(--foreground)] rounded-xl transition"
             >
               Back to Problem
             </button>
@@ -192,15 +194,15 @@ export default function InterviewModePage() {
 
       <div className="flex flex-col h-[calc(100vh-90px)]">
         {/* Header bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800">
+        <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
           <div>
-            <h1 className="text-lg font-bold text-white">{session?.problem?.title}</h1>
-            <p className="text-xs text-zinc-500">
+            <h1 className="text-lg font-bold text-[var(--foreground)]">{session?.problem?.title}</h1>
+            <p className="text-xs text-[var(--muted-foreground)]">
               Live Interview Mode{!hideDifficulty && session?.problem?.difficulty ? ` · ${session.problem.difficulty}` : ""}
             </p>
           </div>
           <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-mono font-bold text-lg ${
-            urgent ? "bg-red-500/20 text-red-400 animate-pulse" : "bg-zinc-800 text-teal-400"
+            urgent ? "bg-red-500/20 text-red-400 animate-pulse" : "bg-[var(--surface-elevated)] text-teal-400"
           }`}>
             ⏱ {formatTime(timeLeft)}
           </div>
@@ -208,10 +210,10 @@ export default function InterviewModePage() {
 
         {submitted ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="bg-zinc-900 border border-teal-500/30 rounded-2xl p-8 text-center max-w-md">
-              <h2 className="text-2xl font-bold text-white mb-2">Interview Complete</h2>
-              <p className="text-zinc-400 text-sm mb-2">{chatLog.filter(c=>c.role==="interviewer").length} questions asked</p>
-              <p className="text-zinc-500 text-xs mb-6">Time used: {formatTime(session.durationMs - timeLeft)}</p>
+            <div className="bg-[var(--surface)] border border-teal-500/30 rounded-2xl p-8 text-center max-w-md">
+              <h2 className="text-2xl font-bold text-[var(--foreground)] mb-2">Interview Complete</h2>
+              <p className="text-[var(--muted-foreground)] text-sm mb-2">{chatLog.filter(c=>c.role==="interviewer").length} questions asked</p>
+              <p className="text-[var(--muted-foreground)] text-xs mb-6">Time used: {formatTime(session.durationMs - timeLeft)}</p>
               <Button onClick={() => navigate(`/problems/${slug}`)}>
                 Back to Problem
               </Button>
@@ -220,12 +222,12 @@ export default function InterviewModePage() {
         ) : (
           <div className="flex-1 flex overflow-hidden">
             {/* Editor */}
-            <div className="flex-1 flex flex-col border-r border-zinc-800">
-              <div className="px-4 py-2 border-b border-zinc-800 flex items-center justify-between">
+            <div className="flex-1 flex flex-col border-r border-[var(--border)]">
+              <div className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between">
                 <select
                   value={language}
                   onChange={e => setLanguage(e.target.value)}
-                  className="bg-zinc-800 text-zinc-200 text-sm border-none rounded-md px-2 py-1 outline-none"
+                  className="bg-[var(--surface-elevated)] text-[var(--foreground)] text-sm border-none rounded-md px-2 py-1 outline-none"
                 >
                   {languages.map((lang) => (
                     <option key={lang.id} value={lang.id}>
@@ -248,16 +250,16 @@ export default function InterviewModePage() {
                   language={language}
                   value={code}
                   onChange={v => setCode(v || "")}
-                  theme="vs-dark"
+                  theme={bwMode ? "light" : "vs-dark"}
                   options={{ fontSize: 14, minimap: { enabled: false }, padding: { top: 16 } }}
                 />
               </div>
             </div>
 
             {/* Chat panel */}
-            <div className="w-[380px] flex flex-col bg-zinc-950">
-              <div className="px-4 py-2 border-b border-zinc-800">
-                <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold">AI Interviewer</p>
+            <div className="w-[380px] flex flex-col bg-[var(--background)]">
+              <div className="px-4 py-2 border-b border-[var(--border)]">
+                <p className="text-xs text-[var(--muted-foreground)] uppercase tracking-widest font-semibold">AI Interviewer</p>
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
                 {chatLog.map((msg, i) => (
@@ -265,7 +267,7 @@ export default function InterviewModePage() {
                     <div className={`max-w-[85%] px-3 py-2 rounded-xl text-sm ${
                       msg.role === "candidate"
                         ? "bg-teal-600 text-white"
-                        : "bg-zinc-800 text-zinc-200"
+                        : "bg-[var(--surface-elevated)] text-[var(--foreground)]"
                     }`}>
                       {msg.text}
                     </div>
@@ -273,18 +275,18 @@ export default function InterviewModePage() {
                 ))}
                 {asking && (
                   <div className="flex justify-start">
-                    <div className="bg-zinc-800 text-zinc-500 px-3 py-2 rounded-xl text-sm">…thinking</div>
+                    <div className="bg-[var(--surface-elevated)] text-[var(--muted-foreground)] px-3 py-2 rounded-xl text-sm">…thinking</div>
                   </div>
                 )}
               </div>
-              <div className="p-3 border-t border-zinc-800">
+              <div className="p-3 border-t border-[var(--border)]">
                 <div className="flex gap-2">
                   <input
                     value={userInput}
                     onChange={e => setUserInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && handleAsk()}
                     placeholder="Explain your approach…"
-                    className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-teal-500/50"
+                    className="flex-1 bg-[var(--surface)] border border-[var(--border-strong)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-teal-500/50"
                   />
                   <Button
                     size="sm"

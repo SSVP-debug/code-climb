@@ -27,10 +27,10 @@ function NextBestProblemCard({ nextProblem }) {
 
   return (
     <div>
-      <p className="text-xs font-medium text-zinc-500 mb-1.5">Next Best Problem</p>
+      <p className="text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Next Best Problem</p>
       <Link
         to={`/problems/${nextProblem.slug}`}
-        className="group block rounded-xl border border-zinc-800 bg-zinc-800/40 hover:bg-zinc-800/70 hover:border-zinc-700 transition px-3.5 py-3"
+        className="group block rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)]/40 hover:bg-[var(--surface-elevated)]/70 hover:border-[var(--border-strong)] transition px-3.5 py-3"
       >
         {nextProblem.reason && (
           <p
@@ -43,7 +43,7 @@ function NextBestProblemCard({ nextProblem }) {
 
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate group-hover:text-[var(--theme-primary,#2dd4bf)] transition-colors">
+            <p className="text-sm font-medium text-[var(--foreground)] truncate group-hover:text-[var(--theme-primary,#2dd4bf)] transition-colors">
               {nextProblem.title}
             </p>
             <div className="flex items-center gap-2 mt-1">
@@ -51,14 +51,14 @@ function NextBestProblemCard({ nextProblem }) {
                 <span
                   className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium border ${
                     DIFFICULTY_STYLES[nextProblem.difficulty] ??
-                    "text-zinc-400 border-zinc-700 bg-zinc-800"
+                    "text-[var(--muted-foreground)] border-[var(--border-strong)] bg-[var(--surface-elevated)]"
                   }`}
                 >
                   {nextProblem.difficulty}
                 </span>
               )}
               {nextProblem.topic && (
-                <span className="text-[10px] text-zinc-500 truncate">{nextProblem.topic}</span>
+                <span className="text-[10px] text-[var(--muted-foreground)] truncate">{nextProblem.topic}</span>
               )}
             </div>
           </div>

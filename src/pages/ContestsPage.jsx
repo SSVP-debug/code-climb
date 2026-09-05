@@ -22,7 +22,7 @@ function StatusBadge({ status }) {
   const styles = {
     upcoming: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
     active:   "bg-green-500/10  text-green-400  border-green-500/20",
-    ended:    "bg-zinc-800      text-zinc-500   border-zinc-700",
+    ended:    "bg-[var(--surface-elevated)] text-[var(--muted-foreground)] border-[var(--border-strong)]",
   };
   return (
     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${styles[status]}`}>

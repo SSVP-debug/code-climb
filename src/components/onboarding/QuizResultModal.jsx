@@ -32,13 +32,13 @@ export default function QuizResultModal({ result, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-ink-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl"
+        className="relative bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"
+          className="absolute top-4 right-4 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
         >
           <X size={20} />
         </button>

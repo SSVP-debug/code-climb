@@ -140,7 +140,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
         inert={stage === "understand"}
         className={
           (isDesktop
-            ? "h-full flex overflow-hidden bg-zinc-950 px-3 py-2 gap-3"
+            ? "h-full flex overflow-hidden bg-[var(--background)] px-3 py-2 gap-3"
             : "flex flex-col h-full overflow-hidden") +
           (stage === "understand" ? " blur-sm brightness-75 scale-[0.99] transition-all duration-300" : " transition-all duration-300")
         }
@@ -153,7 +153,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
           className={
             isDesktop
               ? "flex h-full w-full overflow-hidden relative"
-              : "flex-1 min-h-0 overflow-y-auto bg-zinc-950"
+              : "flex-1 min-h-0 overflow-y-auto bg-[var(--background)]"
           }
         >
           {/* ── Info panel (Problem tab on mobile) ─────────────────────────── */}
@@ -162,7 +162,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
               isDesktop
                 ? "h-full overflow-hidden"
                 : panelVisible.info
-                  ? "p-4 bg-zinc-900 min-h-full"
+                  ? "p-4 bg-[var(--surface)] min-h-full"
                   : "hidden"
             }
             style={isDesktop ? { width: `${problemWidth}%` } : undefined}
@@ -170,13 +170,13 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
             <div
               className={
                 isDesktop
-                  ? "h-full overflow-y-auto custom-scrollbar bg-zinc-900 border border-zinc-800 rounded-2xl p-4 shadow-xl"
+                  ? "h-full overflow-y-auto custom-scrollbar bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 shadow-xl"
                   : undefined
               }
             >
               {!isDesktop && !isSolved && (
                 <div className="mb-4">
-                  <span className="text-xs font-mono text-zinc-500">⏱ {timerFormatted}</span>
+                  <span className="text-xs font-mono text-[var(--muted-foreground)]">⏱ {timerFormatted}</span>
                 </div>
               )}
               <MissionHeader chapterId={editionChapterId} slug={slug} />
@@ -216,7 +216,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
                 window.addEventListener("mouseup", handleUp);
               }}
             >
-              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-zinc-800 group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-[var(--border-strong)] group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
             </div>
           )}
 
@@ -264,7 +264,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
             >
               <ErrorBoundary
                 fallback={
-                  <div className="h-full bg-zinc-900 border border-red-500 text-red-400 p-6 rounded-2xl">
+                  <div className="h-full bg-[var(--surface)] border border-red-500 text-red-400 p-6 rounded-2xl">
                     Editor failed to load.
                   </div>
                 }
@@ -309,7 +309,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
                   window.addEventListener("mouseup", handleUp);
                 }}
               >
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-zinc-800 group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-[var(--border-strong)] group-hover:bg-[var(--theme-primary,#2dd4bf)] transition-colors" />
               </div>
             )}
 
@@ -322,7 +322,7 @@ function ProblemWorkspaceLayout({ problem, slug, solver, nextBestProblem, editio
               showValidation && (
                 <div className="flex-1 min-h-0 flex flex-col animate-validate-panel-in">
                   <SubmissionResultBanner submitInfo={submitInfo} />
-                  <div className="flex-1 min-h-0 overflow-hidden bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl">
+                  <div className="flex-1 min-h-0 overflow-hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl">
                     <WorkspacePanel
                       runResults={runResults}
                       submitInfo={submitInfo}

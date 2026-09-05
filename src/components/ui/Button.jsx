@@ -3,11 +3,11 @@ const VARIANT_CLASSES = {
   primary:
     "bg-[var(--theme-primary,#2dd4bf)] hover:brightness-110 text-[#09090b] disabled:hover:brightness-100",
   secondary:
-    "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 disabled:hover:bg-zinc-800",
+    "bg-[var(--surface-elevated)] hover:brightness-110 text-[var(--foreground)] border border-[var(--border-strong)] disabled:hover:brightness-100",
   danger:
     "bg-red-600 hover:bg-red-500 text-white disabled:hover:bg-red-600",
   ghost:
-    "bg-transparent hover:bg-zinc-900 text-zinc-300 hover:text-white disabled:hover:bg-transparent",
+    "bg-transparent hover:bg-[var(--surface-elevated)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:hover:bg-transparent",
   theme:
     "bg-[var(--theme-primary,#2dd4bf)] hover:brightness-110 text-[#09090b] disabled:hover:brightness-100",
 };
@@ -20,7 +20,7 @@ const SIZE_CLASSES = {
 };
 
 const BASE_CLASSES =
-  "inline-flex items-center justify-center gap-2 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950";
+  "inline-flex items-center justify-center gap-2 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-primary,#2dd4bf)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]";
 
 function Button({
   variant = "primary",

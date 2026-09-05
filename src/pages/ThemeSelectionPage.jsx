@@ -196,7 +196,7 @@ export default function ThemeSelectionPage() {
                                         <Lock
                                             size={16}
                                             strokeWidth={2}
-                                            className="text-zinc-500"
+                                            className="text-[var(--muted-foreground)]"
                                             aria-label={`Locked — requires ${theme.unlockXP} XP`}
                                         />
                                     )}
@@ -210,13 +210,13 @@ export default function ThemeSelectionPage() {
                                     </p>
                                 )}
 
-                                <p className="text-zinc-400 mb-6">
+                                <p className="text-[var(--muted-foreground)] mb-6">
                                     {theme.description}
                                 </p>
 
                                 <div className="space-y-2 mb-6 text-sm">
                                     <p>
-                                        <span className="text-zinc-500">Accepted → </span>
+                                        <span className="text-[var(--muted-foreground)]">Accepted → </span>
                                         <span
                                             className="font-medium"
                                             style={{ color: colors.primary }}
@@ -226,7 +226,7 @@ export default function ThemeSelectionPage() {
                                     </p>
 
                                     <p>
-                                        <span className="text-zinc-500">Runtime Error → </span>
+                                        <span className="text-[var(--muted-foreground)]">Runtime Error → </span>
                                         <span className="font-medium text-rose-400">
                                             {theme.runtimePreview}
                                         </span>
@@ -237,7 +237,7 @@ export default function ThemeSelectionPage() {
                                     <button
                                         disabled
                                         aria-disabled="true"
-                                        className="w-full py-3 rounded-xl font-semibold bg-zinc-800 text-zinc-500 cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full py-3 rounded-xl font-semibold bg-[var(--surface-elevated)] text-[var(--muted-foreground)] cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         <Lock size={16} strokeWidth={2} aria-hidden="true" />
                                         Unlock at {theme.unlockXP.toLocaleString()} XP

@@ -75,7 +75,7 @@ function ContactChannels({ variant = "panel", className = "" }) {
             href={href}
             target={key === "email" ? undefined : "_blank"}
             rel={key === "email" ? undefined : "noopener noreferrer"}
-            className="text-zinc-600 hover:text-zinc-400 transition"
+            className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition"
             aria-label={label}
             title={label}
           >
@@ -91,7 +91,7 @@ function ContactChannels({ variant = "panel", className = "" }) {
       {channels.map(({ key, label, cta, href, Icon, description }) => (
         <div
           key={key}
-          className="flex flex-col gap-3 bg-zinc-800/60 border border-zinc-800 rounded-xl p-4"
+          className="flex flex-col gap-3 bg-[var(--surface-elevated)]/60 border border-[var(--border)] rounded-xl p-4"
         >
           <div className="flex items-center gap-2.5">
             <span
@@ -103,14 +103,14 @@ function ContactChannels({ variant = "panel", className = "" }) {
             >
               <Icon size={16} />
             </span>
-            <span className="font-semibold text-sm">{label}</span>
+            <span className="font-semibold text-sm text-[var(--foreground)]">{label}</span>
           </div>
-          <p className="text-zinc-500 text-xs leading-relaxed flex-1">{description}</p>
+          <p className="text-[var(--muted-foreground)] text-xs leading-relaxed flex-1">{description}</p>
           <a
             href={href}
             target={key === "email" ? undefined : "_blank"}
             rel={key === "email" ? undefined : "noopener noreferrer"}
-            className="text-xs font-semibold text-center rounded-lg py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 transition"
+            className="text-xs font-semibold text-center rounded-lg py-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] border border-[var(--border-strong)] transition"
             style={{ color: "var(--theme-primary, #2dd4bf)" }}
           >
             {cta}

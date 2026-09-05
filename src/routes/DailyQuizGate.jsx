@@ -51,7 +51,7 @@ export default function DailyQuizGate({ children }) {
 
   if (status === "required") {
     return (
-      <div className="min-h-screen bg-black px-4">
+      <div className="min-h-screen bg-[var(--background)] px-4">
         <DailyQuickQuiz onComplete={completeQuiz} />
         {completeError && (
           <div className="max-w-xl mx-auto mt-4">
@@ -82,10 +82,10 @@ export default function DailyQuizGate({ children }) {
 
 function FullScreenSpinner() {
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <Sparkles size={24} className="text-[var(--theme-primary,#2dd4bf)] animate-pulse" />
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-[var(--theme-primary,#2dd4bf)] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--border-strong)] border-t-[var(--theme-primary,#2dd4bf)] rounded-full animate-spin" />
       </div>
     </div>
   );
@@ -96,14 +96,14 @@ function FullScreenMessage({ icon, title, description, children, compact = false
     <div
       className={
         compact
-          ? "border border-zinc-800 rounded-2xl p-5 text-center bg-ink-900"
-          : "min-h-screen bg-black flex items-center justify-center px-4"
+          ? "border border-[var(--border)] rounded-2xl p-5 text-center bg-[var(--surface)]"
+          : "min-h-screen bg-[var(--background)] flex items-center justify-center px-4"
       }
     >
       <div className={compact ? "" : "max-w-sm w-full text-center"}>
         <div className="flex justify-center mb-3">{icon}</div>
-        <h2 className="text-white font-semibold mb-1">{title}</h2>
-        <p className="text-zinc-500 text-sm mb-5">{description}</p>
+        <h2 className="text-[var(--foreground)] font-semibold mb-1">{title}</h2>
+        <p className="text-[var(--muted-foreground)] text-sm mb-5">{description}</p>
         {children}
       </div>
     </div>

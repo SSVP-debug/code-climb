@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "../../hooks/useTheme";
+import { useBWMode } from "../../hooks/useBWMode";
 import { useLanguages } from "../../hooks/useLanguages";
 import EditorMoreMenu from "./EditorMoreMenu";
 import {
@@ -30,6 +31,7 @@ function ProblemEditor({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [justCopied, setJustCopied] = useState(false);
   const { theme } = useTheme();
+  const { bwMode } = useBWMode();
   const { languages } = useLanguages();
   const editorRef = useRef(null);
 
@@ -104,21 +106,21 @@ function ProblemEditor({
   return (
     <div className={
       isFullscreen
-        ? "fixed inset-0 z-50 flex flex-col bg-zinc-900 shadow-2xl"
-        : "flex flex-col h-full bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl"
+        ? "fixed inset-0 z-50 flex flex-col bg-[var(--surface)] shadow-2xl"
+        : "flex flex-col h-full bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-xl"
     }>
       {/* ── Editor Header ────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--surface)]/50">
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
             {theme.words.language}
           </span>
 
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="bg-zinc-800 text-zinc-200 text-sm border-none rounded-md px-2 py-1 outline-none hover:bg-zinc-700 transition-colors cursor-pointer"
+            className="bg-[var(--surface-elevated)] text-[var(--foreground)] text-sm border-none rounded-md px-2 py-1 outline-none hover:brightness-110 transition-colors cursor-pointer"
           >
             {/* Content & Execution Architecture, Phase 2: sourced from
                 GET /api/languages (see useLanguages.js) instead of a
@@ -149,7 +151,7 @@ function ProblemEditor({
           <button
             onClick={onRun}
             disabled={running || submitting}
-            className="px-5 py-2 rounded-xl text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-all disabled:opacity-50"
+            className="px-5 py-2 rounded-xl text-sm font-semibold border border-[var(--border-strong)] text-[var(--foreground)] hover:bg-[var(--surface-elevated)] transition-all disabled:opacity-50"
             title="Run code (Ctrl+Enter)"
           >
             {running ? theme.words.running : theme.words.run}
@@ -177,7 +179,7 @@ function ProblemEditor({
           language={language}
           value={code}
           onChange={(value) => setCode(value || "")}
-          theme="vs-dark"
+          theme={bwMode ? "light" : "vs-dark"}
           onMount={handleEditorMount}
           saveViewState={true}
           options={{
@@ -231,7 +233,7 @@ function ProblemEditor({
         <button
           type="button"
           onClick={() => setShowAdvancedTesting(!showAdvancedTesting)}
-          className="flex items-center gap-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider hover:text-zinc-300 transition-colors"
+          className="flex items-center gap-2 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider hover:text-[var(--foreground)] transition-colors"
         >
           <span>{showAdvancedTesting ? "▼" : "▶"}</span>
           {theme.words.advancedTesting}
@@ -242,7 +244,7 @@ function ProblemEditor({
         <div className="mb-4 px-4">
           <label
             htmlFor="custom-input"
-            className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2"
+            className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2"
           >
             {theme.words.customInput}
           </label>
@@ -252,7 +254,7 @@ function ProblemEditor({
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
             rows={2}
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 font-mono text-sm text-zinc-200 outline-none focus:border-zinc-500 transition-colors placeholder:text-zinc-600"
+            className="w-full bg-[var(--surface-elevated)] border border-[var(--border-strong)] rounded-xl p-3 font-mono text-sm text-[var(--foreground)] outline-none focus:border-[var(--muted-foreground)] transition-colors placeholder:text-[var(--muted-foreground)]"
             placeholder={theme.words.customInputPlaceholder}
           />
         </div>

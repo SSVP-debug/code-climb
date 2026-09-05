@@ -12,7 +12,7 @@ const MOBILE_TABS = [
 
 function MobileTabBar({ active, onChange, hasResults, resultsEnabled = hasResults }) {
   return (
-    <div className="flex border-b border-zinc-800 bg-zinc-900 flex-shrink-0">
+    <div className="flex border-b border-[var(--border-strong)] bg-[var(--surface)] flex-shrink-0">
       {MOBILE_TABS.map((tab) => {
         const isDisabled = tab.id === "results" && !resultsEnabled;
         return (
@@ -24,8 +24,8 @@ function MobileTabBar({ active, onChange, hasResults, resultsEnabled = hasResult
               flex-1 py-3 text-xs font-semibold uppercase tracking-widest
               transition-colors relative
               ${isDisabled
-                ? "text-zinc-700 cursor-not-allowed"
-                : active === tab.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
+                ? "text-[var(--muted-foreground)] opacity-50 cursor-not-allowed"
+                : active === tab.id ? "text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}
             `}
           >
             {tab.label}
@@ -33,7 +33,7 @@ function MobileTabBar({ active, onChange, hasResults, resultsEnabled = hasResult
               <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-[var(--theme-primary,#2dd4bf)] align-middle" />
             )}
             {active === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-white rounded-t-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--foreground)] rounded-t-full" />
             )}
           </button>
         );

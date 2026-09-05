@@ -58,7 +58,7 @@ function PublicProfileCard() {
     <SectionCard accented>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-zinc-400 text-sm">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.publicProfile}
           </p>
 
@@ -76,8 +76,8 @@ function PublicProfileCard() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-zinc-800 rounded-xl p-4">
-          <p className="text-zinc-400 text-sm">
+        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.totalSolved}
           </p>
 
@@ -86,8 +86,8 @@ function PublicProfileCard() {
           </h3>
         </div>
 
-        <div className="bg-zinc-800 rounded-xl p-4">
-          <p className="text-zinc-400 text-sm">
+        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.totalSubmissions}
           </p>
 
@@ -126,8 +126,8 @@ function PublicProfileCard() {
           </h3>
         </div>
 
-        <div className="bg-zinc-800 rounded-xl p-4">
-          <p className="text-zinc-400 text-sm">
+        <div className="bg-[var(--surface-elevated)] rounded-xl p-4">
+          <p className="text-[var(--muted-foreground)] text-sm">
             {theme.words.topics}
           </p>
 
@@ -138,7 +138,7 @@ function PublicProfileCard() {
       </div>
 
       <div className="mt-8">
-        <p className="text-zinc-400 text-sm mb-3">
+        <p className="text-[var(--muted-foreground)] text-sm mb-3">
           {theme.words.recentActivity}
         </p>
 
