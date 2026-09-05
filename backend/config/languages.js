@@ -95,6 +95,9 @@ export const LANGUAGES = {
     // instruction.
     editorIndentSize: 4,
     enabled: true,
+    // Plan 011: every problem's starterCode map must include this key.
+    // See REQUIRED_STARTER_LANGUAGE_KEYS below.
+    requiredForNewProblems: true,
   },
   javascript: {
     name: "JavaScript",
@@ -102,6 +105,7 @@ export const LANGUAGES = {
     extension: "js",
     editorIndentSize: 2,
     enabled: true,
+    requiredForNewProblems: true,
   },
   java: {
     name: "Java",
@@ -109,6 +113,12 @@ export const LANGUAGES = {
     extension: "java",
     editorIndentSize: 4,
     enabled: true,
+    requiredForNewProblems: true,
+    // Plan 011: statically-typed languages need Problem.returnType/
+    // paramTypes contract support. See STATICALLY_TYPED_LANGUAGE_KEYS
+    // below and generateDriverCode.js's use of the declared contract over
+    // regex-inference.
+    requiresTypeDeclaration: true,
   },
   cpp: {
     name: "C++",
@@ -116,6 +126,8 @@ export const LANGUAGES = {
     extension: "cpp",
     editorIndentSize: 4,
     enabled: true,
+    requiredForNewProblems: true,
+    requiresTypeDeclaration: true,
   },
   // Phase 6 (Language Expansion) — see plans/010-language-expansion-scoping.md
   // for why TypeScript went first (structural superset of JS → driver-gen
@@ -135,6 +147,14 @@ export const LANGUAGES = {
     extension: "ts",
     editorIndentSize: 2,
     enabled: true,
+    // Deliberately omitted (falsy): TypeScript is dynamically typed for
+    // this purpose (reuses JavaScript's untyped call-and-print driver
+    // shape — see generateDriverCode.js) and its starter-code backfill,
+    // while complete, isn't a hard requirement the way the original four
+    // are. See REQUIRED_STARTER_LANGUAGE_KEYS / STATICALLY_TYPED_LANGUAGE_KEYS
+    // below.
+    // requiredForNewProblems: false,
+    // requiresTypeDeclaration: false,
   },
 };
 
@@ -228,3 +248,45 @@ export function formatEnabledLanguageKeysMessage() {
   if (keys.length === 2) return `${keys[0]} or ${keys[1]}`;
   return `${keys.slice(0, -1).join(", ")}, or ${keys[keys.length - 1]}`;
 }
+
+export function isSupportedLanguageKey(languageKey) {
+  return SUPPORTED_LANGUAGE_KEYS.includes(languageKey);
+}
+
+// ── Registry-driven contract scoping (plan 011) ──────────────────────────
+// Two derived lists replacing what used to be hand-maintained `[java,
+// cpp]` literals duplicated across Problem.js's returnTypeSchema/
+// paramTypesSchema and problemSchema.js's ReturnTypeSchema/ParamTypesSchema
+// — every one of those four had to be edited, separately, the day a third
+// statically-typed language showed up. Source of truth is now the
+// `requiresTypeDeclaration` flag on each LANGUAGES entry (same pattern as
+// `editorIndentSize`: a real per-language registry field, not a growing
+// conditional). Python/JavaScript/TypeScript don't declare it (defaults to
+// falsy) since dynamically-typed languages have never needed a returnType/
+// paramTypes contract — generateDriverCode.js's regex-inference fallback
+// (or, for TS, just reusing JS's own untyped call-and-print shape) covers
+// them.
+export const STATICALLY_TYPED_LANGUAGE_KEYS = Object.entries(LANGUAGES)
+  .filter(([, lang]) => lang.requiresTypeDeclaration)
+  .map(([key]) => key);
+
+export function requiresTypeDeclaration(languageKey) {
+  return STATICALLY_TYPED_LANGUAGE_KEYS.includes(languageKey);
+}
+
+// Which languages a problem's starterCode map MUST include an entry for.
+// Source of truth is each LANGUAGES entry's `requiredForNewProblems` flag —
+// replacing the hand-maintained 4-language literal that used to be
+// duplicated across problemSchema.js's ProblemFolderSchema and
+// AdminProblemCreateSchema (both required exactly python/javascript/java/
+// cpp, unconditionally, with no shared source). A newly-registered
+// language should start with this flag `false` (or omitted) — same
+// "starts disabled/optional until the backfill has run" shape `enabled:
+// false` already gives new languages at the Judge0-execution layer; this
+// gives them the equivalent at the content-authoring layer. Flip to `true`
+// only once every problem's starter code has actually been backfilled for
+// it (mirrors the runbook's step 5, and step 8's "flip enabled: true only
+// after step 1 is verified" ordering).
+export const REQUIRED_STARTER_LANGUAGE_KEYS = Object.entries(LANGUAGES)
+  .filter(([, lang]) => lang.requiredForNewProblems)
+  .map(([key]) => key);

@@ -12,7 +12,44 @@
  * pass of the execution-pipeline audit — see docs/execution-audit for
  * context. No behavior change: this produces byte-identical output to the
  * original inline version.
+ *
+ * Plan 011 (Batch 2): the `starter/<lang>.<ext>` entries used to be five
+ * hand-written lines (`"starter/python.py": starters.python`, etc.) in a
+ * file that didn't even import backend/config/languages.js — the single
+ * registry everything else in the execution pipeline already derives from.
+ * Adding a language meant a hand-edit here AND a matching hand-edit in
+ * importProblems.js's mirror-image read logic, with nothing enforcing the
+ * two stay in sync (the exact bug class Batch 2's sibling change,
+ * importProblems.js, fixes on the read side). Now both derive the same
+ * `starter/<key>.<extension>` path from the same registry, so a new
+ * language's folder convention costs zero edits to either file.
  */
+import { LANGUAGES, REQUIRED_STARTER_LANGUAGE_KEYS } from "../../config/languages.js";
+
+function buildStarterFiles(starters) {
+  const files = {};
+  for (const [key, lang] of Object.entries(LANGUAGES)) {
+    const isRequired = REQUIRED_STARTER_LANGUAGE_KEYS.includes(key);
+    if (isRequired) {
+      // Matches the old behavior for python/javascript/java/cpp: always
+      // emit the file, falling back to "" if the source object is
+      // somehow missing the key (never expected in practice, since these
+      // are required — see StarterCodeSchema — but keeping the fallback
+      // preserves exact prior semantics rather than introducing a new
+      // failure mode here).
+      files[`starter/${key}.${lang.extension}`] = starters[key] ?? "";
+    } else if (starters[key]) {
+      // Optional languages (typescript today): only emit when non-empty —
+      // matches the old `starters.typescript ? {...} : {}` ternary.
+      // Absent key here means "no file expected" to
+      // checkProblemsFolderDrift.js, matching importProblems.js's own
+      // `.catch(() => "")` treatment of a missing starter file on read.
+      files[`starter/${key}.${lang.extension}`] = starters[key];
+    }
+  }
+  return files;
+}
+
 export function buildProblemFiles(problem) {
   const starters = problem.starterCode ?? {};
 
@@ -52,21 +89,7 @@ export function buildProblemFiles(problem) {
       2
     ),
     "hints.json": JSON.stringify(problem.hints ?? [], null, 2),
-    "starter/python.py": starters.python ?? "",
-    "starter/javascript.js": starters.javascript ?? "",
-    "starter/java.java": starters.java ?? "",
-    "starter/cpp.cpp": starters.cpp ?? "",
-    // Phase 6 (Language Expansion, plan 010) — only emitted when present,
-    // unlike the four required starters above: not every problem has a
-    // typescript starter yet if this runs before/without
-    // scripts/backfillTypescriptStarter.js having populated
-    // src/data/problems.js first. checkProblemsFolderDrift.js diffs
-    // against exactly this set of keys, so an absent key here (rather
-    // than an empty-string one) means "no file expected" instead of
-    // "expected empty file" — matches importProblems.js's own
-    // `.catch(() => "")` treatment of a missing starter/typescript.ts on
-    // the read side.
-    ...(starters.typescript ? { "starter/typescript.ts": starters.typescript } : {}),
+    ...buildStarterFiles(starters),
     "editorial.md": problem.editorial?.content ?? "",
   };
 }

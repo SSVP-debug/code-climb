@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { ProblemFolderSchema } from "../schemas/problemSchema.js";
+import { LANGUAGES, REQUIRED_STARTER_LANGUAGE_KEYS } from "../config/languages.js";
 import "./../config/env.js";
 import connectDB from "../config/db.js";
 import Problem from "../models/Problem.js";
@@ -76,54 +77,28 @@ async function main() {
                 "utf8"
             );
 
-        const starterCode = {
-            python: await fs.readFile(
-                path.join(
-                    folderPath,
-                    "starter",
-                    "python.py"
-                ),
-                "utf8"
-            ),
-            javascript: await fs.readFile(
-                path.join(
-                    folderPath,
-                    "starter",
-                    "javascript.js"
-                ),
-                "utf8"
-            ),
-            java: await fs.readFile(
-                path.join(
-                    folderPath,
-                    "starter",
-                    "java.java"
-                ),
-                "utf8"
-            ),
-            cpp: await fs.readFile(
-                path.join(
-                    folderPath,
-                    "starter",
-                    "cpp.cpp"
-                ),
-                "utf8"
-            ),
-            // Phase 6 (Language Expansion, plan 010) — optional, unlike the
-            // four above: most problem folders won't have a
-            // starter/typescript.ts file until
-            // scripts/backfillTypescriptStarter.js has run against them
-            // (see ProblemFolderSchema's own comment on why this field is
-            // `.default("")` rather than required). Missing file → "",
-            // same posture the rest of this importer already has for any
-            // optional folder content (e.g. editorial.md below).
-            typescript: await fs
-                .readFile(
-                    path.join(folderPath, "starter", "typescript.ts"),
-                    "utf8"
-                )
-                .catch(() => ""),
-        };
+        // Plan 011 (Batch 2): was five hand-written `fs.readFile(...,
+        // "starter", "<lang>.<ext>")` blocks (one `.catch(() => "")` for
+        // typescript, none for the required four) — same registry-driven
+        // pattern as problemFolderFiles.js's write-side counterpart, so a
+        // new language's starter file costs zero edits to either file.
+        // Required-vs-optional read behavior (throw vs. fall back to "")
+        // is unchanged: still driven by REQUIRED_STARTER_LANGUAGE_KEYS.
+        const starterCode = Object.fromEntries(
+            await Promise.all(
+                Object.entries(LANGUAGES).map(async ([key, lang]) => {
+                    const filePath = path.join(
+                        folderPath,
+                        "starter",
+                        `${key}.${lang.extension}`
+                    );
+                    const content = REQUIRED_STARTER_LANGUAGE_KEYS.includes(key)
+                        ? await fs.readFile(filePath, "utf8")
+                        : await fs.readFile(filePath, "utf8").catch(() => "");
+                    return [key, content];
+                })
+            )
+        );
 
         const parsed =
             ProblemFolderSchema.safeParse({

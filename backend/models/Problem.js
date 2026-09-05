@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SUPPORTED_LANGUAGE_KEYS, STATICALLY_TYPED_LANGUAGE_KEYS } from "../config/languages.js";
 
 // ── Sub-schemas ───────────────────────────────────────────────────────────────
 
@@ -11,54 +12,81 @@ const exampleSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const starterCodeSchema = new mongoose.Schema(
-  {
-    python: { type: String, default: "" },
-    javascript: { type: String, default: "" },
-    java: { type: String, default: "" },
-    cpp: { type: String, default: "" },
-    // Phase 6 (Language Expansion) — see
-    // plans/006-language-expansion-scoping.md. Named field, matching this
-    // schema's existing convention rather than switching to a map; worth
-    // revisiting if a second/third language makes the fixed-field list
-    // unwieldy.
-    typescript: { type: String, default: "" },
-  },
-  { _id: false }
-);
+// ── Registry-validated language maps (Plan 011) ────────────────────────────
+// `starterCode`/`returnType`/`paramTypes` used to be three separate
+// mongoose.Schema sub-documents, each with one fixed named field per
+// language (python/javascript/java/cpp, +typescript for starterCode only).
+// That meant every new language was a schema migration touching THIS file
+// in three places, plus problemSchema.js's ProblemFolderSchema AND
+// AdminProblemCreateSchema (six edits total, per docs/adding-a-language.md
+// step 3's own "recommended to change before a 6th/7th language" note).
+//
+// Mongoose's Map type replaces the fixed-field sub-schema: keys are
+// language keys, validated below against the SAME registry
+// (backend/config/languages.js) everything else in the execution pipeline
+// already derives from — so a new language needs zero edits here, only a
+// registry entry + (for starterCode) content. Confirmed Mongoose coerces
+// a legacy plain-object document (`{ python: "...", javascript: "...", ... }`,
+// the shape every existing document already has) into a real Map
+// transparently on load — no data migration required — and `.toJSON()`/
+// `.toObject()` serialize back to a plain object, so every existing
+// `starterCode[lang]`-style read of an API response (frontend, mostly —
+// already dynamic, confirmed via grep before this change) needs zero
+// changes. The one thing that DOES change: reading these fields off a
+// live (non-lean, non-JSON) Mongoose document requires `.get(key)`
+// instead of bracket/dot access, since a real Map instance doesn't expose
+// arbitrary keys as properties — see judgeController.js's two call sites,
+// updated alongside this schema change.
+//
+// Validated against SUPPORTED_LANGUAGE_KEYS, not ENABLED_LANGUAGE_KEYS —
+// same reasoning as Submission.js's language enum: a disabled language's
+// already-authored starter code/contract must stay valid, since disabling
+// a language is a runtime gate on NEW Run/Submit requests, not a retroactive
+// judgment on existing content.
+function languageMapField({ of = String, keys = SUPPORTED_LANGUAGE_KEYS, badKeyLabel = "starterCode" } = {}) {
+  return {
+    type: Map,
+    of,
+    default: () => new Map(),
+    validate: {
+      validator: (m) => [...m.keys()].every((k) => keys.includes(k)),
+      message: `${badKeyLabel} contains a key that is not a registered language for this field (see backend/config/languages.js)`,
+    },
+  };
+}
+
+const starterCodeField = languageMapField({ badKeyLabel: "starterCode" });
 
 // Declared per-language return type for the solution function. This is the
 // execution contract's source of truth for statically-typed languages —
 // backend/utils/generateDriverCode.js prefers this over sniffing the return
-// type out of the user's submitted code. Optional/nullable so existing
-// problems without it keep working via the (fallback) regex inference.
-// Python/JavaScript are dynamically typed and don't need an entry here.
-const returnTypeSchema = new mongoose.Schema(
-  {
-    java: { type: String, default: null }, // e.g. "int", "long", "boolean", "String", "int[]"
-    cpp: { type: String, default: null }, // e.g. "int", "long long", "bool", "string", "vector<int>"
-  },
-  { _id: false }
-);
+// type out of the user's submitted code. Optional so existing problems
+// without it keep working via the (fallback) regex inference. Scoped to
+// STATICALLY_TYPED_LANGUAGE_KEYS (java/cpp today) rather than every
+// registered language — Python/JavaScript/TypeScript are dynamically
+// typed and have never needed a returnType contract; see that export's
+// own comment in languages.js for how a future language opts in.
+const returnTypeField = languageMapField({
+  keys: STATICALLY_TYPED_LANGUAGE_KEYS,
+  badKeyLabel: "returnType",
+});
 
 // Declared per-language, per-parameter argument types for the solution
-// function — the input-side counterpart to returnTypeSchema above. Added
-// during the execution-pipeline audit (finding P0-1/P1-2/P1-3): the driver
+// function — the input-side counterpart to returnType above. Added during
+// the execution-pipeline audit (finding P0-1/P1-2/P1-3): the driver
 // generator previously guessed argument types structurally from the JS
 // testcase value, which works for numeric arrays but silently produces
 // invalid Java/C++ for String, String[], boolean, and 2D-array parameters.
-// Keyed by parameter name so a problem only needs to declare the
-// parameters that need it — e.g. { java: { s: "String" } } for a
-// single-string-argument problem. Optional/nullable, same as returnType:
-// existing problems without it keep working via generateDriverCode.js's
-// structural inference fallback.
-const paramTypesSchema = new mongoose.Schema(
-  {
-    java: { type: Object, default: null }, // e.g. { s: "String", strs: "String[]", grid: "int[][]" }
-    cpp: { type: Object, default: null }, // e.g. { s: "string", strs: "vector<string>", grid: "vector<vector<int>>" }
-  },
-  { _id: false }
-);
+// Each language's value is itself an object keyed by parameter name (e.g.
+// `{ s: "String", strs: "String[]" }`) — `of: Mixed` since Mongoose Maps
+// only take a single scalar/Mixed value type, not a nested schema, and
+// this needs to hold an arbitrary per-problem object. Same
+// STATICALLY_TYPED_LANGUAGE_KEYS scoping as returnType above.
+const paramTypesField = languageMapField({
+  of: mongoose.Schema.Types.Mixed,
+  keys: STATICALLY_TYPED_LANGUAGE_KEYS,
+  badKeyLabel: "paramTypes",
+});
 
 const testcaseSchema = new mongoose.Schema(
   {
@@ -227,14 +255,14 @@ const problemSchema = new mongoose.Schema(
 
     examples: { type: [exampleSchema], default: [] },
     constraints: { type: [String], default: [] },
-    starterCode: { type: starterCodeSchema },
+    starterCode: starterCodeField,
 
-    // Optional per-language return-type contract — see returnTypeSchema above.
-    returnType: { type: returnTypeSchema, default: () => ({}) },
+    // Optional per-language return-type contract — see returnTypeField above.
+    returnType: returnTypeField,
 
     // Optional per-language, per-parameter argument-type contract — see
-    // paramTypesSchema above.
-    paramTypes: { type: paramTypesSchema, default: () => ({}) },
+    // paramTypesField above.
+    paramTypes: paramTypesField,
 
     // How the judge compares a submission's stdout against expectedOutput
     // (see backend/controllers/judgeController.js outputsMatch()).

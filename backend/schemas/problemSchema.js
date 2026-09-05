@@ -1,22 +1,95 @@
 import { z } from "zod";
+import {
+    SUPPORTED_LANGUAGE_KEYS,
+    STATICALLY_TYPED_LANGUAGE_KEYS,
+    REQUIRED_STARTER_LANGUAGE_KEYS,
+} from "../config/languages.js";
 
 export const TestcaseSchema = z.object({
     input: z.record(z.any()),
     expectedOutput: z.any(),
 });
 
-export const ReturnTypeSchema = z.object({
-    java: z.string().nullable().default(null),
-    cpp: z.string().nullable().default(null),
+// ── Registry-validated language maps (Plan 011) ────────────────────────────
+// Replaces what used to be three fixed-field object literals
+// (ReturnTypeSchema/ParamTypesSchema here, plus the two inline
+// `starterCode: { python: ..., javascript: ..., ... }` object schemas
+// further down) — every one of those had to be hand-edited, in step with
+// backend/models/Problem.js's three matching sub-schemas, for every new
+// language. `languageMapSchema` instead validates keys against the SAME
+// registry (backend/config/languages.js) the Mongoose side now derives
+// its own Map validators from, so a new language needs zero edits to
+// either file — see that file's `requiresTypeDeclaration`/
+// `requiredForNewProblems` flags for how a language opts into being a
+// valid key here.
+//
+// Deliberately `z.record(z.string(), valueSchema)` (a plain, unconstrained
+// string key) rather than `z.record(z.enum(allowedKeys), valueSchema)` —
+// zod v4 treats an enum-keyed record as an EXHAUSTIVE map (every enum
+// value must be present), which is the opposite of what a partial,
+// subset-of-languages map needs. The registry-membership check and the
+// required-keys check are both done explicitly in `superRefine` instead,
+// which also lets both checks report which specific key was invalid/
+// missing rather than a single from generic "not an object of this
+// shape" error.
+function languageMapSchema({ allowedKeys, requiredKeys = [], valueSchema = z.string(), label }) {
+    return z.record(z.string(), valueSchema).superRefine((obj, ctx) => {
+        for (const key of Object.keys(obj)) {
+            if (!allowedKeys.includes(key)) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: `"${key}" is not a registered language for ${label} (see backend/config/languages.js)`,
+                    path: [key],
+                });
+            }
+        }
+        for (const key of requiredKeys) {
+            if (!(key in obj)) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: `missing required ${label} for "${key}"`,
+                    path: [key],
+                });
+            }
+        }
+    });
+}
+
+// Optional per-language return-type contract — see backend/models/
+// Problem.js's returnTypeField. Scoped to STATICALLY_TYPED_LANGUAGE_KEYS
+// (java/cpp today); no required keys — a problem may declare none, some,
+// or all of them.
+export const ReturnTypeSchema = languageMapSchema({
+    allowedKeys: STATICALLY_TYPED_LANGUAGE_KEYS,
+    label: "returnType",
 }).default({});
 
 // Per-parameter argument-type contract — see backend/models/Problem.js
-// paramTypesSchema. Keyed by parameter name rather than a fixed shape,
-// since different problems have different parameter names.
-export const ParamTypesSchema = z.object({
-    java: z.record(z.string(), z.string()).nullable().default(null),
-    cpp: z.record(z.string(), z.string()).nullable().default(null),
+// paramTypesField. Each language's value is itself an object keyed by
+// parameter name (different problems have different parameter names, so
+// that inner shape stays a free-form record rather than anything more
+// specific).
+export const ParamTypesSchema = languageMapSchema({
+    allowedKeys: STATICALLY_TYPED_LANGUAGE_KEYS,
+    valueSchema: z.record(z.string(), z.string()),
+    label: "paramTypes",
 }).default({});
+
+// Starter code map — see backend/models/Problem.js's starterCodeField.
+// Validated against every SUPPORTED_LANGUAGE_KEYS (not just the
+// statically-typed ones), and REQUIRES exactly the languages flagged
+// `requiredForNewProblems: true` in the registry (python/javascript/
+// java/cpp today) — everything else (typescript today) is optional,
+// same "starts optional until the backfill has run" shape the registry
+// already gives new languages at the execution layer. Shared by both
+// ProblemFolderSchema and AdminProblemCreateSchema below, replacing what
+// used to be two separately hand-maintained copies of the same
+// four-required-plus-one-optional object literal.
+export const StarterCodeSchema = languageMapSchema({
+    allowedKeys: SUPPORTED_LANGUAGE_KEYS,
+    requiredKeys: REQUIRED_STARTER_LANGUAGE_KEYS,
+    label: "starterCode",
+});
 
 export const MetaSchema = z.object({
     id: z.number().int().positive(),
@@ -62,22 +135,7 @@ export const ProblemFolderSchema =
         hiddenTestcases: z.array(
             TestcaseSchema
         ),
-        starterCode: z.object({
-            python: z.string(),
-            javascript: z.string(),
-            java: z.string(),
-            cpp: z.string(),
-            // Phase 6 (Language Expansion, plan 010) — optional, unlike
-            // the four above: languages.js's `typescript` entry starts
-            // `enabled: false` (see plans/010-language-expansion-scoping.md),
-            // and the folder-importer/exporter round-trip
-            // (scripts/importProblems.js, exportProblemsToFolders.js)
-            // shouldn't hard-require a starter/typescript.ts file to exist
-            // for every one of the 257 existing problem folders before
-            // the backfill script (scripts/backfillTypescriptStarter.js)
-            // has actually run against them.
-            typescript: z.string().default(""),
-        }),
+        starterCode: StarterCodeSchema,
         editorial: z.string().default(""),
         hints: z.array(
             z.object({
@@ -125,14 +183,7 @@ export const AdminProblemCreateSchema = MetaSchema.extend({
         enabled: z.boolean().default(true),
         testcases: z.array(TestcaseSchema).default([]),
     }).default({}),
-    starterCode: z.object({
-        python: z.string(),
-        javascript: z.string(),
-        java: z.string(),
-        cpp: z.string(),
-        // Optional, same reasoning as ProblemFolderSchema above — plan 010.
-        typescript: z.string().default(""),
-    }),
+    starterCode: StarterCodeSchema,
     editorial: z.string().default(""),
     hints: z.array(
         z.object({

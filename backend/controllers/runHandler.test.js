@@ -106,7 +106,13 @@ describe("runHandler", () => {
     it("ignores a client-sent comparisonMode when problemSlug is provided, using the problem's own instead", async () => {
       Problem.findOne.mockResolvedValue({
         functionName: "topKFrequent",
-        returnType: {},
+        // Plan 011: Problem.returnType is a real Mongoose Map on an actual
+        // document (see judgeController.js's `.get(language)` read) —
+        // this fixture models that shape rather than a plain `{}`, which
+        // would throw ("...get is not a function") the moment
+        // runHandler tries to read it, same as it would in production if
+        // the model shape and the read shape ever disagreed.
+        returnType: new Map(),
         comparisonMode: "unordered", // the problem's REAL contract
         operationSequence: { enabled: false },
       });
@@ -188,7 +194,9 @@ describe("runHandler", () => {
     Problem.findOne.mockResolvedValue({
       slug: "single-number",
       functionName: "singleNumber",
-      returnType: {},
+      // Plan 011: see the identical comment on the other fixture above —
+      // a real Problem document's returnType is a Mongoose Map.
+      returnType: new Map(),
       comparisonMode: "exact",
       operationSequence: { enabled: false },
     });

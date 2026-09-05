@@ -135,6 +135,34 @@ describe("config/languages.js — registry", () => {
     expect(LANGUAGES.cpp.judge0Id).toBe(54);
   });
 
+  // Plan 011: STATICALLY_TYPED_LANGUAGE_KEYS / REQUIRED_STARTER_LANGUAGE_KEYS
+  // replace what used to be hand-maintained `[java, cpp]` / `[python,
+  // javascript, java, cpp]` literals duplicated across Problem.js and
+  // problemSchema.js. Asserting the exact real-registry values here (not
+  // just "derivation logic works" on a synthetic fixture) is deliberate —
+  // this is exactly the kind of drift a schema migration silently
+  // reintroduces if someone adds a language to LANGUAGES without setting
+  // these two flags.
+  it("derives STATICALLY_TYPED_LANGUAGE_KEYS and REQUIRED_STARTER_LANGUAGE_KEYS from real per-language flags, not a hand-maintained list", async () => {
+    const {
+      STATICALLY_TYPED_LANGUAGE_KEYS,
+      REQUIRED_STARTER_LANGUAGE_KEYS,
+      requiresTypeDeclaration,
+      isSupportedLanguageKey,
+    } = await import("./languages.js");
+
+    expect(STATICALLY_TYPED_LANGUAGE_KEYS).toEqual(["java", "cpp"]);
+    expect(REQUIRED_STARTER_LANGUAGE_KEYS).toEqual(["python", "javascript", "java", "cpp"]);
+
+    expect(requiresTypeDeclaration("java")).toBe(true);
+    expect(requiresTypeDeclaration("cpp")).toBe(true);
+    expect(requiresTypeDeclaration("python")).toBe(false);
+    expect(requiresTypeDeclaration("typescript")).toBe(false);
+
+    expect(isSupportedLanguageKey("python")).toBe(true);
+    expect(isSupportedLanguageKey("rust")).toBe(false);
+  });
+
   // Timeout raised from the 5s default: this test does vi.resetModules()
   // + vi.doMock() + a dynamic re-import of "./languages.js" itself, which
   // re-runs module transform/collection for this file's whole graph. That

@@ -89,7 +89,14 @@ export async function runHandler(req, res) {
     }
 
     functionName = problem.functionName;
-    returnType = problem.returnType?.[language] || undefined;
+    // Plan 011: Problem.returnType is a Mongoose Map (registry-validated
+    // against STATICALLY_TYPED_LANGUAGE_KEYS), not a fixed-field
+    // sub-document — a live Map instance doesn't expose keys via bracket
+    // access the way the old sub-document shape did, so this must be
+    // `.get(language)`, not `?.[language]` (which would silently and
+    // permanently return undefined here, with no error, disabling the
+    // declared-contract path entirely).
+    returnType = problem.returnType?.get(language) || undefined;
     comparisonMode = problem.comparisonMode || "exact";
     operationSequence = problem.operationSequence?.enabled ? problem.operationSequence : undefined;
   }
@@ -421,7 +428,10 @@ export async function submitHandler(req, res) {
   // server-side). Undefined for python/javascript or for problems that
   // haven't declared a contract yet; generateDriverCode falls back to its
   // regex inference in that case.
-  const returnType = problem.returnType?.[language] || undefined;
+  // Plan 011: see the identical comment on the other `problem.returnType`
+  // read above (runHandler) — same Map-vs-sub-document reasoning applies
+  // here in submitHandler.
+  const returnType = problem.returnType?.get(language) || undefined;
 
   // Output comparison mode — see Problem.comparisonMode's doc comment and
   // audit finding P0-3. Server-side only, same trust model as returnType
