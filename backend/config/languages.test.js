@@ -151,15 +151,17 @@ describe("config/languages.js — registry", () => {
       isSupportedLanguageKey,
     } = await import("./languages.js");
 
-    expect(STATICALLY_TYPED_LANGUAGE_KEYS).toEqual(["java", "cpp"]);
+    expect(STATICALLY_TYPED_LANGUAGE_KEYS).toEqual(["java", "cpp", "c"]);
     expect(REQUIRED_STARTER_LANGUAGE_KEYS).toEqual(["python", "javascript", "java", "cpp"]);
 
     expect(requiresTypeDeclaration("java")).toBe(true);
     expect(requiresTypeDeclaration("cpp")).toBe(true);
+    expect(requiresTypeDeclaration("c")).toBe(true);
     expect(requiresTypeDeclaration("python")).toBe(false);
     expect(requiresTypeDeclaration("typescript")).toBe(false);
 
     expect(isSupportedLanguageKey("python")).toBe(true);
+    expect(isSupportedLanguageKey("c")).toBe(true);
     expect(isSupportedLanguageKey("rust")).toBe(false);
   });
 

@@ -24,8 +24,9 @@ import * as javascript from "./javascript.js";
 import * as typescript from "./typescript.js";
 import * as java from "./java.js";
 import * as cpp from "./cpp.js";
+import * as c from "./c.js";
 
-const DRIVERS = { python, javascript, typescript, java, cpp };
+const DRIVERS = { python, javascript, typescript, java, cpp, c };
 
 for (const key of Object.keys(LANGUAGES)) {
   const driver = DRIVERS[key];

@@ -21,6 +21,7 @@ function toolAvailable(cmd) {
 }
 const HAS_PYTHON3 = toolAvailable("python3");
 const HAS_GPP = toolAvailable("g++");
+const HAS_GCC = toolAvailable("gcc");
 
 const minStackShape = identifyOperationSequence({
   ops: ["push", "push", "push", "getMin", "pop", "top", "getMin"],
@@ -83,6 +84,21 @@ describe("generateOperationSequenceDriver — structural checks", () => {
     );
     expect(jsCode).toContain("if (_r !== undefined) _results.push(_r);");
     expect(jsCode).not.toContain("?? null");
+  });
+
+  // C has no classes — uses a struct + prefixed-function convention
+  // instead (MinStack_create, MinStack_push, ...) and, unlike every other
+  // language here, has no reflection/SFINAE-equivalent to detect a void
+  // return, so results are always collected as `long` regardless of
+  // resultMode. See languageDrivers/c.js's own header comment for why —
+  // this is a real, documented gap, not an oversight.
+  it("c: uses a struct + prefixed-function convention and collects scalar (long) results only", () => {
+    const code = generateOperationSequenceDriver(
+      "c", "typedef struct { int top; } MinStack;", minStackShape, "MinStack", "all"
+    );
+    expect(code).toContain("MinStack* _instance = MinStack_create();");
+    expect(code).toContain("_results[0] = (long) MinStack_push(_instance, _op0_arg0);");
+    expect(code).toContain("_results[3] = (long) MinStack_getMin(_instance);");
   });
 });
 
@@ -159,6 +175,64 @@ private:
         0,
         -2,
       ]);
+    },
+    15_000
+  );
+
+  // Same MinStack sequence as the C++ case above, but using C's struct +
+  // prefixed-function convention (see languageDrivers/c.js) and its
+  // documented "scalar results only, no void detection" limitation — void
+  // calls (push/pop) come back as a dummy 0, not null. This is the direct,
+  // real proof that generateOperationSequence()'s output actually compiles
+  // and runs correctly for C, not just that it string-matches an expected
+  // template.
+  it.skipIf(!HAS_GCC)(
+    "c: a correct MinStack implementation (struct + prefixed functions) compiles and runs correctly",
+    () => {
+      const userCode = `
+typedef struct {
+  int data[100];
+  int size;
+} MinStack;
+
+MinStack* MinStack_create() {
+  MinStack* s = malloc(sizeof(MinStack));
+  s->size = 0;
+  return s;
+}
+long MinStack_push(MinStack* self, int val) {
+  self->data[self->size++] = val;
+  return 0;
+}
+long MinStack_pop(MinStack* self) {
+  self->size--;
+  return 0;
+}
+long MinStack_top(MinStack* self) {
+  return self->data[self->size - 1];
+}
+long MinStack_getMin(MinStack* self) {
+  long min = self->data[0];
+  for (int i = 1; i < self->size; i++) if (self->data[i] < min) min = self->data[i];
+  return min;
+}
+`;
+
+      const code = generateOperationSequenceDriver("c", userCode, minStackShape, "MinStack", "all");
+
+      const dir = mkdtempSync(join(tmpdir(), "opseq-test-"));
+      const cFile = join(dir, "driver.c");
+      const binFile = join(dir, "driver");
+      writeFileSync(cFile, code);
+
+      execFileSync("gcc", ["-std=c11", "-o", binFile, cFile]);
+
+      const out = execFileSync(binFile, { encoding: "utf-8" }).trim();
+
+      // Same real sequence as the C++/Python cases above, but with 0 in
+      // place of null at every void-call slot (push, pop) — the
+      // documented consequence of C having no void-detection mechanism.
+      expect(JSON.parse(out)).toEqual([0, 0, 0, -3, 0, 0, -2]);
     },
     15_000
   );

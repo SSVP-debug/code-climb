@@ -68,6 +68,40 @@ describe("generateDriverCode — C++ return type", () => {
   });
 });
 
+describe("generateDriverCode — C (structural addition, not yet backfilled — see languages.js's `c` entry)", () => {
+  it("declares a companion Size variable for an array argument and threads it into the call", () => {
+    const code = `int twoSum(int* nums, int numsSize, int target, int* returnSize) {\n  *returnSize = 0;\n  return NULL;\n}`;
+    const driver = generateDriverCode("c", code, { nums: [2, 7, 11, 15], target: 9 }, "twoSum", "int*");
+
+    expect(driver).toContain("int nums[] = {2, 7, 11, 15};");
+    expect(driver).toContain("int numsSize = 4;");
+    expect(driver).toContain("twoSum(nums, numsSize, target, &returnSize)");
+  });
+
+  it("declared bool return prints true/false, not 1/0", () => {
+    const code = `bool isPalindrome(int x) {\n  return true;\n}`;
+    const driver = generateDriverCode("c", code, { x: 121 }, "isPalindrome", "bool");
+
+    expect(driver).toContain("bool result = isPalindrome(x);");
+    expect(driver).toContain('printf(result ? "true" : "false");');
+  });
+
+  it("declared char* return quotes the string and does not attempt to free it", () => {
+    const code = `char* reverseString(char* s) {\n  return s;\n}`;
+    const driver = generateDriverCode("c", code, { s: "hi" }, "reverseString", "char*");
+
+    expect(driver).toContain('char* s = "hi";');
+    expect(driver).toContain('printf("\\"%s\\"\\n", result);');
+  });
+
+  it("falls back to inferReturnType's short regex whitelist when no returnType is declared", () => {
+    const code = `long long countPairs(int* nums, int numsSize, int target) {\n  return 0;\n}`;
+    const driver = generateDriverCode("c", code, { nums: [1, 1], target: 2 }, "countPairs");
+
+    expect(driver).toContain('printf("%lld\\n", result);');
+  });
+});
+
 describe("generateDriverCode — Python", () => {
   it("large integer results round-trip through json.dumps without truncation", () => {
     const code = `class Solution:\n    def countPairs(self, nums, target):\n        return 4999950000`;

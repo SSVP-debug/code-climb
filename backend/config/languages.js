@@ -129,6 +129,36 @@ export const LANGUAGES = {
     requiredForNewProblems: true,
     requiresTypeDeclaration: true,
   },
+  // C — added structurally (registry entry + driver module) but starts
+  // disabled and NOT required for new problems, same posture TypeScript
+  // started with, for a stronger reason: TypeScript was a near-zero-risk
+  // reuse of JavaScript's driver; C is NOT a near-zero-risk reuse of
+  // anything already registered. It has no classes, no `string`, no
+  // `vector<T>`, and arrays don't carry their own length — see
+  // backend/utils/languageTypes/c.js and backend/utils/languageDrivers/c.js
+  // for the conventions this required (an auto-generated `<key>Size`
+  // companion variable per array argument; a single supported
+  // array-return shape; operation-sequence/design-problem support
+  // restricted to scalar (long-representable) return values only, since C
+  // has no reflection or template mechanism to generically detect a void
+  // return the way Java/C++ do). Read both files' header comments before
+  // writing the first real C starter code or backfill script — this is
+  // NOT a drop-in the way TypeScript was.
+  c: {
+    name: "C",
+    // Judge0 CE's well-known id for "C (GCC 9.2.0)" on the public
+    // ce.judge0.com instance (same instance TypeScript's judge0Id: 74 was
+    // confirmed against above) — NOT yet independently confirmed for this
+    // entry. Run scripts/verifyLanguageRegistry.js before flipping
+    // `enabled: true`.
+    judge0Id: 50,
+    extension: "c",
+    editorIndentSize: 4,
+    enabled: false,
+    // Deliberately omitted (falsy) — see this entry's header comment.
+    // requiredForNewProblems: false,
+    requiresTypeDeclaration: true,
+  },
   // Phase 6 (Language Expansion) — see plans/010-language-expansion-scoping.md
   // for why TypeScript went first (structural superset of JS → driver-gen
   // reuses formatJsArg/the JS call-and-print pattern almost entirely, and
